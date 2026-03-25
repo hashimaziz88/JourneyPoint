@@ -2,6 +2,7 @@
 using Abp.Dependency;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace JourneyPoint.Web.Host.Startup
 {
@@ -9,6 +10,7 @@ namespace JourneyPoint.Web.Host.Startup
     {
         public static void Main(string[] args)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             CreateHostBuilder(args).Build().Run();
         }
 
