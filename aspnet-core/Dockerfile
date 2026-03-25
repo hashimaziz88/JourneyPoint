@@ -21,7 +21,6 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 # 🔥 REQUIRED FOR RENDER
-ENV ASPNETCORE_URLS=http://+:${PORT}
 ENV ASPNETCORE_ENVIRONMENT=Production
 
 ENTRYPOINT ["dotnet", "JourneyPoint.Web.Host.dll"]
