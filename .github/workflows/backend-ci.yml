@@ -29,14 +29,14 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Restore dependencies
-        run: dotnet restore Team2GroupProject.sln
+        run: dotnet restore JourneyPoint.sln
 
       - name: Build solution
-        run: dotnet build Team2GroupProject.sln --no-restore --configuration Release
+        run: dotnet build JourneyPoint.sln --no-restore --configuration Release
 
       - name: Run tests
         run: |
-          dotnet test test/Team2GroupProject.Tests/Team2GroupProject.Tests.csproj \
+          dotnet test JourneyPoint.sln \
             --no-build \
             --configuration Release \
             --logger "trx;LogFileName=test-results.trx" \
