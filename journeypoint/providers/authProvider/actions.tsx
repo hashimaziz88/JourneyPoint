@@ -1,5 +1,5 @@
 import { createAction } from "redux-actions";
-import { IAuthStateContext, IUserLoginResponse, } from "./context";
+import { IAuthStateContext, IUserLoginResponse, ITenantInfo } from "./context";
 
 export enum AuthActionEnums {
     loginPending = "LOGIN_PENDING",
@@ -17,6 +17,10 @@ export enum AuthActionEnums {
     getMePending = "GET_ME_PENDING",
     getMeSuccess = "GET_ME_SUCCESS",
     getMeError = "GET_ME_ERROR",
+
+    resolveTenantPending = "RESOLVE_TENANT_PENDING",
+    resolveTenantSuccess = "RESOLVE_TENANT_SUCCESS",
+    resolveTenantError = "RESOLVE_TENANT_ERROR",
 }
 
 export const loginPending = createAction<IAuthStateContext>(
@@ -79,4 +83,19 @@ export const getMeSuccess = createAction<IAuthStateContext, IUserLoginResponse>(
 export const getMeError = createAction<IAuthStateContext>(
     AuthActionEnums.getMeError,
     () => ({ isPending: false, isError: true, isSuccess: false, user: null, isAuthenticated: false })
+);
+
+export const resolveTenantPending = createAction<IAuthStateContext>(
+    AuthActionEnums.resolveTenantPending,
+    () => ({ isPending: true, isError: false, isSuccess: false, isAuthenticated: false })
+);
+
+export const resolveTenantSuccess = createAction<IAuthStateContext, ITenantInfo>(
+    AuthActionEnums.resolveTenantSuccess,
+    (tenant: ITenantInfo) => ({ isPending: false, isError: false, isSuccess: false, isAuthenticated: false, tenant })
+);
+
+export const resolveTenantError = createAction<IAuthStateContext>(
+    AuthActionEnums.resolveTenantError,
+    () => ({ isPending: false, isError: true, isSuccess: false, isAuthenticated: false, tenant: null })
 );

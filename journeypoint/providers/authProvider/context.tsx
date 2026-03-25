@@ -1,31 +1,6 @@
 import { createContext } from "react";
-
-export interface IUserLoginRequest {
-    email?: string | null;
-    password?: string | null;
-}
-
-export interface IUserRegisterRequest {
-    email?: string | null;
-    password?: string | null;
-    firstName?: string | null;
-    lastName?: string | null;
-    phoneNumber?: string | null;
-    tenantName?: string | null;
-    tenantId?: string | null;
-    role?: string | null;
-}
-
-export interface IUserLoginResponse {
-    token?: string | null;
-    userId?: string;
-    email?: string | null;
-    firstName?: string | null;
-    lastName?: string | null;
-    roles?: string[] | null;
-    tenantId?: string | null;
-    expiresAt?: string;
-}
+export type { IUserLoginRequest, IUserLoginResponse, IUserRegisterRequest, ITenantInfo } from "@/types/auth";
+import type { IUserLoginRequest, IUserLoginResponse, IUserRegisterRequest, ITenantInfo } from "@/types/auth";
 
 export interface IAuthStateContext {
     isSuccess: boolean;
@@ -33,6 +8,7 @@ export interface IAuthStateContext {
     isError: boolean;
     isAuthenticated: boolean;
     user?: IUserLoginResponse | null;
+    tenant?: ITenantInfo | null;
 }
 
 export interface IAuthActionContext {
@@ -40,6 +16,7 @@ export interface IAuthActionContext {
     register: (payload: IUserRegisterRequest) => Promise<void>;
     logout: () => Promise<void>;
     getMe: () => Promise<void>;
+    resolveTenant: (tenancyName: string) => Promise<ITenantInfo | null>;
 }
 
 export const INITIAL_STATE: IAuthStateContext = {
@@ -48,8 +25,8 @@ export const INITIAL_STATE: IAuthStateContext = {
     isError: false,
     isAuthenticated: false,
     user: null,
+    tenant: null,
 };
 
 export const AuthStateContext = createContext<IAuthStateContext>(INITIAL_STATE);
-
 export const AuthActionContext = createContext<IAuthActionContext>(undefined!);

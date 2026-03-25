@@ -1,29 +1,100 @@
 "use client"
 import React, { useReducer, useContext } from "react";
-import { INITIAL_STATE, AuthActionContext, AuthStateContext, IUserLoginRequest, IUserRegisterRequest } from "./context";
+import { INITIAL_STATE, AuthActionContext, AuthStateContext, IUserLoginRequest, IUserRegisterRequest, ITenantInfo } from "./context";
 import { AuthReducer } from "./reducer";
 import {
     loginPending, loginSuccess, loginError,
-    registerPending, registerSuccess, registerError,
+    registerPending, registerError,
     logoutPending, logoutSuccess, logoutError,
-    getMePending, getMeSuccess, getMeError
+    getMePending, getMeSuccess, getMeError,
+    resolveTenantPending, resolveTenantSuccess, resolveTenantError,
 } from "./actions";
 import { getAxiosInstace } from "@/utils/axiosInstance";
+import { getCookie, setCookie, removeCookie } from "@/utils/cookies";
+import { mapSessionUser } from "@/helpers/auth";
 import { useRouter } from "next/navigation";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
     const router = useRouter();
 
+    const resolveTenant = async (tenancyName: string): Promise<ITenantInfo | null> => {
+        dispatch(resolveTenantPending());
+        return await getAxiosInstace().post("/api/services/app/Account/IsTenantAvailable", { tenancyName })
+            .then((response) => {
+                const data = response.data?.result ?? response.data;
+                if (data?.state === 1) {
+                    const tenant: ITenantInfo = {
+                        tenantId: data.tenantId,
+                        tenancyName,
+                        tenantName: tenancyName,
+                    };
+                    setCookie("tenantId", String(data.tenantId));
+                    dispatch(resolveTenantSuccess(tenant));
+                    return tenant;
+                }
+                dispatch(resolveTenantError());
+                return null;
+            })
+            .catch((error) => {
+                console.error(error);
+                dispatch(resolveTenantError());
+                return null;
+            });
+    };
+
+    const getMe = async () => {
+        const token = getCookie("token");
+        if (!token) return;
+
+        dispatch(getMePending());
+        await getAxiosInstace().get("/api/services/app/Session/GetCurrentLoginInformations")
+            .then((response) => {
+                const data = response.data?.result ?? response.data;
+                const user = mapSessionUser(token, data?.user);
+                dispatch(getMeSuccess(user));
+
+                if (data?.tenant) {
+                    dispatch(resolveTenantSuccess({
+                        tenantId: data.tenant.id,
+                        tenancyName: data.tenant.tenancyName,
+                        tenantName: data.tenant.name,
+                    }));
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                removeCookie("token");
+                dispatch(getMeError());
+            });
+    };
+
     const login = async (payload: IUserLoginRequest) => {
         dispatch(loginPending());
-        await getAxiosInstace().post("/api/Auth/login", payload)
-            .then((response) => {
-                dispatch(loginSuccess(response.data));
-                sessionStorage.setItem('token', response.data.token);
+        await getAxiosInstace().post("/api/TokenAuth/Authenticate", payload)
+            .then(async (response) => {
+                const data = response.data?.result ?? response.data;
+                const token: string = data.accessToken;
+                setCookie("token", token);
+
+                const sessionResponse = await getAxiosInstace().get("/api/services/app/Session/GetCurrentLoginInformations");
+                const sessionData = sessionResponse.data?.result ?? sessionResponse.data;
+
+                const user = mapSessionUser(token, sessionData?.user, data.userId, data.expireInSeconds);
+                dispatch(loginSuccess(user));
+
+                if (sessionData?.tenant) {
+                    dispatch(resolveTenantSuccess({
+                        tenantId: sessionData.tenant.id,
+                        tenancyName: sessionData.tenant.tenancyName,
+                        tenantName: sessionData.tenant.name,
+                    }));
+                }
+
                 router.push("/dashboard");
             })
             .catch((error) => {
+                removeCookie("token");
                 dispatch(loginError());
                 console.error(error.message);
             });
@@ -31,11 +102,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const register = async (payload: IUserRegisterRequest) => {
         dispatch(registerPending());
-        await getAxiosInstace().post("/api/Auth/register", payload)
-            .then((response) => {
-                dispatch(registerSuccess(response.data));
-                sessionStorage.setItem('token', response.data.token);
-                router.push("/dashboard");
+        await getAxiosInstace().post("/api/services/app/Account/Register", payload)
+            .then(async (response) => {
+                const data = response.data?.result ?? response.data;
+                if (data?.canLogin) {
+                    await login({
+                        userNameOrEmailAddress: payload.userName,
+                        password: payload.password,
+                        rememberClient: true,
+                    });
+                    return;
+                }
+                router.push("/login");
             })
             .catch((error) => {
                 console.error(error);
@@ -47,8 +125,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         dispatch(logoutPending());
         await Promise.resolve()
             .then(() => {
-                sessionStorage.removeItem("token");
+                removeCookie("token");
+                removeCookie("tenantId");
                 dispatch(logoutSuccess());
+                router.push("/login");
             })
             .catch((error) => {
                 console.error("Logout error:", error);
@@ -56,25 +136,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
     };
 
-    const getMe = async () => {
-        const token = sessionStorage.getItem("token");
-        if (token) {
-            dispatch(getMePending());
-            await getAxiosInstace().get("/api/Auth/me")
-                .then((response) => {
-                    dispatch(getMeSuccess(response.data));
-                })
-                .catch((error) => {
-                    console.error(error);
-                    sessionStorage.removeItem("token");
-                    dispatch(getMeError());
-                });
-        }
-    };
-
     return (
         <AuthStateContext.Provider value={state}>
-            <AuthActionContext.Provider value={{ login, register, logout, getMe }}>
+            <AuthActionContext.Provider value={{ login, register, logout, getMe, resolveTenant }}>
                 {children}
             </AuthActionContext.Provider>
         </AuthStateContext.Provider>

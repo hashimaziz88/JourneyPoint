@@ -19,6 +19,10 @@ export const AuthReducer = handleActions<IAuthStateContext, Partial<IAuthStateCo
         [AuthActionEnums.getMePending]: (state, action) => ({ ...state, ...action.payload }),
         [AuthActionEnums.getMeSuccess]: (state, action) => ({ ...state, ...action.payload }),
         [AuthActionEnums.getMeError]: (state, action) => ({ ...state, ...action.payload }),
+
+        [AuthActionEnums.resolveTenantPending]: (state, action) => ({ ...state, ...action.payload }),
+        [AuthActionEnums.resolveTenantSuccess]: (state, action) => ({ ...state, ...action.payload }),
+        [AuthActionEnums.resolveTenantError]: (state, action) => ({ ...state, ...action.payload }),
     },
     INITIAL_STATE,
 );
