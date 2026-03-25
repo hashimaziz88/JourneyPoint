@@ -1,40 +1,46 @@
 "use client";
 
-import React, { useEffect, useSyncExternalStore } from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { WithAuthOptions } from "@/types/auth/withAuth";
-
-const subscribeToStorage = (callback: () => void) => {
-    globalThis.addEventListener("storage", callback);
-    return () => globalThis.removeEventListener("storage", callback);
-}
-
-const getToken = () => localStorage.getItem("auth_token");
-const getRole = () => localStorage.getItem("user_role");
-const getServerSnapshot = () => null;
+import { APP_ROUTES } from "@/constants/auth/routes";
+import { useAppSession } from "@/helpers/useAppSession";
+import Spinner from "@/components/spinner/Spinner";
 
 const withAuth = <P extends object>(
     WrappedComponent: React.ComponentType<P>,
-    { allowedRoles = [] }: WithAuthOptions = {}
+    { requiredPermission }: WithAuthOptions = {}
 ) => {
     const AuthenticatedComponent = (props: P) => {
         const router = useRouter();
-        const token = useSyncExternalStore(subscribeToStorage, getToken, getServerSnapshot);
-        const userRole = useSyncExternalStore(subscribeToStorage, getRole, getServerSnapshot);
+        const session = useAppSession();
 
         useEffect(() => {
-            if (!token) {
-                router.replace("/login");
+            if (!session.isReady) {
                 return;
             }
 
-            if (allowedRoles.length > 0 && !allowedRoles.includes(userRole ?? "")) {
-                router.replace(userRole === "admin" ? "/admin" : "/client");
+            if (!session.isAuthenticated) {
+                router.replace(APP_ROUTES.login);
+                return;
             }
-        }, [token, userRole, router]);
 
-        if (!token) return null;
-        if (allowedRoles.length > 0 && !allowedRoles.includes(userRole ?? "")) return null;
+            if (requiredPermission && !session.hasPermission(requiredPermission)) {
+                router.replace(session.defaultRoute);
+            }
+        }, [router, session]);
+
+        if (!session.isReady) {
+            return <Spinner />;
+        }
+
+        if (!session.isAuthenticated) {
+            return null;
+        }
+
+        if (requiredPermission && !session.hasPermission(requiredPermission)) {
+            return null;
+        }
 
         return <WrappedComponent {...props} />;
     };

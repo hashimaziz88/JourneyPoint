@@ -5,6 +5,7 @@ export interface IRoleDto {
     normalizedName?: string | null;
     description?: string | null;
     grantedPermissions?: string[] | null;
+    isStatic?: boolean;
 }
 
 export interface ICreateRoleDto {
@@ -16,14 +17,29 @@ export interface ICreateRoleDto {
 }
 
 export interface IPermissionDto {
+    id?: number;
     name?: string | null;
     displayName?: string | null;
     description?: string | null;
 }
 
+export interface IFlatPermissionDto {
+    name?: string | null;
+    displayName?: string | null;
+    description?: string | null;
+}
+
+export interface IRoleEditDto {
+    id?: number;
+    name?: string | null;
+    displayName?: string | null;
+    description?: string | null;
+    isStatic?: boolean;
+}
+
 export interface IGetRoleForEditOutput {
-    role?: IRoleDto | null;
-    permissions?: IPermissionDto[] | null;
+    role?: IRoleEditDto | null;
+    permissions?: IFlatPermissionDto[] | null;
     grantedPermissionNames?: string[] | null;
 }
 

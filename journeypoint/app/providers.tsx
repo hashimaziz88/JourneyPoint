@@ -1,3 +1,4 @@
+"use client"
 import React from "react"
 import { themeSetup } from "@/constants/global/themeSetup"
 import { ConfigProvider } from "antd"
