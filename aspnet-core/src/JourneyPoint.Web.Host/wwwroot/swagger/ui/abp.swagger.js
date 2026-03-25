@@ -33,6 +33,14 @@ var abp = abp || {};
         }
     }
 
+    function setTenantCookie(tenantId) {
+        if (tenantId) {
+            document.cookie = 'Abp.TenantId=' + encodeURIComponent(tenantId) + '; path=/';
+            return;
+        }
+        document.cookie = 'Abp.TenantId=; path=/; max-age=0';
+    }
+
     function loginUserInternal(tenantId, callback) {
         var usernameOrEmailAddress = document.getElementById('userName').value;
         if (!usernameOrEmailAddress) {
@@ -62,6 +70,7 @@ var abp = abp || {};
             }
         };
 
+        setTenantCookie(tenantId);
         xhr.open('POST', '/api/TokenAuth/Authenticate', true);
         xhr.setRequestHeader('Abp.TenantId', tenantId);
         xhr.setRequestHeader('Content-type', 'application/json');
