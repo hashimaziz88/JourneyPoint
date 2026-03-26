@@ -8,6 +8,16 @@ namespace JourneyPoint.Authorization
     {
         public override void SetPermissions(IPermissionDefinitionContext context)
         {
+            var journeyPoint = context.CreatePermission(
+                PermissionNames.Pages_JourneyPoint,
+                L("JourneyPoint"),
+                multiTenancySides: MultiTenancySides.Tenant
+            );
+            journeyPoint.CreateChildPermission(PermissionNames.Pages_JourneyPoint_TenantAdmin, L("TenantAdmin"));
+            journeyPoint.CreateChildPermission(PermissionNames.Pages_JourneyPoint_Facilitator, L("Facilitator"));
+            journeyPoint.CreateChildPermission(PermissionNames.Pages_JourneyPoint_Manager, L("Manager"));
+            journeyPoint.CreateChildPermission(PermissionNames.Pages_JourneyPoint_Enrolee, L("Enrolee"));
+
             context.CreatePermission(PermissionNames.Pages_Users, L("Users"));
             context.CreatePermission(PermissionNames.Pages_Users_Activation, L("UsersActivation"));
             context.CreatePermission(PermissionNames.Pages_Roles, L("Roles"));

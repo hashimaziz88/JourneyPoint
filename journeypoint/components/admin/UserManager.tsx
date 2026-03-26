@@ -254,7 +254,7 @@ const UserManager: React.FC = () => {
   ];
 
   return (
-    <Space direction="vertical" size={24} className={styles.managerRoot}>
+    <Space orientation="vertical" size={24} className={styles.managerRoot}>
       <div>
         <Title level={2} className={styles.managerHeading}>
           User Management
