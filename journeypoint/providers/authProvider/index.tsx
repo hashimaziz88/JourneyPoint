@@ -1,74 +1,186 @@
 "use client"
-import React, { useReducer, useContext } from "react";
+import React, { useContext, useReducer } from "react";
 import { INITIAL_STATE, AuthActionContext, AuthStateContext, IUserLoginRequest, IUserRegisterRequest, ITenantInfo } from "./context";
 import { AuthReducer } from "./reducer";
 import {
     loginPending, loginSuccess, loginError,
-    registerPending, registerError,
+    registerPending, registerSuccess, registerError,
     logoutPending, logoutSuccess, logoutError,
     getMePending, getMeSuccess, getMeError,
+    refreshSessionPending, refreshSessionSuccess, refreshSessionError,
     resolveTenantPending, resolveTenantSuccess, resolveTenantError,
     clearTenant as clearTenantAction,
 } from "./actions";
 import { getAxiosInstace } from "@/utils/axiosInstance";
 import { getCookie, setCookie, removeCookie } from "@/utils/cookies";
-import { mapSessionUser, persistTenantCookies, clearTenantCookies } from "@/helpers/auth";
+import { clearTenantCookies, mapSessionUser, mapTenantInfo, normalizeTenancyName, persistTenantCookies, readTenantFromCookies } from "@/helpers/auth";
 import { AUTH_COOKIE_NAMES } from "@/constants/auth/cookies";
-import { useRouter } from "next/navigation";
+import { unwrapAbpResponse } from "@/helpers/abp";
+import { getApiErrorMessage } from "@/helpers/errors";
+import { extractGrantedPermissions } from "@/helpers/permissions";
+import { resolveActiveTenancyName } from "@/helpers/tenancy";
+import type { IAbpUserConfigurationResponse, ICurrentLoginInformationsResponse, IUserLoginResponse } from "@/types/auth";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
-    const router = useRouter();
+
+    const loadConfiguration = async (): Promise<{
+        grantedPermissions: string[];
+        isMultiTenancyEnabled: boolean;
+        configurationError: string | null;
+    }> => {
+        try {
+            const response = await getAxiosInstace().get("/AbpUserConfiguration/GetAll");
+            const configuration = unwrapAbpResponse<IAbpUserConfigurationResponse>(response);
+
+            return {
+                grantedPermissions: extractGrantedPermissions(configuration?.auth?.grantedPermissions),
+                isMultiTenancyEnabled: Boolean(configuration?.multiTenancy?.isEnabled),
+                configurationError: null,
+            };
+        } catch (error) {
+            return {
+                grantedPermissions: [],
+                isMultiTenancyEnabled: true,
+                configurationError: getApiErrorMessage(error, "We could not load the user configuration."),
+            };
+        }
+    };
+
+    const fetchCurrentUser = async (
+        token: string,
+        userId?: number,
+        expireInSeconds?: number,
+    ): Promise<{ user: IUserLoginResponse; tenant: ITenantInfo | null }> => {
+        const response = await getAxiosInstace().get("/api/services/app/Session/GetCurrentLoginInformations");
+        const session = unwrapAbpResponse<ICurrentLoginInformationsResponse>(response);
+
+        return {
+            user: mapSessionUser(token, session?.user, userId, expireInSeconds),
+            tenant: mapTenantInfo(session?.tenant),
+        };
+    };
 
     const resolveTenant = async (tenancyName: string): Promise<ITenantInfo | null> => {
+        const normalizedTenancyName = normalizeTenancyName(tenancyName);
+
+        if (!normalizedTenancyName) {
+            clearTenantCookies();
+            dispatch(clearTenantAction());
+            return null;
+        }
+
         dispatch(resolveTenantPending());
-        return await getAxiosInstace().post("/api/services/app/Account/IsTenantAvailable", { tenancyName })
+        return await getAxiosInstace().post("/api/services/app/Account/IsTenantAvailable", { tenancyName: normalizedTenancyName })
             .then((response) => {
                 const data = response.data?.result ?? response.data;
                 if (data?.state === 1) {
                     const tenant: ITenantInfo = {
                         tenantId: data.tenantId ?? null,
-                        tenancyName,
-                        tenantName: tenancyName,
+                        tenancyName: normalizedTenancyName,
+                        tenantName: normalizedTenancyName,
                     };
                     persistTenantCookies(tenant);
                     dispatch(resolveTenantSuccess(tenant));
                     return tenant;
                 }
+                clearTenantCookies();
                 dispatch(resolveTenantError());
                 return null;
             })
             .catch((error) => {
                 console.error(error);
+                clearTenantCookies();
                 dispatch(resolveTenantError());
                 return null;
             });
     };
 
-    const getMe = async () => {
+    const getMe = async (): Promise<IUserLoginResponse | null> => {
         const token = getCookie(AUTH_COOKIE_NAMES.token);
-        if (!token) return;
+        if (!token) {
+            return null;
+        }
 
         dispatch(getMePending());
-        await getAxiosInstace().get("/api/services/app/Session/GetCurrentLoginInformations")
-            .then((response) => {
-                const data = response.data?.result ?? response.data;
-                const user = mapSessionUser(token, data?.user);
-                dispatch(getMeSuccess(user));
-
-                if (data?.tenant) {
-                    dispatch(resolveTenantSuccess({
-                        tenantId: data.tenant.id,
-                        tenancyName: data.tenant.tenancyName,
-                        tenantName: data.tenant.name,
-                    }));
+        return await fetchCurrentUser(token)
+            .then(({ user, tenant }) => {
+                if (tenant) {
+                    persistTenantCookies(tenant);
                 }
+
+                dispatch(getMeSuccess({
+                    isReady: true,
+                    isSessionPending: false,
+                    isAuthenticated: true,
+                    user,
+                    tenant,
+                }));
+
+                return user;
             })
             .catch((error) => {
                 console.error(error);
                 removeCookie(AUTH_COOKIE_NAMES.token);
                 dispatch(getMeError());
+                return null;
             });
+    };
+
+    const refreshSession = async () => {
+        dispatch(refreshSessionPending());
+
+        const token = getCookie(AUTH_COOKIE_NAMES.token);
+        const persistedTenant = readTenantFromCookies();
+        const activeTenancyName = resolveActiveTenancyName(persistedTenant?.tenancyName);
+        let tenant = persistedTenant;
+
+        if (activeTenancyName && activeTenancyName !== persistedTenant?.tenancyName) {
+            tenant = await resolveTenant(activeTenancyName);
+        }
+
+        const configuration = await loadConfiguration();
+
+        if (!token) {
+            dispatch(refreshSessionSuccess({
+                isReady: true,
+                isSessionPending: false,
+                isAuthenticated: false,
+                user: null,
+                tenant,
+                ...configuration,
+            }));
+            return;
+        }
+
+        try {
+            const { user, tenant: sessionTenant } = await fetchCurrentUser(token);
+            const resolvedTenant = sessionTenant ?? tenant;
+
+            if (resolvedTenant) {
+                persistTenantCookies(resolvedTenant);
+            }
+
+            dispatch(refreshSessionSuccess({
+                isReady: true,
+                isSessionPending: false,
+                isAuthenticated: true,
+                user,
+                tenant: resolvedTenant,
+                ...configuration,
+            }));
+        } catch (error) {
+            console.error(error);
+            removeCookie(AUTH_COOKIE_NAMES.token);
+            dispatch(refreshSessionError({
+                isReady: true,
+                isSessionPending: false,
+                isAuthenticated: false,
+                user: null,
+                tenant,
+                ...configuration,
+            }));
+        }
     };
 
     const login = async (payload: IUserLoginRequest) => {
@@ -77,23 +189,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .then(async (response) => {
                 const data = response.data?.result ?? response.data;
                 const token: string = data.accessToken;
-                setCookie(AUTH_COOKIE_NAMES.token, token);
+                setCookie(AUTH_COOKIE_NAMES.token, token, data.expireInSeconds);
 
-                const sessionResponse = await getAxiosInstace().get("/api/services/app/Session/GetCurrentLoginInformations");
-                const sessionData = sessionResponse.data?.result ?? sessionResponse.data;
+                const [{ user, tenant }, configuration] = await Promise.all([
+                    fetchCurrentUser(token, data.userId, data.expireInSeconds),
+                    loadConfiguration(),
+                ]);
 
-                const user = mapSessionUser(token, sessionData?.user, data.userId, data.expireInSeconds);
-                dispatch(loginSuccess(user));
-
-                if (sessionData?.tenant) {
-                    dispatch(resolveTenantSuccess({
-                        tenantId: sessionData.tenant.id,
-                        tenancyName: sessionData.tenant.tenancyName,
-                        tenantName: sessionData.tenant.name,
-                    }));
+                if (tenant) {
+                    persistTenantCookies(tenant);
                 }
 
-                router.push("/dashboard");
+                dispatch(loginSuccess({
+                    isPending: false,
+                    isError: false,
+                    isSuccess: true,
+                    isReady: true,
+                    isSessionPending: false,
+                    isAuthenticated: true,
+                    user,
+                    tenant,
+                    ...configuration,
+                }));
             })
             .catch((error) => {
                 removeCookie(AUTH_COOKIE_NAMES.token);
@@ -102,9 +219,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
     };
 
-    const register = async (payload: IUserRegisterRequest) => {
+    const register = async (payload: IUserRegisterRequest): Promise<"logged-in" | "registered" | "failed"> => {
         dispatch(registerPending());
-        await getAxiosInstace().post("/api/services/app/Account/Register", payload)
+        return await getAxiosInstace().post("/api/services/app/Account/Register", payload)
             .then(async (response) => {
                 const data = response.data?.result ?? response.data;
                 if (data?.canLogin) {
@@ -112,14 +229,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         userNameOrEmailAddress: payload.userName,
                         password: payload.password,
                         rememberClient: true,
+                        tenancyName: payload.tenancyName,
                     });
-                    return;
+                    return "logged-in";
                 }
-                router.push("/login");
+                dispatch(registerSuccess({
+                    isPending: false,
+                    isError: false,
+                    isSuccess: true,
+                }));
+
+                return "registered";
             })
             .catch((error) => {
                 console.error(error);
                 dispatch(registerError());
+                return "failed";
             });
     };
 
@@ -135,7 +260,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 removeCookie(AUTH_COOKIE_NAMES.token);
                 clearTenantCookies();
                 dispatch(logoutSuccess());
-                router.push("/login");
             })
             .catch((error) => {
                 console.error("Logout error:", error);
@@ -145,7 +269,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return (
         <AuthStateContext.Provider value={state}>
-            <AuthActionContext.Provider value={{ login, register, logout, getMe, resolveTenant, clearTenant }}>
+            <AuthActionContext.Provider value={{ login, register, logout, getMe, refreshSession, resolveTenant, clearTenant }}>
                 {children}
             </AuthActionContext.Provider>
         </AuthStateContext.Provider>

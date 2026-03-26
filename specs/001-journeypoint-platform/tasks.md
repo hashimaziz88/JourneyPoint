@@ -34,7 +34,7 @@ stories rely on.
 - [x] T005 Extend backend permission definitions in `aspnet-core/src/JourneyPoint.Core/Authorization/PermissionNames.cs` and `aspnet-core/src/JourneyPoint.Core/Authorization/JourneyPointAuthorizationProvider.cs`
 - [x] T006 Configure role seeding for TenantAdmin, Facilitator, Manager, and Enrolee in `aspnet-core/src/JourneyPoint.Core/Authorization/Roles/AppRoleConfig.cs`
 - [x] T007 [P] Extend account and session DTO handling in `aspnet-core/src/JourneyPoint.Application/Authorization/Accounts/` for JourneyPoint role and tenant context needs
-- [ ] T008 [P] Harden frontend auth and tenant resolution in `journeypoint/providers/authProvider/`, `journeypoint/helpers/useAppSession.tsx`, and `journeypoint/utils/axiosInstance.tsx`
+- [x] T008 [P] Harden frontend auth and tenant resolution in `journeypoint/providers/authProvider/`, `journeypoint/helpers/useAppSession.tsx`, and `journeypoint/utils/axiosInstance.tsx`
 - [ ] T009 [P] Add role-aware route guards and shared navigation in `journeypoint/hoc/withAuth.tsx`, `journeypoint/constants/auth/permissions.ts`, and `journeypoint/constants/global/navigation.ts`
 - [ ] T010 Add Groq, storage, and mail option contracts in `aspnet-core/src/JourneyPoint.Core/Configuration/` and wire them through `aspnet-core/src/JourneyPoint.Web.Host/Startup/`
 - [ ] T011 Add shared DTO mapping and domain module registration entry points in `aspnet-core/src/JourneyPoint.Application/` and `aspnet-core/src/JourneyPoint.Core/`

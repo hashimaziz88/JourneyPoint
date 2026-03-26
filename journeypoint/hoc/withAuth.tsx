@@ -13,32 +13,38 @@ const withAuth = <P extends object>(
 ) => {
     const AuthenticatedComponent = (props: P) => {
         const router = useRouter();
-        const session = useAppSession();
+        const {
+            defaultRoute,
+            hasPermission,
+            isAuthenticated,
+            isReady,
+        } = useAppSession();
+        const hasRequiredPermission = hasPermission(requiredPermission);
 
         useEffect(() => {
-            if (!session.isReady) {
+            if (!isReady) {
                 return;
             }
 
-            if (!session.isAuthenticated) {
+            if (!isAuthenticated) {
                 router.replace(APP_ROUTES.login);
                 return;
             }
 
-            if (requiredPermission && !session.hasPermission(requiredPermission)) {
-                router.replace(session.defaultRoute);
+            if (requiredPermission && !hasRequiredPermission) {
+                router.replace(defaultRoute);
             }
-        }, [router, session]);
+        }, [defaultRoute, hasRequiredPermission, isAuthenticated, isReady, router]);
 
-        if (!session.isReady) {
+        if (!isReady) {
             return <Spinner />;
         }
 
-        if (!session.isAuthenticated) {
+        if (!isAuthenticated) {
             return null;
         }
 
-        if (requiredPermission && !session.hasPermission(requiredPermission)) {
+        if (requiredPermission && !hasRequiredPermission) {
             return null;
         }
 

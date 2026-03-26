@@ -2,6 +2,7 @@ import { AUTH_COOKIE_NAMES } from "@/constants/auth/cookies";
 import { getCookie, removeCookie, setCookie } from "@/utils/cookies";
 import {
     IApplicationInfo,
+    ICurrentLoginInfoUser,
     ICurrentLoginInfoTenant,
     ITenantInfo,
     IUserLoginResponse,
@@ -9,7 +10,7 @@ import {
 
 export const mapSessionUser = (
     token: string,
-    user: { id?: number; name?: string; surname?: string; userName?: string; emailAddress?: string; } | null | undefined,
+    user: ICurrentLoginInfoUser | null | undefined,
     userId?: number,
     expireInSeconds?: number
 ): IUserLoginResponse => {
@@ -27,6 +28,8 @@ export const mapSessionUser = (
         emailAddress: user?.emailAddress ?? null,
         expiresAt,
         fullName: [user?.name, user?.surname].filter(Boolean).join(" ") || user?.userName || null,
+        roleNames: user?.roleNames ?? [],
+        primaryRoleName: user?.primaryRoleName ?? user?.roleNames?.[0] ?? null,
     };
 };
 

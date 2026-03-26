@@ -2,6 +2,7 @@
 import React from "react"
 import { themeSetup } from "@/constants/global/themeSetup"
 import { ConfigProvider } from "antd"
+import AuthSessionBootstrap from "@/components/auth/AuthSessionBootstrap"
 import { AuthProvider } from "@/providers/authProvider"
 import { UserProvider } from "@/providers/userProvider"
 import { RoleProvider } from "@/providers/roleProvider"
@@ -11,6 +12,7 @@ export const AppProviders: React.FC<{ children: React.ReactNode }> = ({ children
     return (
         <ConfigProvider theme={themeSetup}>
             <AuthProvider>
+                <AuthSessionBootstrap />
                 <TenantProvider>
                     <UserProvider>
                         <RoleProvider>

@@ -44,13 +44,20 @@ const RegisterForm: React.FC = () => {
   }, [authState.isError]);
 
   const onFinish: FormProps<RegisterFieldType>["onFinish"] = async (values) => {
-    await register({
+    const result = await register({
       name: values.name ?? "",
       surname: values.surname ?? "",
       userName: values.userName ?? "",
       emailAddress: values.emailAddress ?? "",
       password: values.password ?? "",
+      tenancyName: tenant?.tenancyName ?? null,
     });
+
+    if (result === "registered") {
+      startTransition(() => {
+        router.replace(APP_ROUTES.login);
+      });
+    }
   };
 
   const onFinishFailed: FormProps<RegisterFieldType>["onFinishFailed"] = (errorInfo) => {

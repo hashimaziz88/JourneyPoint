@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import type { FormProps } from "antd";
 import { Alert, Button, Checkbox, Form, Input, Space, Typography, message } from "antd";
 import { ApartmentOutlined, CheckCircleOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
-import { clearTenantCookies } from "@/helpers/auth";
 import { useAppSession } from "@/helpers/useAppSession";
 import { useAuthActions, useAuthState } from "@/providers/authProvider";
 import { LoginFieldType } from "@/types/auth/formTypes";
@@ -53,7 +52,6 @@ const LoginForm: React.FC = () => {
   };
 
   const handleContinueAsHost = () => {
-    clearTenantCookies();
     clearTenant();
     form.setFieldValue("tenancyName", undefined);
     setTenantStatus("idle");
@@ -69,13 +67,14 @@ const LoginForm: React.FC = () => {
         return;
       }
     } else {
-      clearTenantCookies();
+      clearTenant();
     }
 
     await login({
       userNameOrEmailAddress: values.userNameOrEmailAddress ?? "",
       password: values.password ?? "",
       rememberClient: values.rememberClient ?? true,
+      tenancyName: tenancyName ?? null,
     });
   };
 
@@ -96,7 +95,7 @@ const LoginForm: React.FC = () => {
       {messageContextHolder}
       <Space orientation="vertical" size={4} className={styles.formHeader}>
         <Title level={2}>Welcome back</Title>
-        <Text type="secondary">Sign in as a host admin or tenant admin.</Text>
+        <Text type="secondary">Sign in with your host or tenant account.</Text>
       </Space>
 
       {isMultiTenancyEnabled && (
@@ -131,7 +130,7 @@ const LoginForm: React.FC = () => {
             >
               <Input
                 prefix={<ApartmentOutlined />}
-                suffix={tenantStatus === "resolved" ? <CheckCircleOutlined style={{ color: "#52c41a" }} /> : null}
+                suffix={tenantStatus === "resolved" ? <CheckCircleOutlined className={styles.tenantResolvedIcon} /> : null}
                 placeholder="Enter tenant name"
                 size="large"
                 onChange={() => setTenantStatus("idle")}
