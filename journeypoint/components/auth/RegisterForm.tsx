@@ -1,31 +1,76 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, startTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { FormProps } from "antd";
-import { Button, Form, Input, Space, Typography } from "antd";
+import { Alert, Button, Form, Input, Space, Typography, message } from "antd";
+import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
+import { useAppSession } from "@/helpers/useAppSession";
+import { useAuthActions, useAuthState } from "@/providers/authProvider";
 import { RegisterFieldType } from "@/types/auth/formTypes";
+import { APP_ROUTES } from "@/constants/auth/routes";
 import { useStyles } from "./style/style";
 
 const { Title, Text } = Typography;
 
 const RegisterForm: React.FC = () => {
+  const router = useRouter();
   const { styles } = useStyles();
+  const { register } = useAuthActions();
+  const authState = useAuthState();
+  const { defaultRoute, isAuthenticated, isReady, tenant } = useAppSession();
 
-  const onFinish: FormProps<RegisterFieldType>["onFinish"] = (values) => {
-    console.log("Success:", values);
+  useEffect(() => {
+    if (isReady && isAuthenticated) {
+      startTransition(() => {
+        router.replace(defaultRoute);
+      });
+    }
+  }, [defaultRoute, isAuthenticated, isReady, router]);
+
+  useEffect(() => {
+    if (isReady && !isAuthenticated && !tenant?.tenancyName) {
+      startTransition(() => {
+        router.replace(APP_ROUTES.login);
+      });
+    }
+  }, [isReady, isAuthenticated, tenant, router]);
+
+  useEffect(() => {
+    if (authState.isError) {
+      message.error("Registration failed. Please review your details and try again.");
+    }
+  }, [authState.isError]);
+
+  const onFinish: FormProps<RegisterFieldType>["onFinish"] = async (values) => {
+    await register({
+      name: values.name ?? "",
+      surname: values.surname ?? "",
+      userName: values.userName ?? "",
+      emailAddress: values.emailAddress ?? "",
+      password: values.password ?? "",
+    });
   };
 
   const onFinishFailed: FormProps<RegisterFieldType>["onFinishFailed"] = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+    console.error("Failed:", errorInfo);
   };
 
   return (
     <div className={styles.form}>
       <Space orientation="vertical" size={4} className={styles.formHeader}>
         <Title level={2}>Create account</Title>
-        <Text type="secondary">Join us today</Text>
+        <Text type="secondary">Register inside a tenant so you can access its admin workspace.</Text>
       </Space>
+
+      <Alert
+        type="info"
+        showIcon
+        className={styles.infoAlert}
+        title={`Registering for tenant: ${tenant?.tenantName ?? tenant?.tenancyName ?? ""}`}
+        description="Self-registration is tenant-based. Host accounts should be created from the host admin workspace."
+      />
 
       <Form
         name="register"
@@ -35,30 +80,46 @@ const RegisterForm: React.FC = () => {
         autoComplete="off"
       >
         <Form.Item<RegisterFieldType>
-          label="Username"
-          name="username"
-          rules={[{ required: true, message: "Please input your username!" }]}
+          label="First Name"
+          name="name"
+          rules={[{ required: true, message: "Please enter your first name." }]}
         >
-          <Input />
+          <Input prefix={<UserOutlined />} placeholder="Jane" size="large" />
+        </Form.Item>
+
+        <Form.Item<RegisterFieldType>
+          label="Last Name"
+          name="surname"
+          rules={[{ required: true, message: "Please enter your last name." }]}
+        >
+          <Input prefix={<UserOutlined />} placeholder="Doe" size="large" />
+        </Form.Item>
+
+        <Form.Item<RegisterFieldType>
+          label="Username"
+          name="userName"
+          rules={[{ required: true, message: "Please enter a username." }]}
+        >
+          <Input prefix={<UserOutlined />} placeholder="janedoe" size="large" />
         </Form.Item>
 
         <Form.Item<RegisterFieldType>
           label="Email"
-          name="email"
+          name="emailAddress"
           rules={[
-            { required: true, message: "Please input your email!" },
-            { type: "email", message: "Please enter a valid email!" },
+            { required: true, message: "Please enter your email address." },
+            { type: "email", message: "Please enter a valid email address." },
           ]}
         >
-          <Input />
+          <Input prefix={<MailOutlined />} placeholder="jane@example.com" size="large" />
         </Form.Item>
 
         <Form.Item<RegisterFieldType>
           label="Password"
           name="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
+          rules={[{ required: true, message: "Please create a password." }]}
         >
-          <Input.Password />
+          <Input.Password prefix={<LockOutlined />} placeholder="Create a password" size="large" />
         </Form.Item>
 
         <Form.Item<RegisterFieldType>
@@ -66,22 +127,27 @@ const RegisterForm: React.FC = () => {
           name="confirmPassword"
           dependencies={["password"]}
           rules={[
-            { required: true, message: "Please confirm your password!" },
+            { required: true, message: "Please confirm your password." },
             ({ getFieldValue }) => ({
               validator(_, value) {
                 if (!value || getFieldValue("password") === value) {
                   return Promise.resolve();
                 }
-                return Promise.reject(new Error("Passwords do not match!"));
+                return Promise.reject(new Error("Passwords do not match."));
               },
             }),
           ]}
         >
-          <Input.Password />
+          <Input.Password prefix={<LockOutlined />} placeholder="Confirm your password" size="large" />
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" className={styles.submitButton}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            className={styles.submitButton}
+            loading={authState.isPending}
+          >
             Create Account
           </Button>
         </Form.Item>

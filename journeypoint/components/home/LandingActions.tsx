@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Button, Flex, Space, Typography } from "antd";
-import { LoginOutlined, UserAddOutlined } from "@ant-design/icons";
+import { LoginOutlined } from "@ant-design/icons";
 import { useStyles } from "./style/style";
 
 const { Title, Text } = Typography;
@@ -30,15 +30,6 @@ const LandingActions: React.FC = () => {
           </Button>
         </Link>
 
-        <Link href="/register">
-          <Button
-            block
-            icon={<UserAddOutlined />}
-            className={styles.secondaryButton}
-          >
-            Register
-          </Button>
-        </Link>
       </Flex>
 
       <Text type="secondary" className={styles.footerText}>

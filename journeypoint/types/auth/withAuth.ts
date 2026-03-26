@@ -1,3 +1,3 @@
 export type WithAuthOptions = {
-  allowedRoles?: string[];
+  requiredPermission?: string;
 };

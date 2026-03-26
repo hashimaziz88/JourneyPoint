@@ -1,12 +1,16 @@
 export type LoginFieldType = {
-  username?: string;
+  tenancyName?: string;
+  userNameOrEmailAddress?: string;
   password?: string;
-  remember?: string;
+  rememberClient?: boolean;
 };
 
 export type RegisterFieldType = {
-  username?: string;
-  email?: string;
+  tenancyName?: string;
+  name?: string;
+  surname?: string;
+  userName?: string;
+  emailAddress?: string;
   password?: string;
   confirmPassword?: string;
 };

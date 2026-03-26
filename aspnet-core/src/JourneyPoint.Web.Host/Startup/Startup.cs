@@ -131,7 +131,7 @@ namespace JourneyPoint.Web.Host.Startup
                     {
                         Name = "JourneyPoint",
                         Email = string.Empty,
-                        Url = new Uri("https://twitter.com/aspboilerplate"),
+                        Url = new Uri("https://journey-point.vercel.app/"),
                     },
                     License = new OpenApiLicense
                     {
