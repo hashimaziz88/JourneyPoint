@@ -12,7 +12,8 @@ import {
 } from "./actions";
 import { getAxiosInstace } from "@/utils/axiosInstance";
 import { getCookie, setCookie, removeCookie } from "@/utils/cookies";
-import { mapSessionUser } from "@/helpers/auth";
+import { mapSessionUser, persistTenantCookies, clearTenantCookies } from "@/helpers/auth";
+import { AUTH_COOKIE_NAMES } from "@/constants/auth/cookies";
 import { useRouter } from "next/navigation";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -26,11 +27,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 const data = response.data?.result ?? response.data;
                 if (data?.state === 1) {
                     const tenant: ITenantInfo = {
-                        tenantId: data.tenantId,
+                        tenantId: data.tenantId ?? null,
                         tenancyName,
                         tenantName: tenancyName,
                     };
-                    setCookie("tenantId", String(data.tenantId));
+                    persistTenantCookies(tenant);
                     dispatch(resolveTenantSuccess(tenant));
                     return tenant;
                 }
@@ -45,7 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const getMe = async () => {
-        const token = getCookie("token");
+        const token = getCookie(AUTH_COOKIE_NAMES.token);
         if (!token) return;
 
         dispatch(getMePending());
@@ -65,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             })
             .catch((error) => {
                 console.error(error);
-                removeCookie("token");
+                removeCookie(AUTH_COOKIE_NAMES.token);
                 dispatch(getMeError());
             });
     };
@@ -76,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .then(async (response) => {
                 const data = response.data?.result ?? response.data;
                 const token: string = data.accessToken;
-                setCookie("token", token);
+                setCookie(AUTH_COOKIE_NAMES.token, token);
 
                 const sessionResponse = await getAxiosInstace().get("/api/services/app/Session/GetCurrentLoginInformations");
                 const sessionData = sessionResponse.data?.result ?? sessionResponse.data;
@@ -95,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 router.push("/dashboard");
             })
             .catch((error) => {
-                removeCookie("token");
+                removeCookie(AUTH_COOKIE_NAMES.token);
                 dispatch(loginError());
                 console.error(error.message);
             });
@@ -123,6 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const clearTenant = () => {
+        clearTenantCookies();
         dispatch(clearTenantAction());
     };
 
@@ -130,8 +132,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         dispatch(logoutPending());
         await Promise.resolve()
             .then(() => {
-                removeCookie("token");
-                removeCookie("tenantId");
+                removeCookie(AUTH_COOKIE_NAMES.token);
+                clearTenantCookies();
                 dispatch(logoutSuccess());
                 router.push("/login");
             })
