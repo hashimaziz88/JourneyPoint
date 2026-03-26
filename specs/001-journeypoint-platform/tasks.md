@@ -152,7 +152,7 @@ engagement data, surfaces at-risk hires, and supports facilitator intervention.
 **Purpose**: Finalize documentation, smoke validation, and readiness artifacts.
 
 - [ ] T054 [P] Update onboarding architecture and delivery notes in `README.md`, `.specify/project.md`, and `specs/001-journeypoint-platform/quickstart.md`
-- [ ] T055 [P] Update cross-agent guidance in `AGENTS.md`, `CLAUDE.md`, `journeypoint/AGENTS.md`, `journeypoint/CLAUDE.md`, and `.github/copilot-instructions.md`
+- [x] T055 [P] Update cross-agent guidance in `AGENTS.md`, `CLAUDE.md`, `journeypoint/AGENTS.md`, `journeypoint/CLAUDE.md`, and `.github/copilot-instructions.md`
 - [ ] T056 Run milestone smoke validation using `specs/001-journeypoint-platform/quickstart.md`
 - [x] T057 Review issue slicing and milestone readiness in `specs/001-journeypoint-platform/github-roadmap.md`
 

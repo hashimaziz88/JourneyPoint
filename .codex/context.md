@@ -16,6 +16,16 @@ engagement scoring, and at-risk follow-up.
 
 ## Operating rule
 
-Before implementing any feature, use `specs/001-journeypoint-platform/` as the
-source of truth together with `.specify/memory/constitution.md` and
-`.specify/project.md`.
+`AGENTS.md` is the root operating guide for Codex work in this repository.
+
+Use this source-of-truth order before implementing any feature:
+
+1. `.specify/memory/constitution.md`
+2. `.specify/project.md`
+3. the active feature package `specs/001-journeypoint-platform/`:
+   `spec.md`, `plan.md`, `tasks.md`, and `github-roadmap.md`
+4. `.codex/context.md`, then `.codex/backend.md` or `.codex/frontend.md` as
+   relevant
+
+Do not infer the active feature package from branch names. Ignore the
+`angular/` application for current planning and implementation.

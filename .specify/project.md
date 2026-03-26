@@ -19,6 +19,11 @@ surfacing at-risk interventions early.
 If two documents disagree, prefer the higher item in this list and update the
 lower one before continuing.
 
+The active feature package remains `specs/001-journeypoint-platform/` for the
+current initiative even when contributors work from task-specific or
+documentation branches. Do not infer a different feature package from branch
+names or legacy GitHub milestone wording.
+
 ## Active Delivery Scope
 
 The current delivery initiative is a five-milestone implementation plan:
