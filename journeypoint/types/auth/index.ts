@@ -24,6 +24,8 @@ export interface IUserLoginResponse {
     emailAddress?: string | null;
     expiresAt?: string | null;
     fullName?: string | null;
+    roleNames?: string[];
+    primaryRoleName?: string | null;
 }
 
 export interface ITenantInfo {
@@ -44,6 +46,8 @@ export interface ICurrentLoginInfoUser {
     surname?: string | null;
     userName?: string | null;
     emailAddress?: string | null;
+    roleNames?: string[];
+    primaryRoleName?: string | null;
 }
 
 export interface ICurrentLoginInfoTenant {

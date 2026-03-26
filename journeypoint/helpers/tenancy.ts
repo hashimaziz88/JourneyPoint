@@ -40,3 +40,7 @@ export const resolveTenancyNameFromLocation = (): string | null => {
 
   return resolveTenancyFromSubdomain();
 };
+
+export const resolveActiveTenancyName = (
+  fallbackTenancyName?: string | null,
+): string | null => resolveTenancyNameFromLocation() ?? normalizeTenancyName(fallbackTenancyName);

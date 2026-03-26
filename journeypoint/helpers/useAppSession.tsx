@@ -1,91 +1,26 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getAxiosInstace } from "@/utils/axiosInstance";
-import { getCookie, removeCookie } from "@/utils/cookies";
 import { useAuthActions, useAuthState } from "@/providers/authProvider";
-import { unwrapAbpResponse } from "@/helpers/abp";
-import { getApiErrorMessage } from "@/helpers/errors";
 import { readTenantFromCookies } from "@/helpers/auth";
-import { extractGrantedPermissions, getDefaultAuthorizedRoute, hasPermission } from "@/helpers/permissions";
-import { resolveTenancyNameFromLocation } from "@/helpers/tenancy";
-import { AUTH_COOKIE_NAMES } from "@/constants/auth/cookies";
-import type { IAbpUserConfigurationResponse } from "@/types/auth";
-
-const ignoreAsyncError = () => undefined;
+import { getDefaultAuthorizedRoute, hasPermission } from "@/helpers/permissions";
 
 export const useAppSession = () => {
   const authState = useAuthState();
   const authActions = useAuthActions();
-  const [isReady, setIsReady] = useState(false);
-  const [grantedPermissions, setGrantedPermissions] = useState<string[]>([]);
-  const [isMultiTenancyEnabled, setIsMultiTenancyEnabled] = useState(true);
-  const [configurationError, setConfigurationError] = useState<string | null>(null);
-  const getMeRef = useRef(authActions.getMe);
-  const resolveTenantRef = useRef(authActions.resolveTenant);
-  const authStateRef = useRef(authState);
-
-  useEffect(() => {
-    getMeRef.current = authActions.getMe;
-    resolveTenantRef.current = authActions.resolveTenant;
-  }, [authActions.getMe, authActions.resolveTenant]);
-
-  useEffect(() => {
-    authStateRef.current = authState;
-  }, [authState]);
-
-  const refreshSession = useCallback(async () => {
-    const token = getCookie(AUTH_COOKIE_NAMES.token);
-    const tenancyNameFromLocation = resolveTenancyNameFromLocation();
-    const currentTenant = authStateRef.current.tenant ?? readTenantFromCookies();
-
-    if (tenancyNameFromLocation && tenancyNameFromLocation !== currentTenant?.tenancyName) {
-      await resolveTenantRef.current(tenancyNameFromLocation);
-    }
-
-    try {
-      const configurationResponse = await getAxiosInstace().get("/AbpUserConfiguration/GetAll");
-      const configurationData = unwrapAbpResponse<IAbpUserConfigurationResponse>(configurationResponse);
-      setGrantedPermissions(extractGrantedPermissions(configurationData?.auth?.grantedPermissions));
-      setIsMultiTenancyEnabled(Boolean(configurationData?.multiTenancy?.isEnabled));
-      setConfigurationError(null);
-    } catch (error) {
-      setConfigurationError(getApiErrorMessage(error, "We could not load the user configuration."));
-    }
-
-    if (token && !authStateRef.current.isAuthenticated) {
-      await getMeRef.current();
-    }
-
-    if (!token && authStateRef.current.isAuthenticated) {
-      removeCookie(AUTH_COOKIE_NAMES.token);
-    }
-
-    setIsReady(true);
-  }, []);
-
-  useEffect(() => {
-    const bootstrapTimeout = globalThis.setTimeout(() => {
-      refreshSession().catch(ignoreAsyncError);
-    }, 0);
-
-    return () => globalThis.clearTimeout(bootstrapTimeout);
-  }, [refreshSession]);
-
   const tenant = authState.tenant ?? readTenantFromCookies();
-  const isAuthenticated = authState.isAuthenticated || Boolean(getCookie(AUTH_COOKIE_NAMES.token));
-  const defaultRoute = useMemo(() => getDefaultAuthorizedRoute(grantedPermissions), [grantedPermissions]);
+  const grantedPermissions = authState.grantedPermissions;
+  const defaultRoute = getDefaultAuthorizedRoute(grantedPermissions);
 
   return {
-    isReady,
-    isAuthenticated,
+    isReady: authState.isReady,
+    isAuthenticated: authState.isAuthenticated,
     user: authState.user,
     tenant,
     grantedPermissions,
-    isMultiTenancyEnabled,
-    configurationError,
+    isMultiTenancyEnabled: authState.isMultiTenancyEnabled,
+    configurationError: authState.configurationError,
     defaultRoute,
     hasPermission: (permission?: string) => hasPermission(grantedPermissions, permission),
-    refreshSession,
+    refreshSession: authActions.refreshSession,
   };
 };

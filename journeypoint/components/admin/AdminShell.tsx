@@ -63,35 +63,43 @@ const AdminShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { logout } = useAuthActions();
-  const session = useAppSession();
+  const {
+    defaultRoute,
+    hasPermission,
+    isAuthenticated,
+    isReady,
+    tenant,
+    user,
+  } = useAppSession();
+  const requiredPermission = ROUTE_PERMISSION_MAP[pathname];
+  const canAccessCurrentRoute = hasPermission(requiredPermission);
 
   useEffect(() => {
-    if (session.isReady && !session.isAuthenticated) {
+    if (isReady && !isAuthenticated) {
       startTransition(() => {
         router.replace(APP_ROUTES.login);
       });
     }
-  }, [router, session.isAuthenticated, session.isReady]);
+  }, [isAuthenticated, isReady, router]);
 
   useEffect(() => {
-    if (!session.isReady || !session.isAuthenticated) {
+    if (!isReady || !isAuthenticated) {
       return;
     }
 
-    const requiredPermission = ROUTE_PERMISSION_MAP[pathname];
-    if (requiredPermission && !session.hasPermission(requiredPermission)) {
+    if (requiredPermission && !canAccessCurrentRoute) {
       startTransition(() => {
-        router.replace(session.defaultRoute);
+        router.replace(defaultRoute);
       });
     }
-  }, [pathname, router, session]);
+  }, [canAccessCurrentRoute, defaultRoute, isAuthenticated, isReady, requiredPermission, router]);
 
   const navigationItems = useMemo(
     () => {
       const items: NonNullable<MenuProps["items"]> = [];
 
       for (const item of ADMIN_NAVIGATION_ITEMS) {
-        if (session.hasPermission(item.permission)) {
+        if (hasPermission(item.permission)) {
           items.push({
             key: item.key,
             icon: NAVIGATION_ICONS[item.key],
@@ -102,14 +110,14 @@ const AdminShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
       return items;
     },
-    [session],
+    [hasPermission],
   );
 
-  if (!session.isReady) {
+  if (!isReady) {
     return <Spinner />;
   }
 
-  if (!session.isAuthenticated) {
+  if (!isAuthenticated) {
     return null;
   }
 
@@ -138,7 +146,7 @@ const AdminShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             JourneyPoint
           </Title>
           <Text className={styles.siderText}>
-            {session.tenant?.tenancyName ? "Tenant Admin" : "Host Admin"}
+            {tenant?.tenancyName ? "Tenant Admin" : "Host Admin"}
           </Text>
         </div>
 
@@ -159,10 +167,10 @@ const AdminShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               Admin Workspace
             </Title>
             <Space size={8} wrap>
-              <Tag color={session.tenant?.tenancyName ? "gold" : "blue"}>
-                {session.tenant?.tenancyName ? session.tenant.tenantName ?? session.tenant.tenancyName : "Host"}
+              <Tag color={tenant?.tenancyName ? "gold" : "blue"}>
+                {tenant?.tenancyName ? tenant.tenantName ?? tenant.tenancyName : "Host"}
               </Tag>
-              {session.user?.fullName && <Text type="secondary">{session.user.fullName}</Text>}
+              {user?.fullName && <Text type="secondary">{user.fullName}</Text>}
             </Space>
           </Space>
 
