@@ -119,6 +119,20 @@ const RoleManager: React.FC = () => {
     searchTerm,
   ]);
 
+  useEffect(() => {
+    if (!editingRole || !roleState.currentRole?.role) {
+      return;
+    }
+
+    form.setFieldsValue({
+      id: roleState.currentRole.role.id,
+      name: roleState.currentRole.role.name ?? "",
+      displayName: roleState.currentRole.role.displayName ?? "",
+      description: roleState.currentRole.role.description ?? "",
+      grantedPermissions: (roleState.currentRole.grantedPermissionNames ?? []),
+    });
+  }, [editingRole, form, roleState.currentRole]);
+
   const onCreate = () => {
     setEditingRole(null);
     form.setFieldsValue({
@@ -142,19 +156,7 @@ const RoleManager: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (!editingRole || !roleState.currentRole?.role) {
-      return;
-    }
 
-    form.setFieldsValue({
-      id: roleState.currentRole.role.id,
-      name: roleState.currentRole.role.name ?? "",
-      displayName: roleState.currentRole.role.displayName ?? "",
-      description: roleState.currentRole.role.description ?? "",
-      grantedPermissions: (roleState.currentRole.grantedPermissionNames ?? []) as string[],
-    });
-  }, [editingRole, form, roleState.currentRole]);
 
   const onDelete = (role: IRoleDto) => {
     Modal.confirm({

@@ -97,24 +97,6 @@ const AdminShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   }, [pathname, router, session]);
 
-  const navigateTo = (href: string) => {
-    startTransition(() => {
-      router.push(href);
-    });
-  };
-
-  const openTenantModal = () => {
-    tenantForm.setFieldsValue({ tenancyName: session.tenant?.tenancyName ?? undefined });
-    setTenantModalOpen(true);
-  };
-
-  const handleNavigationClick: MenuProps["onClick"] = ({ key }) => {
-    const href = NAVIGATION_ROUTE_MAP[String(key)];
-    if (href) {
-      navigateTo(href);
-    }
-  };
-
   const navigationItems = useMemo(
     () => {
       const items: NonNullable<MenuProps["items"]> = [];
@@ -141,6 +123,24 @@ const AdminShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   if (!session.isAuthenticated) {
     return null;
   }
+
+  const navigateTo = (href: string) => {
+    startTransition(() => {
+      router.push(href);
+    });
+  };
+
+  const openTenantModal = () => {
+    tenantForm.setFieldsValue({ tenancyName: session.tenant?.tenancyName ?? undefined });
+    setTenantModalOpen(true);
+  };
+
+  const handleNavigationClick: MenuProps["onClick"] = ({ key }) => {
+    const href = NAVIGATION_ROUTE_MAP[String(key)];
+    if (href) {
+      navigateTo(href);
+    }
+  };
 
   const handleLogout = () => {
     logout().catch(ignoreAsyncError);

@@ -6,4 +6,4 @@ export const APP_ROUTES = {
   users: "/dashboard/users",
   roles: "/dashboard/roles",
   tenants: "/dashboard/tenants",
-} as const;
+};

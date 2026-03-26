@@ -32,7 +32,7 @@ export const mapSessionUser = (
 
 export const normalizeTenancyName = (value?: string | null): string | null => {
     const normalizedValue = value?.trim();
-    return normalizedValue ? normalizedValue : null;
+    return normalizedValue || null;
 };
 
 export const mapTenantInfo = (
