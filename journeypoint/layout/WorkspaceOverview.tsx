@@ -1,14 +1,25 @@
 "use client";
 
 import React from "react";
-import { Card, Col, Row, Space, Tag, Typography } from "antd";
-import { ADMIN_NAVIGATION_ITEMS } from "@/constants/global/navigation";
+import { Card, Col, Row, Space, Typography } from "antd";
 import { useAppSession } from "@/helpers/useAppSession";
-import { useStyles } from "@/components/admin/style/style";
+import { useStyles } from "./style/style";
 
 const { Paragraph, Title, Text } = Typography;
 
-const DashboardOverview: React.FC = () => {
+interface IWorkspaceOverviewProps {
+  title: string;
+  description: string;
+  currentFocus: string;
+  nextMilestoneHint: string;
+}
+
+const WorkspaceOverview: React.FC<IWorkspaceOverviewProps> = ({
+  currentFocus,
+  description,
+  nextMilestoneHint,
+  title,
+}) => {
   const { styles } = useStyles();
   const session = useAppSession();
 
@@ -16,11 +27,10 @@ const DashboardOverview: React.FC = () => {
     <Space orientation="vertical" size={24} className={styles.overviewRoot}>
       <div>
         <Title level={2} className={styles.overviewHeading}>
-          Welcome back
+          {title}
         </Title>
         <Paragraph type="secondary" className={styles.overviewParagraph}>
-          You are working in the {session.tenant?.tenancyName ? "tenant" : "host"} scope.
-          Use the sections below to manage platform access and administration within the current JourneyPoint scope.
+          {description}
         </Paragraph>
       </div>
 
@@ -40,30 +50,27 @@ const DashboardOverview: React.FC = () => {
         <Col xs={24} md={12}>
           <Card>
             <Text type="secondary">Current Scope</Text>
-            <Title level={4} className={styles.overviewScopeTitle}>
+            <Title level={4} className={styles.overviewCardTitle}>
               {session.tenant?.tenantName ?? "Host"}
             </Title>
-            <Tag color={session.tenant?.tenancyName ? "gold" : "blue"}>
-              {session.tenant?.tenancyName ?? "Host"}
-            </Tag>
+            <Paragraph type="secondary" className={styles.overviewParagraph}>
+              {currentFocus}
+            </Paragraph>
           </Card>
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]}>
-        {ADMIN_NAVIGATION_ITEMS.filter((item) => session.hasPermission(item.permission)).map((item) => (
-          <Col xs={24} md={12} xl={8} key={item.key}>
-            <Card>
-              <Title level={4}>{item.label}</Title>
-              <Paragraph type="secondary" className={styles.overviewParagraph}>
-                {item.description}
-              </Paragraph>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+      <Card>
+        <Text type="secondary">Milestone One Focus</Text>
+        <Title level={4} className={styles.overviewCardTitle}>
+          {nextMilestoneHint}
+        </Title>
+        <Paragraph type="secondary" className={styles.overviewParagraph}>
+          This workspace is intentionally light while role-safe routing, landing behavior, and navigation are being established.
+        </Paragraph>
+      </Card>
     </Space>
   );
 };
 
-export default DashboardOverview;
+export default WorkspaceOverview;

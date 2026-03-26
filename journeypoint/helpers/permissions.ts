@@ -1,5 +1,7 @@
-import { APP_PERMISSIONS } from "@/constants/auth/permissions";
+import { APP_PERMISSIONS, APP_ROLE_NAMES } from "@/constants/auth/permissions";
 import { APP_ROUTES } from "@/constants/auth/routes";
+
+type AppRoleName = (typeof APP_ROLE_NAMES)[keyof typeof APP_ROLE_NAMES];
 
 export const extractGrantedPermissions = (
   grantedPermissions?: Record<string, boolean> | null,
@@ -24,19 +26,43 @@ export const hasPermission = (
   return (grantedPermissions ?? []).includes(permission);
 };
 
+export const hasAnyPermission = (
+  grantedPermissions: string[] | null | undefined,
+  permissions: string[],
+): boolean => permissions.some((permission) => hasPermission(grantedPermissions, permission));
+
+export const isRoleName = (value?: string | null): value is AppRoleName =>
+  Object.values(APP_ROLE_NAMES).includes((value ?? "") as AppRoleName);
+
 export const getDefaultAuthorizedRoute = (
   grantedPermissions: string[] | null | undefined,
+  roleNames: string[] | null | undefined,
+  primaryRoleName?: string | null,
+  isHostScope = false,
 ): string => {
-  if (hasPermission(grantedPermissions, APP_PERMISSIONS.tenants)) {
-    return APP_ROUTES.tenants;
+  const normalizedRoleNames = (roleNames ?? []).filter(isRoleName);
+  const hasRole = (roleName: AppRoleName): boolean =>
+    primaryRoleName === roleName || normalizedRoleNames.includes(roleName);
+
+  if (
+    isHostScope ||
+    hasRole(APP_ROLE_NAMES.tenantAdmin) ||
+    hasPermission(grantedPermissions, APP_PERMISSIONS.tenants) ||
+    hasPermission(grantedPermissions, APP_PERMISSIONS.tenantAdmin)
+  ) {
+    return APP_ROUTES.dashboard;
   }
 
-  if (hasPermission(grantedPermissions, APP_PERMISSIONS.users)) {
-    return APP_ROUTES.users;
+  if (hasRole(APP_ROLE_NAMES.facilitator) || hasPermission(grantedPermissions, APP_PERMISSIONS.facilitator)) {
+    return APP_ROUTES.facilitatorDashboard;
   }
 
-  if (hasPermission(grantedPermissions, APP_PERMISSIONS.roles)) {
-    return APP_ROUTES.roles;
+  if (hasRole(APP_ROLE_NAMES.manager) || hasPermission(grantedPermissions, APP_PERMISSIONS.manager)) {
+    return APP_ROUTES.managerMyTasks;
+  }
+
+  if (hasRole(APP_ROLE_NAMES.enrolee) || hasPermission(grantedPermissions, APP_PERMISSIONS.enrolee)) {
+    return APP_ROUTES.enroleeMyJourney;
   }
 
   return APP_ROUTES.dashboard;
