@@ -1,4 +1,5 @@
-﻿using Abp.Application.Services.Dto;
+using System.Collections.Generic;
+using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using JourneyPoint.Authorization.Users;
 
@@ -14,5 +15,9 @@ namespace JourneyPoint.Sessions.Dto
         public string UserName { get; set; }
 
         public string EmailAddress { get; set; }
+
+        public IReadOnlyList<string> RoleNames { get; set; }
+
+        public string PrimaryRoleName { get; set; }
     }
 }

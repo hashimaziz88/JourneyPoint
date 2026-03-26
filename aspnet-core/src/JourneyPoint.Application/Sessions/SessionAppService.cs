@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Abp.Auditing;
+using JourneyPoint.Authorization.Roles;
 using JourneyPoint.Sessions.Dto;
 
 namespace JourneyPoint.Sessions
@@ -27,7 +29,19 @@ namespace JourneyPoint.Sessions
 
             if (AbpSession.UserId.HasValue)
             {
-                output.User = ObjectMapper.Map<UserLoginInfoDto>(await GetCurrentUserAsync());
+                var currentUser = await GetCurrentUserAsync();
+                var roleNames = (await UserManager.GetRolesAsync(currentUser))
+                    .Select(StaticRoleNames.Tenants.NormalizeForClient)
+                    .Distinct()
+                    .OrderBy(StaticRoleNames.Tenants.GetClientSortOrder)
+                    .ThenBy(roleName => roleName)
+                    .ToArray();
+
+                var user = ObjectMapper.Map<UserLoginInfoDto>(currentUser);
+                user.RoleNames = roleNames;
+                user.PrimaryRoleName = roleNames.FirstOrDefault();
+
+                output.User = user;
             }
 
             return output;

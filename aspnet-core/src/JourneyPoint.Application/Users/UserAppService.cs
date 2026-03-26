@@ -232,7 +232,7 @@ namespace JourneyPoint.Users
             }
             
             var roles = await _userManager.GetRolesAsync(currentUser);
-            if (!roles.Contains(StaticRoleNames.Tenants.Admin))
+            if (!roles.Any(StaticRoleNames.Tenants.IsTenantAdmin))
             {
                 throw new UserFriendlyException("Only administrators may reset passwords.");
             }
@@ -248,4 +248,3 @@ namespace JourneyPoint.Users
         }
     }
 }
-
