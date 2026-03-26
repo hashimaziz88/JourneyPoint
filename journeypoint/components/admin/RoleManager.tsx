@@ -272,10 +272,12 @@ const RoleManager: React.FC = () => {
 
       <Card>
         <Table
+          className={styles.responsiveTable}
           rowKey={(record) => String(record.id)}
           columns={columns}
           dataSource={roleState.roles ?? []}
           loading={roleState.isPending && !awaitingMutation}
+          scroll={{ x: "max-content" }}
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
