@@ -9,13 +9,24 @@ export const useAppSession = () => {
   const authActions = useAuthActions();
   const tenant = authState.tenant ?? readTenantFromCookies();
   const grantedPermissions = authState.grantedPermissions;
-  const defaultRoute = getDefaultAuthorizedRoute(grantedPermissions);
+  const roleNames = authState.user?.roleNames ?? [];
+  const primaryRoleName = authState.user?.primaryRoleName ?? null;
+  const isHostScope = !tenant?.tenancyName;
+  const defaultRoute = getDefaultAuthorizedRoute(
+    grantedPermissions,
+    roleNames,
+    primaryRoleName,
+    isHostScope,
+  );
 
   return {
     isReady: authState.isReady,
     isAuthenticated: authState.isAuthenticated,
     user: authState.user,
     tenant,
+    roleNames,
+    primaryRoleName,
+    isHostScope,
     grantedPermissions,
     isMultiTenancyEnabled: authState.isMultiTenancyEnabled,
     configurationError: authState.configurationError,

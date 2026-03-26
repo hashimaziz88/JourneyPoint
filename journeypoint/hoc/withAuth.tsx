@@ -9,7 +9,7 @@ import Spinner from "@/components/spinner/Spinner";
 
 const withAuth = <P extends object>(
     WrappedComponent: React.ComponentType<P>,
-    { requiredPermission }: WithAuthOptions = {}
+    { allowHost = false, allowedRoles = [], requiredPermission }: WithAuthOptions = {}
 ) => {
     const AuthenticatedComponent = (props: P) => {
         const router = useRouter();
@@ -17,9 +17,16 @@ const withAuth = <P extends object>(
             defaultRoute,
             hasPermission,
             isAuthenticated,
+            isHostScope,
             isReady,
+            primaryRoleName,
         } = useAppSession();
         const hasRequiredPermission = hasPermission(requiredPermission);
+        const hasRoleRestriction = allowHost || allowedRoles.length > 0;
+        const hasAllowedRole =
+            !hasRoleRestriction ||
+            (allowHost && isHostScope) ||
+            allowedRoles.includes(primaryRoleName ?? "");
 
         useEffect(() => {
             if (!isReady) {
@@ -31,10 +38,10 @@ const withAuth = <P extends object>(
                 return;
             }
 
-            if (requiredPermission && !hasRequiredPermission) {
+            if (!hasAllowedRole || (requiredPermission && !hasRequiredPermission)) {
                 router.replace(defaultRoute);
             }
-        }, [defaultRoute, hasRequiredPermission, isAuthenticated, isReady, router]);
+        }, [defaultRoute, hasAllowedRole, hasRequiredPermission, isAuthenticated, isReady, router]);
 
         if (!isReady) {
             return <Spinner />;
@@ -44,7 +51,7 @@ const withAuth = <P extends object>(
             return null;
         }
 
-        if (requiredPermission && !hasRequiredPermission) {
+        if (!hasAllowedRole || (requiredPermission && !hasRequiredPermission)) {
             return null;
         }
 

@@ -21,7 +21,7 @@ expansion.
 
 - [ ] T001 Align JourneyPoint feature settings in `aspnet-core/src/JourneyPoint.Web.Host/appsettings.json` and `aspnet-core/src/JourneyPoint.Web.Host/appsettings.Staging.json`
 - [ ] T002 [P] Create onboarding, journey, and engagement domain folders under `aspnet-core/src/JourneyPoint.Core/Domains/`
-- [ ] T003 [P] Create JourneyPoint route-group placeholders under `journeypoint/app/(facilitator)/`, `journeypoint/app/(manager)/`, and `journeypoint/app/(enrolee)/`
+- [x] T003 [P] Create JourneyPoint route-group placeholders under `journeypoint/app/(facilitator)/`, `journeypoint/app/(manager)/`, and `journeypoint/app/(enrolee)/`
 - [ ] T004 [P] Add shared JourneyPoint feature constants and types under `journeypoint/constants/` and `journeypoint/types/`
 
 ---
@@ -35,7 +35,7 @@ stories rely on.
 - [x] T006 Configure role seeding for TenantAdmin, Facilitator, Manager, and Enrolee in `aspnet-core/src/JourneyPoint.Core/Authorization/Roles/AppRoleConfig.cs`
 - [x] T007 [P] Extend account and session DTO handling in `aspnet-core/src/JourneyPoint.Application/Authorization/Accounts/` for JourneyPoint role and tenant context needs
 - [x] T008 [P] Harden frontend auth and tenant resolution in `journeypoint/providers/authProvider/`, `journeypoint/helpers/useAppSession.tsx`, and `journeypoint/utils/axiosInstance.tsx`
-- [ ] T009 [P] Add role-aware route guards and shared navigation in `journeypoint/hoc/withAuth.tsx`, `journeypoint/constants/auth/permissions.ts`, and `journeypoint/constants/global/navigation.ts`
+- [x] T009 [P] Add role-aware route guards and shared navigation in `journeypoint/hoc/withAuth.tsx`, `journeypoint/constants/auth/permissions.ts`, and `journeypoint/constants/global/navigation.ts`
 - [ ] T010 Add Groq, storage, and mail option contracts in `aspnet-core/src/JourneyPoint.Core/Configuration/` and wire them through `aspnet-core/src/JourneyPoint.Web.Host/Startup/`
 - [ ] T011 Add shared DTO mapping and domain module registration entry points in `aspnet-core/src/JourneyPoint.Application/` and `aspnet-core/src/JourneyPoint.Core/`
 
@@ -51,11 +51,11 @@ shared auth flow.
 **Independent Test**: TenantAdmin, Facilitator, Manager, and Enrolee can sign
 in and reach the correct shell without cross-tenant leakage.
 
-- [ ] T012 [P] [US1] Create facilitator shell pages in `journeypoint/app/(facilitator)/layout.tsx` and `journeypoint/app/(facilitator)/dashboard/page.tsx`
-- [ ] T013 [P] [US1] Create manager shell pages in `journeypoint/app/(manager)/layout.tsx` and `journeypoint/app/(manager)/my-tasks/page.tsx`
-- [ ] T014 [P] [US1] Create enrolee shell pages in `journeypoint/app/(enrolee)/layout.tsx` and `journeypoint/app/(enrolee)/my-journey/page.tsx`
-- [ ] T015 [P] [US1] Add shared layout components in `journeypoint/components/layout/`
-- [ ] T016 [US1] Connect role-aware landing behavior in `journeypoint/app/dashboard/page.tsx` and `journeypoint/components/admin/AdminShell.tsx`
+- [x] T012 [P] [US1] Create facilitator shell pages in `journeypoint/app/(facilitator)/facilitator/layout.tsx` and `journeypoint/app/(facilitator)/facilitator/dashboard/page.tsx`
+- [x] T013 [P] [US1] Create manager shell pages in `journeypoint/app/(manager)/manager/layout.tsx` and `journeypoint/app/(manager)/manager/my-tasks/page.tsx`
+- [x] T014 [P] [US1] Create enrolee shell pages in `journeypoint/app/(enrolee)/enrolee/layout.tsx` and `journeypoint/app/(enrolee)/enrolee/my-journey/page.tsx`
+- [x] T015 [P] [US1] Add shared layout components in `journeypoint/layout/`
+- [x] T016 [US1] Connect role-aware landing behavior in `journeypoint/app/dashboard/page.tsx` and `journeypoint/components/admin/AdminShell.tsx`
 - [ ] T017 [US1] Add frontend permission-aware navigation states in `journeypoint/providers/roleProvider/` and `journeypoint/providers/tenantProvider/`
 - [ ] T018 [US1] Expose tenant-aware current-user and role summary endpoints through `aspnet-core/src/JourneyPoint.Application/Authorization/Accounts/AccountAppService.cs`
 
