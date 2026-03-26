@@ -1,6 +1,6 @@
 export const AUTH_COOKIE_NAMES = {
   token: "token",
-  tenantId: "tenantId",
+  tenantId: "Abp.TenantId",
   tenancyName: "tenancyName",
   tenantName: "tenantName",
 };

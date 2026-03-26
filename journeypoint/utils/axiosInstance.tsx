@@ -11,7 +11,7 @@ export const getAxiosInstace = () => {
         headers: {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            ...(tenantId ? { "Abp-TenantId": tenantId } : {}),
+            ...(tenantId ? { "Abp.TenantId": tenantId } : {}),
         },
     });
 };
