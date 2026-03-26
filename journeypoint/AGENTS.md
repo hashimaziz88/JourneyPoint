@@ -1,6 +1,7 @@
 # JourneyPoint Frontend Agent Guide
 
 This file supplements the root `AGENTS.md` for work inside `journeypoint/`.
+It does not override the canonical source-of-truth order defined there.
 
 ## Mandatory source of truth
 
@@ -9,11 +10,13 @@ Before making frontend changes, read:
 1. `../AGENTS.md`
 2. `../.specify/memory/constitution.md`
 3. `../.specify/project.md`
-4. `../specs/001-journeypoint-platform/spec.md`
-5. `../specs/001-journeypoint-platform/plan.md`
-6. `../specs/001-journeypoint-platform/tasks.md`
-7. `../specs/001-journeypoint-platform/github-roadmap.md`
-8. `../.codex/frontend.md`
+4. the active feature package `../specs/001-journeypoint-platform/`:
+   `spec.md`, `plan.md`, `tasks.md`, and `github-roadmap.md`
+5. `../.codex/context.md`
+6. `../.codex/frontend.md`
+
+Do not infer a different feature package from the current branch name. Ignore
+`../angular/`.
 
 ## Frontend rules
 

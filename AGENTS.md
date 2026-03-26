@@ -1,16 +1,26 @@
 # JourneyPoint Agent Guide
 
-## Read Order
+This is the root operating guide for repository contributors and assistant
+tools.
 
-Before making or proposing changes, read these in order:
+## Canonical Source of Truth
+
+Before making or proposing changes, follow this order:
 
 1. `.specify/memory/constitution.md`
 2. `.specify/project.md`
-3. `specs/001-journeypoint-platform/spec.md`
-4. `specs/001-journeypoint-platform/plan.md`
-5. `specs/001-journeypoint-platform/tasks.md`
-6. `specs/001-journeypoint-platform/github-roadmap.md`
-7. `.codex/context.md` plus `.codex/backend.md` or `.codex/frontend.md` as relevant
+3. the active feature package `specs/001-journeypoint-platform/`:
+   `spec.md`, `plan.md`, `tasks.md`, and `github-roadmap.md`
+4. lower-priority assistant guidance files such as `CLAUDE.md`,
+   `.github/copilot-instructions.md`, and `.codex/context.md`
+5. `.codex/backend.md` or `.codex/frontend.md` as relevant
+
+If two documents disagree, prefer the higher item and update the lower item
+before continuing.
+
+The active feature package is currently `001-journeypoint-platform`. Do not
+infer a different package from the current branch name or from historical
+GitHub milestone wording.
 
 ## Project Identity
 

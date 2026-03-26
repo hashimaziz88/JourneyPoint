@@ -1,14 +1,20 @@
 # Claude Code Instructions for JourneyPoint Frontend
 
-Read these first:
+`../AGENTS.md` is the root operating guide for frontend work.
 
-1. `../AGENTS.md`
-2. `../.specify/memory/constitution.md`
-3. `../.specify/project.md`
-4. `../specs/001-journeypoint-platform/spec.md`
-5. `../specs/001-journeypoint-platform/plan.md`
-6. `../specs/001-journeypoint-platform/tasks.md`
-7. `../specs/001-journeypoint-platform/github-roadmap.md`
+## Canonical Source of Truth
+
+After reading `../AGENTS.md`, follow this order:
+
+1. `../.specify/memory/constitution.md`
+2. `../.specify/project.md`
+3. the active feature package `../specs/001-journeypoint-platform/`:
+   `spec.md`, `plan.md`, `tasks.md`, and `github-roadmap.md`
+4. `../.codex/context.md`
+5. `../.codex/frontend.md`
+
+Do not infer the active feature package from branch names. `../angular/` is out
+of scope.
 
 When implementing:
 
