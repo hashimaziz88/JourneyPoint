@@ -84,6 +84,18 @@ export const useStyles = createStyles(({ css }) => ({
     gap: 8px;
   `,
 
+  responsiveTable: css`
+    width: 100%;
+
+    :global(.ant-table-wrapper) {
+      width: 100%;
+    }
+
+    :global(.ant-table-container) {
+      overflow-x: auto;
+    }
+  `,
+
   overviewHeading: css`
     margin-bottom: 8px !important;
   `,
