@@ -19,10 +19,10 @@ implemented, demonstrated, and reviewed independently.
 **Purpose**: Prepare the backend and frontend for the JourneyPoint domain
 expansion.
 
-- [ ] T001 Align JourneyPoint feature settings in `aspnet-core/src/JourneyPoint.Web.Host/appsettings.json` and `aspnet-core/src/JourneyPoint.Web.Host/appsettings.Staging.json`
-- [ ] T002 [P] Create onboarding, journey, and engagement domain folders under `aspnet-core/src/JourneyPoint.Core/Domains/`
+- [x] T001 Closed as superseded by JP-006 configuration-contract wiring in `aspnet-core/src/JourneyPoint.Web.Host/appsettings.json` and `aspnet-core/src/JourneyPoint.Web.Host/appsettings.Staging.json`
+- [x] T002 [P] Closed as superseded; empty onboarding, journey, and engagement scaffolding will be created alongside real domain work in later issues instead of as a standalone M1 task
 - [x] T003 [P] Create JourneyPoint route-group placeholders under `journeypoint/app/(facilitator)/`, `journeypoint/app/(manager)/`, and `journeypoint/app/(enrolee)/`
-- [ ] T004 [P] Add shared JourneyPoint feature constants and types under `journeypoint/constants/` and `journeypoint/types/`
+- [x] T004 [P] Closed as superseded by concrete auth, route, and session constants/types delivered during JP-003, JP-004, and JP-005
 
 ---
 
@@ -36,8 +36,8 @@ stories rely on.
 - [x] T007 [P] Extend account and session DTO handling in `aspnet-core/src/JourneyPoint.Application/Authorization/Accounts/` for JourneyPoint role and tenant context needs
 - [x] T008 [P] Harden frontend auth and tenant resolution in `journeypoint/providers/authProvider/`, `journeypoint/helpers/useAppSession.tsx`, and `journeypoint/utils/axiosInstance.tsx`
 - [x] T009 [P] Add role-aware route guards and shared navigation in `journeypoint/hoc/withAuth.tsx`, `journeypoint/constants/auth/permissions.ts`, and `journeypoint/constants/global/navigation.ts`
-- [ ] T010 Add Groq, storage, and mail option contracts in `aspnet-core/src/JourneyPoint.Core/Configuration/` and wire them through `aspnet-core/src/JourneyPoint.Web.Host/Startup/`
-- [ ] T011 Add shared DTO mapping and domain module registration entry points in `aspnet-core/src/JourneyPoint.Application/` and `aspnet-core/src/JourneyPoint.Core/`
+- [x] T010 Add Groq, storage, and mail option contracts in `aspnet-core/src/JourneyPoint.Core/Configuration/` and wire them through `aspnet-core/src/JourneyPoint.Web.Host/Startup/`
+- [x] T011 Re-scoped to later backend domain milestones; shared DTO mapping and module registration will land with concrete onboarding, journey, and engagement domain issues instead of as a standalone M1 task
 
 **Checkpoint**: Foundation ready - user story implementation can begin.
 
@@ -56,8 +56,8 @@ in and reach the correct shell without cross-tenant leakage.
 - [x] T014 [P] [US1] Create enrolee shell pages in `journeypoint/app/(enrolee)/enrolee/layout.tsx` and `journeypoint/app/(enrolee)/enrolee/my-journey/page.tsx`
 - [x] T015 [P] [US1] Add shared layout components in `journeypoint/layout/`
 - [x] T016 [US1] Connect role-aware landing behavior in `journeypoint/app/dashboard/page.tsx` and `journeypoint/components/admin/AdminShell.tsx`
-- [ ] T017 [US1] Add frontend permission-aware navigation states in `journeypoint/providers/roleProvider/` and `journeypoint/providers/tenantProvider/`
-- [ ] T018 [US1] Expose tenant-aware current-user and role summary endpoints through `aspnet-core/src/JourneyPoint.Application/Authorization/Accounts/AccountAppService.cs`
+- [x] T017 [US1] Re-scoped to later frontend state refinement; JP-005 already delivers permission-aware navigation and role routing through the shell and route-guard layer
+- [x] T018 [US1] Closed as superseded by JP-003 session DTO enrichment; no separate M1 `AccountAppService` current-user endpoint is required
 
 **Checkpoint**: Access control and role shells are demonstrable.
 
