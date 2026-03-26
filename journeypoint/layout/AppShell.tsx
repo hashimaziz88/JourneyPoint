@@ -1,18 +1,19 @@
 "use client";
 
-import React, { startTransition, useMemo } from "react";
+import React, { startTransition, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { MenuProps } from "antd";
 import {
   ApartmentOutlined,
   DashboardOutlined,
   LogoutOutlined,
+  MenuOutlined,
   SafetyCertificateOutlined,
   SolutionOutlined,
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, Layout, Menu, Space, Tag, Typography } from "antd";
+import { Button, Drawer, Grid, Layout, Menu, Space, Tag, Typography } from "antd";
 import { APP_ROUTES } from "@/constants/auth/routes";
 import type { IWorkspaceNavigationItem, NavigationIconKey } from "@/constants/global/navigation";
 import { useAuthActions } from "@/providers/authProvider";
@@ -20,6 +21,7 @@ import { useStyles } from "./style/style";
 
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
+const { useBreakpoint } = Grid;
 const ignoreAsyncError = () => undefined;
 
 const NAVIGATION_ICONS: Record<NavigationIconKey, React.ReactNode> = {
@@ -63,6 +65,9 @@ const AppShell: React.FC<IAppShellProps> = ({
   const pathname = usePathname();
   const router = useRouter();
   const { logout } = useAuthActions();
+  const screens = useBreakpoint();
+  const [isMobileNavigationOpen, setIsMobileNavigationOpen] = useState(false);
+  const isMobile = !screens.lg;
 
   const menuItems = useMemo<NonNullable<MenuProps["items"]>>(
     () =>
@@ -83,6 +88,12 @@ const AppShell: React.FC<IAppShellProps> = ({
     [navigationItems],
   );
 
+  useEffect(() => {
+    if (!isMobile) {
+      setIsMobileNavigationOpen(false);
+    }
+  }, [isMobile]);
+
   const navigateTo = (href: string) => {
     startTransition(() => {
       router.push(href);
@@ -92,11 +103,13 @@ const AppShell: React.FC<IAppShellProps> = ({
   const handleNavigationClick: MenuProps["onClick"] = ({ key }) => {
     const href = routeMap[String(key)];
     if (href) {
+      setIsMobileNavigationOpen(false);
       navigateTo(href);
     }
   };
 
   const handleLogout = () => {
+    setIsMobileNavigationOpen(false);
     logout()
       .then(() => {
         router.replace(APP_ROUTES.login);
@@ -104,34 +117,69 @@ const AppShell: React.FC<IAppShellProps> = ({
       .catch(ignoreAsyncError);
   };
 
+  const navigationBrand = (
+    <div className={styles.siderBrand}>
+      <Title level={3} className={styles.siderTitle}>
+        JourneyPoint
+      </Title>
+      <Text className={styles.siderText}>{subtitle}</Text>
+    </div>
+  );
+
+  const navigationMenu = (
+    <Menu
+      mode="inline"
+      selectedKeys={[getSelectedMenuKey(pathname, navigationItems)]}
+      items={menuItems}
+      onClick={handleNavigationClick}
+      className={styles.shellMenu}
+    />
+  );
+
   return (
     <Layout className={styles.shellLayout}>
-      <Sider breakpoint="lg" collapsedWidth="0" className={styles.shellSider}>
-        <div className={styles.siderBrand}>
-          <Title level={3} className={styles.siderTitle}>
-            JourneyPoint
-          </Title>
-          <Text className={styles.siderText}>{subtitle}</Text>
-        </div>
+      {!isMobile ? (
+        <Sider breakpoint="lg" collapsedWidth="0" className={styles.shellSider}>
+          {navigationBrand}
+          {navigationMenu}
+        </Sider>
+      ) : null}
 
-        <Menu
-          mode="inline"
-          selectedKeys={[getSelectedMenuKey(pathname, navigationItems)]}
-          items={menuItems}
-          onClick={handleNavigationClick}
-          className={styles.shellMenu}
-        />
-      </Sider>
+      <Drawer
+        placement="left"
+        open={isMobile && isMobileNavigationOpen}
+        onClose={() => setIsMobileNavigationOpen(false)}
+        closable
+        size="100vw"
+        rootClassName={styles.mobileDrawerRoot}
+      >
+        <div className={styles.mobileDrawerContent}>
+          {navigationBrand}
+          {navigationMenu}
+        </div>
+      </Drawer>
 
       <Layout>
         <Header className={styles.shellHeader}>
-          <Space orientation="vertical" size={2}>
-            <Title level={4} className={styles.headerTitle}>
-              {title}
-            </Title>
-            <Space size={8} wrap>
-              <Tag color={scopeLabel === "Host" ? "blue" : "gold"}>{scopeLabel}</Tag>
-              {userDisplayName ? <Text type="secondary">{userDisplayName}</Text> : null}
+          <Space size="middle" align="start">
+            {isMobile ? (
+              <Button
+                type="text"
+                icon={<MenuOutlined />}
+                onClick={() => setIsMobileNavigationOpen(true)}
+                className={styles.mobileMenuButton}
+                aria-label="Open navigation menu"
+              />
+            ) : null}
+
+            <Space orientation="vertical" size={2}>
+              <Title level={4} className={styles.headerTitle}>
+                {title}
+              </Title>
+              <Space size={8} wrap>
+                <Tag color={scopeLabel === "Host" ? "blue" : "gold"}>{scopeLabel}</Tag>
+                {userDisplayName ? <Text type="secondary">{userDisplayName}</Text> : null}
+              </Space>
             </Space>
           </Space>
 

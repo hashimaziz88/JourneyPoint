@@ -11,6 +11,7 @@ export const useStyles = createStyles(({ token, css }) => ({
   shellSider: css`
     background: ${token.colorBgElevated} !important;
     border-inline-end: 1px solid ${token.colorBorderSecondary};
+    overflow: auto;
   `,
 
   siderBrand: css`
@@ -31,6 +32,35 @@ export const useStyles = createStyles(({ token, css }) => ({
     padding-inline: ${token.paddingXS}px;
   `,
 
+  mobileDrawerRoot: css`
+    :global(.ant-drawer-content) {
+      background: ${token.colorBgElevated};
+    }
+
+    :global(.ant-drawer-header) {
+      background: ${token.colorBgElevated};
+      border-bottom: 1px solid ${token.colorBorderSecondary};
+      padding: ${token.paddingSM}px ${token.paddingSM}px 0;
+    }
+
+    :global(.ant-drawer-body) {
+      padding: 0;
+    }
+
+    :global(.ant-drawer-content-wrapper) {
+      max-width: 100vw;
+    }
+  `,
+
+  mobileDrawerContent: css`
+    min-height: 100vh;
+    background: ${token.colorBgElevated};
+  `,
+
+  mobileMenuButton: css`
+    margin-top: 2px;
+  `,
+
   shellHeader: css`
     display: flex;
     align-items: center;
@@ -40,6 +70,11 @@ export const useStyles = createStyles(({ token, css }) => ({
     padding: ${token.paddingLG}px !important;
     height: auto !important;
     line-height: 1.2 !important;
+
+    @media (max-width: 991px) {
+      align-items: flex-start;
+      padding: ${token.padding}px !important;
+    }
   `,
 
   headerTitle: css`
@@ -48,6 +83,10 @@ export const useStyles = createStyles(({ token, css }) => ({
 
   shellContent: css`
     padding: 0 ${token.paddingLG}px ${token.paddingLG}px !important;
+
+    @media (max-width: 991px) {
+      padding: 0 ${token.padding}px ${token.padding}px !important;
+    }
   `,
 
   shellContentCard: css`
@@ -57,6 +96,11 @@ export const useStyles = createStyles(({ token, css }) => ({
     background: ${token.colorBgContainer};
     border: 1px solid ${token.colorBorderSecondary};
     box-shadow: ${token.boxShadowTertiary};
+
+    @media (max-width: 991px) {
+      min-height: calc(100vh - 108px);
+      padding: ${token.padding}px;
+    }
   `,
 
   overviewRoot: css`
