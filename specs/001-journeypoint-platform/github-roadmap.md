@@ -1,5 +1,9 @@
 # JourneyPoint GitHub Roadmap
 
+This document is the canonical JourneyPoint roadmap for current delivery.
+Historical GitHub milestone or issue language that references Angular records
+earlier foundation work only and does not define current scope.
+
 ## Snapshot of Existing GitHub State
 
 Snapshot date: 2026-03-26
@@ -35,13 +39,14 @@ Snapshot date: 2026-03-26
 | #11 | fix: reorder ABP initialization in Configure method for consistency | 2026-03-26T08:53:49Z | feat/frontend-auth-multi-tenancy |
 | #12 | Implement multi-tenant proxy API and update Axios base URL | 2026-03-26T09:26:37Z | feat/frontend-auth-multi-tenancy |
 
-### Roadmap recommendation
+### Canonical baseline
 
 - Keep the existing issues and PRs as historical foundation work.
-- Close or rename milestone `#1` so its title no longer references Angular.
-- Create the new five-milestone roadmap below as the canonical JourneyPoint plan.
+- Treat milestone `#1` and its Angular-oriented wording as legacy context only.
+- Use the five milestones and issue slices below as the canonical JourneyPoint
+  roadmap baseline.
 
-## Proposed Five Milestones
+## Canonical Five Milestones
 
 | Milestone | Goal | Issue Count |
 |----------|------|-------------|
@@ -51,9 +56,9 @@ Snapshot date: 2026-03-26
 | M4 - Participant Experience and Human-in-the-Loop AI | Deliver enrolee, manager, and personalisation flows | 6 |
 | M5 - Intelligence, Interventions, and Demo Readiness | Deliver scoring, pipeline, interventions, and seed validation | 6 |
 
-Total proposed issues: 30
+Total canonical issues: 30
 
-## Proposed Issues
+## Canonical Issues
 
 ### M1 - Platform Foundation and Access
 
@@ -190,9 +195,11 @@ Total proposed issues: 30
    - Scope: Boxfusion and DeptDemo seed state plus milestone smoke validation
    - Depends on: JP-028, JP-029
 
-## Suggested GitHub Creation Order
+## GitHub Alignment Guidance
 
-1. Create all five milestones.
-2. Create M1 issues first and close or rename the old milestone.
-3. Create M2 through M5 issues in dependency order.
-4. Link each PR back to one roadmap issue and one milestone.
+1. Ensure GitHub milestone names align with the five canonical milestones above.
+2. Rename or close milestone `#1` so Angular-oriented wording remains
+   historical only.
+3. Treat legacy issues `#1`, `#2`, and `#8`, plus merged PRs `#3` through
+   `#12`, as historical foundation evidence rather than roadmap-defining slices.
+4. Link ongoing PRs back to one canonical JP issue and one canonical milestone.

@@ -29,6 +29,11 @@ The current delivery initiative is a five-milestone implementation plan:
 4. Journey participation and human-in-the-loop AI
 5. Intelligence, interventions, and demo readiness
 
+This five-milestone plan is the canonical JourneyPoint roadmap for the current
+initiative. Any older GitHub milestone or issue wording that references Angular
+must be treated as historical foundation context only and must not override the
+active feature package or roadmap markdown.
+
 The active feature package must remain detailed enough that Claude, ChatGPT,
 Codex, and GitHub Copilot can continue work from the same documented intent.
 
@@ -67,6 +72,8 @@ specs/     # Active Spec Kit feature packages
 - Prefer reusable domain concepts over one-off demo shortcuts.
 - Preserve audit history for AI runs, engagement scoring, and interventions.
 - Update the roadmap markdown before or alongside any major issue re-slicing.
+- Treat Angular-oriented milestone labels in historical GitHub records as
+  legacy context rather than active roadmap language.
 
 ## Working Commands
 
