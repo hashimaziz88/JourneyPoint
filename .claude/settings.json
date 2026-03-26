@@ -4,7 +4,8 @@
       "Bash(find 'c:/Users/Hashim/Documents/Git Repos/JourneyPoint/journeypoint' -name *cookie* -o -name *cookies*)",
       "Bash(find 'c:/Users/Hashim/Documents/Git Repos/JourneyPoint/angular' -type f -name *.ts -not -path */node_modules/* -not -path */.angular/* -not -path *dist/*)",
       "Bash(find 'c:/Users/Hashim/Documents/Git Repos/JourneyPoint/journeypoint' -type f -name *.tsx -not -path */node_modules/* -not -path */.next/*)",
-      "Bash(find 'c:/Users/Hashim/Documents/Git Repos/JourneyPoint/journeypoint' -type f -not -path */node_modules/* -not -path */.next/*)"
+      "Bash(find 'c:/Users/Hashim/Documents/Git Repos/JourneyPoint/journeypoint' -type f -not -path */node_modules/* -not -path */.next/*)",
+      "Bash(grep -r \"TenantId\\\\|tenantid\\\\|Abp-TenantId\\\\|Abp.TenantId\" 'c:/Users/Hashim/Documents/Git Repos/JourneyPoint/journeypoint' --include=*.ts --include=*.tsx -l)"
     ]
   }
 }
