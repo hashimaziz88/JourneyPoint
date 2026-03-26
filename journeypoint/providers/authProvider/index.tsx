@@ -8,6 +8,7 @@ import {
     logoutPending, logoutSuccess, logoutError,
     getMePending, getMeSuccess, getMeError,
     resolveTenantPending, resolveTenantSuccess, resolveTenantError,
+    clearTenant as clearTenantAction,
 } from "./actions";
 import { getAxiosInstace } from "@/utils/axiosInstance";
 import { getCookie, setCookie, removeCookie } from "@/utils/cookies";
@@ -121,6 +122,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
     };
 
+    const clearTenant = () => {
+        dispatch(clearTenantAction());
+    };
+
     const logout = async () => {
         dispatch(logoutPending());
         await Promise.resolve()
@@ -138,7 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return (
         <AuthStateContext.Provider value={state}>
-            <AuthActionContext.Provider value={{ login, register, logout, getMe, resolveTenant }}>
+            <AuthActionContext.Provider value={{ login, register, logout, getMe, resolveTenant, clearTenant }}>
                 {children}
             </AuthActionContext.Provider>
         </AuthStateContext.Provider>

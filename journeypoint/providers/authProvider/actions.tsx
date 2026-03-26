@@ -21,6 +21,8 @@ export enum AuthActionEnums {
     resolveTenantPending = "RESOLVE_TENANT_PENDING",
     resolveTenantSuccess = "RESOLVE_TENANT_SUCCESS",
     resolveTenantError = "RESOLVE_TENANT_ERROR",
+
+    clearTenant = "CLEAR_TENANT",
 }
 
 export const loginPending = createAction<IAuthStateContext>(
@@ -98,4 +100,9 @@ export const resolveTenantSuccess = createAction<IAuthStateContext, ITenantInfo>
 export const resolveTenantError = createAction<IAuthStateContext>(
     AuthActionEnums.resolveTenantError,
     () => ({ isPending: false, isError: true, isSuccess: false, isAuthenticated: false, tenant: null })
+);
+
+export const clearTenant = createAction<IAuthStateContext>(
+    AuthActionEnums.clearTenant,
+    () => ({ isPending: false, isError: false, isSuccess: false, isAuthenticated: false, tenant: null })
 );

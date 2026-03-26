@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect, startTransition } from "react";
+import React, { useEffect, startTransition, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { FormProps } from "antd";
 import { Alert, Button, Checkbox, Form, Input, Space, Typography, message } from "antd";
-import { ApartmentOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
+import { ApartmentOutlined, CheckCircleOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 import { clearTenantCookies } from "@/helpers/auth";
 import { useAppSession } from "@/helpers/useAppSession";
 import { useAuthActions, useAuthState } from "@/providers/authProvider";
@@ -15,13 +15,17 @@ import { useStyles } from "./style/style";
 const { Title, Text } = Typography;
 const ignoreAsyncError = () => undefined;
 
+type TenantResolveStatus = "idle" | "resolving" | "resolved" | "not_found";
+
 const LoginForm: React.FC = () => {
   const router = useRouter();
   const { styles } = useStyles();
-  const { login, resolveTenant } = useAuthActions();
+  const { login, resolveTenant, clearTenant } = useAuthActions();
   const authState = useAuthState();
   const { defaultRoute, isAuthenticated, isMultiTenancyEnabled, isReady, tenant } = useAppSession();
   const [messageApi, messageContextHolder] = message.useMessage();
+  const [tenantStatus, setTenantStatus] = useState<TenantResolveStatus>("idle");
+  const [form] = Form.useForm<LoginFieldType>();
 
   useEffect(() => {
     if (isReady && isAuthenticated) {
@@ -36,6 +40,24 @@ const LoginForm: React.FC = () => {
       messageApi.error("Login failed. Please check your credentials and try again.");
     }
   }, [authState.isError, messageApi]);
+
+  const handleChangeTenant = async () => {
+    const tenancyName = form.getFieldValue("tenancyName")?.trim();
+    if (!tenancyName) {
+      setTenantStatus("idle");
+      return;
+    }
+    setTenantStatus("resolving");
+    const result = await resolveTenant(tenancyName).catch(() => null);
+    setTenantStatus(result ? "resolved" : "not_found");
+  };
+
+  const handleContinueAsHost = () => {
+    clearTenantCookies();
+    clearTenant();
+    form.setFieldValue("tenancyName", undefined);
+    setTenantStatus("idle");
+  };
 
   const submitLogin = async (values: LoginFieldType) => {
     const tenancyName = values.tenancyName?.trim();
@@ -65,6 +87,10 @@ const LoginForm: React.FC = () => {
     console.error("Failed:", errorInfo);
   };
 
+  let tenantValidateStatus: "" | "error" | "success" = "";
+  if (tenantStatus === "not_found") tenantValidateStatus = "error";
+  else if (tenantStatus === "resolved") tenantValidateStatus = "success";
+
   return (
     <div className={styles.form}>
       {messageContextHolder}
@@ -84,6 +110,7 @@ const LoginForm: React.FC = () => {
       )}
 
       <Form
+        form={form}
         name="login"
         layout="vertical"
         initialValues={{
@@ -95,9 +122,36 @@ const LoginForm: React.FC = () => {
         autoComplete="off"
       >
         {isMultiTenancyEnabled && (
-          <Form.Item<LoginFieldType> label="Tenancy Name" name="tenancyName">
-            <Input prefix={<ApartmentOutlined />} placeholder="Leave blank for host" size="large" />
-          </Form.Item>
+          <>
+            <Form.Item<LoginFieldType>
+              label="Tenancy Name"
+              name="tenancyName"
+              validateStatus={tenantValidateStatus}
+              help={tenantStatus === "not_found" ? "No tenant with that name was found." : undefined}
+            >
+              <Input
+                prefix={<ApartmentOutlined />}
+                suffix={tenantStatus === "resolved" ? <CheckCircleOutlined style={{ color: "#52c41a" }} /> : null}
+                placeholder="Enter tenant name"
+                size="large"
+                onChange={() => setTenantStatus("idle")}
+              />
+            </Form.Item>
+
+            <Form.Item>
+              <Space>
+                <Button
+                  onClick={handleChangeTenant}
+                  loading={tenantStatus === "resolving"}
+                >
+                  Change Tenant
+                </Button>
+                <Button onClick={handleContinueAsHost}>
+                  Continue as Host
+                </Button>
+              </Space>
+            </Form.Item>
+          </>
         )}
 
         <Form.Item<LoginFieldType>
@@ -132,9 +186,11 @@ const LoginForm: React.FC = () => {
         </Form.Item>
       </Form>
 
-      <Text type="secondary" className={styles.footerText}>
-        Need a tenant account? <Link href="/register">Register here</Link>
-      </Text>
+      {tenantStatus === "resolved" && (
+        <Text type="secondary" className={styles.footerText}>
+          Need a tenant account? <Link href="/register">Register here</Link>
+        </Text>
+      )}
     </div>
   );
 };

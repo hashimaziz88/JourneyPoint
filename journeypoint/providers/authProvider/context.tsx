@@ -17,6 +17,7 @@ export interface IAuthActionContext {
     logout: () => Promise<void>;
     getMe: () => Promise<void>;
     resolveTenant: (tenancyName: string) => Promise<ITenantInfo | null>;
+    clearTenant: () => void;
 }
 
 export const INITIAL_STATE: IAuthStateContext = {
