@@ -23,16 +23,21 @@ export const useAppSession = () => {
   const [configurationError, setConfigurationError] = useState<string | null>(null);
   const getMeRef = useRef(authActions.getMe);
   const resolveTenantRef = useRef(authActions.resolveTenant);
+  const authStateRef = useRef(authState);
 
   useEffect(() => {
     getMeRef.current = authActions.getMe;
     resolveTenantRef.current = authActions.resolveTenant;
   }, [authActions.getMe, authActions.resolveTenant]);
 
+  useEffect(() => {
+    authStateRef.current = authState;
+  }, [authState]);
+
   const refreshSession = useCallback(async () => {
     const token = getCookie(AUTH_COOKIE_NAMES.token);
     const tenancyNameFromLocation = resolveTenancyNameFromLocation();
-    const currentTenant = authState.tenant ?? readTenantFromCookies();
+    const currentTenant = authStateRef.current.tenant ?? readTenantFromCookies();
 
     if (tenancyNameFromLocation && tenancyNameFromLocation !== currentTenant?.tenancyName) {
       await resolveTenantRef.current(tenancyNameFromLocation);
@@ -48,16 +53,16 @@ export const useAppSession = () => {
       setConfigurationError(getApiErrorMessage(error, "We could not load the user configuration."));
     }
 
-    if (token && !authState.isAuthenticated) {
+    if (token && !authStateRef.current.isAuthenticated) {
       await getMeRef.current();
     }
 
-    if (!token && authState.isAuthenticated) {
+    if (!token && authStateRef.current.isAuthenticated) {
       removeCookie(AUTH_COOKIE_NAMES.token);
     }
 
     setIsReady(true);
-  }, [authState.isAuthenticated, authState.tenant]);
+  }, []);
 
   useEffect(() => {
     const bootstrapTimeout = globalThis.setTimeout(() => {

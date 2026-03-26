@@ -7,7 +7,7 @@ export const getAxiosInstace = () => {
     const tenantId = getCookie(AUTH_COOKIE_NAMES.tenantId);
 
     return axios.create({
-        baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+        baseURL: "/api/proxy",
         headers: {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),

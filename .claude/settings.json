@@ -5,7 +5,29 @@
       "Bash(find 'c:/Users/Hashim/Documents/Git Repos/JourneyPoint/angular' -type f -name *.ts -not -path */node_modules/* -not -path */.angular/* -not -path *dist/*)",
       "Bash(find 'c:/Users/Hashim/Documents/Git Repos/JourneyPoint/journeypoint' -type f -name *.tsx -not -path */node_modules/* -not -path */.next/*)",
       "Bash(find 'c:/Users/Hashim/Documents/Git Repos/JourneyPoint/journeypoint' -type f -not -path */node_modules/* -not -path */.next/*)",
-      "Bash(grep -r \"TenantId\\\\|tenantid\\\\|Abp-TenantId\\\\|Abp.TenantId\" 'c:/Users/Hashim/Documents/Git Repos/JourneyPoint/journeypoint' --include=*.ts --include=*.tsx -l)"
+      "Bash(grep -r \"TenantId\\\\|tenantid\\\\|Abp-TenantId\\\\|Abp.TenantId\" 'c:/Users/Hashim/Documents/Git Repos/JourneyPoint/journeypoint' --include=*.ts --include=*.tsx -l)",
+      "Bash(grep -r \"HttpTenantResolveContributor\\\\|ITenantResolveContributor\\\\|TenantResolveContributor\" 'c:/Users/Hashim/Documents/Git Repos/JourneyPoint/aspnet-core' --include=*.cs -l)",
+      "Bash(find 'c:/Users/Hashim/Documents/Git Repos/JourneyPoint/aspnet-core' -path */Abp.AspNetCore* -name *.dll)",
+      "Read(//c/Users/Hashim/.nuget/**)",
+      "Bash(xargs grep:*)",
+      "Bash(find /c/Users/Hashim/.nuget -name *.cs)",
+      "Bash(find /c/Users/Hashim/.nuget/packages/abp.aspnetcore/9.4.1 -name *.cs)",
+      "Bash(find /c/Users/Hashim/.nuget/packages/abp.aspnetcore/9.4.1 -name *.dll)",
+      "Bash(powershell -Command \"& { Add-Type -Path ''''Abp.AspNetCore.dll''''; [System.Reflection.Assembly]::LoadFrom\\(\\(Resolve-Path ''''Abp.AspNetCore.dll''''\\).Path\\).GetTypes\\(\\) | Where-Object { $_ame -match ''''Tenant'''' } | Select-Object FullName }\")",
+      "Bash(powershell -Command \"[System.Reflection.Assembly]::LoadFrom\\(''C:/Users/Hashim/.nuget/packages/abp.aspnetcore/9.4.1/lib/net8.0/Abp.AspNetCore.dll''\\).GetTypes\\(\\) | Where-Object { $_.Name -match ''Tenant'' } | Select-Object -ExpandProperty FullName\")",
+      "Bash(cd /tmp)",
+      "Bash(cp /c/Users/Hashim/.nuget/packages/abp.aspnetcore/9.4.1/abp.aspnetcore.9.4.1.nupkg abp.zip)",
+      "Bash(unzip -o abp.zip *.cs -d abp_src)",
+      "Bash(find abp_src -name *.cs)",
+      "WebSearch",
+      "WebFetch(domain:aspnetboilerplate.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(powershell -Command \":*)",
+      "Bash(cd /c/Users/Hashim/Documents/Git Repos/JourneyPoint/journeypoint)",
+      "Read(//c/Users/Hashim/Documents/Git/ Repos/JourneyPoint/journeypoint/utils/**)",
+      "Bash(gh api:*)",
+      "Bash(python3 -c \"import json,sys; [print\\(f[''''path'''']\\) for f in json.load\\(sys.stdin\\) if f[''''type'''']==''''dir'''' or f[''''name''''].endswith\\(\\(''''.ts'''',''''.tsx'''',''''.js'''',''''.json''''\\)\\)]\")",
+      "Bash(python3 -c \"import json,sys; [print\\(f[''''path'''']\\) for f in json.load\\(sys.stdin\\)]\")"
     ]
   }
 }
