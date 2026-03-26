@@ -122,6 +122,35 @@ function Get-NormalizedFeatureName {
     return $FeatureRef
 }
 
+function Get-ConfiguredFeatureName {
+    param([string]$RepoRoot)
+
+    $projectGuide = Join-Path $RepoRoot ".specify/project.md"
+    if (-not (Test-Path -LiteralPath $projectGuide -PathType Leaf)) {
+        return $null
+    }
+
+    try {
+        $content = Get-Content -LiteralPath $projectGuide -Raw -ErrorAction Stop
+        $matches = [regex]::Matches(
+            $content,
+            'specs/((?:[0-9]{3}|[0-9]{8}-[0-9]{6})-[A-Za-z0-9._-]+)/?'
+        )
+
+        foreach ($match in $matches) {
+            $featureName = $match.Groups[1].Value
+            $featureDir = Join-Path $RepoRoot "specs/$featureName"
+            if (Test-Path -LiteralPath $featureDir -PathType Container) {
+                return $featureName
+            }
+        }
+    } catch {
+        return $null
+    }
+
+    return $null
+}
+
 # Check if we have git available at the spec-kit root level
 # Returns true only if git is installed and the repo root is inside a git work tree
 # Handles both regular repos (.git directory) and worktrees/submodules (.git file)
@@ -158,8 +187,15 @@ function Test-FeatureBranch {
     }
     
     $normalizedBranch = Get-NormalizedFeatureName -FeatureRef $Branch
+    $repoRoot = Get-RepoRoot
+    $configuredFeature = Get-ConfiguredFeatureName -RepoRoot $repoRoot
 
     if ($normalizedBranch -notmatch '^[0-9]{3}-' -and $normalizedBranch -notmatch '^\d{8}-\d{6}-') {
+        if ($configuredFeature) {
+            Write-Warning "[specify] Branch '$Branch' does not map to a feature package; using configured feature '$configuredFeature' from .specify/project.md"
+            return $true
+        }
+
         Write-Output "ERROR: Not on a feature branch. Current branch: $Branch"
         Write-Output "Feature branches should be named like: codex/001-feature-name, 001-feature-name, or codex/20260319-143022-feature-name"
         return $false
@@ -170,7 +206,18 @@ function Test-FeatureBranch {
 function Get-FeatureDir {
     param([string]$RepoRoot, [string]$Branch)
     $featureName = Get-NormalizedFeatureName -FeatureRef $Branch
-    Join-Path $RepoRoot "specs/$featureName"
+    $branchFeatureDir = Join-Path $RepoRoot "specs/$featureName"
+
+    if (Test-Path -LiteralPath $branchFeatureDir -PathType Container) {
+        return $branchFeatureDir
+    }
+
+    $configuredFeature = Get-ConfiguredFeatureName -RepoRoot $RepoRoot
+    if ($configuredFeature) {
+        return (Join-Path $RepoRoot "specs/$configuredFeature")
+    }
+
+    return $branchFeatureDir
 }
 
 function Get-FeaturePathsEnv {

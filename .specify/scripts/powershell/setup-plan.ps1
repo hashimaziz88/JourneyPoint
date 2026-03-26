@@ -31,9 +31,11 @@ if (-not (Test-FeatureBranch -Branch $paths.CURRENT_BRANCH -HasGit $paths.HAS_GI
 # Ensure the feature directory exists
 New-Item -ItemType Directory -Path $paths.FEATURE_DIR -Force | Out-Null
 
-# Copy plan template if it exists, otherwise note it or create empty file
+# Copy plan template only when the plan does not already exist
 $template = Resolve-Template -TemplateName 'plan-template' -RepoRoot $paths.REPO_ROOT
-if ($template -and (Test-Path $template)) { 
+if (Test-Path -LiteralPath $paths.IMPL_PLAN -PathType Leaf) {
+    Write-Output "Using existing plan at $($paths.IMPL_PLAN)"
+} elseif ($template -and (Test-Path $template)) { 
     Copy-Item $template $paths.IMPL_PLAN -Force
     Write-Output "Copied plan template to $($paths.IMPL_PLAN)"
 } else {
