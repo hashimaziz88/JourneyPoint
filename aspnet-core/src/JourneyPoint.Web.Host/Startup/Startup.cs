@@ -83,9 +83,9 @@ namespace JourneyPoint.Web.Host.Startup
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseAbp(options => { options.UseAbpRequestLocalization = false; }); // Initializes ABP framework.
-
             app.UseCors(_defaultCorsPolicyName); // Enable CORS!
+
+            app.UseAbp(options => { options.UseAbpRequestLocalization = false; }); // Initializes ABP framework.
 
             app.UseStaticFiles();
 
