@@ -16,6 +16,12 @@
 - Groq integrations must be backend-only and auditable.
 - Build new product domains under `JourneyPoint.Core/Domains/` and
   `JourneyPoint.Application/Services/`.
+- Place DTOs next to their app services, not in the domain layer.
+- Add XML comments to public backend classes and public methods.
+- Use audited ABP entity bases for new product entities and preserve tenant
+  ownership as a core invariant.
+- Prefer small focused classes and methods, guard clauses, explicit enums or
+  constants instead of magic numbers, and no abbreviation-heavy naming.
 
 ## Style
 

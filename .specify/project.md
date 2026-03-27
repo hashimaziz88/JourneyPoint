@@ -15,6 +15,8 @@ surfacing at-risk interventions early.
 4. root agent guidance files: `AGENTS.md`, `CLAUDE.md`,
    `.github/copilot-instructions.md`
 5. Codex supplements in `.codex/`
+6. supporting repo-local company reference copies in `docs/company-standards/`
+6. supporting repo-local company reference copies in `docs/company-standards/`
 
 If two documents disagree, prefer the higher item in this list and update the
 lower one before continuing.
@@ -23,6 +25,20 @@ The active feature package remains `specs/001-journeypoint-platform/` for the
 current initiative even when contributors work from task-specific or
 documentation branches. Do not infer a different feature package from branch
 names or legacy GitHub milestone wording.
+
+## Internal Standards Baseline
+
+The company coding standards and architecture references provided for
+JourneyPoint are now absorbed into the repo guidance and are no longer optional
+side references.
+
+- Backend expectations follow the supplied ABP backend structure and C# coding
+  standards.
+- Frontend expectations follow the supplied Next.js, TypeScript, and strict
+  provider-pattern standards.
+- When older local code conflicts with these standards, new work MUST follow
+  the stricter documented rule unless a higher-priority source-of-truth
+  document explicitly permits an exception.
 
 ## Active Delivery Scope
 
@@ -71,6 +87,16 @@ specs/     # Active Spec Kit feature packages
 
 - Keep backend work aligned to ABP layer boundaries.
 - Keep frontend stateful features aligned to the four-file provider contract.
+- Keep backend domain entities under `JourneyPoint.Core/Domains/<DomainArea>/`
+  and DTOs next to their app services under
+  `JourneyPoint.Application/Services/<Feature>/Dto/`.
+- Keep domain logic out of AppServices except for orchestration.
+- Add XML comments to public backend classes and public methods, plus short
+  comments for non-obvious logic.
+- Prefer guarded, small, cohesive methods and classes; replace magic numbers
+  with constants or enums.
+- Keep regular React components free of nested component declarations; extract
+  child components into `components/` or another dedicated module.
 - Keep all AI calls in backend services only.
 - Treat Boxfusion and DeptDemo as separate tenants in every plan, seed dataset,
   and demo workflow.

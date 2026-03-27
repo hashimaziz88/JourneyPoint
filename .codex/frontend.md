@@ -16,6 +16,16 @@
 - Put side effects in providers/hooks, not presentational components.
 - Reuse constants and utility functions.
 - Ignore the `angular/` application.
+- Keep provider modules on the strict four-file contract only:
+  `actions.tsx`, `context.tsx`, `index.tsx`, and `reducer.tsx`.
+- Keep bootstrap, auth/session restoration, and other cross-cutting side
+  effects outside provider folders unless the provider contract explicitly
+  allows them.
+- Do not declare regular nested React components inside other functional
+  component bodies; extract them into `components/` or another dedicated
+  module.
+- Keep component files PascalCase and non-component files aligned to the
+  documented project conventions.
 
 ## Auth and tenancy
 

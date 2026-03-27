@@ -44,6 +44,9 @@ interface IAppShellProps {
   userDisplayName?: string | null;
 }
 
+/**
+ * Resolves the active navigation item for the current route.
+ */
 const getSelectedMenuKey = (
   pathname: string,
   navigationItems: IWorkspaceNavigationItem[],
@@ -54,6 +57,9 @@ const getSelectedMenuKey = (
   return selectedItem?.key ?? navigationItems[0]?.key ?? "workspace";
 };
 
+/**
+ * Renders the shared JourneyPoint workspace shell for host and tenant routes.
+ */
 const AppShell: React.FC<IAppShellProps> = ({
   children,
   navigationItems,

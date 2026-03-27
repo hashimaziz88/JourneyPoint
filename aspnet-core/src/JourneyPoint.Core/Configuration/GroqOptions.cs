@@ -2,6 +2,9 @@ using System;
 
 namespace JourneyPoint.Configuration
 {
+    /// <summary>
+    /// Defines configurable settings for backend Groq integration.
+    /// </summary>
     public class GroqOptions
     {
         public bool Enabled { get; set; }
@@ -14,6 +17,9 @@ namespace JourneyPoint.Configuration
 
         public int TimeoutSeconds { get; set; } = 60;
 
+        /// <summary>
+        /// Resolves the configured Groq base URL into an absolute URI.
+        /// </summary>
         public Uri GetBaseUri()
         {
             return string.IsNullOrWhiteSpace(BaseUrl) ? null : new Uri(BaseUrl, UriKind.Absolute);

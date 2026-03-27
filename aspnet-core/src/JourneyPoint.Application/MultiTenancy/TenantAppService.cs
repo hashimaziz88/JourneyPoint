@@ -19,6 +19,9 @@ using Microsoft.AspNetCore.Identity;
 namespace JourneyPoint.MultiTenancy
 {
     [AbpAuthorize(PermissionNames.Pages_Tenants)]
+    /// <summary>
+    /// Provides host-level tenant management workflows and tenant bootstrap behavior.
+    /// </summary>
     public class TenantAppService : AsyncCrudAppService<Tenant, TenantDto, int, PagedTenantResultRequestDto, CreateTenantDto, TenantDto>, ITenantAppService
     {
         private readonly TenantManager _tenantManager;
@@ -43,6 +46,9 @@ namespace JourneyPoint.MultiTenancy
             _abpZeroDbMigrator = abpZeroDbMigrator;
         }
 
+        /// <summary>
+        /// Creates a tenant, provisions its database, seeds its static roles, and creates the tenant admin user.
+        /// </summary>
         public override async Task<TenantDto> CreateAsync(CreateTenantDto input)
         {
             CheckCreatePermission();
@@ -105,6 +111,9 @@ namespace JourneyPoint.MultiTenancy
             entity.IsActive = updateInput.IsActive;
         }
 
+        /// <summary>
+        /// Deletes the requested tenant through the tenant manager.
+        /// </summary>
         public override async Task DeleteAsync(EntityDto<int> input)
         {
             CheckDeletePermission();

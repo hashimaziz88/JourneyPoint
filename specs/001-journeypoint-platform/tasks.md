@@ -9,6 +9,23 @@ but each milestone includes smoke-validation expectations in `quickstart.md`.
 **Organization**: Tasks are grouped by user story so each milestone can be
 implemented, demonstrated, and reviewed independently.
 
+## Engineering Standards Overlay
+
+- Backend tasks must follow the internal ABP backend structure and C# coding
+  standards: domain entities in `JourneyPoint.Core/Domains/<DomainArea>/`, DTOs
+  next to application services, no domain logic in AppServices, XML comments on
+  public classes/methods, guard clauses where appropriate, and enums/constants
+  instead of magic numbers.
+- Frontend tasks must follow the strict provider contract:
+  `providers/<feature>Provider/actions.tsx`, `context.tsx`, `index.tsx`, and
+  `reducer.tsx` only. Bootstrap or side-effect components belong outside
+  provider folders.
+- Regular functional components must not declare nested React components in
+  their bodies; extract child components into `components/` or another
+  dedicated module.
+- New work must move touched code toward these standards even when older repo
+  code predates them.
+
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel
@@ -70,7 +87,7 @@ in and reach the correct shell without cross-tenant leakage.
 **Independent Test**: A facilitator can create a plan manually, import a plan
 from markdown, and review document-extracted task proposals.
 
-- [ ] T019 [P] [US2] Create plan authoring entities in `aspnet-core/src/JourneyPoint.Core/Domains/OnboardingPlans/OnboardingPlan.cs`, `OnboardingModule.cs`, and `OnboardingTask.cs`
+- [x] T019 [P] [US2] Create plan authoring entities in `aspnet-core/src/JourneyPoint.Core/Domains/OnboardingPlans/OnboardingPlan.cs`, `OnboardingModule.cs`, and `OnboardingTask.cs`
 - [ ] T020 [P] [US2] Create enrichment entities in `aspnet-core/src/JourneyPoint.Core/Domains/OnboardingPlans/OnboardingDocument.cs` and `ExtractedTask.cs`
 - [ ] T021 [US2] Register onboarding `DbSet` properties and mappings in `aspnet-core/src/JourneyPoint.EntityFrameworkCore/EntityFrameworkCore/JourneyPointDbContext.cs` and related configuration files
 - [ ] T022 [US2] Add initial onboarding migration under `aspnet-core/src/JourneyPoint.EntityFrameworkCore/Migrations/`
@@ -155,6 +172,7 @@ engagement data, surfaces at-risk hires, and supports facilitator intervention.
 - [x] T055 [P] Update cross-agent guidance in `AGENTS.md`, `CLAUDE.md`, `journeypoint/AGENTS.md`, `journeypoint/CLAUDE.md`, and `.github/copilot-instructions.md`
 - [ ] T056 Run milestone smoke validation using `specs/001-journeypoint-platform/quickstart.md`
 - [x] T057 Review issue slicing and milestone readiness in `specs/001-journeypoint-platform/github-roadmap.md`
+- [x] T058 Align repo guidance, Speckit templates, and current M1-owned backend/frontend implementation surfaces to the absorbed company engineering standards before starting M2
 
 ---
 

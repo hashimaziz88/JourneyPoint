@@ -7,9 +7,15 @@ using JourneyPoint.Sessions.Dto;
 
 namespace JourneyPoint.Sessions
 {
+    /// <summary>
+    /// Provides session context data for the current authenticated request.
+    /// </summary>
     public class SessionAppService : JourneyPointAppServiceBase, ISessionAppService
     {
         [DisableAuditing]
+        /// <summary>
+        /// Returns the current application, tenant, and user login context.
+        /// </summary>
         public async Task<GetCurrentLoginInformationsOutput> GetCurrentLoginInformations()
         {
             var output = new GetCurrentLoginInformationsOutput

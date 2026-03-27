@@ -6,10 +6,16 @@ import { useStyles } from "@/layout/style/style";
 
 const { Title, Text } = Typography;
 
+/**
+ * Displays the shared JourneyPoint brand block inside workspace navigation.
+ */
 interface IAppShellBrandProps {
   subtitle: string;
 }
 
+/**
+ * Renders the shared workspace navigation brand header.
+ */
 const AppShellBrand: React.FC<IAppShellBrandProps> = ({ subtitle }) => {
   const { styles } = useStyles();
 

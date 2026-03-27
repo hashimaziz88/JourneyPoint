@@ -1,5 +1,8 @@
 namespace JourneyPoint.Configuration
 {
+    /// <summary>
+    /// Defines configurable settings for outbound mail delivery.
+    /// </summary>
     public class MailOptions
     {
         public bool Enabled { get; set; }

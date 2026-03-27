@@ -27,11 +27,18 @@
 **Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
 **Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
+**Standards Alignment**: [Summarize any repo-specific engineering standards that
+must govern implementation, such as layer boundaries, provider contracts,
+documentation rules, and structural constraints from the project guidance]
+
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 [Gates determined based on constitution file]
+
+- Confirm the plan reflects any absorbed internal engineering standards defined
+  by the repo guidance, not only the feature requirements.
 
 ## Project Structure
 
