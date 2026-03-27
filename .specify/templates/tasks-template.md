@@ -12,6 +12,16 @@ description: "Task list template for feature implementation"
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
+## Engineering Standards Overlay
+
+- Add task wording that reflects any mandatory repo engineering standards from
+  the constitution and project guide.
+- Include file paths that preserve the intended architecture and folder
+  contracts for the project.
+- Do not generate tasks that place DTOs in domain layers, mix business logic
+  into presentation-only surfaces, or violate documented provider/component
+  structure rules.
+
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel (different files, no dependencies)

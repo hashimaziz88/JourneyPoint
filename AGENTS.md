@@ -43,6 +43,20 @@ The `angular/` application is out of scope and must be ignored.
 - Do not use inline styles.
 - Do not use `any` in TypeScript.
 - Map meaningful implementation work back to the active feature tasks and issue roadmap.
+- Treat the absorbed company standards as binding: backend entities in
+  `JourneyPoint.Core/Domains/<DomainArea>/`, DTOs next to app services, no
+  domain logic in AppServices, public backend classes/methods documented with
+  XML comments, and strict four-file provider folders only.
+- Do not declare regular child React components inside other functional
+  component bodies; extract them into `components/` or another dedicated
+  module.
+- Treat the absorbed company standards as binding: backend entities in
+  `JourneyPoint.Core/Domains/<DomainArea>/`, DTOs next to app services, no
+  domain logic in AppServices, public backend classes/methods documented with
+  XML comments, and strict four-file provider folders only.
+- Do not declare regular child React components inside other functional
+  component bodies; extract them into `components/` or another dedicated
+  module.
 
 ## Working Protocol
 

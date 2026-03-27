@@ -20,7 +20,7 @@ loop AI, and engagement intelligence with intervention workflows.
 **Target Platform**: Web application delivered as an ABP API backend and a Next.js frontend  
 **Project Type**: Multi-tenant web application monorepo  
 **Performance Goals**: Hire enrolment to journey draft under 60 seconds for the demo plan; pipeline and hire detail loads under 3 seconds for seeded demo data; markdown import preview under 10 seconds for standard onboarding tables  
-**Constraints**: Preserve ABP multi-tenancy, keep AI backend-only and facilitator-triggered, keep engagement scoring on-demand for the current scope, ignore the Angular app, avoid inline styles and untyped `any` in frontend work  
+**Constraints**: Preserve ABP multi-tenancy, keep AI backend-only and facilitator-triggered, keep engagement scoring on-demand for the current scope, ignore the Angular app, avoid inline styles and untyped `any` in frontend work, follow the internal ABP backend structure rules, keep provider state on the strict four-file contract, and extract regular nested components into dedicated files  
 **Scale/Scope**: 11 core entities, 4 roles, 2 seeded tenants, 5 milestones, 25+ implementation issues, 1 end-to-end platform roadmap
 
 ## Constitution Check
@@ -95,6 +95,25 @@ delivery surfaces. New onboarding, journey, and intelligence domains will be
 added inside the empty backend `Domains/` and `Services/` folders, while the
 frontend will expand into role-specific route groups, providers, components,
 types, and constants. The `angular/` directory remains explicitly out of scope.
+
+## Company Standards Alignment
+
+- Backend domain entities will be created under
+  `aspnet-core/src/JourneyPoint.Core/Domains/<DomainArea>/` using audited ABP
+  entity bases, explicit enums/constants, tenant-safe ownership, and XML
+  comments on public classes and methods.
+- Backend DTOs belong next to the app service that uses them under
+  `aspnet-core/src/JourneyPoint.Application/Services/<Feature>/Dto/`; DTOs do
+  not belong in the domain layer.
+- Application services orchestrate use cases, while reusable business logic
+  remains in domain services or the domain model.
+- Frontend stateful modules must keep the strict provider folder contract:
+  `actions.tsx`, `context.tsx`, `index.tsx`, and `reducer.tsx` only.
+- Frontend bootstrap, session restoration, and other cross-cutting behavior
+  must live outside provider folders.
+- Regular React components must not declare child component definitions inside
+  their function bodies; reusable children belong in `journeypoint/components/`
+  or another dedicated top-level module.
 
 ## Complexity Tracking
 

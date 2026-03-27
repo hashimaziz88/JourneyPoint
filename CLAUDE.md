@@ -33,3 +33,13 @@ Guardrails:
 - do not bypass tenant isolation
 - do not add inline styling
 - do not add untyped `any`
+- follow the internal ABP backend structure and coding rules now encoded in the
+  repo guidance
+- keep provider folders on the strict four-file contract only
+- do not declare regular nested React components inside other functional
+  component bodies
+- follow the internal ABP backend structure and coding rules now encoded in the
+  repo guidance
+- keep provider folders on the strict four-file contract only
+- do not declare regular nested React components inside other functional
+  component bodies

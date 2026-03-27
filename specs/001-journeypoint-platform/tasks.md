@@ -9,6 +9,23 @@ but each milestone includes smoke-validation expectations in `quickstart.md`.
 **Organization**: Tasks are grouped by user story so each milestone can be
 implemented, demonstrated, and reviewed independently.
 
+## Engineering Standards Overlay
+
+- Backend tasks must follow the internal ABP backend structure and C# coding
+  standards: domain entities in `JourneyPoint.Core/Domains/<DomainArea>/`, DTOs
+  next to application services, no domain logic in AppServices, XML comments on
+  public classes/methods, guard clauses where appropriate, and enums/constants
+  instead of magic numbers.
+- Frontend tasks must follow the strict provider contract:
+  `providers/<feature>Provider/actions.tsx`, `context.tsx`, `index.tsx`, and
+  `reducer.tsx` only. Bootstrap or side-effect components belong outside
+  provider folders.
+- Regular functional components must not declare nested React components in
+  their bodies; extract child components into `components/` or another
+  dedicated module.
+- New work must move touched code toward these standards even when older repo
+  code predates them.
+
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel

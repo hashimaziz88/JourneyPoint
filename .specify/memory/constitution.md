@@ -107,6 +107,31 @@ gates. Delivering demoable increments reduces risk and keeps planning grounded.
 - Historical data for AI runs, engagement snapshots, and at-risk interventions
   MUST be retained in a way that preserves auditability.
 
+## Internal Engineering Standards
+
+- The internal company backend structure, C# coding standards, frontend coding
+  standards, TypeScript rules, and strict provider-pattern guidance supplied to
+  this project are now normative for JourneyPoint work.
+- Backend work MUST follow the documented ABP layer structure: entities, enums,
+  and domain rules in `JourneyPoint.Core`; DTOs and application services in
+  `JourneyPoint.Application/Services/`; persistence in
+  `JourneyPoint.EntityFrameworkCore`; no business logic in controllers or host
+  startup wiring.
+- New product entities MUST be created under
+  `JourneyPoint.Core/Domains/<DomainArea>/`, use audited ABP entity bases, keep
+  tenant ownership explicit, and favor enums/constants over magic numbers.
+- Public backend classes and public methods MUST include XML comments, and
+  non-obvious logic MUST be preceded by a short explanatory comment.
+- Frontend stateful features MUST stay on the strict four-file provider
+  contract only: `actions.tsx`, `context.tsx`, `index.tsx`, and `reducer.tsx`.
+  Bootstrap or cross-cutting side effects MUST live outside provider folders.
+- Regular functional components MUST NOT declare nested React component
+  definitions inside their bodies. Reusable child components belong in
+  `components/` or another dedicated top-level module.
+- Existing legacy code does not justify carrying older patterns forward. New
+  work and touched code MUST move toward these stricter standards without broad
+  unrelated rewrites.
+
 ## Delivery Workflow & Quality Gates
 
 - The canonical project guide is `.specify/project.md`.
@@ -120,6 +145,9 @@ gates. Delivering demoable increments reduces risk and keeps planning grounded.
   the repo root and the GitHub Copilot instructions.
 - Before closing a milestone-sized change, contributors MUST verify that the
   relevant spec, plan, tasks, and roadmap artifacts still match the codebase.
+- Before starting new implementation work, contributors MUST consult the
+  in-repo guidance that now encodes the internal company standards rather than
+  relying on external side notes alone.
 
 ## Governance
 
@@ -145,4 +173,4 @@ Compliance review expectations:
 - Reviews SHOULD reject changes that bypass the constitution even if the code
   appears locally correct.
 
-**Version**: 1.0.0 | **Ratified**: 2026-03-26 | **Last Amended**: 2026-03-26
+**Version**: 1.1.0 | **Ratified**: 2026-03-26 | **Last Amended**: 2026-03-27

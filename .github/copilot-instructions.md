@@ -33,3 +33,17 @@ Rules:
 - use providers for stateful frontend features
 - do not add inline styles
 - do not use untyped `any`
+- follow the internal backend structure standard: domain entities in
+  `JourneyPoint.Core/Domains/<DomainArea>/`, DTOs next to their app services,
+  and no domain logic in AppServices
+- add XML comments to public backend classes and public methods
+- keep provider modules on the strict four-file contract only
+- do not declare regular nested React components inside other functional
+  component bodies
+- follow the internal backend structure standard: domain entities in
+  `JourneyPoint.Core/Domains/<DomainArea>/`, DTOs next to their app services,
+  and no domain logic in AppServices
+- add XML comments to public backend classes and public methods
+- keep provider modules on the strict four-file contract only
+- do not declare regular nested React components inside other functional
+  component bodies
