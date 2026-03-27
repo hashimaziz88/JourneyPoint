@@ -173,4 +173,44 @@ export const useStyles = createStyles(({ css, token }) => ({
     alert: css`
         width: 100%;
     `,
+
+    importGrid: css`
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 24px;
+        width: 100%;
+
+        @media (max-width: 992px) {
+            grid-template-columns: 1fr;
+        }
+    `,
+
+    importSourceCard: css`
+        width: 100%;
+    `,
+
+    importPreviewCard: css`
+        width: 100%;
+    `,
+
+    importTextArea: css`
+        min-height: 320px !important;
+    `,
+
+    warningsList: css`
+        margin: 0;
+        padding-left: 18px;
+    `,
+
+    previewModuleCard: css`
+        width: 100%;
+    `,
+
+    previewTableWrap: css`
+        width: 100%;
+
+        :global(.ant-table-wrapper) {
+            width: 100%;
+        }
+    `,
 }));
