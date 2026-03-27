@@ -112,10 +112,10 @@ from markdown, and review document-extracted task proposals.
 - [x] T023 [US2] Implement plan CRUD DTOs and application services in `aspnet-core/src/JourneyPoint.Application/Services/OnboardingPlanService/`
 - [ ] T024 [US2] Implement markdown import parsing and draft-save services in `aspnet-core/src/JourneyPoint.Application/Services/MarkdownImportService/`
 - [ ] T025 [US2] Implement document upload, extraction orchestration, and proposal review services in `aspnet-core/src/JourneyPoint.Application/Services/OnboardingDocumentService/`
-- [ ] T026 [P] [US2] Build facilitator plan pages in `journeypoint/app/(facilitator)/plans/page.tsx`, `journeypoint/app/(facilitator)/plans/[planId]/page.tsx`, and `journeypoint/app/(facilitator)/plans/[planId]/documents/page.tsx`
+- [x] T026 [P] [US2] Build facilitator plan list and editor pages in `journeypoint/app/(facilitator)/facilitator/plans/page.tsx` and `journeypoint/app/(facilitator)/facilitator/plans/[planId]/page.tsx`
 - [ ] T027 [P] [US2] Build markdown import UI in `journeypoint/app/(facilitator)/markdown-import/page.tsx` and `journeypoint/components/plans/MarkdownPreviewTable.tsx`
-- [ ] T028 [P] [US2] Add plan provider state in `journeypoint/providers/onboardingPlanProvider/`
-- [ ] T029 [US2] Add plan builder components in `journeypoint/components/plans/PlanCard.tsx`, `ModulePanel.tsx`, and `TaskFormModal.tsx`
+- [x] T028 [P] [US2] Add plan provider state in `journeypoint/providers/onboardingPlanProvider/`
+- [x] T029 [US2] Add plan builder components in `journeypoint/components/plans/PlanCard.tsx`, `PlanEditor.tsx`, `ModulePanel.tsx`, `TaskFormModal.tsx`, and `TaskListEditor.tsx`
 
 **Checkpoint**: Published onboarding plans can be authored and enriched.
 
