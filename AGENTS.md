@@ -14,6 +14,8 @@ Before making or proposing changes, follow this order:
 4. lower-priority assistant guidance files such as `CLAUDE.md`,
    `.github/copilot-instructions.md`, and `.codex/context.md`
 5. `.codex/backend.md` or `.codex/frontend.md` as relevant
+6. supporting repo-local company reference copies in `docs/company-standards/`
+6. supporting repo-local company reference copies in `docs/company-standards/`
 
 If two documents disagree, prefer the higher item and update the lower item
 before continuing.

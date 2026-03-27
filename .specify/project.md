@@ -15,6 +15,8 @@ surfacing at-risk interventions early.
 4. root agent guidance files: `AGENTS.md`, `CLAUDE.md`,
    `.github/copilot-instructions.md`
 5. Codex supplements in `.codex/`
+6. supporting repo-local company reference copies in `docs/company-standards/`
+6. supporting repo-local company reference copies in `docs/company-standards/`
 
 If two documents disagree, prefer the higher item in this list and update the
 lower one before continuing.

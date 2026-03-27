@@ -34,3 +34,6 @@ The company's internal backend and frontend standards have been absorbed into
 the repo guidance. Treat `.specify/memory/constitution.md`,
 `.specify/project.md`, `.codex/backend.md`, and `.codex/frontend.md` as the
 in-repo canonical summary of those standards for future work.
+
+Repo-local supporting copies of the supplied company reference material now live
+under `docs/company-standards/`.
