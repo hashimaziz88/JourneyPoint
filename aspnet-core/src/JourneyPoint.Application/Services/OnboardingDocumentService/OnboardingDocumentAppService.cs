@@ -124,7 +124,7 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
                 if (!candidates.Any())
                 {
                     throw new InvalidOperationException(
-                        "No reviewable task proposals could be extracted from this document. Use structured markdown or a text-based PDF.");
+                        "No reviewable task proposals could be extracted from this document. Review the source content or enable Groq-backed document normalization.");
                 }
 
                 foreach (var candidate in candidates)
@@ -218,7 +218,7 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
         }
 
         /// <summary>
-        /// Applies all currently accepted proposals to the published onboarding plan.
+        /// Applies all currently accepted proposals to the onboarding plan without mutating existing journeys.
         /// </summary>
         public async Task<OnboardingDocumentDetailDto> ApplyAcceptedProposalsAsync(EntityDto<Guid> input)
         {
@@ -253,7 +253,7 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
                     proposal.AssignmentTarget,
                     proposal.AcknowledgementRule);
 
-                _onboardingPlanManager.AddReviewedTaskToPublishedPlan(document.OnboardingPlan, targetModule.Id, task);
+                _onboardingPlanManager.AddReviewedTaskToPlan(document.OnboardingPlan, targetModule.Id, task);
                 _onboardingDocumentManager.MarkProposalApplied(proposal, task.Id, GetRequiredUserId());
             }
 
@@ -292,6 +292,7 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
             var tenantId = GetRequiredTenantId();
             var plan = await _onboardingPlanRepository.GetAll()
                 .AsNoTracking()
+                .AsSplitQuery()
                 .Where(planEntity => planEntity.TenantId == tenantId && planEntity.Id == planId)
                 .Include(planEntity => planEntity.Documents)
                 .ThenInclude(document => document.ExtractedTasks)
@@ -311,6 +312,7 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
         {
             var tenantId = GetRequiredTenantId();
             var plan = await _onboardingPlanRepository.GetAll()
+                .AsSplitQuery()
                 .Where(planEntity => planEntity.TenantId == tenantId && planEntity.Id == planId)
                 .Include(planEntity => planEntity.Documents)
                 .ThenInclude(document => document.ExtractedTasks)
@@ -331,6 +333,7 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
             var tenantId = GetRequiredTenantId();
             var document = await _onboardingDocumentRepository.GetAll()
                 .AsNoTracking()
+                .AsSplitQuery()
                 .Where(documentEntity => documentEntity.TenantId == tenantId && documentEntity.Id == documentId)
                 .Include(documentEntity => documentEntity.ExtractedTasks)
                 .Include(documentEntity => documentEntity.OnboardingPlan)
@@ -350,6 +353,7 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
         {
             var tenantId = GetRequiredTenantId();
             var document = await _onboardingDocumentRepository.GetAll()
+                .AsSplitQuery()
                 .Where(documentEntity => documentEntity.TenantId == tenantId && documentEntity.Id == documentId)
                 .Include(documentEntity => documentEntity.ExtractedTasks)
                 .Include(documentEntity => documentEntity.OnboardingPlan)
@@ -369,6 +373,7 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
         {
             var tenantId = GetRequiredTenantId();
             var proposal = await _extractedTaskRepository.GetAll()
+                .AsSplitQuery()
                 .Where(task => task.TenantId == tenantId && task.Id == proposalId)
                 .Include(task => task.OnboardingDocument)
                 .ThenInclude(document => document.OnboardingPlan)
@@ -506,7 +511,33 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
                 return normalizedContentType;
             }
 
-            throw new UserFriendlyException("Only markdown and PDF documents are supported.");
+            if (extension.Equals(".txt", StringComparison.OrdinalIgnoreCase))
+            {
+                return "text/plain";
+            }
+
+            if (extension.Equals(".png", StringComparison.OrdinalIgnoreCase))
+            {
+                return "image/png";
+            }
+
+            if (extension.Equals(".webp", StringComparison.OrdinalIgnoreCase))
+            {
+                return "image/webp";
+            }
+
+            if (extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                extension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase))
+            {
+                return "image/jpeg";
+            }
+
+            if (normalizedContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+            {
+                return normalizedContentType;
+            }
+
+            throw new UserFriendlyException("Only markdown, plain-text, PDF, PNG, JPG, JPEG, and WEBP documents are supported.");
         }
 
         private static void ValidateSuggestedModule(OnboardingPlan plan, Guid? suggestedModuleId)

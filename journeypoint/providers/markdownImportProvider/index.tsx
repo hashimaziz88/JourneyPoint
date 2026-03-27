@@ -25,6 +25,7 @@ import {
     saveSuccess,
     setPreview,
     setSource,
+    setSourceFile as setSourceFileAction,
 } from "./actions";
 import {
     INITIAL_STATE,
@@ -219,7 +220,7 @@ const getApiResult = <T,>(response: { data?: { result?: T } & T }): T =>
     response.data?.result ?? (response.data as T);
 
 /**
- * Provides markdown import preview, review, and save-as-draft state.
+ * Provides document import preview, review, and save-as-draft state.
  */
 export const MarkdownImportProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
@@ -227,7 +228,25 @@ export const MarkdownImportProvider: React.FC<{ children: React.ReactNode }> = (
     const [state, dispatch] = useReducer(MarkdownImportReducer, INITIAL_STATE);
 
     const setSourceContent = (content: string, fileName?: string | null): void => {
-        dispatch(setSource({ sourceContent: content, sourceFileName: fileName ?? null }));
+        dispatch(setSource({
+            sourceContent: content,
+            sourceFileName: fileName ?? null,
+            sourceContentType: "text/markdown",
+        }));
+    };
+
+    const setSourceFile: IMarkdownImportActionContext["setSourceFile"] = ({
+        fileName,
+        contentType,
+        base64Content,
+        sourceContent,
+    }) => {
+        dispatch(setSourceFileAction({
+            sourceFileName: fileName,
+            sourceContentType: contentType,
+            sourceBase64Content: base64Content,
+            sourceContent: sourceContent ?? "",
+        }));
     };
 
     const previewImport = async (): Promise<IMarkdownImportPreviewDto | null> => {
@@ -239,6 +258,8 @@ export const MarkdownImportProvider: React.FC<{ children: React.ReactNode }> = (
                 {
                     markdownContent: state.sourceContent,
                     sourceFileName: state.sourceFileName,
+                    sourceContentType: state.sourceContentType,
+                    base64Content: state.sourceBase64Content,
                 },
             );
             const preview = getApiResult<IMarkdownImportPreviewDto>(response);
@@ -344,6 +365,7 @@ export const MarkdownImportProvider: React.FC<{ children: React.ReactNode }> = (
             <MarkdownImportActionContext.Provider
                 value={{
                     setSourceContent,
+                    setSourceFile,
                     previewImport,
                     saveDraft,
                     resetImport,

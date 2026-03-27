@@ -131,7 +131,7 @@ component declarations.
    - Depends on: JP-009
 6. **JP-012 - Implement document upload and extraction proposal review**
    - Labels: backend, frontend, ai
-   - Scope: upload storage, extraction orchestration, review UI, accept/edit/reject flow
+   - Scope: upload storage, extraction orchestration, Groq-backed normalization for rough markdown and documents, standalone draft-import preview, review UI, and accept/edit/reject flow
    - Depends on: JP-009
 
 ### M3 - Hire Enrolment and Journey Orchestration

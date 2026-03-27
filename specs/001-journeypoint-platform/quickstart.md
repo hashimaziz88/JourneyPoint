@@ -74,8 +74,8 @@ Expected result:
 ### Milestone 2 - Plan Authoring and Content Ingestion
 
 1. Create a draft onboarding plan manually.
-2. Import a markdown onboarding table into a second draft plan.
-3. Upload a document to a published plan and review extracted task proposals.
+2. Import rough markdown or a document into a second draft plan through the review preview.
+3. Upload a document to a saved plan and review extracted task proposals.
 
 ### Milestone 3 - Hire Enrolment and Journey Orchestration
 

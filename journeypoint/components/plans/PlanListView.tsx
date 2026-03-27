@@ -223,19 +223,69 @@ const PlanListView: React.FC = () => {
                         icon={<PlusOutlined />}
                         onClick={() => handleOpen("new")}
                     >
-                        New Plan
+                        Create Manually
                     </Button>
                     <Button
                         icon={<ImportOutlined />}
                         onClick={() =>
                             startTransition(() =>
-                                router.push(APP_ROUTES.facilitatorMarkdownImport),
+                                router.push(APP_ROUTES.facilitatorPlanImport),
                             )
                         }
                     >
-                        Import Markdown
+                        Create From Document
                     </Button>
                 </Space>
+            </div>
+
+            <div className={styles.creationGrid}>
+                <Card className={styles.creationCard}>
+                    <div className={styles.creationCardBody}>
+                        <div>
+                            <Title level={4}>Start Manually</Title>
+                            <Paragraph type="secondary">
+                                Build the draft plan yourself by entering metadata,
+                                adding modules, and defining tasks directly in the
+                                editor.
+                            </Paragraph>
+                        </div>
+
+                        <Button
+                            className={styles.creationAction}
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={() => handleOpen("new")}
+                        >
+                            Open Manual Builder
+                        </Button>
+                    </div>
+                </Card>
+
+                <Card className={styles.creationCard}>
+                    <div className={styles.creationCardBody}>
+                        <div>
+                            <Title level={4}>Start From Markdown or PDF</Title>
+                            <Paragraph type="secondary">
+                                Upload markdown, text, PDF, or image source material.
+                                The backend normalizes it into the same draft-plan DTO
+                                shape, and you review the result before any draft is
+                                saved.
+                            </Paragraph>
+                        </div>
+
+                        <Button
+                            className={styles.creationAction}
+                            icon={<ImportOutlined />}
+                            onClick={() =>
+                                startTransition(() =>
+                                    router.push(APP_ROUTES.facilitatorPlanImport),
+                                )
+                            }
+                        >
+                            Open Document Import
+                        </Button>
+                    </div>
+                </Card>
             </div>
 
             <Card>

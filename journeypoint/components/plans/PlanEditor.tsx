@@ -21,6 +21,7 @@ import {
 } from "antd";
 import {
     CopyOutlined,
+    ImportOutlined,
     PlusOutlined,
     RollbackOutlined,
     SaveOutlined,
@@ -161,6 +162,15 @@ const findDraftTask = (
     return parentModule?.tasks.find((task) => task.clientKey === taskClientKey) ?? null;
 };
 
+const isBlankNewDraft = (draftPlan: IOnboardingPlanDraft | null | undefined): boolean =>
+    !!draftPlan &&
+    !draftPlan.id &&
+    !draftPlan.name.trim() &&
+    !draftPlan.description.trim() &&
+    !draftPlan.targetAudience.trim() &&
+    draftPlan.durationDays === 30 &&
+    draftPlan.modules.length === 0;
+
 interface IPlanEditorProps {
     planId: string;
 }
@@ -203,6 +213,7 @@ const PlanEditor: React.FC<IPlanEditorProps> = ({ planId }) => {
     );
     const isNewPlan = planId === "new";
     const isDraftEditable = draftPlan?.status === OnboardingPlanStatus.Draft;
+    const showCreationChoice = isNewPlan && isBlankNewDraft(draftPlan);
 
     const loadEditor = useEffectEvent(async (): Promise<void> => {
         if (isNewPlan) {
@@ -432,6 +443,59 @@ const PlanEditor: React.FC<IPlanEditorProps> = ({ planId }) => {
                     showIcon
                     message={`This plan is ${ONBOARDING_PLAN_STATUS_LABELS[draftPlan.status].toLowerCase()} and its structure is read-only.`}
                 />
+            ) : null}
+
+            {showCreationChoice ? (
+                <Card className={styles.editorCard}>
+                    <div className={styles.creationGrid}>
+                        <Card className={styles.creationCard}>
+                            <div className={styles.creationCardBody}>
+                                <div>
+                                    <Title level={4}>Build Manually</Title>
+                                    <Paragraph type="secondary">
+                                        Stay on this page to enter the plan details,
+                                        add modules, and define tasks yourself.
+                                    </Paragraph>
+                                </div>
+
+                                <Paragraph
+                                    className={styles.creationAction}
+                                    type="secondary"
+                                >
+                                    The editor below is already ready for manual
+                                    authoring.
+                                </Paragraph>
+                            </div>
+                        </Card>
+
+                        <Card className={styles.creationCard}>
+                            <div className={styles.creationCardBody}>
+                                <div>
+                                    <Title level={4}>Create From Document</Title>
+                                    <Paragraph type="secondary">
+                                        Upload markdown, text, PDF, or image content
+                                        and let the backend normalize it into the same
+                                        reviewable draft-plan DTO before save.
+                                    </Paragraph>
+                                </div>
+
+                                <Button
+                                    className={styles.creationAction}
+                                    icon={<ImportOutlined />}
+                                    onClick={() =>
+                                        startTransition(() =>
+                                            router.push(
+                                                APP_ROUTES.facilitatorPlanImport,
+                                            ),
+                                        )
+                                    }
+                                >
+                                    Open Document Import
+                                </Button>
+                            </div>
+                        </Card>
+                    </div>
+                </Card>
             ) : null}
 
             <Card className={styles.editorCard}>

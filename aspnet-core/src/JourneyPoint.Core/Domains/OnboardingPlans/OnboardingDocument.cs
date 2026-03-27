@@ -9,7 +9,7 @@ using Abp.Domain.Entities.Auditing;
 namespace JourneyPoint.Domains.OnboardingPlans
 {
     /// <summary>
-    /// Represents one uploaded document used to enrich a published onboarding plan.
+    /// Represents one uploaded document used to enrich a saved onboarding plan.
     /// </summary>
     public class OnboardingDocument : FullAuditedEntity<Guid>, IMustHaveTenant
     {

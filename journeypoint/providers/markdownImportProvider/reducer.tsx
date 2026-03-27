@@ -9,6 +9,12 @@ export const MarkdownImportReducer = handleActions<
     {
         [MarkdownImportActionEnums.setSource]: (state, action) => ({
             ...state,
+            previewPlan: null,
+            ...action.payload,
+        }),
+        [MarkdownImportActionEnums.setSourceFile]: (state, action) => ({
+            ...state,
+            previewPlan: null,
             ...action.payload,
         }),
         [MarkdownImportActionEnums.previewPending]: (state, action) => ({

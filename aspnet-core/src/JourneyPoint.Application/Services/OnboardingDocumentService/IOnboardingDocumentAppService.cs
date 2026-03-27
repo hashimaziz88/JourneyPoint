@@ -47,7 +47,7 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
         Task<OnboardingDocumentDetailDto> RejectProposalAsync(EntityDto<Guid> input);
 
         /// <summary>
-        /// Applies all currently accepted proposals to the published onboarding plan.
+        /// Applies all currently accepted proposals to the onboarding plan.
         /// </summary>
         Task<OnboardingDocumentDetailDto> ApplyAcceptedProposalsAsync(EntityDto<Guid> input);
     }

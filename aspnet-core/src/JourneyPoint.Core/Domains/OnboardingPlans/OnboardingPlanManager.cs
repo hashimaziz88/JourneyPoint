@@ -163,15 +163,15 @@ namespace JourneyPoint.Domains.OnboardingPlans
         }
 
         /// <summary>
-        /// Adds a reviewed extraction task to a published onboarding plan without mutating existing journeys.
+        /// Adds a reviewed extraction task to a saved onboarding plan without mutating existing journeys.
         /// </summary>
-        public void AddReviewedTaskToPublishedPlan(OnboardingPlan plan, Guid moduleId, OnboardingTask task)
+        public void AddReviewedTaskToPlan(OnboardingPlan plan, Guid moduleId, OnboardingTask task)
         {
             EnsurePlan(plan);
 
-            if (plan.Status != OnboardingPlanStatus.Published)
+            if (plan.Status == OnboardingPlanStatus.Archived)
             {
-                throw new InvalidOperationException("Reviewed document tasks can be added only to published plans.");
+                throw new InvalidOperationException("Reviewed document tasks can be added only to onboarding plans that are not archived.");
             }
 
             if (task == null)

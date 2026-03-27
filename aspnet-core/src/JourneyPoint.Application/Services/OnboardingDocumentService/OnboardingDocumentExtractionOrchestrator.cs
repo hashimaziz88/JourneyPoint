@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Abp.Dependency;
+using JourneyPoint.Application.Services.DocumentExtractionService;
+using JourneyPoint.Application.Services.GroqService;
 using JourneyPoint.Application.Services.MarkdownImportService;
 using JourneyPoint.Domains.OnboardingPlans;
 
@@ -16,32 +15,24 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
     /// </summary>
     public class OnboardingDocumentExtractionOrchestrator : ITransientDependency
     {
-        private static readonly string[] MarkdownExtensions = [".md", ".markdown"];
-        private static readonly string[] PdfToTextCandidatesWindows =
-        [
-            "pdftotext.exe",
-            @"C:\Program Files\Git\mingw64\bin\pdftotext.exe",
-            @"C:\Program Files\poppler\Library\bin\pdftotext.exe"
-        ];
-        private static readonly string[] PdfToTextCandidatesUnix =
-        [
-            "pdftotext",
-            "/usr/bin/pdftotext",
-            "/usr/local/bin/pdftotext"
-        ];
-
         private readonly IOnboardingDocumentStorage _onboardingDocumentStorage;
         private readonly MarkdownImportParser _markdownImportParser;
+        private readonly DocumentContentExtractionService _documentContentExtractionService;
+        private readonly GroqDocumentNormalizationService _groqDocumentNormalizationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OnboardingDocumentExtractionOrchestrator"/> class.
         /// </summary>
         public OnboardingDocumentExtractionOrchestrator(
             IOnboardingDocumentStorage onboardingDocumentStorage,
-            MarkdownImportParser markdownImportParser)
+            MarkdownImportParser markdownImportParser,
+            DocumentContentExtractionService documentContentExtractionService,
+            GroqDocumentNormalizationService groqDocumentNormalizationService)
         {
             _onboardingDocumentStorage = onboardingDocumentStorage;
             _markdownImportParser = markdownImportParser;
+            _documentContentExtractionService = documentContentExtractionService;
+            _groqDocumentNormalizationService = groqDocumentNormalizationService;
         }
 
         /// <summary>
@@ -63,58 +54,93 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
 
             var content = await _onboardingDocumentStorage.ReadAsync(document.StoragePath);
 
-            if (IsMarkdownDocument(document))
-            {
-                var markdownContent = Encoding.UTF8.GetString(content);
-                return ExtractFromMarkdown(plan, markdownContent, document.FileName);
-            }
+            var extractedContent = await _documentContentExtractionService.ExtractAsync(
+                document.FileName,
+                document.ContentType,
+                content);
+            var proposalCandidates = new List<ExtractedTaskCandidate>();
 
-            if (IsPdfDocument(document))
+            if (!string.IsNullOrWhiteSpace(extractedContent.TextContent))
             {
-                var extractedText = await ExtractPdfTextAsync(content);
-
-                if (string.IsNullOrWhiteSpace(extractedText) ||
-                    extractedText.All(character => char.IsWhiteSpace(character) || char.IsControl(character)))
+                if (_groqDocumentNormalizationService.IsEnabled)
                 {
-                    throw new InvalidOperationException(
-                        "The PDF did not contain extractable text. Scanned or image-only PDFs are not supported by the current extractor.");
+                    try
+                    {
+                        var groqCandidates = await _groqDocumentNormalizationService
+                            .ExtractPlanProposalsFromTextAsync(
+                                plan,
+                                document.FileName,
+                                document.ContentType,
+                                extractedContent.TextContent);
+                        proposalCandidates.AddRange(groqCandidates);
+                    }
+                    catch
+                    {
+                        // fall back to deterministic extraction when Groq normalization fails
+                    }
                 }
 
-                return ExtractFromPlainText(plan, extractedText);
+                if (!proposalCandidates.Any())
+                {
+                    proposalCandidates.AddRange(ExtractFallbackCandidates(
+                        plan,
+                        extractedContent.TextContent,
+                        document.FileName));
+                }
             }
 
-            throw new InvalidOperationException("Only markdown and PDF documents are supported for plan enrichment.");
+            if (!proposalCandidates.Any() &&
+                extractedContent.Images.Any() &&
+                _groqDocumentNormalizationService.IsEnabled)
+            {
+                var groqCandidates = await _groqDocumentNormalizationService
+                    .ExtractPlanProposalsFromImagesAsync(
+                        plan,
+                        document.FileName,
+                        document.ContentType,
+                        extractedContent.Images);
+                proposalCandidates.AddRange(groqCandidates);
+            }
+
+            return proposalCandidates;
         }
 
-        private IReadOnlyCollection<ExtractedTaskCandidate> ExtractFromMarkdown(
+        private IReadOnlyCollection<ExtractedTaskCandidate> ExtractFallbackCandidates(
             OnboardingPlan plan,
-            string markdownContent,
+            string extractedText,
             string sourceFileName)
         {
-            var preview = _markdownImportParser.Parse(markdownContent, sourceFileName);
-
-            return preview.Modules
-                .OrderBy(module => module.OrderIndex)
-                .SelectMany(module => module.Tasks.Select(task => new ExtractedTaskCandidate
-                {
-                    SuggestedModuleId = ResolveModuleId(plan, module.Name),
-                    Title = task.Title,
-                    Description = task.Description,
-                    Category = task.Category,
-                    DueDayOffset = task.DueDayOffset,
-                    AssignmentTarget = task.AssignmentTarget,
-                    AcknowledgementRule = task.AcknowledgementRule
-                }))
-                .ToList();
-        }
-
-        private IReadOnlyCollection<ExtractedTaskCandidate> ExtractFromPlainText(OnboardingPlan plan, string extractedText)
-        {
             var orderedModules = plan.Modules.OrderBy(module => module.OrderIndex).ToList();
-
             if (!orderedModules.Any())
             {
-                return [];
+                return Array.Empty<ExtractedTaskCandidate>();
+            }
+
+            if (sourceFileName.EndsWith(".md", StringComparison.OrdinalIgnoreCase) ||
+                sourceFileName.EndsWith(".markdown", StringComparison.OrdinalIgnoreCase) ||
+                sourceFileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    var preview = _markdownImportParser.Parse(extractedText, sourceFileName);
+                    return preview.Modules
+                        .OrderBy(module => module.OrderIndex)
+                        .SelectMany(module => module.Tasks.Select(task => new ExtractedTaskCandidate
+                        {
+                            SuggestedModuleId = ResolveModuleId(plan, module.Name),
+                            Title = task.Title,
+                            Description = task.Description,
+                            Category = task.Category,
+                            DueDayOffset = task.DueDayOffset,
+                            AssignmentTarget = task.AssignmentTarget,
+                            AcknowledgementRule = task.AcknowledgementRule
+                        }))
+                        .ToList();
+                }
+                catch
+                {
+                    // fall through to plain text heuristics when strict parsing fails
+                }
             }
 
             var currentModuleId = orderedModules[0].Id;
@@ -157,67 +183,6 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
                 .Take(10)
                 .Select(line => CreateDefaultCandidate(orderedModules[0].Id, line))
                 .ToList();
-        }
-
-        private async Task<string> ExtractPdfTextAsync(byte[] content)
-        {
-            var executablePath = ResolvePdfToTextExecutable();
-
-            if (string.IsNullOrWhiteSpace(executablePath))
-            {
-                throw new InvalidOperationException("PDF extraction is unavailable because pdftotext could not be found on the host.");
-            }
-
-            var tempDirectory = Path.Combine(Path.GetTempPath(), "journeypoint-document-extraction", Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(tempDirectory);
-
-            var inputPath = Path.Combine(tempDirectory, "source.pdf");
-            var outputPath = Path.Combine(tempDirectory, "source.txt");
-
-            try
-            {
-                await File.WriteAllBytesAsync(inputPath, content);
-
-                var startInfo = new ProcessStartInfo
-                {
-                    FileName = executablePath,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    CreateNoWindow = true
-                };
-                startInfo.ArgumentList.Add("-layout");
-                startInfo.ArgumentList.Add("-enc");
-                startInfo.ArgumentList.Add("UTF-8");
-                startInfo.ArgumentList.Add(inputPath);
-                startInfo.ArgumentList.Add(outputPath);
-
-                using var process = Process.Start(startInfo);
-                if (process == null)
-                {
-                    throw new InvalidOperationException("The PDF extraction process could not be started.");
-                }
-
-                await process.WaitForExitAsync();
-
-                if (process.ExitCode != 0)
-                {
-                    var standardError = await process.StandardError.ReadToEndAsync();
-                    throw new InvalidOperationException(
-                        string.IsNullOrWhiteSpace(standardError)
-                            ? "PDF extraction failed."
-                            : $"PDF extraction failed: {standardError.Trim()}");
-                }
-
-                return await File.ReadAllTextAsync(outputPath, Encoding.UTF8);
-            }
-            finally
-            {
-                if (Directory.Exists(tempDirectory))
-                {
-                    Directory.Delete(tempDirectory, true);
-                }
-            }
         }
 
         private static IEnumerable<string> SplitLines(string value)
@@ -376,61 +341,5 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
             return (value ?? string.Empty).Trim().ToLowerInvariant();
         }
 
-        private static bool IsMarkdownDocument(OnboardingDocument document)
-        {
-            var extension = Path.GetExtension(document.FileName);
-            return MarkdownExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase) ||
-                   document.ContentType.Contains("markdown", StringComparison.OrdinalIgnoreCase) ||
-                   document.ContentType.Equals("text/plain", StringComparison.OrdinalIgnoreCase);
-        }
-
-        private static bool IsPdfDocument(OnboardingDocument document)
-        {
-            return Path.GetExtension(document.FileName).Equals(".pdf", StringComparison.OrdinalIgnoreCase) ||
-                   document.ContentType.Equals("application/pdf", StringComparison.OrdinalIgnoreCase);
-        }
-
-        private static string ResolvePdfToTextExecutable()
-        {
-            var candidates = OperatingSystem.IsWindows()
-                ? PdfToTextCandidatesWindows
-                : PdfToTextCandidatesUnix;
-
-            foreach (var candidate in candidates)
-            {
-                if (Path.IsPathRooted(candidate))
-                {
-                    if (File.Exists(candidate))
-                    {
-                        return candidate;
-                    }
-
-                    continue;
-                }
-
-                var resolvedFromPath = ResolveFromPath(candidate);
-                if (!string.IsNullOrWhiteSpace(resolvedFromPath))
-                {
-                    return resolvedFromPath;
-                }
-            }
-
-            return null;
-        }
-
-        private static string ResolveFromPath(string executableName)
-        {
-            var pathValue = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
-            foreach (var directory in pathValue.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries))
-            {
-                var candidatePath = Path.Combine(directory.Trim(), executableName);
-                if (File.Exists(candidatePath))
-                {
-                    return candidatePath;
-                }
-            }
-
-            return null;
-        }
     }
 }

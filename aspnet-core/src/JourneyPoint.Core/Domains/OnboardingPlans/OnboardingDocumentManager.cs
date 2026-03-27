@@ -10,7 +10,7 @@ namespace JourneyPoint.Domains.OnboardingPlans
     public class OnboardingDocumentManager : DomainService
     {
         /// <summary>
-        /// Creates a new uploaded document record for a published onboarding plan.
+        /// Creates a new uploaded document record for a saved non-archived onboarding plan.
         /// </summary>
         public OnboardingDocument CreateDocument(
             OnboardingPlan plan,
@@ -19,7 +19,7 @@ namespace JourneyPoint.Domains.OnboardingPlans
             string contentType,
             long fileSizeBytes)
         {
-            EnsurePublishedPlan(plan);
+            EnsureMutablePlan(plan);
 
             if (fileSizeBytes < 0)
             {
@@ -204,16 +204,16 @@ namespace JourneyPoint.Domains.OnboardingPlans
                             proposal.ReviewStatus == ExtractedTaskReviewStatus.Applied);
         }
 
-        private static void EnsurePublishedPlan(OnboardingPlan plan)
+        private static void EnsureMutablePlan(OnboardingPlan plan)
         {
             if (plan == null)
             {
                 throw new ArgumentNullException(nameof(plan));
             }
 
-            if (plan.Status != OnboardingPlanStatus.Published)
+            if (plan.Status == OnboardingPlanStatus.Archived)
             {
-                throw new InvalidOperationException("Documents can be uploaded only to published onboarding plans.");
+                throw new InvalidOperationException("Documents can be uploaded only to saved onboarding plans that are not archived.");
             }
         }
 

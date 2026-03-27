@@ -175,7 +175,7 @@ const DocumentReviewWorkspace: React.FC<IDocumentReviewWorkspaceProps> = ({
             return;
         }
 
-        messageApi.success("Accepted proposals were added to the published plan.");
+        messageApi.success("Accepted proposals were added to the onboarding plan.");
     };
 
     const handleReject = async (proposalId: string): Promise<void> => {
@@ -255,7 +255,7 @@ const DocumentReviewWorkspace: React.FC<IDocumentReviewWorkspaceProps> = ({
                         Document Review
                     </Title>
                     <Paragraph type="secondary">
-                        Review extracted task proposals before adding anything to the published plan.
+                        Review extracted task proposals before adding anything to the onboarding plan.
                     </Paragraph>
                 </div>
 
@@ -320,7 +320,7 @@ const DocumentReviewWorkspace: React.FC<IDocumentReviewWorkspaceProps> = ({
                     selectedDocument.status === OnboardingDocumentStatus.Failed
                         ? "Extraction failed for this document."
                         : selectedDocument.status === OnboardingDocumentStatus.Applied
-                            ? "Accepted proposals have been applied to the published plan."
+                            ? "Accepted proposals have been applied to the onboarding plan."
                             : "Accepted proposals affect future journeys only."
                 }
                 description={

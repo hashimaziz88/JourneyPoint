@@ -113,11 +113,12 @@ from markdown, and review document-extracted task proposals.
 - [x] T024 [US2] Implement markdown import parsing and draft-save services in `aspnet-core/src/JourneyPoint.Application/Services/MarkdownImportService/`
 - [x] T025 [US2] Implement document upload, extraction orchestration, and proposal review services in `aspnet-core/src/JourneyPoint.Application/Services/OnboardingDocumentService/`
 - [x] T026 [P] [US2] Build facilitator plan list and editor pages in `journeypoint/app/(facilitator)/facilitator/plans/page.tsx` and `journeypoint/app/(facilitator)/facilitator/plans/[planId]/page.tsx`
-- [x] T027 [P] [US2] Build markdown import UI in `journeypoint/app/(facilitator)/facilitator/markdown-import/page.tsx`, `journeypoint/components/plans/MarkdownImportWorkspace.tsx`, and `journeypoint/components/plans/MarkdownPreviewTable.tsx`
+- [x] T027 [P] [US2] Build markdown import UI in `journeypoint/app/(facilitator)/facilitator/plans/import/page.tsx`, `journeypoint/components/plans/MarkdownImportWorkspace.tsx`, and `journeypoint/components/plans/MarkdownPreviewTable.tsx`
 - [x] T028 [P] [US2] Add plan provider state in `journeypoint/providers/onboardingPlanProvider/`
 - [x] T029 [US2] Add plan builder components in `journeypoint/components/plans/PlanCard.tsx`, `PlanEditor.tsx`, `ModulePanel.tsx`, `TaskFormModal.tsx`, and `TaskListEditor.tsx`
+- [x] T059 [US2] Extend JP-012 and JP-011 with Groq-backed document normalization, saved-plan enrichment uploads, and standalone document-import preview/save flow across `aspnet-core/src/JourneyPoint.Application/Services/GroqService/`, `aspnet-core/src/JourneyPoint.Application/Services/DocumentExtractionService/`, and `journeypoint/components/plans/`
 
-**Checkpoint**: Published onboarding plans can be authored and enriched.
+**Checkpoint**: Saved onboarding plans can be authored and enriched, and standalone source documents can be normalized into draft previews.
 
 ---
 

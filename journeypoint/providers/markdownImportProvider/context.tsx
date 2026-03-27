@@ -23,11 +23,19 @@ export interface IMarkdownImportStateContext {
     isSavePending: boolean;
     sourceContent: string;
     sourceFileName?: string | null;
+    sourceContentType?: string | null;
+    sourceBase64Content?: string | null;
     previewPlan?: IMarkdownImportDraftState | null;
 }
 
 export interface IMarkdownImportActionContext {
     setSourceContent: (content: string, fileName?: string | null) => void;
+    setSourceFile: (payload: {
+        fileName: string;
+        contentType: string;
+        base64Content: string;
+        sourceContent?: string | null;
+    }) => void;
     previewImport: () => Promise<IMarkdownImportPreviewDto | null>;
     saveDraft: () => Promise<IOnboardingPlanDetailDto | null>;
     resetImport: () => void;
@@ -59,6 +67,8 @@ export const INITIAL_STATE: IMarkdownImportStateContext = {
     isSavePending: false,
     sourceContent: "",
     sourceFileName: null,
+    sourceContentType: null,
+    sourceBase64Content: null,
     previewPlan: null,
 };
 

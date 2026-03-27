@@ -43,6 +43,8 @@ export interface IMarkdownImportPreviewDto {
 export interface IPreviewMarkdownImportRequest {
     markdownContent: string;
     sourceFileName?: string | null;
+    sourceContentType?: string | null;
+    base64Content?: string | null;
 }
 
 export interface ISaveMarkdownImportRequest {

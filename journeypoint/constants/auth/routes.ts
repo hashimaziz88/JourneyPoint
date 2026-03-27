@@ -8,7 +8,7 @@ export const APP_ROUTES = {
   tenants: "/dashboard/tenants",
   facilitatorDashboard: "/facilitator/dashboard",
   facilitatorPlans: "/facilitator/plans",
-  facilitatorMarkdownImport: "/facilitator/markdown-import",
+  facilitatorPlanImport: "/facilitator/plans/import",
   managerMyTasks: "/manager/my-tasks",
   enroleeMyJourney: "/enrolee/my-journey",
 };

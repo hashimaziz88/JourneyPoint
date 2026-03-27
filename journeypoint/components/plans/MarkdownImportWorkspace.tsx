@@ -47,6 +47,29 @@ import { useRouter } from "next/navigation";
 
 const { Paragraph, Text, Title } = Typography;
 
+const readFileAsBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            if (typeof reader.result !== "string") {
+                reject(new Error("The uploaded file could not be read."));
+                return;
+            }
+
+            const base64Content = reader.result.includes(",")
+                ? reader.result.split(",")[1]
+                : reader.result;
+            resolve(base64Content);
+        };
+
+        reader.onerror = () => {
+            reject(new Error("The uploaded file could not be read."));
+        };
+
+        reader.readAsDataURL(file);
+    });
+
 const SAMPLE_MARKDOWN = `# Graduate Cohort Programme
 Description: Multi-week onboarding for the graduate cohort.
 Target Audience: Graduate hires
@@ -83,7 +106,7 @@ const findDraftTask = (
 };
 
 /**
- * Provides the facilitator markdown import review and draft-save workspace.
+ * Provides the facilitator document-import review and draft-save workspace.
  */
 const MarkdownImportWorkspace: React.FC = () => {
     const { styles } = useStyles();
@@ -97,6 +120,7 @@ const MarkdownImportWorkspace: React.FC = () => {
         saveDraft,
         setPreviewMetadata,
         setSourceContent,
+        setSourceFile,
         updatePreviewModule,
         updatePreviewTask,
     } = useMarkdownImportActions();
@@ -105,6 +129,8 @@ const MarkdownImportWorkspace: React.FC = () => {
         isSavePending,
         previewPlan,
         sourceContent,
+        sourceBase64Content,
+        sourceContentType,
         sourceFileName,
     } = useMarkdownImportState();
     const [taskModalState, setTaskModalState] = useState<ITaskModalState | null>(
@@ -134,15 +160,18 @@ const MarkdownImportWorkspace: React.FC = () => {
     );
 
     const handlePreview = async (): Promise<void> => {
-        if (!sourceContent.trim()) {
-            messageApi.error("Paste markdown content or upload a markdown file first.");
+        const hasTextSource = !!sourceContent.trim();
+        const hasBinarySource = !!sourceBase64Content;
+
+        if (!hasTextSource && !hasBinarySource) {
+            messageApi.error("Paste source content or upload a supported document first.");
             return;
         }
 
         const preview = await previewImport();
 
         if (!preview) {
-            messageApi.error("The markdown content could not be parsed.");
+            messageApi.error("The source document could not be normalized into a plan preview.");
             return;
         }
 
@@ -198,11 +227,23 @@ const MarkdownImportWorkspace: React.FC = () => {
     };
 
     const uploadProps: UploadProps = {
-        accept: ".md,.markdown,text/markdown,text/plain",
+        accept: ".md,.markdown,.txt,.pdf,.png,.jpg,.jpeg,.webp,text/markdown,text/plain,application/pdf,image/png,image/jpeg,image/webp",
         showUploadList: false,
         beforeUpload: async (file) => {
-            const content = await file.text();
-            setSourceContent(content, file.name);
+            const base64Content = await readFileAsBase64(file);
+            const isTextFile =
+                file.type.startsWith("text/") ||
+                file.name.endsWith(".md") ||
+                file.name.endsWith(".markdown") ||
+                file.name.endsWith(".txt");
+            const textContent = isTextFile ? await file.text() : null;
+
+            setSourceFile({
+                fileName: file.name,
+                contentType: file.type || "application/octet-stream",
+                base64Content,
+                sourceContent: textContent,
+            });
             messageApi.success(`${file.name} loaded for preview.`);
             return Upload.LIST_IGNORE;
         },
@@ -214,12 +255,14 @@ const MarkdownImportWorkspace: React.FC = () => {
             <div className={styles.pageHeader}>
                 <div>
                     <Title level={2} className={styles.pageHeading}>
-                        Import Markdown
+                        Create Plan From Document
                     </Title>
                     <Paragraph type="secondary">
-                        Parse structured markdown into a reviewable onboarding draft.
-                        Nothing is applied automatically. A facilitator must inspect
-                        and approve the preview before the draft is created.
+                        Upload markdown, text, PDF, or image source material and
+                        normalize it into the same reviewable onboarding draft shape
+                        used by the manual builder. Nothing is applied
+                        automatically. A facilitator must inspect and approve the
+                        preview before the draft is created.
                     </Paragraph>
                 </div>
 
@@ -232,7 +275,7 @@ const MarkdownImportWorkspace: React.FC = () => {
                             )
                         }
                     >
-                        Back to Plans
+                        Back to Plan Creation
                     </Button>
                     <Button onClick={handleLoadExample}>Load Example</Button>
                     <Button onClick={resetImport}>Reset</Button>
@@ -259,18 +302,19 @@ const MarkdownImportWorkspace: React.FC = () => {
                 className={styles.alert}
                 type="info"
                 showIcon
-                title="Accepted markdown content only affects future journeys once this draft is later used for enrolment."
+                title="Backend AI normalization is review-first. Imported content only affects future journeys once the saved draft is later used for enrolment."
             />
 
             <div className={styles.importGrid}>
                 <Card className={styles.importSourceCard}>
                     <Space orientation="vertical" size={16} className={styles.pageRoot}>
                         <div>
-                            <Title level={4}>Source Markdown</Title>
+                            <Title level={4}>Source Document</Title>
                             <Paragraph type="secondary">
-                                Use a top-level plan title, optional metadata fields,
-                                `##` module headings, and either markdown task tables
-                                or list rows separated with `|`.
+                                Start with whatever source material you have. Clean
+                                markdown still previews fastest, but rough markdown,
+                                text, PDFs, and image documents can be normalized on
+                                the backend into the required draft shape for review.
                             </Paragraph>
                         </div>
 
@@ -279,7 +323,7 @@ const MarkdownImportWorkspace: React.FC = () => {
                                 <InboxOutlined />
                             </p>
                             <p className="ant-upload-text">
-                                Drop a markdown file here or click to load one.
+                                Drop a document here or click to load one.
                             </p>
                             <p className="ant-upload-hint">
                                 Review is mandatory before any draft is created.
@@ -287,7 +331,10 @@ const MarkdownImportWorkspace: React.FC = () => {
                         </Upload.Dragger>
 
                         {sourceFileName ? (
-                            <Text type="secondary">Loaded file: {sourceFileName}</Text>
+                            <Text type="secondary">
+                                Loaded file: {sourceFileName}
+                                {sourceContentType ? ` (${sourceContentType})` : ""}
+                            </Text>
                         ) : null}
 
                         <Input.TextArea
@@ -296,7 +343,7 @@ const MarkdownImportWorkspace: React.FC = () => {
                             onChange={(event) =>
                                 setSourceContent(event.target.value, sourceFileName)
                             }
-                            placeholder="Paste structured markdown here."
+                            placeholder="Paste onboarding source text here. Typing here replaces any uploaded binary file as the active preview source."
                             rows={18}
                         />
                     </Space>

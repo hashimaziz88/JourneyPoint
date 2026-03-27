@@ -106,7 +106,7 @@ const DocumentUploadPanel: React.FC<IDocumentUploadPanelProps> = ({
     } = useOnboardingDocumentActions();
     const { documents, isListPending, isMutationPending } = useOnboardingDocumentState();
     const hasSavedPlan = Boolean(planId);
-    const canUpload = hasSavedPlan && planStatus === OnboardingPlanStatus.Published;
+    const canUpload = hasSavedPlan && planStatus !== OnboardingPlanStatus.Archived;
 
     const loadDocuments = useEffectEvent(async (): Promise<void> => {
         if (!planId) {
@@ -139,12 +139,12 @@ const DocumentUploadPanel: React.FC<IDocumentUploadPanelProps> = ({
     };
 
     const uploadProps: UploadProps = {
-        accept: ".pdf,.md,.markdown,text/plain,application/pdf,text/markdown",
+        accept: ".pdf,.md,.markdown,.txt,.png,.jpg,.jpeg,.webp,text/plain,application/pdf,text/markdown,image/png,image/jpeg,image/webp",
         disabled: !canUpload || isMutationPending,
         showUploadList: false,
         beforeUpload: async (file) => {
             if (!planId) {
-                messageApi.error("Save and publish the plan before uploading enrichment documents.");
+                messageApi.error("Save the plan before uploading enrichment documents.");
                 return Upload.LIST_IGNORE;
             }
 
@@ -196,7 +196,7 @@ const DocumentUploadPanel: React.FC<IDocumentUploadPanelProps> = ({
             <div>
                 <Title level={3}>Plan Documents</Title>
                 <Paragraph type="secondary">
-                    Upload a published plan document for backend extraction and facilitator review.
+                    Upload a saved plan document for backend extraction and facilitator review.
                     Accepted proposals affect future journeys only.
                 </Paragraph>
             </div>
@@ -210,13 +210,13 @@ const DocumentUploadPanel: React.FC<IDocumentUploadPanelProps> = ({
                 />
             ) : null}
 
-            {hasSavedPlan && planStatus !== OnboardingPlanStatus.Published ? (
+            {hasSavedPlan && planStatus === OnboardingPlanStatus.Archived ? (
                 <Alert
                     className={styles.alert}
                     type="info"
                     showIcon
-                    title="Document enrichment is available only for published plans."
-                    description="Publish the current draft first, then upload supporting PDF or markdown documents for review."
+                    title="Archived plans cannot receive new enrichment documents."
+                    description="Clone the plan or reopen the content in a draft workflow before uploading supporting documents for review."
                 />
             ) : null}
 
@@ -226,7 +226,7 @@ const DocumentUploadPanel: React.FC<IDocumentUploadPanelProps> = ({
                         <InboxOutlined />
                     </p>
                     <p className="ant-upload-text">
-                        Drop a PDF or markdown file here, or click to browse
+                        Drop a PDF, markdown, text, or image file here, or click to browse
                     </p>
                     <p className="ant-upload-hint">
                         Extraction runs on the backend only, and nothing is applied until a facilitator reviews the proposals.

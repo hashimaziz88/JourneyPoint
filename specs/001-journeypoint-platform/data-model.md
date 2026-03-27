@@ -67,7 +67,8 @@ JourneyPoint has three primary domain areas:
 
 ### OnboardingDocument
 
-- Purpose: track uploaded markdown or PDF enrichment content
+- Purpose: track uploaded markdown, text, PDF, or image enrichment content for
+  saved plans
 - Core fields: plan id, file name, storage path, file type, extraction status,
   extracted task count, accepted task count
 - Relationships:

@@ -35,6 +35,28 @@ export const useStyles = createStyles(({ css, token }) => ({
         }
     `,
 
+    creationGrid: css`
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+        width: 100%;
+    `,
+
+    creationCard: css`
+        height: 100%;
+    `,
+
+    creationCardBody: css`
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        height: 100%;
+    `,
+
+    creationAction: css`
+        margin-top: auto;
+    `,
+
     planGrid: css`
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
