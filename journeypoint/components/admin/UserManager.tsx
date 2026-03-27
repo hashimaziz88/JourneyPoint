@@ -254,7 +254,7 @@ const UserManager: React.FC = () => {
   ];
 
   return (
-    <Space direction="vertical" size={24} className={styles.managerRoot}>
+    <Space orientation="vertical" size={24} className={styles.managerRoot}>
       <div>
         <Title level={2} className={styles.managerHeading}>
           User Management
@@ -319,10 +319,12 @@ const UserManager: React.FC = () => {
 
       <Card>
         <Table
+          className={styles.responsiveTable}
           rowKey={(record) => String(record.id)}
           columns={columns}
           dataSource={userState.users ?? []}
           loading={userState.isPending && !awaitingMutation}
+          scroll={{ x: "max-content" }}
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,

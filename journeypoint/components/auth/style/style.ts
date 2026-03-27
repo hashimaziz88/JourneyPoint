@@ -87,6 +87,10 @@ export const useStyles = createStyles(({ token, css }) => ({
     margin-bottom: ${token.marginLG}px;
   `,
 
+  tenantResolvedIcon: css`
+    color: ${token.colorSuccess};
+  `,
+
   submitButton: css`
     width: 100%;
     height: 40px;

@@ -1,20 +1,31 @@
 import { APP_PERMISSIONS } from "@/constants/auth/permissions";
 import { APP_ROUTES } from "@/constants/auth/routes";
 
-export interface IAdminNavigationItem {
+export type NavigationIconKey =
+  | "dashboard"
+  | "tenants"
+  | "users"
+  | "roles"
+  | "facilitator"
+  | "manager"
+  | "enrolee";
+
+export interface IWorkspaceNavigationItem {
   key: string;
   label: string;
   href: string;
   permission?: string;
   description: string;
+  iconKey: NavigationIconKey;
 }
 
-export const ADMIN_NAVIGATION_ITEMS: IAdminNavigationItem[] = [
+export const ADMIN_NAVIGATION_ITEMS: IWorkspaceNavigationItem[] = [
   {
     key: "dashboard",
     label: "Dashboard",
     href: APP_ROUTES.dashboard,
     description: "Overview and quick actions",
+    iconKey: "dashboard",
   },
   {
     key: "tenants",
@@ -22,6 +33,7 @@ export const ADMIN_NAVIGATION_ITEMS: IAdminNavigationItem[] = [
     href: APP_ROUTES.tenants,
     permission: APP_PERMISSIONS.tenants,
     description: "Host-only tenant management",
+    iconKey: "tenants",
   },
   {
     key: "users",
@@ -29,6 +41,7 @@ export const ADMIN_NAVIGATION_ITEMS: IAdminNavigationItem[] = [
     href: APP_ROUTES.users,
     permission: APP_PERMISSIONS.users,
     description: "Manage users for the current scope",
+    iconKey: "users",
   },
   {
     key: "roles",
@@ -36,5 +49,39 @@ export const ADMIN_NAVIGATION_ITEMS: IAdminNavigationItem[] = [
     href: APP_ROUTES.roles,
     permission: APP_PERMISSIONS.roles,
     description: "Manage role permissions",
+    iconKey: "roles",
+  },
+];
+
+export const FACILITATOR_NAVIGATION_ITEMS: IWorkspaceNavigationItem[] = [
+  {
+    key: "facilitator-dashboard",
+    label: "Dashboard",
+    href: APP_ROUTES.facilitatorDashboard,
+    permission: APP_PERMISSIONS.facilitator,
+    description: "Facilitator landing and milestone-one workspace access",
+    iconKey: "facilitator",
+  },
+];
+
+export const MANAGER_NAVIGATION_ITEMS: IWorkspaceNavigationItem[] = [
+  {
+    key: "manager-my-tasks",
+    label: "My Tasks",
+    href: APP_ROUTES.managerMyTasks,
+    permission: APP_PERMISSIONS.manager,
+    description: "Manager-assigned task workspace",
+    iconKey: "manager",
+  },
+];
+
+export const ENROLEE_NAVIGATION_ITEMS: IWorkspaceNavigationItem[] = [
+  {
+    key: "enrolee-my-journey",
+    label: "My Journey",
+    href: APP_ROUTES.enroleeMyJourney,
+    permission: APP_PERMISSIONS.enrolee,
+    description: "Personal onboarding journey workspace",
+    iconKey: "enrolee",
   },
 ];

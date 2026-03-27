@@ -9,36 +9,49 @@ import Spinner from "@/components/spinner/Spinner";
 
 const withAuth = <P extends object>(
     WrappedComponent: React.ComponentType<P>,
-    { requiredPermission }: WithAuthOptions = {}
+    { allowHost = false, allowedRoles = [], requiredPermission }: WithAuthOptions = {}
 ) => {
     const AuthenticatedComponent = (props: P) => {
         const router = useRouter();
-        const session = useAppSession();
+        const {
+            defaultRoute,
+            hasPermission,
+            isAuthenticated,
+            isHostScope,
+            isReady,
+            primaryRoleName,
+        } = useAppSession();
+        const hasRequiredPermission = hasPermission(requiredPermission);
+        const hasRoleRestriction = allowHost || allowedRoles.length > 0;
+        const hasAllowedRole =
+            !hasRoleRestriction ||
+            (allowHost && isHostScope) ||
+            allowedRoles.includes(primaryRoleName ?? "");
 
         useEffect(() => {
-            if (!session.isReady) {
+            if (!isReady) {
                 return;
             }
 
-            if (!session.isAuthenticated) {
+            if (!isAuthenticated) {
                 router.replace(APP_ROUTES.login);
                 return;
             }
 
-            if (requiredPermission && !session.hasPermission(requiredPermission)) {
-                router.replace(session.defaultRoute);
+            if (!hasAllowedRole || (requiredPermission && !hasRequiredPermission)) {
+                router.replace(defaultRoute);
             }
-        }, [router, session]);
+        }, [defaultRoute, hasAllowedRole, hasRequiredPermission, isAuthenticated, isReady, router]);
 
-        if (!session.isReady) {
+        if (!isReady) {
             return <Spinner />;
         }
 
-        if (!session.isAuthenticated) {
+        if (!isAuthenticated) {
             return null;
         }
 
-        if (requiredPermission && !session.hasPermission(requiredPermission)) {
+        if (!hasAllowedRole || (requiredPermission && !hasRequiredPermission)) {
             return null;
         }
 

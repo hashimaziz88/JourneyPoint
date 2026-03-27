@@ -20,7 +20,7 @@ const DashboardOverview: React.FC = () => {
         </Title>
         <Paragraph type="secondary" className={styles.overviewParagraph}>
           You are working in the {session.tenant?.tenancyName ? "tenant" : "host"} scope.
-          Use the sections below to manage tenants, users, and roles with the same multi-tenant flow as the Angular app.
+          Use the sections below to manage platform access and administration within the current JourneyPoint scope.
         </Paragraph>
       </div>
 

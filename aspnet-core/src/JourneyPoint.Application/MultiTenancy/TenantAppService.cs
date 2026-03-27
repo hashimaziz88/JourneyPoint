@@ -70,12 +70,11 @@ namespace JourneyPoint.MultiTenancy
             {
                 // Create static roles for new tenant
                 CheckErrors(await _roleManager.CreateStaticRoles(tenant.Id));
-
                 await CurrentUnitOfWork.SaveChangesAsync(); // To get static role ids
+                await ApplyJourneyPointTenantRoleDefaultsAsync(tenant.Id);
+                await CurrentUnitOfWork.SaveChangesAsync();
 
-                // Grant all permissions to admin role
                 var adminRole = _roleManager.Roles.Single(r => r.Name == StaticRoleNames.Tenants.Admin);
-                await _roleManager.GrantAllPermissionsAsync(adminRole);
 
                 // Create admin user for the tenant
                 var adminUser = User.CreateTenantAdminUser(tenant.Id, input.AdminEmailAddress);
@@ -118,6 +117,36 @@ namespace JourneyPoint.MultiTenancy
         {
             identityResult.CheckErrors(LocalizationManager);
         }
+
+        private async Task ApplyJourneyPointTenantRoleDefaultsAsync(int tenantId)
+        {
+            var roleNames = StaticRoleNames.Tenants.GetStaticRoleNames();
+            var tenantRoles = _roleManager.Roles
+                .Where(r => r.TenantId == tenantId && roleNames.Contains(r.Name))
+                .ToList();
+            var permissionsByName = PermissionFinder.GetAllPermissions(new JourneyPointAuthorizationProvider())
+                .ToDictionary(permission => permission.Name);
+
+            foreach (var role in tenantRoles)
+            {
+                var expectedDisplayName = StaticRoleNames.Tenants.GetDisplayName(role.Name);
+                if (role.DisplayName != expectedDisplayName)
+                {
+                    role.DisplayName = expectedDisplayName;
+                    CheckErrors(await _roleManager.UpdateAsync(role));
+                }
+            }
+
+            var adminRole = tenantRoles.Single(r => r.Name == StaticRoleNames.Tenants.Admin);
+            await _roleManager.GrantAllPermissionsAsync(adminRole);
+
+            foreach (var role in tenantRoles.Where(r => r.Name != StaticRoleNames.Tenants.Admin))
+            {
+                foreach (var permissionName in JourneyPointTenantRolePermissionDefaults.GetDefaultGrantedPermissions(role.Name))
+                {
+                    await _roleManager.GrantPermissionAsync(role, permissionsByName[permissionName]);
+                }
+            }
+        }
     }
 }
-

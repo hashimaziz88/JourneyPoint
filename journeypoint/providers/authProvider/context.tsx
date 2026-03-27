@@ -7,15 +7,22 @@ export interface IAuthStateContext {
     isPending: boolean;
     isError: boolean;
     isAuthenticated: boolean;
+    isReady: boolean;
+    isSessionPending: boolean;
+    isTenantPending: boolean;
+    grantedPermissions: string[];
+    isMultiTenancyEnabled: boolean;
+    configurationError: string | null;
     user?: IUserLoginResponse | null;
     tenant?: ITenantInfo | null;
 }
 
 export interface IAuthActionContext {
     login: (payload: IUserLoginRequest) => Promise<void>;
-    register: (payload: IUserRegisterRequest) => Promise<void>;
+    register: (payload: IUserRegisterRequest) => Promise<"logged-in" | "registered" | "failed">;
     logout: () => Promise<void>;
-    getMe: () => Promise<void>;
+    getMe: () => Promise<IUserLoginResponse | null>;
+    refreshSession: () => Promise<void>;
     resolveTenant: (tenancyName: string) => Promise<ITenantInfo | null>;
     clearTenant: () => void;
 }
@@ -25,6 +32,12 @@ export const INITIAL_STATE: IAuthStateContext = {
     isPending: false,
     isError: false,
     isAuthenticated: false,
+    isReady: false,
+    isSessionPending: false,
+    isTenantPending: false,
+    grantedPermissions: [],
+    isMultiTenancyEnabled: true,
+    configurationError: null,
     user: null,
     tenant: null,
 };

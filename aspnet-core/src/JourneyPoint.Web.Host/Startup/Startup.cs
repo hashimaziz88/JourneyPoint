@@ -17,6 +17,7 @@ using Abp.AspNetCore.SignalR.Hubs;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System.IO;
+using System.Collections.Generic;
 
 namespace JourneyPoint.Web.Host.Startup
 {
@@ -42,6 +43,8 @@ namespace JourneyPoint.Web.Host.Startup
             {
                 options.Filters.Add(new AbpAutoValidateAntiforgeryTokenAttribute());
             });
+
+            ConfigureJourneyPointOptions(services);
 
             IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);
@@ -83,6 +86,8 @@ namespace JourneyPoint.Web.Host.Startup
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            EnsureStorageDirectories();
+
             app.UseCors(_defaultCorsPolicyName); // Enable CORS!
 
             app.UseAbp(options => { options.UseAbpRequestLocalization = false; }); // Initializes ABP framework.
@@ -168,6 +173,174 @@ namespace JourneyPoint.Web.Host.Startup
                     options.IncludeXmlComments(webCoreXmlPath);
                 }
             });
+        }
+
+        private void ConfigureJourneyPointOptions(IServiceCollection services)
+        {
+            var groqOptions = BindOptions<GroqOptions>(AppSettingNames.Groq.SectionName);
+            ValidateGroqOptions(groqOptions);
+            services.Configure<GroqOptions>(_appConfiguration.GetSection(AppSettingNames.Groq.SectionName));
+
+            var fileStorageOptions = BindOptions<FileStorageOptions>(AppSettingNames.Storage.SectionName);
+            ValidateFileStorageOptions(fileStorageOptions);
+            services.Configure<FileStorageOptions>(_appConfiguration.GetSection(AppSettingNames.Storage.SectionName));
+
+            var mailOptions = BindOptions<MailOptions>(AppSettingNames.Mail.SectionName);
+            ValidateMailOptions(mailOptions);
+            services.Configure<MailOptions>(_appConfiguration.GetSection(AppSettingNames.Mail.SectionName));
+        }
+
+        private TOptions BindOptions<TOptions>(string sectionName)
+            where TOptions : new()
+        {
+            var options = new TOptions();
+            _appConfiguration.GetSection(sectionName).Bind(options);
+            return options;
+        }
+
+        private void ValidateGroqOptions(GroqOptions options)
+        {
+            if (options == null)
+            {
+                throw new InvalidOperationException("Groq configuration is required.");
+            }
+
+            if (!options.Enabled)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(options.ApiKey))
+            {
+                throw new InvalidOperationException("Groq:ApiKey must be configured when Groq is enabled.");
+            }
+
+            if (string.IsNullOrWhiteSpace(options.BaseUrl) ||
+                !Uri.TryCreate(options.BaseUrl, UriKind.Absolute, out Uri baseUri) ||
+                !string.Equals(baseUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("Groq:BaseUrl must be a valid HTTPS URL when Groq is enabled.");
+            }
+
+            if (string.IsNullOrWhiteSpace(options.Model))
+            {
+                throw new InvalidOperationException("Groq:Model must be configured when Groq is enabled.");
+            }
+
+            if (options.TimeoutSeconds <= 0)
+            {
+                throw new InvalidOperationException("Groq:TimeoutSeconds must be greater than zero.");
+            }
+        }
+
+        private void ValidateFileStorageOptions(FileStorageOptions options)
+        {
+            if (options == null)
+            {
+                throw new InvalidOperationException("Storage configuration is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(options.Provider))
+            {
+                throw new InvalidOperationException("Storage:Provider must be configured.");
+            }
+
+            if (string.IsNullOrWhiteSpace(options.RootPath))
+            {
+                throw new InvalidOperationException("Storage:RootPath must be configured.");
+            }
+
+            if (IsFileSystemProvider(options.Provider) && string.IsNullOrWhiteSpace(options.PlanDocumentSubdirectory))
+            {
+                throw new InvalidOperationException("Storage:PlanDocumentSubdirectory must be configured for the file-system provider.");
+            }
+        }
+
+        private void ValidateMailOptions(MailOptions options)
+        {
+            if (options == null)
+            {
+                throw new InvalidOperationException("Mail configuration is required.");
+            }
+
+            if (!options.Enabled)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(options.FromAddress))
+            {
+                throw new InvalidOperationException("Mail:FromAddress must be configured when mail is enabled.");
+            }
+
+            if (string.IsNullOrWhiteSpace(options.Provider))
+            {
+                throw new InvalidOperationException("Mail:Provider must be configured when mail is enabled.");
+            }
+
+            if (IsPickupDirectoryProvider(options.Provider))
+            {
+                if (string.IsNullOrWhiteSpace(options.PickupDirectory))
+                {
+                    throw new InvalidOperationException("Mail:PickupDirectory must be configured for the pickup-directory provider.");
+                }
+
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(options.SmtpHost))
+            {
+                throw new InvalidOperationException("Mail:SmtpHost must be configured for SMTP mail delivery.");
+            }
+
+            if (options.SmtpPort <= 0)
+            {
+                throw new InvalidOperationException("Mail:SmtpPort must be greater than zero for SMTP mail delivery.");
+            }
+        }
+
+        private void EnsureStorageDirectories()
+        {
+            var options = BindOptions<FileStorageOptions>(AppSettingNames.Storage.SectionName);
+            if (options == null ||
+                !options.EnsureDirectoriesOnStartup ||
+                !IsFileSystemProvider(options.Provider))
+            {
+                return;
+            }
+
+            var rootPath = ResolveHostPath(options.RootPath);
+            Directory.CreateDirectory(rootPath);
+
+            if (!string.IsNullOrWhiteSpace(options.PlanDocumentSubdirectory))
+            {
+                Directory.CreateDirectory(Path.Combine(rootPath, options.PlanDocumentSubdirectory));
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.PublicBaseUrl) && !Uri.TryCreate(options.PublicBaseUrl, UriKind.Absolute, out Uri _))
+            {
+                throw new InvalidOperationException("Storage:PublicBaseUrl must be a valid absolute URL when provided.");
+            }
+        }
+
+        private string ResolveHostPath(string configuredPath)
+        {
+            if (Path.IsPathRooted(configuredPath))
+            {
+                return configuredPath;
+            }
+
+            return Path.GetFullPath(Path.Combine(_hostingEnvironment.ContentRootPath, configuredPath));
+        }
+
+        private bool IsFileSystemProvider(string provider)
+        {
+            return string.Equals(provider, "FileSystem", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool IsPickupDirectoryProvider(string provider)
+        {
+            return string.Equals(provider, "PickupDirectory", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
