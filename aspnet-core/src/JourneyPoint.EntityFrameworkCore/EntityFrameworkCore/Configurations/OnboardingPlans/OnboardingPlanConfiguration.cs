@@ -28,6 +28,11 @@ namespace JourneyPoint.EntityFrameworkCore.Configurations.OnboardingPlans
                 .HasForeignKey(module => module.OnboardingPlanId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasMany(plan => plan.Documents)
+                .WithOne(document => document.OnboardingPlan)
+                .HasForeignKey(document => document.OnboardingPlanId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.HasIndex(plan => plan.TenantId);
             builder.HasIndex(plan => new { plan.TenantId, plan.Status });
         }

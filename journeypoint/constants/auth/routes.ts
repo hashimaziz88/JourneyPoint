@@ -15,3 +15,8 @@ export const APP_ROUTES = {
 
 export const buildFacilitatorPlanRoute = (planId: string): string =>
   `${APP_ROUTES.facilitatorPlans}/${planId}`;
+
+export const buildFacilitatorPlanDocumentRoute = (
+  planId: string,
+  documentId: string,
+): string => `${buildFacilitatorPlanRoute(planId)}/documents/${documentId}`;

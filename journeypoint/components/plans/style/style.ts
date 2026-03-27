@@ -213,4 +213,95 @@ export const useStyles = createStyles(({ css, token }) => ({
             width: 100%;
         }
     `,
+
+    documentPanel: css`
+        width: 100%;
+    `,
+
+    documentList: css`
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 16px;
+        width: 100%;
+    `,
+
+    documentCard: css`
+        height: 100%;
+    `,
+
+    documentCardBody: css`
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        height: 100%;
+    `,
+
+    documentCardHeader: css`
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+    `,
+
+    documentStatGrid: css`
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    `,
+
+    documentCardActions: css`
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: auto;
+    `,
+
+    reviewGrid: css`
+        display: grid;
+        grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+        gap: 24px;
+        width: 100%;
+
+        @media (max-width: 1200px) {
+            grid-template-columns: 1fr;
+        }
+    `,
+
+    proposalGrid: css`
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+        width: 100%;
+    `,
+
+    proposalCard: css`
+        height: 100%;
+    `,
+
+    proposalCardBody: css`
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        height: 100%;
+    `,
+
+    proposalCardHeader: css`
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+    `,
+
+    proposalMetaTags: css`
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    `,
+
+    proposalActions: css`
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: auto;
+    `,
 }));

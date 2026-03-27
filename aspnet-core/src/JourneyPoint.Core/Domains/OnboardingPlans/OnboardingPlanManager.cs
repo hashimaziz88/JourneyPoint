@@ -163,6 +163,36 @@ namespace JourneyPoint.Domains.OnboardingPlans
         }
 
         /// <summary>
+        /// Adds a reviewed extraction task to a published onboarding plan without mutating existing journeys.
+        /// </summary>
+        public void AddReviewedTaskToPublishedPlan(OnboardingPlan plan, Guid moduleId, OnboardingTask task)
+        {
+            EnsurePlan(plan);
+
+            if (plan.Status != OnboardingPlanStatus.Published)
+            {
+                throw new InvalidOperationException("Reviewed document tasks can be added only to published plans.");
+            }
+
+            if (task == null)
+            {
+                throw new ArgumentNullException(nameof(task));
+            }
+
+            var module = FindModule(plan, moduleId);
+            EnsureTenantOwnership(plan.TenantId, module.TenantId, nameof(module));
+            EnsureUniqueTaskOrder(module, task.OrderIndex, task.Id);
+
+            task.TenantId = plan.TenantId;
+            task.OnboardingModuleId = module.Id;
+
+            if (!module.Tasks.Any(existingTask => existingTask.Id == task.Id))
+            {
+                module.Tasks.Add(task);
+            }
+        }
+
+        /// <summary>
         /// Updates a task in a draft plan module.
         /// </summary>
         public void UpdateTask(

@@ -27,6 +27,16 @@ namespace JourneyPoint.EntityFrameworkCore
         /// </summary>
         public DbSet<OnboardingTask> OnboardingTasks { get; set; }
 
+        /// <summary>
+        /// Gets or sets uploaded onboarding documents persisted for published plans.
+        /// </summary>
+        public DbSet<OnboardingDocument> OnboardingDocuments { get; set; }
+
+        /// <summary>
+        /// Gets or sets extracted task proposals persisted for facilitator review.
+        /// </summary>
+        public DbSet<ExtractedTask> ExtractedTasks { get; set; }
+
         public JourneyPointDbContext(DbContextOptions<JourneyPointDbContext> options)
             : base(options)
         {

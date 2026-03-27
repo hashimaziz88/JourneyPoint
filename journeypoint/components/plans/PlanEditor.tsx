@@ -31,6 +31,7 @@ import {
     APP_ROUTES,
     buildFacilitatorPlanRoute,
 } from "@/constants/auth/routes";
+import DocumentUploadPanel from "@/components/plans/DocumentUploadPanel";
 import ModulePanel from "@/components/plans/ModulePanel";
 import TaskFormModal from "@/components/plans/TaskFormModal";
 import { useStyles } from "@/components/plans/style/style";
@@ -482,6 +483,11 @@ const PlanEditor: React.FC<IPlanEditorProps> = ({ planId }) => {
                     </div>
                 </Space>
             </Card>
+
+            <DocumentUploadPanel
+                planId={draftPlan.id}
+                planStatus={draftPlan.status}
+            />
 
             <Space direction="vertical" size={16} className={styles.modulesWrap}>
                 <div className={styles.pageHeader}>
