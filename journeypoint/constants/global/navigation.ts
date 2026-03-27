@@ -6,6 +6,7 @@ export type NavigationIconKey =
   | "tenants"
   | "users"
   | "roles"
+  | "plans"
   | "facilitator"
   | "manager"
   | "enrolee";
@@ -61,6 +62,14 @@ export const FACILITATOR_NAVIGATION_ITEMS: IWorkspaceNavigationItem[] = [
     permission: APP_PERMISSIONS.facilitator,
     description: "Facilitator landing and milestone-one workspace access",
     iconKey: "facilitator",
+  },
+  {
+    key: "facilitator-plans",
+    label: "Plans",
+    href: APP_ROUTES.facilitatorPlans,
+    permission: APP_PERMISSIONS.facilitator,
+    description: "Create, refine, publish, and clone onboarding templates",
+    iconKey: "plans",
   },
 ];
 

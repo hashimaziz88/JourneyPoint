@@ -7,6 +7,10 @@ export const APP_ROUTES = {
   roles: "/dashboard/roles",
   tenants: "/dashboard/tenants",
   facilitatorDashboard: "/facilitator/dashboard",
+  facilitatorPlans: "/facilitator/plans",
   managerMyTasks: "/manager/my-tasks",
   enroleeMyJourney: "/enrolee/my-journey",
 };
+
+export const buildFacilitatorPlanRoute = (planId: string): string =>
+  `${APP_ROUTES.facilitatorPlans}/${planId}`;
