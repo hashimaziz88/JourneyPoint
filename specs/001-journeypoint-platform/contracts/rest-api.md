@@ -90,3 +90,9 @@ should remain ABP application-service friendly, typically under
   actor.
 - Hire detail and pipeline calls are allowed to trigger on-demand engagement
   computation before returning the response.
+- Concrete API methods should continue to be exposed through
+  interface-and-implementation AppService pairs with DTOs that live beside
+  their service slice under `JourneyPoint.Application/Services/<Feature>/Dto/`.
+- Web.Core and Web.Host remain transport/plumbing layers only; business rules
+  that power these contracts belong in Core, Application, and
+  EntityFrameworkCore according to layer responsibility.

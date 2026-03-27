@@ -8,6 +8,20 @@ JourneyPoint has three primary domain areas:
 2. Journey enrolment and execution
 3. Engagement intelligence and intervention
 
+## Entity Implementation Contract
+
+- New JourneyPoint product entities should default to `FullAuditedEntity<Guid>`
+  unless the active spec explicitly records another key strategy.
+- Property validation should prefer data annotations such as `[Required]`,
+  `[MaxLength]`, `[Range]`, and `[ForeignKey]`.
+- Aggregate and cross-entity rules should live in Core domain managers/services
+  rather than entity method bodies.
+- EF-specific concerns such as table naming, enum conversion, and composite
+  uniqueness belong in `JourneyPoint.EntityFrameworkCore`.
+- The same contract applies to future entities in the onboarding, hires,
+  engagement, and audit domains unless a later approved spec amendment records
+  a narrower exception.
+
 ## Entity Inventory
 
 | Entity | Purpose | Key Relationships |

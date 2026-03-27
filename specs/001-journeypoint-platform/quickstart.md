@@ -42,6 +42,20 @@ Expected result:
 - Backend Groq settings include a valid model and API key.
 - Frontend environment points to the backend base URL or proxy entrypoint.
 
+## Standards Validation Expectations
+
+- New backend entities follow the active spec package contract:
+  `FullAuditedEntity<Guid>` by default, data-annotation validation, and domain
+  manager/service ownership for aggregate rules.
+- New application-service slices expose interface-and-implementation pairs,
+  keep DTOs under `JourneyPoint.Application/Services/<Feature>/Dto/`, and use
+  repositories instead of direct `DbContext` access.
+- New persistence slices register `DbSet` properties, keep EF-only concerns in
+  `JourneyPoint.EntityFrameworkCore`, and generate migrations from that layer.
+- New Web.Core and Web.Host changes stay plumbing-only.
+- New frontend provider work preserves the four-file provider contract and
+  keeps bootstrap or side-effect logic outside provider folders.
+
 ## Milestone Validation Flow
 
 ### Milestone 1 - Foundation and Access Control
@@ -75,6 +89,8 @@ Expected result:
 2. Open a hire detail view and confirm historical snapshots appear.
 3. Acknowledge and resolve an at-risk flag while preserving the intervention
    record.
+4. Confirm touched backend and frontend surfaces still satisfy the package-wide
+   engineering standards listed above.
 
 ## Seed Data Expectations
 

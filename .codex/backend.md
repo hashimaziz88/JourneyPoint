@@ -20,6 +20,12 @@
 - Add XML comments to public backend classes and public methods.
 - Use audited ABP entity bases for new product entities and preserve tenant
   ownership as a core invariant.
+- New product entities should default to `FullAuditedEntity<Guid>` unless a
+  higher-priority spec explicitly records a different key strategy.
+- Use data annotations for entity validation and relationship hints instead of
+  manual validation code inside entity bodies.
+- Put aggregate and cross-entity business rules into Core domain services or
+  managers, not into entity method bodies.
 - Prefer small focused classes and methods, guard clauses, explicit enums or
   constants instead of magic numbers, and no abbreviation-heavy naming.
 
