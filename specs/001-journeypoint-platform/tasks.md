@@ -102,7 +102,7 @@ from markdown, and review document-extracted task proposals.
 - [ ] T020 [P] [US2] Create enrichment entities in `aspnet-core/src/JourneyPoint.Core/Domains/OnboardingPlans/OnboardingDocument.cs` and `ExtractedTask.cs`
 - [x] T021 [US2] Register onboarding `DbSet` properties and mappings in `aspnet-core/src/JourneyPoint.EntityFrameworkCore/EntityFrameworkCore/JourneyPointDbContext.cs` and related configuration files
 - [x] T022 [US2] Add initial onboarding migration under `aspnet-core/src/JourneyPoint.EntityFrameworkCore/Migrations/`
-- [ ] T023 [US2] Implement plan CRUD DTOs and application services in `aspnet-core/src/JourneyPoint.Application/Services/OnboardingPlanService/`
+- [x] T023 [US2] Implement plan CRUD DTOs and application services in `aspnet-core/src/JourneyPoint.Application/Services/OnboardingPlanService/`
 - [ ] T024 [US2] Implement markdown import parsing and draft-save services in `aspnet-core/src/JourneyPoint.Application/Services/MarkdownImportService/`
 - [ ] T025 [US2] Implement document upload, extraction orchestration, and proposal review services in `aspnet-core/src/JourneyPoint.Application/Services/OnboardingDocumentService/`
 - [ ] T026 [P] [US2] Build facilitator plan pages in `journeypoint/app/(facilitator)/plans/page.tsx`, `journeypoint/app/(facilitator)/plans/[planId]/page.tsx`, and `journeypoint/app/(facilitator)/plans/[planId]/documents/page.tsx`
