@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useEffectEvent, useState } from "react";
 import {
   Button,
   Card,
@@ -60,13 +60,17 @@ const TenantManager: React.FC = () => {
   const [form] = Form.useForm<ITenantFormValues>();
   const [messageApi, messageContextHolder] = message.useMessage();
 
-  useEffect(() => {
-    const loadTenants = async () => {
-      await getAll(buildTenantQuery(searchTerm, activeFilter, pagination));
-    };
+  const loadTenants = useEffectEvent(async (): Promise<void> => {
+    await getAll(buildTenantQuery(searchTerm, activeFilter, pagination));
+  });
 
+  const refreshTenants = useEffectEvent(async (): Promise<void> => {
+    await getAll(buildTenantQuery(searchTerm, activeFilter, pagination));
+  });
+
+  useEffect(() => {
     loadTenants().catch(ignoreAsyncError);
-  }, [activeFilter, getAll, pagination, pagination.pageSize, searchTerm]);
+  }, [activeFilter, pagination, pagination.pageSize, searchTerm]);
 
   useEffect(() => {
     if (!awaitingMutation || tenantState.isPending) {
@@ -84,10 +88,6 @@ const TenantManager: React.FC = () => {
 
       messageApi.success(successMessage);
       globalThis.setTimeout(() => {
-        const refreshTenants = async () => {
-          await getAll(buildTenantQuery(searchTerm, activeFilter, pagination));
-        };
-
         setAwaitingMutation(null);
         setModalOpen(false);
         setEditingTenant(null);
@@ -99,7 +99,6 @@ const TenantManager: React.FC = () => {
     activeFilter,
     awaitingMutation,
     form,
-    getAll,
     messageApi,
     pagination,
     pagination.pageSize,
