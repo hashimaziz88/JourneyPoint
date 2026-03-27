@@ -241,6 +241,32 @@ surfaces at-risk flags, and lets a facilitator capture intervention actions.
 - **FR-035**: The system MUST support a demo-ready seed state containing at
   least two distinct tenants and hires across multiple engagement bands.
 
+### Implementation Governance Requirements
+
+- **IGR-001**: All new JourneyPoint backend entities MUST follow the internal
+  backend standard by defaulting to `FullAuditedEntity<Guid>` unless this
+  feature package is explicitly amended with another key strategy.
+- **IGR-002**: Backend entity property validation MUST prefer data annotations
+  such as `[Required]`, `[MaxLength]`, `[Range]`, and `[ForeignKey]`.
+- **IGR-003**: Aggregate and cross-entity business rules MUST live in
+  `JourneyPoint.Core` domain managers/services rather than in entity method
+  bodies or AppServices.
+- **IGR-004**: Application-service implementation MUST preserve
+  interface-and-implementation pairs, DTOs under
+  `JourneyPoint.Application/Services/<Feature>/Dto/`, and repository usage
+  rather than direct `DbContext` access.
+- **IGR-005**: Persistence-specific concerns such as `DbSet` registration,
+  table naming, enum conversion, indexes, and migrations MUST remain in
+  `JourneyPoint.EntityFrameworkCore`.
+- **IGR-006**: `JourneyPoint.Web.Core` and `JourneyPoint.Web.Host` MUST remain
+  plumbing-only layers with no business logic introduced there.
+- **IGR-007**: Public JourneyPoint-owned backend classes and public methods
+  MUST include XML summary comments, and non-obvious logic MUST be explained
+  with concise inline comments.
+- **IGR-008**: New milestone work across plan authoring, hire orchestration,
+  participant flows, and intelligence MUST move touched code toward these
+  standards even when older scaffolded code predates them.
+
 ### Key Entities *(include if feature involves data)*
 
 - **OnboardingPlan**: A reusable onboarding curriculum with metadata, lifecycle
@@ -308,3 +334,14 @@ surfaces at-risk flags, and lets a facilitator capture intervention actions.
   background scheduler before the final milestone.
 - The Angular application is legacy reference material only and is out of scope
   for the current JourneyPoint roadmap.
+- New JourneyPoint product entities should default to `FullAuditedEntity<Guid>`
+  unless a later spec amendment explicitly records another key strategy.
+- Entity validation should prefer data annotations, while aggregate and
+  cross-entity rules should live in Core domain managers/services rather than
+  entity method bodies.
+- Application services should keep interface-and-implementation pairs, DTOs
+  under `JourneyPoint.Application/Services/<Feature>/Dto/`, and repository
+  usage instead of direct `DbContext` access.
+- Web.Core and Web.Host remain plumbing layers only; new product business logic
+  belongs in Core, Application, or EntityFrameworkCore according to layer
+  responsibility.

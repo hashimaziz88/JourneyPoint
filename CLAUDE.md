@@ -35,11 +35,10 @@ Guardrails:
 - do not add untyped `any`
 - follow the internal ABP backend structure and coding rules now encoded in the
   repo guidance
-- keep provider folders on the strict four-file contract only
-- do not declare regular nested React components inside other functional
-  component bodies
-- follow the internal ABP backend structure and coding rules now encoded in the
-  repo guidance
+- default new product entities to `FullAuditedEntity<Guid>` unless the active
+  spec records a different key strategy
+- use data annotations for entity validation and relationship hints
+- move aggregate or cross-entity rules into Core domain services or managers
 - keep provider folders on the strict four-file contract only
 - do not declare regular nested React components inside other functional
   component bodies

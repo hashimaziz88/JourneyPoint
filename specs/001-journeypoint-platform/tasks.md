@@ -16,6 +16,16 @@ implemented, demonstrated, and reviewed independently.
   next to application services, no domain logic in AppServices, XML comments on
   public classes/methods, guard clauses where appropriate, and enums/constants
   instead of magic numbers.
+- When a backend slice introduces new product entities, default them to
+  `FullAuditedEntity<Guid>` unless the active spec records another key
+  strategy, prefer data annotations for entity validation, and move aggregate
+  or cross-entity rules into Core domain managers/services.
+- Backend application-service tasks should preserve interface-and-
+  implementation pairs, DTOs under `Services/<Feature>/Dto/`, AutoMapper-ready
+  DTO shapes, and repository usage instead of direct `DbContext` access.
+- Backend persistence tasks must keep `DbSet` registration, EF configuration,
+  and migrations inside `JourneyPoint.EntityFrameworkCore`; Web.Core and
+  Web.Host remain plumbing-only and must not absorb business logic.
 - Frontend tasks must follow the strict provider contract:
   `providers/<feature>Provider/actions.tsx`, `context.tsx`, `index.tsx`, and
   `reducer.tsx` only. Bootstrap or side-effect components belong outside
@@ -24,7 +34,8 @@ implemented, demonstrated, and reviewed independently.
   their bodies; extract child components into `components/` or another
   dedicated module.
 - New work must move touched code toward these standards even when older repo
-  code predates them.
+  code predates them, including later milestones for hire orchestration,
+  participant workspaces, AI review, engagement, and intervention flows.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -89,8 +100,8 @@ from markdown, and review document-extracted task proposals.
 
 - [x] T019 [P] [US2] Create plan authoring entities in `aspnet-core/src/JourneyPoint.Core/Domains/OnboardingPlans/OnboardingPlan.cs`, `OnboardingModule.cs`, and `OnboardingTask.cs`
 - [ ] T020 [P] [US2] Create enrichment entities in `aspnet-core/src/JourneyPoint.Core/Domains/OnboardingPlans/OnboardingDocument.cs` and `ExtractedTask.cs`
-- [ ] T021 [US2] Register onboarding `DbSet` properties and mappings in `aspnet-core/src/JourneyPoint.EntityFrameworkCore/EntityFrameworkCore/JourneyPointDbContext.cs` and related configuration files
-- [ ] T022 [US2] Add initial onboarding migration under `aspnet-core/src/JourneyPoint.EntityFrameworkCore/Migrations/`
+- [x] T021 [US2] Register onboarding `DbSet` properties and mappings in `aspnet-core/src/JourneyPoint.EntityFrameworkCore/EntityFrameworkCore/JourneyPointDbContext.cs` and related configuration files
+- [x] T022 [US2] Add initial onboarding migration under `aspnet-core/src/JourneyPoint.EntityFrameworkCore/Migrations/`
 - [ ] T023 [US2] Implement plan CRUD DTOs and application services in `aspnet-core/src/JourneyPoint.Application/Services/OnboardingPlanService/`
 - [ ] T024 [US2] Implement markdown import parsing and draft-save services in `aspnet-core/src/JourneyPoint.Application/Services/MarkdownImportService/`
 - [ ] T025 [US2] Implement document upload, extraction orchestration, and proposal review services in `aspnet-core/src/JourneyPoint.Application/Services/OnboardingDocumentService/`

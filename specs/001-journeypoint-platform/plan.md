@@ -98,15 +98,37 @@ types, and constants. The `angular/` directory remains explicitly out of scope.
 
 ## Company Standards Alignment
 
+- These standards apply across the full five-milestone JourneyPoint roadmap,
+  not only the current onboarding slice. Every future domain, AppService, EF
+  mapping, migration, and frontend/provider addition must inherit the same
+  rules unless a later approved spec amendment records an exception.
 - Backend domain entities will be created under
   `aspnet-core/src/JourneyPoint.Core/Domains/<DomainArea>/` using audited ABP
   entity bases, explicit enums/constants, tenant-safe ownership, and XML
   comments on public classes and methods.
+- New JourneyPoint product entities should default to `FullAuditedEntity<Guid>`
+  unless the active spec explicitly records another key strategy.
+- Entity validation should prefer data annotations, while aggregate and
+  cross-entity rules should live in Core domain managers/services rather than
+  entity method bodies.
+- Backend implementation should preserve one-way dependencies only:
+  `JourneyPoint.Web.Host` -> `JourneyPoint.Web.Core` ->
+  `JourneyPoint.Application`, with `JourneyPoint.Application` and
+  `JourneyPoint.EntityFrameworkCore` both depending downward on
+  `JourneyPoint.Core`.
 - Backend DTOs belong next to the app service that uses them under
   `aspnet-core/src/JourneyPoint.Application/Services/<Feature>/Dto/`; DTOs do
   not belong in the domain layer.
 - Application services orchestrate use cases, while reusable business logic
   remains in domain services or the domain model.
+- New application-service slices should keep interface-and-implementation pairs
+  and use repository injection rather than direct `DbContext` access.
+- `JourneyPoint.Web.Core` and `JourneyPoint.Web.Host` stay as plumbing-only
+  layers; new business use cases must surface through Application services
+  rather than host/controller logic.
+- EF Core mappings and migrations should express persistence-only concerns that
+  cannot or should not live in data annotations, such as table naming, enum
+  conversions, indexes, and delete behavior.
 - Frontend stateful modules must keep the strict provider folder contract:
   `actions.tsx`, `context.tsx`, `index.tsx`, and `reducer.tsx` only.
 - Frontend bootstrap, session restoration, and other cross-cutting behavior

@@ -21,6 +21,9 @@ description: "Task list template for feature implementation"
 - Do not generate tasks that place DTOs in domain layers, mix business logic
   into presentation-only surfaces, or violate documented provider/component
   structure rules.
+- When backend standards require `FullAuditedEntity<Guid>`, data annotations,
+  and domain managers/services for aggregate rules, reflect that explicitly in
+  the task wording for the affected files.
 
 ## Format: `[ID] [P?] [Story] Description`
 

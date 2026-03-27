@@ -93,17 +93,28 @@ Milestone gate: begin M2 only after the current M1-owned guidance, shared
 frontend shell/auth surfaces, and JourneyPoint-owned backend foundation files
 have been normalized to the absorbed company engineering standards.
 
+All remaining milestones inherit the same engineering baseline: new backend
+entities default to `FullAuditedEntity<Guid>` unless this feature package says
+otherwise, aggregate rules live in Core domain managers/services, DTOs stay
+beside AppServices, persistence-only concerns stay in
+`JourneyPoint.EntityFrameworkCore`, and Web.Core/Web.Host stay plumbing-only.
+
 1. **JP-007 - Model onboarding plan, module, and template task entities**
    - Labels: backend, domain
-   - Scope: reusable onboarding template entities and relationships
+   - Scope: reusable onboarding template entities and relationships using the
+     current backend standard for `FullAuditedEntity<Guid>`, data-annotation
+     validation, and Core domain-manager rule ownership
    - Depends on: JP-006
 2. **JP-008 - Add onboarding persistence and migration support**
    - Labels: backend, database
-   - Scope: DbContext registration and initial onboarding migration
+   - Scope: `DbSet` registration, EF configuration only for persistence-only
+     concerns, and the initial onboarding migration
    - Depends on: JP-007
 3. **JP-009 - Implement onboarding plan CRUD application services**
    - Labels: backend, api
-   - Scope: list, detail, create, update, publish, archive, clone flows
+   - Scope: interface-and-implementation AppService pairs, DTOs under
+     `Services/OnboardingPlanService/Dto/`, and list/detail/create/update/
+     publish/archive/clone flows
    - Depends on: JP-008
 4. **JP-010 - Build facilitator plan builder UI and provider state**
    - Labels: frontend, ux
@@ -122,19 +133,24 @@ have been normalized to the absorbed company engineering standards.
 
 1. **JP-013 - Model hire, journey, and journey task entities**
    - Labels: backend, domain
-   - Scope: hire lifecycle plus journey draft and task-copy model
+   - Scope: hire lifecycle plus journey draft and task-copy model using the
+     active backend standard for audited `Guid` entities, data annotations, and
+     Core-owned aggregate rules
    - Depends on: JP-008
 2. **JP-014 - Add hire and journey persistence with follow-up migration**
    - Labels: backend, database
-   - Scope: DbContext and migration updates for hire and journey aggregates
+   - Scope: `DbSet` registration, EF configuration for persistence-only
+     concerns, and migration updates for hire and journey aggregates
    - Depends on: JP-013
 3. **JP-015 - Implement hire enrolment, account creation, and welcome-notification flow**
    - Labels: backend, onboarding
-   - Scope: create hire, create account, assign role, send credentials
+   - Scope: repository-driven application services, DTOs, create hire, create
+     account, assign role, and send credentials
    - Depends on: JP-014
 4. **JP-016 - Implement synchronous journey generation and draft review services**
    - Labels: backend, onboarding
-   - Scope: copy plan tasks, compute due dates, draft review updates
+   - Scope: repository-driven application services and domain services to copy
+     plan tasks, compute due dates, and support draft review updates
    - Depends on: JP-015
 5. **JP-017 - Build facilitator hire management and journey review UI**
    - Labels: frontend, ux
@@ -149,11 +165,12 @@ have been normalized to the absorbed company engineering standards.
 
 1. **JP-019 - Add AI audit logging for personalisation and extraction**
    - Labels: backend, ai, audit
-   - Scope: generation logs with outcome summary and timing
+   - Scope: audited `Guid`-key audit entities plus outcome summary and timing
    - Depends on: JP-012
 2. **JP-020 - Implement Groq journey personalisation service and selective acceptance workflow**
    - Labels: backend, ai
-   - Scope: request assembly, diff-ready response parsing, selective apply
+   - Scope: backend-only application/domain services for request assembly,
+     diff-ready response parsing, and selective apply
    - Depends on: JP-019
 3. **JP-021 - Build enrolee journey dashboard and task detail workflow**
    - Labels: frontend, enrolee
@@ -176,15 +193,19 @@ have been normalized to the absorbed company engineering standards.
 
 1. **JP-025 - Model engagement snapshots and at-risk flags**
    - Labels: backend, domain, analytics
-   - Scope: append-only score history and intervention records
+   - Scope: append-only score history and intervention records using the active
+     backend standard for audited entities, data annotations, and Core-owned
+     rule logic
    - Depends on: JP-014
 2. **JP-026 - Implement engagement scoring domain service**
    - Labels: backend, analytics
-   - Scope: completion, recency, overdue, composite score, classification logic
+   - Scope: Core domain service for completion, recency, overdue, composite
+     score, and classification logic
    - Depends on: JP-025
 3. **JP-027 - Implement pipeline, hire intelligence, and intervention application services**
    - Labels: backend, api, analytics
-   - Scope: on-demand computation, flag raising, flag resolution, profile payloads
+   - Scope: interface-and-implementation AppService pairs, DTOs, on-demand
+     computation, flag raising, flag resolution, and profile payloads
    - Depends on: JP-026
 4. **JP-028 - Build facilitator pipeline board and engagement badges**
    - Labels: frontend, analytics

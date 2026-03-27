@@ -36,13 +36,10 @@ Rules:
 - follow the internal backend structure standard: domain entities in
   `JourneyPoint.Core/Domains/<DomainArea>/`, DTOs next to their app services,
   and no domain logic in AppServices
-- add XML comments to public backend classes and public methods
-- keep provider modules on the strict four-file contract only
-- do not declare regular nested React components inside other functional
-  component bodies
-- follow the internal backend structure standard: domain entities in
-  `JourneyPoint.Core/Domains/<DomainArea>/`, DTOs next to their app services,
-  and no domain logic in AppServices
+- default new product entities to `FullAuditedEntity<Guid>` unless the active
+  spec records another key strategy
+- use data annotations for entity validation and move aggregate rules into Core
+  domain services or managers
 - add XML comments to public backend classes and public methods
 - keep provider modules on the strict four-file contract only
 - do not declare regular nested React components inside other functional

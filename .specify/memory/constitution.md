@@ -120,6 +120,11 @@ gates. Delivering demoable increments reduces risk and keeps planning grounded.
 - New product entities MUST be created under
   `JourneyPoint.Core/Domains/<DomainArea>/`, use audited ABP entity bases, keep
   tenant ownership explicit, and favor enums/constants over magic numbers.
+- New product entities SHOULD default to `FullAuditedEntity<Guid>` unless the
+  active spec records a different key strategy.
+- Entity validation SHOULD prefer data annotations, while aggregate and
+  cross-entity rules SHOULD live in Core domain services or managers instead of
+  entity method bodies.
 - Public backend classes and public methods MUST include XML comments, and
   non-obvious logic MUST be preceded by a short explanatory comment.
 - Frontend stateful features MUST stay on the strict four-file provider

@@ -6,6 +6,7 @@ namespace JourneyPoint.Domains.OnboardingPlans
     public enum OnboardingTaskAssignmentTarget
     {
         Enrolee = 1,
-        Manager = 2
+        Manager = 2,
+        Facilitator = 3
     }
 }

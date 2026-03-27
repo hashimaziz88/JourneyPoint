@@ -91,6 +91,12 @@ specs/     # Active Spec Kit feature packages
   and DTOs next to their app services under
   `JourneyPoint.Application/Services/<Feature>/Dto/`.
 - Keep domain logic out of AppServices except for orchestration.
+- Default new product entities to `FullAuditedEntity<Guid>` with explicit
+  tenant ownership unless the active spec records a different key strategy.
+- Use data annotations for entity validation and relationship hints; keep
+  EF-only persistence configuration in EntityFrameworkCore.
+- Put aggregate and cross-entity rules into Core domain services or managers
+  rather than embedding them directly in entity method bodies.
 - Add XML comments to public backend classes and public methods, plus short
   comments for non-obvious logic.
 - Prefer guarded, small, cohesive methods and classes; replace magic numbers

@@ -29,7 +29,9 @@
 
 **Standards Alignment**: [Summarize any repo-specific engineering standards that
 must govern implementation, such as layer boundaries, provider contracts,
-documentation rules, and structural constraints from the project guidance]
+documentation rules, structural constraints from the project guidance, default
+entity key strategy, validation approach, and whether domain managers/services
+must carry aggregate rules]
 
 ## Constitution Check
 
