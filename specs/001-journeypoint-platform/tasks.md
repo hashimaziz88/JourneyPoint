@@ -30,9 +30,16 @@ implemented, demonstrated, and reviewed independently.
   `providers/<feature>Provider/actions.tsx`, `context.tsx`, `index.tsx`, and
   `reducer.tsx` only. Bootstrap or side-effect components belong outside
   provider folders.
+- Frontend tasks must use Next.js App Router file placement and must not
+  regress to legacy `pages/`, `getServerSideProps`, or `getStaticProps`
+  patterns from older company notes.
+- Frontend styling tasks must preserve `antd-style` and dedicated style-module
+  patterns rather than inline styling or Tailwind-first deviations.
 - Regular functional components must not declare nested React components in
   their bodies; extract child components into `components/` or another
   dedicated module.
+- Frontend provider state, actions, and API contracts must remain explicitly
+  typed with no untyped `any`.
 - New work must move touched code toward these standards even when older repo
   code predates them, including later milestones for hire orchestration,
   participant workspaces, AI review, engagement, and intervention flows.

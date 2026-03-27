@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useEffectEvent, useMemo, useState } from "react";
 import {
   Button,
   Card,
@@ -62,18 +62,26 @@ const RoleManager: React.FC = () => {
     [availablePermissions],
   );
 
-  useEffect(() => {
-    const loadRoles = async () => {
-      await getAllPermissions();
-      await getAll({
-        keyword: searchTerm || null,
-        skipCount: ((pagination.current ?? 1) - 1) * (pagination.pageSize ?? 10),
-        maxResultCount: pagination.pageSize ?? 10,
-      });
-    };
+  const loadRoles = useEffectEvent(async (): Promise<void> => {
+    await getAllPermissions();
+    await getAll({
+      keyword: searchTerm || null,
+      skipCount: ((pagination.current ?? 1) - 1) * (pagination.pageSize ?? 10),
+      maxResultCount: pagination.pageSize ?? 10,
+    });
+  });
 
+  const refreshRoles = useEffectEvent(async (): Promise<void> => {
+    await getAll({
+      keyword: searchTerm || null,
+      skipCount: ((pagination.current ?? 1) - 1) * (pagination.pageSize ?? 10),
+      maxResultCount: pagination.pageSize ?? 10,
+    });
+  });
+
+  useEffect(() => {
     loadRoles().catch(ignoreAsyncError);
-  }, [getAll, getAllPermissions, pagination, pagination.pageSize, searchTerm]);
+  }, [pagination, pagination.pageSize, searchTerm]);
 
   useEffect(() => {
     if (!awaitingMutation || roleState.isPending) {
@@ -91,14 +99,6 @@ const RoleManager: React.FC = () => {
 
       messageApi.success(successMessage);
       globalThis.setTimeout(() => {
-        const refreshRoles = async () => {
-          await getAll({
-            keyword: searchTerm || null,
-            skipCount: ((pagination.current ?? 1) - 1) * (pagination.pageSize ?? 10),
-            maxResultCount: pagination.pageSize ?? 10,
-          });
-        };
-
         setAwaitingMutation(null);
         setModalOpen(false);
         setEditingRole(null);
@@ -109,7 +109,6 @@ const RoleManager: React.FC = () => {
   }, [
     awaitingMutation,
     form,
-    getAll,
     messageApi,
     pagination,
     pagination.pageSize,

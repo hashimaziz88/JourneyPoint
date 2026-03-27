@@ -33,4 +33,4 @@ export const INITIAL_STATE: IUserStateContext = {
 };
 
 export const UserStateContext = createContext<IUserStateContext>(INITIAL_STATE);
-export const UserActionContext = createContext<IUserActionContext>(undefined!);
+export const UserActionContext = createContext<IUserActionContext | undefined>(undefined);

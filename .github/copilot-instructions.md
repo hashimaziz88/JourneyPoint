@@ -30,6 +30,7 @@ Rules:
 - preserve ABP layering
 - preserve tenant and auth behavior
 - keep AI services backend-only and reviewable
+- use the Next.js App Router instead of legacy `pages/` routing
 - use providers for stateful frontend features
 - do not add inline styles
 - do not use untyped `any`
@@ -42,5 +43,7 @@ Rules:
   domain services or managers
 - add XML comments to public backend classes and public methods
 - keep provider modules on the strict four-file contract only
+- interpret absorbed company frontend standards through JourneyPoint's real
+  stack by using App Router and `antd-style`, not conflicting legacy guidance
 - do not declare regular nested React components inside other functional
   component bodies

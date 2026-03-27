@@ -98,6 +98,10 @@ entities default to `FullAuditedEntity<Guid>` unless this feature package says
 otherwise, aggregate rules live in Core domain managers/services, DTOs stay
 beside AppServices, persistence-only concerns stay in
 `JourneyPoint.EntityFrameworkCore`, and Web.Core/Web.Host stay plumbing-only.
+Frontend work across all remaining milestones must use Next.js App Router,
+strict four-file provider folders, `antd-style`, typed contracts with no
+untyped `any`, and extracted top-level components rather than regular nested
+component declarations.
 
 1. **JP-007 - Model onboarding plan, module, and template task entities**
    - Labels: backend, domain
@@ -118,7 +122,8 @@ beside AppServices, persistence-only concerns stay in
    - Depends on: JP-008
 4. **JP-010 - Build facilitator plan builder UI and provider state**
    - Labels: frontend, ux
-   - Scope: plan list, plan editor, module/task editing, provider state
+   - Scope: App Router plan list and editor routes, module/task editing,
+     strict provider-folder state, and `antd-style`-based UI composition
    - Depends on: JP-009
 5. **JP-011 - Implement markdown import preview and draft-save flow**
    - Labels: backend, frontend, import
@@ -154,7 +159,8 @@ beside AppServices, persistence-only concerns stay in
    - Depends on: JP-015
 5. **JP-017 - Build facilitator hire management and journey review UI**
    - Labels: frontend, ux
-   - Scope: hire list, hire detail, journey review page, activation controls
+   - Scope: App Router hire list, hire detail, journey review routes,
+     activation controls, typed providers, and `antd-style` styling
    - Depends on: JP-016
 6. **JP-018 - Add storage and resend-recovery support for onboarding communications**
    - Labels: backend, operations
@@ -174,19 +180,24 @@ beside AppServices, persistence-only concerns stay in
    - Depends on: JP-019
 3. **JP-021 - Build enrolee journey dashboard and task detail workflow**
    - Labels: frontend, enrolee
-   - Scope: module-grouped tasks, acknowledgement flow, mark-complete behavior
+   - Scope: App Router journey routes, module-grouped tasks, acknowledgement
+     flow, mark-complete behavior, and typed provider-backed state
    - Depends on: JP-017
 4. **JP-022 - Build manager task workspace**
    - Labels: frontend, manager
-   - Scope: direct-report task list and manager completion flow
+   - Scope: App Router manager routes, direct-report task list, manager
+     completion flow, and typed provider-backed state
    - Depends on: JP-017
 5. **JP-023 - Build facilitator personalisation diff UI**
    - Labels: frontend, ai
-   - Scope: before/after comparison, per-task accept/reject, apply action
+   - Scope: App Router facilitator routes, before/after comparison, per-task
+     accept/reject, apply action, and `antd-style`-based diff presentation
    - Depends on: JP-020
 6. **JP-024 - Connect participant provider state across enrolee, manager, and facilitator flows**
    - Labels: frontend, state
-   - Scope: journey provider updates and cross-role task refresh behavior
+   - Scope: strict four-file providers, journey provider updates, and
+     cross-role task refresh behavior without cross-cutting leakage into
+     provider folders
    - Depends on: JP-021, JP-022, JP-023
 
 ### M5 - Intelligence, Interventions, and Demo Readiness
@@ -209,11 +220,13 @@ beside AppServices, persistence-only concerns stay in
    - Depends on: JP-026
 4. **JP-028 - Build facilitator pipeline board and engagement badges**
    - Labels: frontend, analytics
-   - Scope: Kanban board, filters, score badges, hire cards
+   - Scope: App Router pipeline routes, Kanban board, filters, score badges,
+     hire cards, typed providers, and `antd-style`-based presentation
    - Depends on: JP-027
 5. **JP-029 - Build score trend chart and intervention history UI**
    - Labels: frontend, analytics
-   - Scope: hire detail chart, active flag panel, intervention notes and history
+   - Scope: App Router hire detail routes, score chart, active flag panel,
+     intervention notes and history with typed provider-backed state
    - Depends on: JP-027
 6. **JP-030 - Seed demo tenants and run milestone validation walkthrough**
    - Labels: backend, demo, validation

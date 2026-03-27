@@ -10,7 +10,10 @@
 <!--
   ACTION REQUIRED: Confirm any repo-specific engineering standards that must
   govern implementation. This includes absorbed internal company standards from
-  the project guidance and any local architectural contracts.
+  the project guidance and any local architectural contracts. For frontend
+  features, explicitly state how older company guidance was normalized to the
+  repo's real stack, such as Next.js App Router replacing legacy Pages Router
+  APIs and `antd-style` replacing conflicting styling guidance.
 -->
 
 - [Document required engineering standards or note that the project guidance

@@ -1,91 +1,126 @@
-"use client"
-import React, { useReducer, useContext } from "react";
+"use client";
+
+import React, { useContext, useReducer } from "react";
+import { getAxiosInstance } from "@/utils/axiosInstance";
 import {
-    INITIAL_STATE, TenantActionContext, TenantStateContext,
-    ICreateTenantDto, IGetAllTenantsRequest, ITenantDto,
+  createTenantError,
+  createTenantPending,
+  createTenantSuccess,
+  deleteTenantError,
+  deleteTenantPending,
+  deleteTenantSuccess,
+  getAllTenantsError,
+  getAllTenantsPending,
+  getAllTenantsSuccess,
+  updateTenantError,
+  updateTenantPending,
+  updateTenantSuccess,
+} from "./actions";
+import {
+  INITIAL_STATE,
+  TenantActionContext,
+  TenantStateContext,
+  type ICreateTenantDto,
+  type IGetAllTenantsRequest,
+  type ITenantDto,
 } from "./context";
 import { TenantReducer } from "./reducer";
-import {
-    getAllTenantsPending, getAllTenantsSuccess, getAllTenantsError,
-    createTenantPending, createTenantSuccess, createTenantError,
-    updateTenantPending, updateTenantSuccess, updateTenantError,
-    deleteTenantPending, deleteTenantSuccess, deleteTenantError,
-} from "./actions";
-import { getAxiosInstace } from "@/utils/axiosInstance";
 
-export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [state, dispatch] = useReducer(TenantReducer, INITIAL_STATE);
+/**
+ * Provides tenant-management state and actions for the host admin workspace.
+ */
+export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [state, dispatch] = useReducer(TenantReducer, INITIAL_STATE);
 
-    const getAll = async (request: IGetAllTenantsRequest) => {
-        dispatch(getAllTenantsPending());
-        await getAxiosInstace().get("/api/services/app/Tenant/GetAll", { params: request })
-            .then((response) => {
-                const data = response.data?.result ?? response.data;
-                dispatch(getAllTenantsSuccess({ items: data?.items ?? [], totalCount: data?.totalCount ?? 0 }));
-            })
-            .catch((error) => {
-                console.error(error);
-                dispatch(getAllTenantsError());
-            });
-    };
+  const getAll = async (request: IGetAllTenantsRequest): Promise<void> => {
+    dispatch(getAllTenantsPending());
 
-    const createTenant = async (payload: ICreateTenantDto) => {
-        dispatch(createTenantPending());
-        await getAxiosInstace().post("/api/services/app/Tenant/Create", payload)
-            .then(() => {
-                dispatch(createTenantSuccess());
-            })
-            .catch((error) => {
-                console.error(error);
-                dispatch(createTenantError());
-            });
-    };
+    try {
+      const response = await getAxiosInstance().get(
+        "/api/services/app/Tenant/GetAll",
+        { params: request },
+      );
+      const data = response.data?.result ?? response.data;
 
-    const updateTenant = async (payload: ITenantDto) => {
-        dispatch(updateTenantPending());
-        await getAxiosInstace().put("/api/services/app/Tenant/Update", payload)
-            .then(() => {
-                dispatch(updateTenantSuccess());
-            })
-            .catch((error) => {
-                console.error(error);
-                dispatch(updateTenantError());
-            });
-    };
+      dispatch(
+        getAllTenantsSuccess({
+          items: data?.items ?? [],
+          totalCount: data?.totalCount ?? 0,
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+      dispatch(getAllTenantsError());
+    }
+  };
 
-    const deleteTenant = async (id: number) => {
-        dispatch(deleteTenantPending());
-        await getAxiosInstace().delete("/api/services/app/Tenant/Delete", { params: { id } })
-            .then(() => {
-                dispatch(deleteTenantSuccess());
-            })
-            .catch((error) => {
-                console.error(error);
-                dispatch(deleteTenantError());
-            });
-    };
+  const createTenant = async (payload: ICreateTenantDto): Promise<void> => {
+    dispatch(createTenantPending());
 
-    return (
-        <TenantStateContext.Provider value={state}>
-            <TenantActionContext.Provider value={{ getAll, createTenant, updateTenant, deleteTenant }}>
-                {children}
-            </TenantActionContext.Provider>
-        </TenantStateContext.Provider>
-    );
+    try {
+      await getAxiosInstance().post("/api/services/app/Tenant/Create", payload);
+      dispatch(createTenantSuccess());
+    } catch (error) {
+      console.error(error);
+      dispatch(createTenantError());
+    }
+  };
+
+  const updateTenant = async (payload: ITenantDto): Promise<void> => {
+    dispatch(updateTenantPending());
+
+    try {
+      await getAxiosInstance().put("/api/services/app/Tenant/Update", payload);
+      dispatch(updateTenantSuccess());
+    } catch (error) {
+      console.error(error);
+      dispatch(updateTenantError());
+    }
+  };
+
+  const deleteTenant = async (id: number): Promise<void> => {
+    dispatch(deleteTenantPending());
+
+    try {
+      await getAxiosInstance().delete("/api/services/app/Tenant/Delete", {
+        params: { id },
+      });
+      dispatch(deleteTenantSuccess());
+    } catch (error) {
+      console.error(error);
+      dispatch(deleteTenantError());
+    }
+  };
+
+  return (
+    <TenantStateContext.Provider value={state}>
+      <TenantActionContext.Provider
+        value={{ getAll, createTenant, updateTenant, deleteTenant }}
+      >
+        {children}
+      </TenantActionContext.Provider>
+    </TenantStateContext.Provider>
+  );
 };
 
 export const useTenantState = () => {
-    const context = useContext(TenantStateContext);
-    if (context === undefined) {
-        throw new Error("useTenantState must be used within a TenantProvider");
-    }
-    return context;
+  const context = useContext(TenantStateContext);
+
+  if (context === undefined) {
+    throw new Error("useTenantState must be used within a TenantProvider");
+  }
+
+  return context;
 };
 
 export const useTenantActions = () => {
-    const context = useContext(TenantActionContext);
-    if (context === undefined) {
-        throw new Error("useTenantActions must be used within a TenantProvider");
-    }
-    return context;
+  const context = useContext(TenantActionContext);
+
+  if (context === undefined) {
+    throw new Error("useTenantActions must be used within a TenantProvider");
+  }
+
+  return context;
 };

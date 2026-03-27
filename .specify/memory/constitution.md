@@ -130,9 +130,18 @@ gates. Delivering demoable increments reduces risk and keeps planning grounded.
 - Frontend stateful features MUST stay on the strict four-file provider
   contract only: `actions.tsx`, `context.tsx`, `index.tsx`, and `reducer.tsx`.
   Bootstrap or cross-cutting side effects MUST live outside provider folders.
+- Frontend architecture MUST follow Next.js 16 App Router conventions. Older
+  Pages Router patterns such as `pages/`, `getServerSideProps`, and
+  `getStaticProps` are considered legacy guidance and MUST be translated into
+  App Router equivalents before use in this repo.
+- Frontend styling MUST use `antd-style` and existing project styling patterns.
+  Tailwind-first or inline-style approaches from older notes MUST NOT override
+  this repo's styling contract.
 - Regular functional components MUST NOT declare nested React component
   definitions inside their bodies. Reusable child components belong in
   `components/` or another dedicated top-level module.
+- Frontend TypeScript MUST prefer explicit interfaces, avoid untyped `any`, and
+  keep provider actions, state, and API payloads typed end to end.
 - Existing legacy code does not justify carrying older patterns forward. New
   work and touched code MUST move toward these stricter standards without broad
   unrelated rewrites.

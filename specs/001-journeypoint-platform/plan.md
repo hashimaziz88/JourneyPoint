@@ -131,11 +131,18 @@ types, and constants. The `angular/` directory remains explicitly out of scope.
   conversions, indexes, and delete behavior.
 - Frontend stateful modules must keep the strict provider folder contract:
   `actions.tsx`, `context.tsx`, `index.tsx`, and `reducer.tsx` only.
+- Frontend route and data-loading work must use Next.js App Router patterns
+  rather than legacy `pages/`, `getServerSideProps`, or `getStaticProps`
+  approaches from older company notes.
+- Frontend styling must use `antd-style` and existing repo patterns rather than
+  Tailwind-specific guidance from older notes.
 - Frontend bootstrap, session restoration, and other cross-cutting behavior
   must live outside provider folders.
 - Regular React components must not declare child component definitions inside
   their function bodies; reusable children belong in `journeypoint/components/`
   or another dedicated top-level module.
+- Frontend provider actions, state, and API contracts must stay explicitly
+  typed and must not use untyped `any`.
 
 ## Complexity Tracking
 

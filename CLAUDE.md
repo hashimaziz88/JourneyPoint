@@ -31,6 +31,7 @@ Guardrails:
 
 - ignore `angular/`
 - do not bypass tenant isolation
+- use the Next.js App Router rather than legacy `pages/` patterns
 - do not add inline styling
 - do not add untyped `any`
 - follow the internal ABP backend structure and coding rules now encoded in the
@@ -40,5 +41,7 @@ Guardrails:
 - use data annotations for entity validation and relationship hints
 - move aggregate or cross-entity rules into Core domain services or managers
 - keep provider folders on the strict four-file contract only
+- normalize older company frontend notes to JourneyPoint's real stack by using
+  App Router and `antd-style` rather than copying conflicting legacy guidance
 - do not declare regular nested React components inside other functional
   component bodies

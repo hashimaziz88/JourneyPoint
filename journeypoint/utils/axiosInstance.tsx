@@ -32,4 +32,4 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     return config;
 });
 
-export const getAxiosInstace = () => axiosInstance;
+export const getAxiosInstance = (): typeof axiosInstance => axiosInstance;

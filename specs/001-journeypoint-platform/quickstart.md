@@ -55,6 +55,13 @@ Expected result:
 - New Web.Core and Web.Host changes stay plumbing-only.
 - New frontend provider work preserves the four-file provider contract and
   keeps bootstrap or side-effect logic outside provider folders.
+- New frontend route and data-loading work preserves Next.js App Router
+  patterns and does not regress to legacy `pages/`, `getServerSideProps`, or
+  `getStaticProps` approaches.
+- New frontend styling work uses `antd-style` and dedicated style modules
+  rather than inline styles or Tailwind-first deviations.
+- New frontend provider, component, and API-contract work keeps TypeScript
+  types explicit and avoids untyped `any`.
 
 ## Milestone Validation Flow
 

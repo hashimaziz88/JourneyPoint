@@ -1,26 +1,30 @@
-"use client"
-import React from "react"
-import { themeSetup } from "@/constants/global/themeSetup"
-import { ConfigProvider } from "antd"
-import AuthSessionBootstrap from "@/components/auth/AuthSessionBootstrap"
-import { AuthProvider } from "@/providers/authProvider"
-import { UserProvider } from "@/providers/userProvider"
-import { RoleProvider } from "@/providers/roleProvider"
-import { TenantProvider } from "@/providers/tenantProvider"
+"use client";
 
-export const AppProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    return (
-        <ConfigProvider theme={themeSetup}>
-            <AuthProvider>
-                <AuthSessionBootstrap />
-                <TenantProvider>
-                    <UserProvider>
-                        <RoleProvider>
-                            {children}
-                        </RoleProvider>
-                    </UserProvider>
-                </TenantProvider>
-            </AuthProvider>
-        </ConfigProvider>
-    )
+import React from "react";
+import { ConfigProvider } from "antd";
+import AuthSessionBootstrap from "@/components/auth/AuthSessionBootstrap";
+import { themeSetup } from "@/constants/global/themeSetup";
+import { AuthProvider } from "@/providers/authProvider";
+import { RoleProvider } from "@/providers/roleProvider";
+import { TenantProvider } from "@/providers/tenantProvider";
+import { UserProvider } from "@/providers/userProvider";
+
+interface IAppProvidersProps {
+  children: React.ReactNode;
 }
+
+/**
+ * Composes the global JourneyPoint frontend providers in dependency order.
+ */
+export const AppProviders: React.FC<IAppProvidersProps> = ({ children }) => (
+  <ConfigProvider theme={themeSetup}>
+    <AuthProvider>
+      <AuthSessionBootstrap />
+      <TenantProvider>
+        <UserProvider>
+          <RoleProvider>{children}</RoleProvider>
+        </UserProvider>
+      </TenantProvider>
+    </AuthProvider>
+  </ConfigProvider>
+);
