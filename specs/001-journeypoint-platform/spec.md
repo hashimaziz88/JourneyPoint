@@ -266,6 +266,18 @@ surfaces at-risk flags, and lets a facilitator capture intervention actions.
 - **IGR-008**: New milestone work across plan authoring, hire orchestration,
   participant flows, and intelligence MUST move touched code toward these
   standards even when older scaffolded code predates them.
+- **IGR-009**: JourneyPoint frontend work MUST use Next.js 16 App Router
+  conventions rather than legacy Pages Router APIs such as `pages/`,
+  `getServerSideProps`, or `getStaticProps`.
+- **IGR-010**: JourneyPoint frontend styling MUST use `antd-style` and repo
+  styling patterns; inline styles and Tailwind-first deviations are out of
+  scope unless the project guidance is explicitly amended.
+- **IGR-011**: Stateful frontend features MUST use the strict four-file
+  provider contract and keep bootstrap or cross-cutting side effects outside
+  provider folders.
+- **IGR-012**: Frontend TypeScript MUST avoid untyped `any`, keep provider and
+  API contracts explicitly typed, and extract regular nested React components
+  into dedicated top-level modules.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -345,3 +357,7 @@ surfaces at-risk flags, and lets a facilitator capture intervention actions.
 - Web.Core and Web.Host remain plumbing layers only; new product business logic
   belongs in Core, Application, or EntityFrameworkCore according to layer
   responsibility.
+- Frontend work should interpret the absorbed company standards through
+  JourneyPoint's actual stack: App Router, TypeScript, Ant Design, and
+  `antd-style`, rather than copying conflicting legacy Pages Router or
+  Tailwind-first guidance literally.

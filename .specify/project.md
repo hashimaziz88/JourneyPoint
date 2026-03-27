@@ -36,6 +36,10 @@ side references.
   standards.
 - Frontend expectations follow the supplied Next.js, TypeScript, and strict
   provider-pattern standards.
+- Those frontend standards are interpreted through JourneyPoint's actual stack:
+  Next.js 16 App Router, React 19, TypeScript, Ant Design, and `antd-style`.
+  Conflicting legacy references such as `pages/`, `getServerSideProps`,
+  `getStaticProps`, or Tailwind-first styling must be normalized before use.
 - When older local code conflicts with these standards, new work MUST follow
   the stricter documented rule unless a higher-priority source-of-truth
   document explicitly permits an exception.
@@ -87,6 +91,8 @@ specs/     # Active Spec Kit feature packages
 
 - Keep backend work aligned to ABP layer boundaries.
 - Keep frontend stateful features aligned to the four-file provider contract.
+- Keep frontend route, data-loading, and styling work aligned to App Router and
+  `antd-style`, not legacy Pages Router or Tailwind assumptions.
 - Keep backend domain entities under `JourneyPoint.Core/Domains/<DomainArea>/`
   and DTOs next to their app services under
   `JourneyPoint.Application/Services/<Feature>/Dto/`.
@@ -103,6 +109,8 @@ specs/     # Active Spec Kit feature packages
   with constants or enums.
 - Keep regular React components free of nested component declarations; extract
   child components into `components/` or another dedicated module.
+- Keep provider state, actions, and API contracts explicitly typed; use
+  `unknown` instead of `any` when a boundary is temporarily uncertain.
 - Keep all AI calls in backend services only.
 - Treat Boxfusion and DeptDemo as separate tenants in every plan, seed dataset,
   and demo workflow.

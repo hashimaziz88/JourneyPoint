@@ -35,5 +35,11 @@ the repo guidance. Treat `.specify/memory/constitution.md`,
 `.specify/project.md`, `.codex/backend.md`, and `.codex/frontend.md` as the
 in-repo canonical summary of those standards for future work.
 
+For frontend work, interpret absorbed standards through JourneyPoint's actual
+stack: Next.js 16 App Router, TypeScript, Ant Design, `antd-style`, and the
+strict four-file provider contract. Do not regress to legacy `pages/`,
+`getServerSideProps`, `getStaticProps`, or Tailwind-first assumptions unless a
+higher-priority repo document is explicitly amended.
+
 Repo-local supporting copies of the supplied company reference material now live
 under `docs/company-standards/`.

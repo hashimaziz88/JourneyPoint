@@ -24,6 +24,10 @@ description: "Task list template for feature implementation"
 - When backend standards require `FullAuditedEntity<Guid>`, data annotations,
   and domain managers/services for aggregate rules, reflect that explicitly in
   the task wording for the affected files.
+- When frontend standards apply, generate tasks that preserve Next.js App
+  Router structure, strict four-file provider folders, `antd-style` styling,
+  typed contracts, and extraction of regular nested components into dedicated
+  files.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -37,6 +41,10 @@ description: "Task list template for feature implementation"
 - **Web app**: `backend/src/`, `frontend/src/`
 - **Mobile**: `api/src/`, `ios/src/` or `android/src/`
 - Paths shown below assume single project - adjust based on plan.md structure
+
+For JourneyPoint-like App Router frontends, prefer concrete paths such as
+`journeypoint/app/`, `journeypoint/components/`, `journeypoint/providers/`,
+`journeypoint/types/`, and `journeypoint/utils/`.
 
 <!-- 
   ============================================================================

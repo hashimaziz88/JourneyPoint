@@ -25,6 +25,14 @@ Do not infer a different feature package from the current branch name. Ignore
 - Use `antd-style`.
 - Do not use inline styles.
 - Do not use untyped `any`.
+- Keep provider folders on the strict four-file contract only:
+  `actions.tsx`, `context.tsx`, `index.tsx`, and `reducer.tsx`.
+- Keep cross-cutting bootstrap and auth/session restoration logic outside
+  provider folders.
+- Do not declare regular nested React components inside other component bodies.
+- Normalize older company guidance to JourneyPoint's actual stack: do not add
+  legacy `pages/`, `getServerSideProps`, `getStaticProps`, or Tailwind-first
+  patterns here.
 - Keep AI calls out of the frontend.
 - Ignore `../angular/`.
 

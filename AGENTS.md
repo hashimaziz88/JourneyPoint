@@ -41,6 +41,7 @@ The `angular/` application is out of scope and must be ignored.
 - Preserve tenant isolation and do not bypass ABP tenant handling for convenience.
 - Keep all AI calls backend-only, explicit, reviewable, and auditable.
 - Use provider-based state for stateful frontend features.
+- Use the Next.js App Router rather than legacy `pages/` routing.
 - Do not use inline styles.
 - Do not use `any` in TypeScript.
 - Map meaningful implementation work back to the active feature tasks and issue roadmap.
@@ -51,6 +52,10 @@ The `angular/` application is out of scope and must be ignored.
   rules, DTOs next to app services, no domain logic in AppServices, public
   backend classes/methods documented with XML comments, and strict four-file
   provider folders only.
+- Normalize older company frontend notes to the real repo stack: App Router and
+  `antd-style` are binding here, so do not introduce legacy Pages Router or
+  Tailwind-specific patterns unless the higher-priority project docs are
+  explicitly changed.
 - Do not declare regular child React components inside other functional
   component bodies; extract them into `components/` or another dedicated
   module.
