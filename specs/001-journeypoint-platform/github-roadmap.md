@@ -89,6 +89,10 @@ Total canonical issues: 30
 
 ### M2 - Plan Authoring and Content Ingestion
 
+Milestone gate: begin M2 only after the current M1-owned guidance, shared
+frontend shell/auth surfaces, and JourneyPoint-owned backend foundation files
+have been normalized to the absorbed company engineering standards.
+
 1. **JP-007 - Model onboarding plan, module, and template task entities**
    - Labels: backend, domain
    - Scope: reusable onboarding template entities and relationships

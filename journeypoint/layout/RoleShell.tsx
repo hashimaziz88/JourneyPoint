@@ -8,6 +8,9 @@ import { useAppSession } from "@/helpers/useAppSession";
 import Spinner from "@/components/spinner/Spinner";
 import AppShell from "./AppShell";
 
+/**
+ * Defines the route-shell access and presentation options for a role workspace.
+ */
 interface IRoleShellProps {
   children: React.ReactNode;
   title: string;
@@ -17,6 +20,9 @@ interface IRoleShellProps {
   allowHost?: boolean;
 }
 
+/**
+ * Applies role-aware access control and shared shell rendering to a workspace.
+ */
 const RoleShell: React.FC<IRoleShellProps> = ({
   children,
   title,

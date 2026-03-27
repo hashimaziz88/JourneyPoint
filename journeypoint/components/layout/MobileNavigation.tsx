@@ -7,6 +7,9 @@ import { MenuOutlined } from "@ant-design/icons";
 import { useStyles } from "@/layout/style/style";
 import AppShellBrand from "./AppShellBrand";
 
+/**
+ * Defines the props required to render the mobile workspace navigation drawer.
+ */
 interface IMobileNavigationProps {
   menuItems: NonNullable<MenuProps["items"]>;
   onNavigate: (href: string) => void;
@@ -15,6 +18,9 @@ interface IMobileNavigationProps {
   subtitle: string;
 }
 
+/**
+ * Renders the mobile-only navigation entry point and full-screen drawer.
+ */
 const MobileNavigation: React.FC<IMobileNavigationProps> = ({
   menuItems,
   onNavigate,

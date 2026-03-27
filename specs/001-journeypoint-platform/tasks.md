@@ -172,6 +172,7 @@ engagement data, surfaces at-risk hires, and supports facilitator intervention.
 - [x] T055 [P] Update cross-agent guidance in `AGENTS.md`, `CLAUDE.md`, `journeypoint/AGENTS.md`, `journeypoint/CLAUDE.md`, and `.github/copilot-instructions.md`
 - [ ] T056 Run milestone smoke validation using `specs/001-journeypoint-platform/quickstart.md`
 - [x] T057 Review issue slicing and milestone readiness in `specs/001-journeypoint-platform/github-roadmap.md`
+- [x] T058 Align repo guidance, Speckit templates, and current M1-owned backend/frontend implementation surfaces to the absorbed company engineering standards before starting M2
 
 ---
 

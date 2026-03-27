@@ -26,6 +26,9 @@ using Microsoft.EntityFrameworkCore;
 namespace JourneyPoint.Users
 {
     [AbpAuthorize(PermissionNames.Pages_Users)]
+    /// <summary>
+    /// Provides tenant-scoped user management and password administration workflows.
+    /// </summary>
     public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {
         private readonly UserManager _userManager;
@@ -53,6 +56,9 @@ namespace JourneyPoint.Users
             _logInManager = logInManager;
         }
 
+        /// <summary>
+        /// Creates a tenant-scoped user and assigns the selected roles.
+        /// </summary>
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
         {
             CheckCreatePermission();
@@ -76,6 +82,9 @@ namespace JourneyPoint.Users
             return MapToEntityDto(user);
         }
 
+        /// <summary>
+        /// Updates a tenant-scoped user and refreshes their assigned roles.
+        /// </summary>
         public override async Task<UserDto> UpdateAsync(UserDto input)
         {
             CheckUpdatePermission();
@@ -94,6 +103,9 @@ namespace JourneyPoint.Users
             return await GetAsync(input);
         }
 
+        /// <summary>
+        /// Deletes the specified user.
+        /// </summary>
         public override async Task DeleteAsync(EntityDto<long> input)
         {
             var user = await _userManager.GetUserByIdAsync(input.Id);
@@ -101,6 +113,9 @@ namespace JourneyPoint.Users
         }
 
         [AbpAuthorize(PermissionNames.Pages_Users_Activation)]
+        /// <summary>
+        /// Activates the specified user account.
+        /// </summary>
         public async Task Activate(EntityDto<long> user)
         {
             await Repository.UpdateAsync(user.Id, async (entity) =>
@@ -110,6 +125,9 @@ namespace JourneyPoint.Users
         }
 
         [AbpAuthorize(PermissionNames.Pages_Users_Activation)]
+        /// <summary>
+        /// Deactivates the specified user account.
+        /// </summary>
         public async Task DeActivate(EntityDto<long> user)
         {
             await Repository.UpdateAsync(user.Id, async (entity) =>
@@ -118,12 +136,18 @@ namespace JourneyPoint.Users
             });
         }
 
+        /// <summary>
+        /// Returns the roles available within the current tenant scope.
+        /// </summary>
         public async Task<ListResultDto<RoleDto>> GetRoles()
         {
             var roles = await _roleRepository.GetAllListAsync();
             return new ListResultDto<RoleDto>(ObjectMapper.Map<List<RoleDto>>(roles));
         }
 
+        /// <summary>
+        /// Changes the current user's preferred language setting.
+        /// </summary>
         public async Task ChangeLanguage(ChangeUserLanguageDto input)
         {
             await SettingManager.ChangeSettingForUserAsync(
@@ -187,6 +211,9 @@ namespace JourneyPoint.Users
             identityResult.CheckErrors(LocalizationManager);
         }
 
+        /// <summary>
+        /// Changes the current user's password after validating the current password.
+        /// </summary>
         public async Task<bool> ChangePassword(ChangePasswordDto input)
         {
             await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
@@ -212,6 +239,9 @@ namespace JourneyPoint.Users
             return true;
         }
 
+        /// <summary>
+        /// Allows a tenant administrator to reset another user's password after admin-password confirmation.
+        /// </summary>
         public async Task<bool> ResetPassword(ResetPasswordDto input)
         {
             if (_abpSession.UserId == null)

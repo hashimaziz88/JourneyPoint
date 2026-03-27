@@ -6,6 +6,9 @@ using JourneyPoint.Authorization.Users;
 namespace JourneyPoint.Sessions.Dto
 {
     [AutoMapFrom(typeof(User))]
+    /// <summary>
+    /// Describes the current authenticated user returned in the session payload.
+    /// </summary>
     public class UserLoginInfoDto : EntityDto<long>
     {
         public string Name { get; set; }
