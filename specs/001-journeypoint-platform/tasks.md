@@ -87,7 +87,7 @@ in and reach the correct shell without cross-tenant leakage.
 **Independent Test**: A facilitator can create a plan manually, import a plan
 from markdown, and review document-extracted task proposals.
 
-- [ ] T019 [P] [US2] Create plan authoring entities in `aspnet-core/src/JourneyPoint.Core/Domains/OnboardingPlans/OnboardingPlan.cs`, `OnboardingModule.cs`, and `OnboardingTask.cs`
+- [x] T019 [P] [US2] Create plan authoring entities in `aspnet-core/src/JourneyPoint.Core/Domains/OnboardingPlans/OnboardingPlan.cs`, `OnboardingModule.cs`, and `OnboardingTask.cs`
 - [ ] T020 [P] [US2] Create enrichment entities in `aspnet-core/src/JourneyPoint.Core/Domains/OnboardingPlans/OnboardingDocument.cs` and `ExtractedTask.cs`
 - [ ] T021 [US2] Register onboarding `DbSet` properties and mappings in `aspnet-core/src/JourneyPoint.EntityFrameworkCore/EntityFrameworkCore/JourneyPointDbContext.cs` and related configuration files
 - [ ] T022 [US2] Add initial onboarding migration under `aspnet-core/src/JourneyPoint.EntityFrameworkCore/Migrations/`

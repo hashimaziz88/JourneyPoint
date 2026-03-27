@@ -37,7 +37,7 @@ JourneyPoint has three primary domain areas:
 ### OnboardingModule
 
 - Purpose: define ordered phases that also drive pipeline columns
-- Core fields: onboarding plan id, name, description, order index, day offset
+- Core fields: onboarding plan id, name, description, order index
 - Relationships:
   - many-to-one with `OnboardingPlan`
   - one-to-many with `OnboardingTask`
@@ -45,8 +45,8 @@ JourneyPoint has three primary domain areas:
 ### OnboardingTask
 
 - Purpose: define reusable template work before a hire exists
-- Core fields: module id, title, description, category, day offset, assigned-to
-  role, acknowledgement requirement
+- Core fields: module id, title, description, category, order index, due-day
+  offset, assigned-to role, acknowledgement requirement
 - Relationships:
   - many-to-one with `OnboardingModule`
   - optional one-to-many source relationship to `JourneyTask`
