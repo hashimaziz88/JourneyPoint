@@ -54,6 +54,15 @@ const PlanCard: React.FC<IPlanCardProps> = ({
     const { styles } = useStyles();
     const canPublish = plan.status === OnboardingPlanStatus.Draft;
     const canArchive = plan.status !== OnboardingPlanStatus.Archived;
+    const handleCloneClick = async (): Promise<void> => {
+        await onClone(plan);
+    };
+    const handlePublishClick = async (): Promise<void> => {
+        await onPublish(plan);
+    };
+    const handleArchiveClick = async (): Promise<void> => {
+        await onArchive(plan);
+    };
 
     return (
         <Card className={styles.planCard}>
@@ -92,12 +101,12 @@ const PlanCard: React.FC<IPlanCardProps> = ({
 
                 <Space wrap className={styles.planCardActions}>
                     <Button onClick={() => onOpen(plan.id)}>Open</Button>
-                    <Button onClick={() => void onClone(plan)} loading={isActionPending}>
+                    <Button onClick={handleCloneClick} loading={isActionPending}>
                         Clone
                     </Button>
                     <Button
                         type="primary"
-                        onClick={() => void onPublish(plan)}
+                        onClick={handlePublishClick}
                         disabled={!canPublish}
                         loading={isActionPending}
                     >
@@ -105,7 +114,7 @@ const PlanCard: React.FC<IPlanCardProps> = ({
                     </Button>
                     <Button
                         danger
-                        onClick={() => void onArchive(plan)}
+                        onClick={handleArchiveClick}
                         disabled={!canArchive}
                         loading={isActionPending}
                     >

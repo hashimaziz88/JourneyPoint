@@ -134,6 +134,156 @@ const withDraft = (
     return updater(draft);
 };
 
+const applyDraftMetadata = (
+    currentDraft: IOnboardingPlanDraft,
+    payload: Partial<IOnboardingPlanDraft>,
+): IOnboardingPlanDraft => ({
+    ...currentDraft,
+    ...payload,
+});
+
+const appendDraftModule = (
+    currentDraft: IOnboardingPlanDraft,
+): IOnboardingPlanDraft => ({
+    ...currentDraft,
+    modules: normalizeModules([
+        ...currentDraft.modules,
+        {
+            clientKey: createClientKey(),
+            name: "",
+            description: "",
+            orderIndex: currentDraft.modules.length + 1,
+            tasks: [],
+        },
+    ]),
+});
+
+const updateDraftModuleDetails = (
+    currentDraft: IOnboardingPlanDraft,
+    moduleClientKey: string,
+    name: string,
+    description: string,
+): IOnboardingPlanDraft => ({
+    ...currentDraft,
+    modules: currentDraft.modules.map((module) =>
+        module.clientKey === moduleClientKey
+            ? { ...module, name, description }
+            : module,
+    ),
+});
+
+const removeDraftModule = (
+    currentDraft: IOnboardingPlanDraft,
+    moduleClientKey: string,
+): IOnboardingPlanDraft => ({
+    ...currentDraft,
+    modules: normalizeModules(
+        currentDraft.modules.filter((module) => module.clientKey !== moduleClientKey),
+    ),
+});
+
+const reorderDraftModule = (
+    currentDraft: IOnboardingPlanDraft,
+    moduleClientKey: string,
+    direction: "up" | "down",
+): IOnboardingPlanDraft => {
+    const currentIndex = currentDraft.modules.findIndex(
+        (module) => module.clientKey === moduleClientKey,
+    );
+    const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+
+    return {
+        ...currentDraft,
+        modules: normalizeModules(moveItem(currentDraft.modules, currentIndex, targetIndex)),
+    };
+};
+
+const appendDraftTask = (
+    currentDraft: IOnboardingPlanDraft,
+    moduleClientKey: string,
+    payload: IOnboardingTaskEditorValues,
+): IOnboardingPlanDraft => ({
+    ...currentDraft,
+    modules: currentDraft.modules.map((module) =>
+        module.clientKey === moduleClientKey
+            ? {
+                ...module,
+                tasks: normalizeTasks([
+                    ...module.tasks,
+                    {
+                        clientKey: createClientKey(),
+                        orderIndex: module.tasks.length + 1,
+                        ...payload,
+                    },
+                ]),
+            }
+            : module,
+    ),
+});
+
+const updateDraftTaskDetails = (
+    currentDraft: IOnboardingPlanDraft,
+    moduleClientKey: string,
+    taskClientKey: string,
+    payload: IOnboardingTaskEditorValues,
+): IOnboardingPlanDraft => ({
+    ...currentDraft,
+    modules: currentDraft.modules.map((module) =>
+        module.clientKey === moduleClientKey
+            ? {
+                ...module,
+                tasks: module.tasks.map((task) =>
+                    task.clientKey === taskClientKey
+                        ? { ...task, ...payload }
+                        : task,
+                ),
+            }
+            : module,
+    ),
+});
+
+const removeDraftTask = (
+    currentDraft: IOnboardingPlanDraft,
+    moduleClientKey: string,
+    taskClientKey: string,
+): IOnboardingPlanDraft => ({
+    ...currentDraft,
+    modules: currentDraft.modules.map((module) =>
+        module.clientKey === moduleClientKey
+            ? {
+                ...module,
+                tasks: normalizeTasks(
+                    module.tasks.filter((task) => task.clientKey !== taskClientKey),
+                ),
+            }
+            : module,
+    ),
+});
+
+const reorderDraftTask = (
+    currentDraft: IOnboardingPlanDraft,
+    moduleClientKey: string,
+    taskClientKey: string,
+    direction: "up" | "down",
+): IOnboardingPlanDraft => ({
+    ...currentDraft,
+    modules: currentDraft.modules.map((module) => {
+        if (module.clientKey !== moduleClientKey) {
+            return module;
+        }
+
+        const currentIndex = module.tasks.findIndex(
+            (task) => task.clientKey === taskClientKey,
+        );
+        const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+
+        return {
+            ...module,
+            tasks: normalizeTasks(moveItem(module.tasks, currentIndex, targetIndex)),
+        };
+    }),
+});
+
 const getApiResult = <T,>(response: { data?: { result?: T } & T }): T =>
     response.data?.result ?? (response.data as T);
 
@@ -255,26 +405,11 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
     };
 
     const setDraftMetadata: IOnboardingPlanActionContext["setDraftMetadata"] = (payload) => {
-        updateDraft((currentDraft) => ({
-            ...currentDraft,
-            ...payload,
-        }));
+        updateDraft((currentDraft) => applyDraftMetadata(currentDraft, payload));
     };
 
     const addModule = (): void => {
-        updateDraft((currentDraft) => ({
-            ...currentDraft,
-            modules: normalizeModules([
-                ...currentDraft.modules,
-                {
-                    clientKey: createClientKey(),
-                    name: "",
-                    description: "",
-                    orderIndex: currentDraft.modules.length + 1,
-                    tasks: [],
-                },
-            ]),
-        }));
+        updateDraft(appendDraftModule);
     };
 
     const updateModule = (
@@ -282,64 +417,31 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
         name: string,
         description: string,
     ): void => {
-        updateDraft((currentDraft) => ({
-            ...currentDraft,
-            modules: currentDraft.modules.map((module) =>
-                module.clientKey === moduleClientKey
-                    ? { ...module, name, description }
-                    : module,
-            ),
-        }));
+        updateDraft((currentDraft) =>
+            updateDraftModuleDetails(currentDraft, moduleClientKey, name, description),
+        );
     };
 
     const removeModule = (moduleClientKey: string): void => {
-        updateDraft((currentDraft) => ({
-            ...currentDraft,
-            modules: normalizeModules(
-                currentDraft.modules.filter((module) => module.clientKey !== moduleClientKey),
-            ),
-        }));
+        updateDraft((currentDraft) => removeDraftModule(currentDraft, moduleClientKey));
     };
 
     const moveModule = (
         moduleClientKey: string,
         direction: "up" | "down",
     ): void => {
-        updateDraft((currentDraft) => {
-            const currentIndex = currentDraft.modules.findIndex(
-                (module) => module.clientKey === moduleClientKey,
-            );
-            const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
-
-            return {
-                ...currentDraft,
-                modules: normalizeModules(moveItem(currentDraft.modules, currentIndex, targetIndex)),
-            };
-        });
+        updateDraft((currentDraft) =>
+            reorderDraftModule(currentDraft, moduleClientKey, direction),
+        );
     };
 
     const addTask = (
         moduleClientKey: string,
         payload: IOnboardingTaskEditorValues,
     ): void => {
-        updateDraft((currentDraft) => ({
-            ...currentDraft,
-            modules: currentDraft.modules.map((module) =>
-                module.clientKey === moduleClientKey
-                    ? {
-                        ...module,
-                        tasks: normalizeTasks([
-                            ...module.tasks,
-                            {
-                                clientKey: createClientKey(),
-                                orderIndex: module.tasks.length + 1,
-                                ...payload,
-                            },
-                        ]),
-                    }
-                    : module,
-            ),
-        }));
+        updateDraft((currentDraft) =>
+            appendDraftTask(currentDraft, moduleClientKey, payload),
+        );
     };
 
     const updateTask = (
@@ -347,40 +449,23 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
         taskClientKey: string,
         payload: IOnboardingTaskEditorValues,
     ): void => {
-        updateDraft((currentDraft) => ({
-            ...currentDraft,
-            modules: currentDraft.modules.map((module) =>
-                module.clientKey === moduleClientKey
-                    ? {
-                        ...module,
-                        tasks: module.tasks.map((task) =>
-                            task.clientKey === taskClientKey
-                                ? { ...task, ...payload }
-                                : task,
-                        ),
-                    }
-                    : module,
+        updateDraft((currentDraft) =>
+            updateDraftTaskDetails(
+                currentDraft,
+                moduleClientKey,
+                taskClientKey,
+                payload,
             ),
-        }));
+        );
     };
 
     const removeTask = (
         moduleClientKey: string,
         taskClientKey: string,
     ): void => {
-        updateDraft((currentDraft) => ({
-            ...currentDraft,
-            modules: currentDraft.modules.map((module) =>
-                module.clientKey === moduleClientKey
-                    ? {
-                        ...module,
-                        tasks: normalizeTasks(
-                            module.tasks.filter((task) => task.clientKey !== taskClientKey),
-                        ),
-                    }
-                    : module,
-            ),
-        }));
+        updateDraft((currentDraft) =>
+            removeDraftTask(currentDraft, moduleClientKey, taskClientKey),
+        );
     };
 
     const moveTask = (
@@ -388,24 +473,14 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
         taskClientKey: string,
         direction: "up" | "down",
     ): void => {
-        updateDraft((currentDraft) => ({
-            ...currentDraft,
-            modules: currentDraft.modules.map((module) => {
-                if (module.clientKey !== moduleClientKey) {
-                    return module;
-                }
-
-                const currentIndex = module.tasks.findIndex(
-                    (task) => task.clientKey === taskClientKey,
-                );
-                const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
-
-                return {
-                    ...module,
-                    tasks: normalizeTasks(moveItem(module.tasks, currentIndex, targetIndex)),
-                };
-            }),
-        }));
+        updateDraft((currentDraft) =>
+            reorderDraftTask(
+                currentDraft,
+                moduleClientKey,
+                taskClientKey,
+                direction,
+            ),
+        );
     };
 
     return (

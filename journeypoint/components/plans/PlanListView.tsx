@@ -13,8 +13,11 @@ import {
     Typography,
     message,
 } from "antd";
-import { PlusOutlined, ReloadOutlined } from "@ant-design/icons";
-import { buildFacilitatorPlanRoute } from "@/constants/auth/routes";
+import { ImportOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
+import {
+    APP_ROUTES,
+    buildFacilitatorPlanRoute,
+} from "@/constants/auth/routes";
 import PlanCard from "@/components/plans/PlanCard";
 import { useStyles } from "@/components/plans/style/style";
 import {
@@ -151,9 +154,49 @@ const PlanListView: React.FC = () => {
     };
 
     const hasPlans = (plans ?? []).length > 0;
+    const listContent = isListPending ? (
+        <Spin size="large" className={styles.loadingWrap} />
+    ) : hasPlans ? (
+        <>
+            <div className={styles.planGrid}>
+                {(plans ?? []).map((plan) => (
+                    <PlanCard
+                        key={plan.id}
+                        isActionPending={isMutationPending}
+                        onArchive={handleArchive}
+                        onClone={handleClone}
+                        onOpen={handleOpen}
+                        onPublish={handlePublish}
+                        plan={plan}
+                    />
+                ))}
+            </div>
+
+            <div className={styles.paginationWrap}>
+                <Pagination
+                    current={query.current}
+                    pageSize={query.maxResultCount}
+                    total={totalCount ?? 0}
+                    showSizeChanger
+                    onChange={(page, pageSize) =>
+                        setQuery((currentQuery) => ({
+                            ...currentQuery,
+                            current: page,
+                            maxResultCount: pageSize,
+                        }))
+                    }
+                />
+            </div>
+        </>
+    ) : (
+        <Empty
+            className={styles.emptyState}
+            description="No onboarding plans match the current filter set."
+        />
+    );
 
     return (
-        <Space direction="vertical" size={24} className={styles.pageRoot}>
+        <Space orientation="vertical" size={24} className={styles.pageRoot}>
             {messageContextHolder}
             <div className={styles.pageHeader}>
                 <div>
@@ -181,6 +224,16 @@ const PlanListView: React.FC = () => {
                         onClick={() => handleOpen("new")}
                     >
                         New Plan
+                    </Button>
+                    <Button
+                        icon={<ImportOutlined />}
+                        onClick={() =>
+                            startTransition(() =>
+                                router.push(APP_ROUTES.facilitatorMarkdownImport),
+                            )
+                        }
+                    >
+                        Import Markdown
                     </Button>
                 </Space>
             </div>
@@ -215,46 +268,7 @@ const PlanListView: React.FC = () => {
                 </div>
             </Card>
 
-            {isListPending ? (
-                <Spin size="large" className={styles.loadingWrap} />
-            ) : hasPlans ? (
-                <>
-                    <div className={styles.planGrid}>
-                        {(plans ?? []).map((plan) => (
-                            <PlanCard
-                                key={plan.id}
-                                isActionPending={isMutationPending}
-                                onArchive={handleArchive}
-                                onClone={handleClone}
-                                onOpen={handleOpen}
-                                onPublish={handlePublish}
-                                plan={plan}
-                            />
-                        ))}
-                    </div>
-
-                    <div className={styles.paginationWrap}>
-                        <Pagination
-                            current={query.current}
-                            pageSize={query.maxResultCount}
-                            total={totalCount ?? 0}
-                            showSizeChanger
-                            onChange={(page, pageSize) =>
-                                setQuery((currentQuery) => ({
-                                    ...currentQuery,
-                                    current: page,
-                                    maxResultCount: pageSize,
-                                }))
-                            }
-                        />
-                    </div>
-                </>
-            ) : (
-                <Empty
-                    className={styles.emptyState}
-                    description="No onboarding plans match the current filter set."
-                />
-            )}
+            {listContent}
         </Space>
     );
 };
