@@ -142,3 +142,54 @@
 - Alternatives considered: Putting these rules on entities or directly in
   AppServices was rejected because it conflicts with the absorbed backend
   standards and makes later M3/M4 extension harder.
+
+## Decision 15: Keep hire account provisioning in the Application layer
+
+- Decision: JP-015 should create hires through a `HireAppService` that
+  orchestrates `HireJourneyManager`, `UserManager`, `RoleManager`, and the
+  welcome-notification abstraction inside one tenant-aware application flow.
+- Rationale: Hire aggregate validation belongs in Core, but identity account
+  creation and role assignment are ABP application concerns and should not be
+  pushed into the domain manager.
+- Alternatives considered: Creating users directly from Core or from Web.Host
+  was rejected because it breaks ABP layering and mixes infrastructure with
+  domain rules.
+
+## Decision 16: Assign only the Enrolee role and validate manager linkage separately
+
+- Decision: Newly provisioned hire accounts should receive only the `Enrolee`
+  role during JP-015, while optional `ManagerUserId` remains a reference to an
+  existing same-tenant user validated to hold the `Manager` role.
+- Rationale: This keeps least-privilege defaults for new hires and avoids
+  silently creating or mutating manager accounts during enrolment.
+- Alternatives considered: Copying facilitator roles, auto-creating managers,
+  or skipping manager-role validation were rejected because they weaken role
+  safety and create ambiguous onboarding ownership.
+
+## Decision 17: Treat welcome delivery failures as recoverable enrolment outcomes
+
+- Decision: The hire enrolment flow should initiate welcome notification
+  immediately after account creation, but a mail/send failure must not roll back
+  the hire or platform user. Instead, the system should persist a recoverable
+  welcome state on the hire plus safe attempt metadata for later retry in
+  JP-018.
+- Rationale: Email and notification providers are more failure-prone than local
+  entity writes, so rolling back the entire enrolment for a transient send
+  error would frustrate facilitators and create duplicate-account risk.
+- Alternatives considered: Rolling back account creation on send failure or
+  introducing a dedicated communication aggregate in JP-015 were rejected as
+  either too brittle or too heavy for the current slice.
+
+## Decision 18: Never persist plaintext onboarding credentials
+
+- Decision: The initial generated password or activation secret may be used
+  in-memory for the first welcome-notification attempt, but plaintext
+  credentials must never be stored on `Hire` or in a notification table. Future
+  resend flows should reset or reissue credentials instead of reading a stored
+  secret.
+- Rationale: Recoverable notification behavior is required, but storing
+  original credentials would create unnecessary security risk and conflict with
+  the repo's accountable platform posture.
+- Alternatives considered: Persisting the original temporary password for later
+  resend was rejected because it increases breach impact and is not needed once
+  a reset/reissue path exists.

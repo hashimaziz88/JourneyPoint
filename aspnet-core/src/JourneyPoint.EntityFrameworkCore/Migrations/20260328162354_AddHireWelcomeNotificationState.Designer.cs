@@ -3,6 +3,7 @@ using System;
 using JourneyPoint.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JourneyPoint.Migrations
 {
     [DbContext(typeof(JourneyPointDbContext))]
-    partial class JourneyPointDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260328162354_AddHireWelcomeNotificationState")]
+    partial class AddHireWelcomeNotificationState
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

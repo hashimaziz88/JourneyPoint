@@ -103,15 +103,38 @@ JourneyPoint has three primary domain areas:
   - activated at
   - completed at
   - exited at
+  - welcome notification status
+  - welcome notification last attempted at
+  - welcome notification sent at
+  - welcome notification failure reason
 - Validation:
   - full name and email are required
   - start date is required
   - onboarding plan id is required
   - role title and department use bounded lengths
   - a tenant-scoped hire cannot point at a plan from another tenant
+  - optional `ManagerUserId` must reference a same-tenant user with the
+    `Manager` role
+  - `PlatformUserId` becomes required once account provisioning succeeds
+  - recoverable welcome failure state may store a safe failure summary only and
+    must never store plaintext credentials
 - Relationships:
   - many-to-one with `OnboardingPlan`
   - one-to-one with `Journey`
+
+### WelcomeNotificationStatus
+
+- Lifecycle: Pending -> Sent or FailedRecoverable
+- Purpose: track the outcome of the initial welcome-notification attempt without
+  introducing a separate communication aggregate in JP-015
+- Core fields:
+  - status
+  - last attempted at
+  - sent at
+  - failure reason summary
+- Notes:
+  - plaintext credentials are never persisted
+  - JP-018 may add retry/resend orchestration on top of this state
 
 ### Journey
 
@@ -191,6 +214,30 @@ JourneyPoint has three primary domain areas:
    moves to `Active`, and copied due dates remain based on the hire start date.
 5. Pause or complete the journey through the manager logic and confirm
    transitions reject invalid state jumps.
+
+### JP-015 Planned Application Files
+
+- `aspnet-core/src/JourneyPoint.Application/Services/HireService/IHireAppService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/HireService/HireAppService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/HireService/Dto/CreateHireRequest.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/HireService/Dto/HireEnrolmentResultDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/NotificationService/IWelcomeNotificationService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/NotificationService/WelcomeNotificationService.cs`
+
+### JP-015 Validation Steps
+
+1. Submit hire creation for a published plan and confirm a same-tenant `Hire`
+   is created in `PendingActivation` with no cross-tenant plan or manager
+   leakage.
+2. Confirm a tenant-scoped platform account is created for the hire and
+   assigned only the `Enrolee` role.
+3. Supply an optional manager id and confirm enrolment accepts only a same-tenant
+   user who already has the `Manager` role.
+4. Run enrolment with mail enabled and confirm the response reports welcome
+   status `Sent` with a recorded send timestamp.
+5. Simulate a notification failure and confirm the hire and account still
+   persist while the hire records `FailedRecoverable` plus safe failure metadata
+   only, with no plaintext credential storage.
 
 ### GenerationLog
 
