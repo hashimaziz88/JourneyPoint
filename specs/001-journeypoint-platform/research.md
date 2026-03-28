@@ -193,3 +193,38 @@
 - Alternatives considered: Persisting the original temporary password for later
   resend was rejected because it increases breach impact and is not needed once
   a reset/reissue path exists.
+
+## Decision 19: Keep synchronous draft generation in a dedicated Journey application service
+
+- Decision: JP-016 should introduce `JourneyAppService` for draft generation and
+  draft-review mutations rather than extending `HireAppService` further.
+- Rationale: `HireAppService` already owns identity and welcome-notification
+  orchestration, while synchronous journey generation and review are a separate
+  use-case slice that still depends on the same Core manager rules.
+- Alternatives considered: Folding generation and review into `HireAppService`
+  was rejected because it would blur service boundaries and make the milestone-3
+  application layer harder to keep under the repository's file-size and
+  readability standards.
+
+## Decision 20: Compute journey due dates from the hire start date plus template offsets
+
+- Decision: Draft generation should compute each `JourneyTask.DueOn` from the
+  persisted `Hire.StartDate` plus the copied template `DueDayOffset`.
+- Rationale: This preserves deterministic tenant-safe scheduling, matches the
+  current domain model, and keeps generated tasks stable even if the source
+  template is later edited.
+- Alternatives considered: Recomputing due dates from the current date or
+  reading them live from the template after generation was rejected because it
+  would make draft review nondeterministic and violate the snapshot requirement.
+
+## Decision 21: Allow draft-only journey review edits on copied task snapshots
+
+- Decision: Facilitators may review a draft journey by editing copied snapshot
+  fields, adding new facilitator-authored tasks with no source-template ids, and
+  removing only pending draft tasks before activation.
+- Rationale: This satisfies the reviewable-draft requirement while preserving
+  the rule that onboarding-plan templates affect only future journeys.
+- Alternatives considered: Locking all generated tasks against change or writing
+  review edits back to `OnboardingTask` was rejected because both approaches
+  conflict with the product requirement for per-hire review without template
+  mutation.

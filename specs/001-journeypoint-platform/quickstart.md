@@ -86,12 +86,17 @@ Expected result:
    manager.
 3. Confirm the initial welcome-notification attempt reports either `Sent` or a
    recoverable failure state without rolling back the hire or account.
-4. Generate the draft journey and confirm it starts in `Draft`.
+4. Generate the draft journey and confirm the operation completes
+   synchronously and the journey starts in `Draft`.
 5. Review the generated draft journey and confirm task payloads include copied
-   snapshot fields plus optional source-template ids.
-6. Edit the source onboarding plan after generation and confirm the draft
-   journey task content does not mutate.
-7. Activate the journey and confirm the hire moves to `Active`, the journey
+   snapshot fields, preserved ordering and assignment rules, and optional
+   source-template ids.
+6. Confirm generated due dates match the hire start date plus copied day
+   offsets.
+7. Update one draft task, add one facilitator-authored draft task, and remove
+   one pending draft task while confirming the underlying onboarding template
+   records do not mutate.
+8. Activate the journey and confirm the hire moves to `Active`, the journey
    moves to `Active`, and due dates still reflect the hire start date.
 
 ### Milestone 4 - Journey Participation and Human-in-the-Loop AI
