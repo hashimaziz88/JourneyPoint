@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using Abp.Dependency;
 using JourneyPoint.Configuration;
 using Microsoft.Extensions.Options;
 
@@ -11,7 +12,7 @@ namespace JourneyPoint.Application.Services.NotificationService
     /// <summary>
     /// Sends onboarding welcome notifications through the configured mail provider.
     /// </summary>
-    public class WelcomeNotificationService : IWelcomeNotificationService
+    public class WelcomeNotificationService : IWelcomeNotificationService, ITransientDependency
     {
         private readonly MailOptions _mailOptions;
 
