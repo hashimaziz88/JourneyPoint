@@ -11,6 +11,43 @@ foundation and access control, plan authoring and content ingestion, hire
 enrolment and journey orchestration, participant experience with human-in-the-
 loop AI, and engagement intelligence with intervention workflows.
 
+The current planning increment for JP-013 focuses milestone 3 domain modeling on
+`Hire`, `Journey`, and `JourneyTask` under
+`aspnet-core/src/JourneyPoint.Core/Domains/Hires/`, keeping the initial slice
+minimal: audited `Guid` entities, explicit lifecycle enums, copied task
+snapshots that preserve optional source-template linkage, and a Core-owned
+domain manager for aggregate validation and state transitions.
+
+The current planning increment for JP-015 focuses milestone 3 application
+orchestration on tenant-safe hire enrolment before journey generation expands
+again in JP-016. This slice will create the hire record, provision a tenant user
+account, assign the `Enrolee` role, validate optional manager association,
+initiate the welcome-notification workflow, and persist a recoverable delivery
+state without storing plaintext credentials. The minimal file surface stays in
+`aspnet-core/src/JourneyPoint.Application/Services/HireService/` and
+`aspnet-core/src/JourneyPoint.Application/Services/NotificationService/` with
+DTOs beside their AppServices and identity orchestration kept in the
+Application layer.
+
+The current planning increment for JP-016 focuses milestone 3 synchronous
+journey generation and draft review after enrolment succeeds. This slice will
+introduce a dedicated `JourneyService` application surface that copies published
+plan tasks into `JourneyTask` snapshots, computes due dates directly from the
+hire start date, preserves module/task ordering and assignment rules, and
+supports draft-only review edits, additions, and removals without mutating the
+underlying template records. The minimal file surface stays in
+`aspnet-core/src/JourneyPoint.Application/Services/JourneyService/` with DTOs
+beside the AppService and Core-owned generation rules remaining in
+`HireJourneyManager`.
+
+The current planning increment for JP-017 focuses milestone 3 facilitator UI
+delivery on top of the hire-enrolment and journey-review backend. This slice
+will add App Router pages for the hire list, hire detail, and journey review
+workspace; activation controls tied to the draft-review flow; strict
+provider-backed state for hire queries and journey review mutations; and
+`antd-style` presentation components that keep helpers, constants, and typed
+contracts extracted into their dedicated frontend folders.
+
 ## Technical Context
 
 **Language/Version**: C# 12 on .NET 8; TypeScript 5 with React 19 and Next.js 16  

@@ -421,3 +421,6 @@ FodyWeavers.xsd
 /angular
 aspnet-core/.dotnet-home/.dotnet/TelemetryStorageService/20260327081344_fb8bd7f26d53449fb1f5d3ca11eaff86.trn
 *.trn
+/aspnet-core/.localappdata/NuGet/v3-cache
+/aspnet-core/.nuget-packages
+/.dotnet-home/.dotnet/TelemetryStorageService

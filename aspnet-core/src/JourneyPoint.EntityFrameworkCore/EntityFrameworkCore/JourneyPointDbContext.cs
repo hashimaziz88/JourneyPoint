@@ -1,6 +1,7 @@
 using Abp.Zero.EntityFrameworkCore;
 using JourneyPoint.Authorization.Roles;
 using JourneyPoint.Authorization.Users;
+using JourneyPoint.Domains.Hires;
 using JourneyPoint.Domains.OnboardingPlans;
 using JourneyPoint.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +37,21 @@ namespace JourneyPoint.EntityFrameworkCore
         /// Gets or sets extracted task proposals persisted for facilitator review.
         /// </summary>
         public DbSet<ExtractedTask> ExtractedTasks { get; set; }
+
+        /// <summary>
+        /// Gets or sets tenant-scoped hires enrolled into published onboarding plans.
+        /// </summary>
+        public DbSet<Hire> Hires { get; set; }
+
+        /// <summary>
+        /// Gets or sets hire-specific onboarding journeys generated from plan templates.
+        /// </summary>
+        public DbSet<Journey> Journeys { get; set; }
+
+        /// <summary>
+        /// Gets or sets copied journey tasks persisted per hire journey.
+        /// </summary>
+        public DbSet<JourneyTask> JourneyTasks { get; set; }
 
         public JourneyPointDbContext(DbContextOptions<JourneyPointDbContext> options)
             : base(options)

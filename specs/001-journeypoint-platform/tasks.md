@@ -149,14 +149,14 @@ expanding into hire enrolment and journey orchestration.
 **Independent Test**: A facilitator can enrol a hire, generate a draft journey,
 review the task list, and activate the journey.
 
-- [ ] T030 [P] [US3] Create hire and journey entities in `aspnet-core/src/JourneyPoint.Core/Domains/Hires/Hire.cs`, `Journey.cs`, and `JourneyTask.cs`
-- [ ] T031 [US3] Register hire and journey persistence in `aspnet-core/src/JourneyPoint.EntityFrameworkCore/EntityFrameworkCore/JourneyPointDbContext.cs` and a follow-up migration under `aspnet-core/src/JourneyPoint.EntityFrameworkCore/Migrations/`
-- [ ] T032 [US3] Implement hire enrolment and journey generation services in `aspnet-core/src/JourneyPoint.Application/Services/HireService/` and `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/`
-- [ ] T033 [US3] Implement welcome-notification and storage abstractions in `aspnet-core/src/JourneyPoint.Application/Services/NotificationService/` and `aspnet-core/src/JourneyPoint.Application/Services/FileStorageService/`
-- [ ] T034 [P] [US3] Build facilitator hire pages in `journeypoint/app/(facilitator)/hires/page.tsx` and `journeypoint/app/(facilitator)/hires/[hireId]/page.tsx`
-- [ ] T035 [P] [US3] Build journey review page in `journeypoint/app/(facilitator)/hires/[hireId]/journey/page.tsx`
-- [ ] T036 [P] [US3] Add hire and journey provider state in `journeypoint/providers/hireProvider/` and `journeypoint/providers/journeyProvider/`
-- [ ] T037 [US3] Add hire and journey components in `journeypoint/components/hires/HireForm.tsx`, `HireCard.tsx`, and `journeypoint/components/journey/JourneyTaskList.tsx`
+- [x] T030 [P] [US3] Create hire and journey entities in `aspnet-core/src/JourneyPoint.Core/Domains/Hires/Hire.cs`, `Journey.cs`, and `JourneyTask.cs`
+- [x] T031 [US3] Register hire and journey persistence in `aspnet-core/src/JourneyPoint.EntityFrameworkCore/EntityFrameworkCore/JourneyPointDbContext.cs` and a follow-up migration under `aspnet-core/src/JourneyPoint.EntityFrameworkCore/Migrations/`
+- [x] T032 [US3] Implement hire enrolment and journey generation services in `aspnet-core/src/JourneyPoint.Application/Services/HireService/` and `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/`
+- [x] T033 [US3] Implement welcome-notification and storage abstractions in `aspnet-core/src/JourneyPoint.Application/Services/NotificationService/` and `aspnet-core/src/JourneyPoint.Application/Services/FileStorageService/`
+- [x] T034 [P] [US3] Build facilitator hire pages in `journeypoint/app/(facilitator)/hires/page.tsx` and `journeypoint/app/(facilitator)/hires/[hireId]/page.tsx`
+- [x] T035 [P] [US3] Build journey review page in `journeypoint/app/(facilitator)/hires/[hireId]/journey/page.tsx`
+- [x] T036 [P] [US3] Add hire and journey provider state in `journeypoint/providers/hireProvider/` and `journeypoint/providers/journeyProvider/`
+- [x] T037 [US3] Add hire and journey components in `journeypoint/components/hires/HireForm.tsx`, `HireCard.tsx`, and `journeypoint/components/journey/JourneyTaskList.tsx`
 
 **Checkpoint**: Hire enrolment and journey activation are demonstrable.
 

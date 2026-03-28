@@ -76,3 +76,192 @@
 - Alternatives considered: Introducing a different state library or bypassing
   providers inside page components was rejected because it would fragment the
   frontend architecture.
+
+## Decision 9: Use a hire lifecycle that tracks onboarding readiness separately from journey state
+
+- Decision: Model `HireLifecycleState` as `PendingActivation`, `Active`,
+  `Completed`, and `Exited`.
+- Rationale: Hire state needs to answer business questions that are broader than
+  the journey itself, especially the gap between enrolment and activation and
+  the possibility of a hire leaving before onboarding completes.
+- Alternatives considered: Reusing journey status as the only hire lifecycle was
+  rejected because it makes hire-level reporting and exit handling ambiguous.
+
+## Decision 10: Keep journey lifecycle minimal and aligned to the spec
+
+- Decision: Model `JourneyStatus` as `Draft`, `Active`, `Paused`, and
+  `Completed`.
+- Rationale: The active spec already describes these states, and they cleanly
+  separate pre-activation review from live execution without introducing extra
+  cancellation rules into the first milestone-3 domain slice.
+- Alternatives considered: Adding a `Cancelled` status now was rejected because
+  hire exit can be represented by `HireLifecycleState.Exited` plus a paused
+  journey until a concrete cancellation requirement exists.
+
+## Decision 11: Keep journey tasks as copied snapshots with optional source-template references
+
+- Decision: Each `JourneyTask` should persist copied task and module snapshot
+  fields, plus optional `SourceOnboardingTaskId` and `SourceOnboardingModuleId`
+  references back to the template records.
+- Rationale: This keeps generated journeys stable after activation, supports
+  facilitator draft edits without mutating templates, and still preserves
+  lineage for audit, review, and future refresh logic.
+- Alternatives considered: Reading task content directly from `OnboardingTask`
+  after generation was rejected because later template edits would leak into
+  already-generated journeys.
+
+## Decision 12: Avoid a separate journey-module entity in the initial M3 slice
+
+- Decision: Do not introduce `JourneyModule` in JP-013; instead, store module
+  snapshot title and order directly on `JourneyTask`.
+- Rationale: The user requested a minimal domain file set, and module grouping
+  for draft review and participant views can still be reconstructed from task
+  snapshots without another aggregate layer.
+- Alternatives considered: Adding a dedicated journey-module entity now was
+  rejected because it increases file count, persistence complexity, and
+  migration scope before a clear mutation requirement exists.
+
+## Decision 13: Keep journey-task completion state minimal and derive overdue status
+
+- Decision: Persist `JourneyTaskStatus` as `Pending` or `Completed`, and derive
+  overdue status from `DueOn` plus current time rather than storing a separate
+  overdue state.
+- Rationale: This matches the on-demand engagement model, avoids time-driven
+  mutation churn, and keeps the first hire-orchestration domain slice smaller.
+- Alternatives considered: Persisting `Overdue` as a first-class stored status
+  was rejected because it would require extra lifecycle transitions without
+  changing the facilitator or participant flows in milestone 3.
+
+## Decision 14: Centralize generation and lifecycle validation in a minimal Core manager
+
+- Decision: Introduce a single `HireJourneyManager` plus a small validation
+  partial to create hires, generate draft journeys, copy journey tasks, and
+  enforce state transitions and tenant-safe ownership checks.
+- Rationale: This preserves the repo's current Core-manager pattern and keeps
+  AppServices orchestration-only.
+- Alternatives considered: Putting these rules on entities or directly in
+  AppServices was rejected because it conflicts with the absorbed backend
+  standards and makes later M3/M4 extension harder.
+
+## Decision 15: Keep hire account provisioning in the Application layer
+
+- Decision: JP-015 should create hires through a `HireAppService` that
+  orchestrates `HireJourneyManager`, `UserManager`, `RoleManager`, and the
+  welcome-notification abstraction inside one tenant-aware application flow.
+- Rationale: Hire aggregate validation belongs in Core, but identity account
+  creation and role assignment are ABP application concerns and should not be
+  pushed into the domain manager.
+- Alternatives considered: Creating users directly from Core or from Web.Host
+  was rejected because it breaks ABP layering and mixes infrastructure with
+  domain rules.
+
+## Decision 16: Assign only the Enrolee role and validate manager linkage separately
+
+- Decision: Newly provisioned hire accounts should receive only the `Enrolee`
+  role during JP-015, while optional `ManagerUserId` remains a reference to an
+  existing same-tenant user validated to hold the `Manager` role.
+- Rationale: This keeps least-privilege defaults for new hires and avoids
+  silently creating or mutating manager accounts during enrolment.
+- Alternatives considered: Copying facilitator roles, auto-creating managers,
+  or skipping manager-role validation were rejected because they weaken role
+  safety and create ambiguous onboarding ownership.
+
+## Decision 17: Treat welcome delivery failures as recoverable enrolment outcomes
+
+- Decision: The hire enrolment flow should initiate welcome notification
+  immediately after account creation, but a mail/send failure must not roll back
+  the hire or platform user. Instead, the system should persist a recoverable
+  welcome state on the hire plus safe attempt metadata for later retry in
+  JP-018.
+- Rationale: Email and notification providers are more failure-prone than local
+  entity writes, so rolling back the entire enrolment for a transient send
+  error would frustrate facilitators and create duplicate-account risk.
+- Alternatives considered: Rolling back account creation on send failure or
+  introducing a dedicated communication aggregate in JP-015 were rejected as
+  either too brittle or too heavy for the current slice.
+
+## Decision 18: Never persist plaintext onboarding credentials
+
+- Decision: The initial generated password or activation secret may be used
+  in-memory for the first welcome-notification attempt, but plaintext
+  credentials must never be stored on `Hire` or in a notification table. Future
+  resend flows should reset or reissue credentials instead of reading a stored
+  secret.
+- Rationale: Recoverable notification behavior is required, but storing
+  original credentials would create unnecessary security risk and conflict with
+  the repo's accountable platform posture.
+- Alternatives considered: Persisting the original temporary password for later
+  resend was rejected because it increases breach impact and is not needed once
+  a reset/reissue path exists.
+
+## Decision 19: Keep synchronous draft generation in a dedicated Journey application service
+
+- Decision: JP-016 should introduce `JourneyAppService` for draft generation and
+  draft-review mutations rather than extending `HireAppService` further.
+- Rationale: `HireAppService` already owns identity and welcome-notification
+  orchestration, while synchronous journey generation and review are a separate
+  use-case slice that still depends on the same Core manager rules.
+- Alternatives considered: Folding generation and review into `HireAppService`
+  was rejected because it would blur service boundaries and make the milestone-3
+  application layer harder to keep under the repository's file-size and
+  readability standards.
+
+## Decision 20: Compute journey due dates from the hire start date plus template offsets
+
+- Decision: Draft generation should compute each `JourneyTask.DueOn` from the
+  persisted `Hire.StartDate` plus the copied template `DueDayOffset`.
+- Rationale: This preserves deterministic tenant-safe scheduling, matches the
+  current domain model, and keeps generated tasks stable even if the source
+  template is later edited.
+- Alternatives considered: Recomputing due dates from the current date or
+  reading them live from the template after generation was rejected because it
+  would make draft review nondeterministic and violate the snapshot requirement.
+
+## Decision 21: Allow draft-only journey review edits on copied task snapshots
+
+- Decision: Facilitators may review a draft journey by editing copied snapshot
+  fields, adding new facilitator-authored tasks with no source-template ids, and
+  removing only pending draft tasks before activation.
+- Rationale: This satisfies the reviewable-draft requirement while preserving
+  the rule that onboarding-plan templates affect only future journeys.
+- Alternatives considered: Locking all generated tasks against change or writing
+  review edits back to `OnboardingTask` was rejected because both approaches
+  conflict with the product requirement for per-hire review without template
+  mutation.
+
+## Decision 22: Split facilitator M3 UI into dedicated hire-list, hire-detail, and journey-review routes
+
+- Decision: JP-017 should use three App Router pages under the facilitator route
+  group: a tenant-scoped hire index, a hire detail page, and a dedicated journey
+  review page nested under the selected hire.
+- Rationale: This keeps each page under the repo's file-size and readability
+  standards while matching the natural facilitator workflow from cohort browse,
+  to hire context, to detailed draft review and activation.
+- Alternatives considered: Rendering the full journey review editor inline on
+  the hire list or collapsing hire detail and journey review into one oversized
+  page was rejected because it would increase route complexity and produce
+  harder-to-maintain frontend files.
+
+## Decision 23: Use separate provider slices for hire queries and journey review mutations
+
+- Decision: JP-017 should introduce `hireProvider` for list/detail state and
+  `journeyProvider` for draft review, task mutations, and activation.
+- Rationale: The provider contract is mandatory in this frontend, and splitting
+  hire queries from journey review mutations limits avoidable rerenders while
+  keeping provider folders on the strict four-file shape.
+- Alternatives considered: Reusing one provider for both pages or colocating all
+  state inside route components was rejected because it would blur concerns and
+  conflict with the current repo state-management pattern.
+
+## Decision 24: Keep journey review state server-authoritative after each mutation
+
+- Decision: The journey-review UI should treat backend responses as the source
+  of truth after generate, update, add, remove, and activate actions rather than
+  maintaining a long-lived client-only shadow draft.
+- Rationale: The backend already owns due-date calculation, ordering validation,
+  and draft activation rules, so rehydrating from server responses reduces drift
+  and keeps review state consistent across refreshes and later facilitator UI
+  additions.
+- Alternatives considered: Holding the editable journey draft entirely in client
+  state until a later save was rejected because it would duplicate backend rules
+  in the browser and increase mismatch risk for ordering and activation logic.

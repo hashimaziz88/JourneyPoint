@@ -1,0 +1,235 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Abp.Authorization;
+using Abp.Domain.Entities;
+using JourneyPoint.Application.Services.HireService.Dto;
+using JourneyPoint.Application.Services.NotificationService;
+using JourneyPoint.Authorization.Roles;
+using JourneyPoint.Authorization.Users;
+using JourneyPoint.Domains.Hires;
+using JourneyPoint.Domains.OnboardingPlans;
+using Microsoft.EntityFrameworkCore;
+
+namespace JourneyPoint.Application.Services.HireService
+{
+    /// <summary>
+    /// Provides query, validation, mapping, and notification helpers for hire enrolment.
+    /// </summary>
+    public partial class HireAppService
+    {
+        private async Task<OnboardingPlan> GetPublishedPlanAsync(Guid planId, int tenantId)
+        {
+            var onboardingPlan = await _onboardingPlanRepository.GetAll()
+                .AsNoTracking()
+                .SingleOrDefaultAsync(plan => plan.Id == planId && plan.TenantId == tenantId);
+
+            if (onboardingPlan == null)
+            {
+                throw new EntityNotFoundException(typeof(OnboardingPlan), planId);
+            }
+
+            if (onboardingPlan.Status != OnboardingPlanStatus.Published)
+            {
+                throw new InvalidOperationException("Only published onboarding plans can be used for hire enrolment.");
+            }
+
+            return onboardingPlan;
+        }
+
+        private async Task<User> GetManagerUserOrNullAsync(long? managerUserId, int tenantId)
+        {
+            if (!managerUserId.HasValue)
+            {
+                return null;
+            }
+
+            var managerUser = await _userManager.Users.SingleOrDefaultAsync(user =>
+                user.Id == managerUserId.Value &&
+                user.TenantId == tenantId &&
+                !user.IsDeleted);
+
+            if (managerUser == null)
+            {
+                throw new EntityNotFoundException(typeof(User), managerUserId.Value);
+            }
+
+            if (!managerUser.IsActive)
+            {
+                throw new InvalidOperationException("Assigned manager must be active.");
+            }
+
+            var managerRoles = await _userManager.GetRolesAsync(managerUser);
+            if (!managerRoles.Any(roleName => string.Equals(roleName, StaticRoleNames.Tenants.Manager, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new AbpAuthorizationException("Assigned manager must already have the Manager role.");
+            }
+
+            return managerUser;
+        }
+
+        private async Task EnsureHireEmailIsAvailableAsync(string normalizedEmailAddress, int tenantId)
+        {
+            var emailAlreadyUsedByHire = await _hireRepository.GetAll()
+                .AnyAsync(hire => hire.TenantId == tenantId && hire.EmailAddress == normalizedEmailAddress);
+
+            if (emailAlreadyUsedByHire)
+            {
+                throw new InvalidOperationException("A hire with this email address already exists for the current tenant.");
+            }
+        }
+
+        private async Task EnsurePlatformEmailIsAvailableAsync(string normalizedEmailAddress, int tenantId)
+        {
+            var normalizedUserName = normalizedEmailAddress.ToUpperInvariant();
+            var platformUserExists = await _userManager.Users.AnyAsync(user =>
+                user.TenantId == tenantId &&
+                !user.IsDeleted &&
+                (user.NormalizedEmailAddress == normalizedUserName || user.NormalizedUserName == normalizedUserName));
+
+            if (platformUserExists)
+            {
+                throw new InvalidOperationException("A platform user with this email address already exists for the current tenant.");
+            }
+        }
+
+        private User BuildPlatformUser(Hire hire, string normalizedEmailAddress)
+        {
+            var (name, surname) = SplitName(hire.FullName);
+            var user = new User
+            {
+                TenantId = hire.TenantId,
+                Name = name,
+                Surname = surname,
+                EmailAddress = normalizedEmailAddress,
+                UserName = normalizedEmailAddress,
+                IsActive = true,
+                IsEmailConfirmed = true
+            };
+
+            user.SetNormalizedNames();
+            return user;
+        }
+
+        private async Task<WelcomeNotificationDispatchResult> SendWelcomeNotificationAsync(
+            Hire hire,
+            User platformUser,
+            string temporaryPassword)
+        {
+            var tenant = await GetCurrentTenantAsync();
+            return await _welcomeNotificationService.SendAsync(new WelcomeNotificationMessage
+            {
+                TenantName = tenant?.TenancyName ?? "JourneyPoint",
+                RecipientName = hire.FullName,
+                RecipientEmailAddress = hire.EmailAddress,
+                UserName = platformUser.UserName,
+                TemporaryPassword = temporaryPassword
+            });
+        }
+
+        private async Task<Hire> GetHireForEditAsync(Guid hireId)
+        {
+            var hire = await _hireRepository.GetAll()
+                .SingleOrDefaultAsync(existingHire =>
+                    existingHire.Id == hireId &&
+                    existingHire.TenantId == GetRequiredTenantId());
+
+            if (hire == null)
+            {
+                throw new EntityNotFoundException(typeof(Hire), hireId);
+            }
+
+            return hire;
+        }
+
+        private async Task<User> GetPlatformUserAsync(Hire hire)
+        {
+            if (!hire.PlatformUserId.HasValue)
+            {
+                throw new InvalidOperationException("The hire does not yet have a provisioned platform account.");
+            }
+
+            var platformUser = await _userManager.Users.SingleOrDefaultAsync(user =>
+                user.Id == hire.PlatformUserId.Value &&
+                user.TenantId == hire.TenantId &&
+                !user.IsDeleted);
+
+            if (platformUser == null)
+            {
+                throw new EntityNotFoundException(typeof(User), hire.PlatformUserId.Value);
+            }
+
+            return platformUser;
+        }
+
+        private async Task ResetPlatformPasswordAsync(User platformUser, string temporaryPassword)
+        {
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(platformUser);
+            CheckErrors(await _userManager.ResetPasswordAsync(platformUser, resetToken, temporaryPassword));
+        }
+
+        private void ApplyWelcomeResult(Hire hire, WelcomeNotificationDispatchResult result)
+        {
+            if (result.Succeeded)
+            {
+                _hireJourneyManager.MarkWelcomeNotificationSent(hire, result.SentAt ?? result.AttemptedAt);
+                return;
+            }
+
+            _hireJourneyManager.MarkWelcomeNotificationFailed(hire, result.AttemptedAt, result.FailureReason);
+        }
+
+        private int GetRequiredTenantId()
+        {
+            if (!AbpSession.TenantId.HasValue)
+            {
+                throw new AbpAuthorizationException("Hire enrolment requires a tenant context.");
+            }
+
+            return AbpSession.TenantId.Value;
+        }
+
+        private static string NormalizeEmailAddress(string value)
+        {
+            return string.IsNullOrWhiteSpace(value)
+                ? string.Empty
+                : value.Trim().ToLowerInvariant();
+        }
+
+        private static (string Name, string Surname) SplitName(string fullName)
+        {
+            var trimmedFullName = fullName?.Trim() ?? string.Empty;
+            var nameParts = trimmedFullName
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (nameParts.Length <= 1)
+            {
+                var fallbackValue = string.IsNullOrWhiteSpace(trimmedFullName) ? "Hire" : trimmedFullName;
+                return (fallbackValue, fallbackValue);
+            }
+
+            return (nameParts.First(), string.Join(" ", nameParts.Skip(1)));
+        }
+
+        private static HireEnrolmentResultDto MapToResultDto(Hire hire)
+        {
+            return new HireEnrolmentResultDto
+            {
+                Id = hire.Id,
+                OnboardingPlanId = hire.OnboardingPlanId,
+                PlatformUserId = hire.PlatformUserId ?? 0,
+                ManagerUserId = hire.ManagerUserId,
+                FullName = hire.FullName,
+                EmailAddress = hire.EmailAddress,
+                RoleTitle = hire.RoleTitle,
+                Department = hire.Department,
+                StartDate = hire.StartDate,
+                Status = hire.Status,
+                WelcomeNotificationStatus = hire.WelcomeNotificationStatus,
+                WelcomeNotificationLastAttemptedAt = hire.WelcomeNotificationLastAttemptedAt,
+                WelcomeNotificationSentAt = hire.WelcomeNotificationSentAt,
+                WelcomeNotificationFailureReason = hire.WelcomeNotificationFailureReason
+            };
+        }
+    }
+}

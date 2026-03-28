@@ -88,18 +88,70 @@ JourneyPoint has three primary domain areas:
 
 ### Hire
 
-- Lifecycle: Active -> Completed or Exited
-- Core fields: full name, email, role title, department, start date, manager
-  user id, onboarding plan id, platform user id, status
+- Lifecycle: PendingActivation -> Active -> Completed or Exited
+- Core fields:
+  - tenant id
+  - onboarding plan id
+  - platform user id
+  - manager user id
+  - full name
+  - email address
+  - role title
+  - department
+  - start date
+  - status
+  - activated at
+  - completed at
+  - exited at
+  - welcome notification status
+  - welcome notification last attempted at
+  - welcome notification sent at
+  - welcome notification failure reason
+- Validation:
+  - full name and email are required
+  - start date is required
+  - onboarding plan id is required
+  - role title and department use bounded lengths
+  - a tenant-scoped hire cannot point at a plan from another tenant
+  - optional `ManagerUserId` must reference a same-tenant user with the
+    `Manager` role
+  - `PlatformUserId` becomes required once account provisioning succeeds
+  - recoverable welcome failure state may store a safe failure summary only and
+    must never store plaintext credentials
 - Relationships:
   - many-to-one with `OnboardingPlan`
   - one-to-one with `Journey`
 
+### WelcomeNotificationStatus
+
+- Lifecycle: Pending -> Sent or FailedRecoverable
+- Purpose: track the outcome of the initial welcome-notification attempt without
+  introducing a separate communication aggregate in JP-015
+- Core fields:
+  - status
+  - last attempted at
+  - sent at
+  - failure reason summary
+- Notes:
+  - plaintext credentials are never persisted
+  - JP-018 may add retry/resend orchestration on top of this state
+
 ### Journey
 
 - Lifecycle: Draft -> Active -> Paused -> Completed
-- Core fields: hire id, onboarding plan id, status, personalised at, activated
-  at, completed at
+- Core fields:
+  - tenant id
+  - hire id
+  - onboarding plan id
+  - status
+  - activated at
+  - paused at
+  - completed at
+- Validation:
+  - only one journey exists per hire in the initial M3 slice
+  - a draft journey can be edited and activated
+  - only a published onboarding plan can generate a journey draft
+  - a journey can activate only when it has at least one task
 - Relationships:
   - one-to-one with `Hire`
   - many-to-one with `OnboardingPlan`
@@ -109,12 +161,158 @@ JourneyPoint has three primary domain areas:
 
 ### JourneyTask
 
-- Lifecycle: Pending -> Complete or Overdue
-- Core fields: journey id, source task id, title, description, category,
-  assigned-to role, due date, completed at, acknowledged at, personalised flag
+- Lifecycle: Pending -> Completed, with overdue derived from `DueOn`
+- Core fields:
+  - tenant id
+  - journey id
+  - optional source onboarding task id
+  - optional source onboarding module id
+  - module title snapshot
+  - module order index snapshot
+  - task order index snapshot
+  - title snapshot
+  - description snapshot
+  - category snapshot
+  - assignment target snapshot
+  - acknowledgement rule snapshot
+  - due day offset snapshot
+  - due on
+  - status
+  - acknowledged at
+  - completed at
+  - completed by user id
+- Validation:
+  - task order must be unique within a journey module snapshot
+  - due day offset cannot be negative
+  - due date must not be earlier than the hire start date
+  - source references are optional and never used as live reads after
+    generation
+  - facilitators may edit snapshot fields only while the journey is in `Draft`
+  - facilitator-authored draft tasks must keep null source-template ids
+  - pending draft tasks may be removed during review, but template tasks are
+    never deleted or rewritten as part of review
 - Relationships:
   - many-to-one with `Journey`
   - optional many-to-one with `OnboardingTask`
+
+### Minimal Domain File Set for JP-013
+
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/Hire.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/HireLifecycleState.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/Journey.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/JourneyStatus.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/JourneyTask.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/JourneyTaskStatus.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/HireJourneyManager.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/HireJourneyManager.Validation.cs`
+
+### JP-013 Validation Steps
+
+1. Create a hire for a published plan and confirm the new hire starts in
+   `PendingActivation` while the linked journey starts in `Draft`.
+2. Generate journey tasks and confirm each task stores copied snapshot content
+   plus optional `SourceOnboardingTaskId` linkage.
+3. Edit the plan template after generation and confirm the draft journey task
+   content does not change.
+4. Activate the journey and confirm the hire moves to `Active`, the journey
+   moves to `Active`, and copied due dates remain based on the hire start date.
+5. Pause or complete the journey through the manager logic and confirm
+   transitions reject invalid state jumps.
+
+### JP-015 Planned Application Files
+
+- `aspnet-core/src/JourneyPoint.Application/Services/HireService/IHireAppService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/HireService/HireAppService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/HireService/Dto/CreateHireRequest.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/HireService/Dto/HireEnrolmentResultDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/NotificationService/IWelcomeNotificationService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/NotificationService/WelcomeNotificationService.cs`
+
+### JP-015 Validation Steps
+
+1. Submit hire creation for a published plan and confirm a same-tenant `Hire`
+   is created in `PendingActivation` with no cross-tenant plan or manager
+   leakage.
+2. Confirm a tenant-scoped platform account is created for the hire and
+   assigned only the `Enrolee` role.
+3. Supply an optional manager id and confirm enrolment accepts only a same-tenant
+   user who already has the `Manager` role.
+4. Run enrolment with mail enabled and confirm the response reports welcome
+   status `Sent` with a recorded send timestamp.
+5. Simulate a notification failure and confirm the hire and account still
+   persist while the hire records `FailedRecoverable` plus safe failure metadata
+   only, with no plaintext credential storage.
+
+### JP-016 Planned Application Files
+
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/IJourneyAppService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/JourneyAppService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/JourneyAppService.Support.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/GenerateDraftJourneyRequest.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/JourneyDraftDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/JourneyTaskReviewDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/UpdateJourneyTaskRequest.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/AddJourneyTaskRequest.cs`
+
+### JP-016 Validation Steps
+
+1. Generate a draft journey for a same-tenant hire enrolled against a published
+   plan and confirm the response completes synchronously with copied journey
+   tasks.
+2. Confirm generated tasks preserve module ordering, task ordering, assignment
+   targets, acknowledgement rules, and optional source-template ids from the
+   published plan.
+3. Confirm every generated `DueOn` value equals `Hire.StartDate` plus the
+   copied `DueDayOffset`.
+4. Edit one generated draft task and confirm only the `JourneyTask` snapshot
+   changes while the source onboarding plan/task records remain unchanged.
+5. Add one facilitator-authored draft task and confirm it persists with null
+   source-template ids and valid draft ordering.
+6. Remove one pending draft task and confirm activation rules still evaluate
+   against the updated journey task set without mutating the template.
+
+### JP-017 Planned Frontend Files
+
+- `journeypoint/app/(facilitator)/facilitator/hires/page.tsx`
+- `journeypoint/app/(facilitator)/facilitator/hires/[hireId]/page.tsx`
+- `journeypoint/app/(facilitator)/facilitator/hires/[hireId]/journey/page.tsx`
+- `journeypoint/providers/hireProvider/actions.tsx`
+- `journeypoint/providers/hireProvider/context.tsx`
+- `journeypoint/providers/hireProvider/index.tsx`
+- `journeypoint/providers/hireProvider/reducer.tsx`
+- `journeypoint/providers/journeyProvider/actions.tsx`
+- `journeypoint/providers/journeyProvider/context.tsx`
+- `journeypoint/providers/journeyProvider/index.tsx`
+- `journeypoint/providers/journeyProvider/reducer.tsx`
+- `journeypoint/components/hires/HireListView.tsx`
+- `journeypoint/components/hires/HireDetailView.tsx`
+- `journeypoint/components/journey/JourneyReviewView.tsx`
+- `journeypoint/components/hires/style/style.ts`
+- `journeypoint/components/journey/style/style.ts`
+- `journeypoint/types/hire/index.ts`
+- `journeypoint/types/journey/index.ts`
+- `journeypoint/constants/hire/list.ts`
+- `journeypoint/constants/journey/review.ts`
+- `journeypoint/utils/hire/list.ts`
+- `journeypoint/utils/journey/review.ts`
+- `journeypoint/constants/auth/routes.ts`
+
+### JP-017 Validation Steps
+
+1. Open the facilitator hire list page and confirm it loads same-tenant hires
+   with lifecycle and welcome-notification summaries through `hireProvider`.
+2. Filter or refresh the hire list and confirm provider-backed query state
+   updates the rendered list without route mismatches or inline style usage.
+3. Open one hire detail page and confirm it shows hire identity, plan linkage,
+   manager association, account/welcome status, and current journey summary.
+4. Navigate from the hire detail page to the journey review page and confirm the
+   route loads draft task snapshots through `journeyProvider`.
+5. Update one draft task, add one facilitator-authored task, and remove one
+   pending draft task from the review page while confirming the UI rehydrates
+   from backend responses instead of mutating template state locally.
+6. Activate the draft journey from the review page and confirm the provider
+   refreshes to show the activated journey state and disables draft-only review
+   controls.
 
 ### GenerationLog
 
@@ -146,10 +344,13 @@ JourneyPoint has three primary domain areas:
 
 ## Derived Rules
 
-- A hire can have only one active journey at a time.
+- A hire can have only one journey aggregate in the initial milestone-3 slice.
+- A hire cannot become `Active` until its journey has been explicitly activated.
 - A hire can have at most one unresolved at-risk flag at a time.
-- Journey tasks inherit their initial ordering and due-date logic from template
-  tasks at generation time.
+- Journey tasks inherit their initial ordering, module grouping, and due-date
+  logic from template tasks at generation time.
+- Journey tasks retain copied snapshots even if the source onboarding plan is
+  later edited, published again, or enriched with new tasks.
 - Accepted extracted tasks affect future journeys only.
 - AI personalisation updates journey tasks only after facilitator approval.
 - Engagement snapshots are append-only and never overwritten.

@@ -1,4 +1,4 @@
-# JourneyPoint Agent Guide
+﻿# JourneyPoint Agent Guide
 
 This is the root operating guide for repository contributors and assistant
 tools.
