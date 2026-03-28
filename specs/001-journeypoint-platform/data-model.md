@@ -88,9 +88,27 @@ JourneyPoint has three primary domain areas:
 
 ### Hire
 
-- Lifecycle: Active -> Completed or Exited
-- Core fields: full name, email, role title, department, start date, manager
-  user id, onboarding plan id, platform user id, status
+- Lifecycle: PendingActivation -> Active -> Completed or Exited
+- Core fields:
+  - tenant id
+  - onboarding plan id
+  - platform user id
+  - manager user id
+  - full name
+  - email address
+  - role title
+  - department
+  - start date
+  - status
+  - activated at
+  - completed at
+  - exited at
+- Validation:
+  - full name and email are required
+  - start date is required
+  - onboarding plan id is required
+  - role title and department use bounded lengths
+  - a tenant-scoped hire cannot point at a plan from another tenant
 - Relationships:
   - many-to-one with `OnboardingPlan`
   - one-to-one with `Journey`
@@ -98,8 +116,19 @@ JourneyPoint has three primary domain areas:
 ### Journey
 
 - Lifecycle: Draft -> Active -> Paused -> Completed
-- Core fields: hire id, onboarding plan id, status, personalised at, activated
-  at, completed at
+- Core fields:
+  - tenant id
+  - hire id
+  - onboarding plan id
+  - status
+  - activated at
+  - paused at
+  - completed at
+- Validation:
+  - only one journey exists per hire in the initial M3 slice
+  - a draft journey can be edited and activated
+  - only a published onboarding plan can generate a journey draft
+  - a journey can activate only when it has at least one task
 - Relationships:
   - one-to-one with `Hire`
   - many-to-one with `OnboardingPlan`
@@ -109,12 +138,59 @@ JourneyPoint has three primary domain areas:
 
 ### JourneyTask
 
-- Lifecycle: Pending -> Complete or Overdue
-- Core fields: journey id, source task id, title, description, category,
-  assigned-to role, due date, completed at, acknowledged at, personalised flag
+- Lifecycle: Pending -> Completed, with overdue derived from `DueOn`
+- Core fields:
+  - tenant id
+  - journey id
+  - optional source onboarding task id
+  - optional source onboarding module id
+  - module title snapshot
+  - module order index snapshot
+  - task order index snapshot
+  - title snapshot
+  - description snapshot
+  - category snapshot
+  - assignment target snapshot
+  - acknowledgement rule snapshot
+  - due day offset snapshot
+  - due on
+  - status
+  - acknowledged at
+  - completed at
+  - completed by user id
+- Validation:
+  - task order must be unique within a journey module snapshot
+  - due day offset cannot be negative
+  - due date must not be earlier than the hire start date
+  - source references are optional and never used as live reads after
+    generation
 - Relationships:
   - many-to-one with `Journey`
   - optional many-to-one with `OnboardingTask`
+
+### Minimal Domain File Set for JP-013
+
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/Hire.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/HireLifecycleState.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/Journey.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/JourneyStatus.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/JourneyTask.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/JourneyTaskStatus.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/HireJourneyManager.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/HireJourneyManager.Validation.cs`
+
+### JP-013 Validation Steps
+
+1. Create a hire for a published plan and confirm the new hire starts in
+   `PendingActivation` while the linked journey starts in `Draft`.
+2. Generate journey tasks and confirm each task stores copied snapshot content
+   plus optional `SourceOnboardingTaskId` linkage.
+3. Edit the plan template after generation and confirm the draft journey task
+   content does not change.
+4. Activate the journey and confirm the hire moves to `Active`, the journey
+   moves to `Active`, and copied due dates remain based on the hire start date.
+5. Pause or complete the journey through the manager logic and confirm
+   transitions reject invalid state jumps.
 
 ### GenerationLog
 
@@ -146,10 +222,13 @@ JourneyPoint has three primary domain areas:
 
 ## Derived Rules
 
-- A hire can have only one active journey at a time.
+- A hire can have only one journey aggregate in the initial milestone-3 slice.
+- A hire cannot become `Active` until its journey has been explicitly activated.
 - A hire can have at most one unresolved at-risk flag at a time.
-- Journey tasks inherit their initial ordering and due-date logic from template
-  tasks at generation time.
+- Journey tasks inherit their initial ordering, module grouping, and due-date
+  logic from template tasks at generation time.
+- Journey tasks retain copied snapshots even if the source onboarding plan is
+  later edited, published again, or enriched with new tasks.
 - Accepted extracted tasks affect future journeys only.
 - AI personalisation updates journey tasks only after facilitator approval.
 - Engagement snapshots are append-only and never overwritten.
