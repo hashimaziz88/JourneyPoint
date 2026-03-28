@@ -18,6 +18,17 @@ minimal: audited `Guid` entities, explicit lifecycle enums, copied task
 snapshots that preserve optional source-template linkage, and a Core-owned
 domain manager for aggregate validation and state transitions.
 
+The current planning increment for JP-015 focuses milestone 3 application
+orchestration on tenant-safe hire enrolment before journey generation expands
+again in JP-016. This slice will create the hire record, provision a tenant user
+account, assign the `Enrolee` role, validate optional manager association,
+initiate the welcome-notification workflow, and persist a recoverable delivery
+state without storing plaintext credentials. The minimal file surface stays in
+`aspnet-core/src/JourneyPoint.Application/Services/HireService/` and
+`aspnet-core/src/JourneyPoint.Application/Services/NotificationService/` with
+DTOs beside their AppServices and identity orchestration kept in the
+Application layer.
+
 ## Technical Context
 
 **Language/Version**: C# 12 on .NET 8; TypeScript 5 with React 19 and Next.js 16  

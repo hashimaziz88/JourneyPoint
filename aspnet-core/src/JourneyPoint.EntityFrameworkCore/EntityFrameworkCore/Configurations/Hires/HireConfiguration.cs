@@ -23,6 +23,13 @@ namespace JourneyPoint.EntityFrameworkCore.Configurations.Hires
                 .HasConversion<int>()
                 .IsRequired();
 
+            builder.Property(hire => hire.WelcomeNotificationStatus)
+                .HasConversion<int>()
+                .IsRequired();
+
+            builder.Property(hire => hire.WelcomeNotificationFailureReason)
+                .HasMaxLength(Hire.MaxWelcomeNotificationFailureReasonLength);
+
             builder.HasOne(hire => hire.OnboardingPlan)
                 .WithMany()
                 .HasForeignKey(hire => hire.OnboardingPlanId)
@@ -38,6 +45,7 @@ namespace JourneyPoint.EntityFrameworkCore.Configurations.Hires
             builder.HasIndex(hire => hire.PlatformUserId);
             builder.HasIndex(hire => hire.ManagerUserId);
             builder.HasIndex(hire => new { hire.TenantId, hire.Status });
+            builder.HasIndex(hire => new { hire.TenantId, hire.WelcomeNotificationStatus });
             builder.HasIndex(hire => new { hire.TenantId, hire.EmailAddress });
         }
     }

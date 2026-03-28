@@ -39,7 +39,8 @@ namespace JourneyPoint.Domains.Hires
                 StartDate = EnsureStartDate(startDate),
                 ManagerUserId = NormalizeOptionalUserId(managerUserId, nameof(managerUserId)),
                 PlatformUserId = NormalizeOptionalUserId(platformUserId, nameof(platformUserId)),
-                Status = HireLifecycleState.PendingActivation
+                Status = HireLifecycleState.PendingActivation,
+                WelcomeNotificationStatus = WelcomeNotificationStatus.Pending
             };
         }
 

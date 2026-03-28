@@ -46,7 +46,8 @@ should remain ABP application-service friendly, typically under
 |-----------|--------|---------|----------------|
 | List hires | GET | Return tenant-scoped hires and current statuses | Facilitator, TenantAdmin |
 | Get hire detail | GET | Return hire profile, journey summary, score history, and flags | Facilitator, Manager |
-| Create and enrol hire | POST | Create hire, account, and a draft journey in one flow, returning pending-activation hire state and draft journey state | Facilitator |
+| Create hire enrolment | POST | Create the hire record, provision a tenant platform account, assign the `Enrolee` role, validate optional manager linkage, initiate welcome notification, and return recoverable notification status | Facilitator |
+| Generate draft journey | POST | Copy the published onboarding plan into a draft journey for an existing hire, preserving source ordering and due-date rules | Facilitator |
 | Resend welcome notification | POST | Retry onboarding credentials delivery | Facilitator |
 | Get draft journey | GET | Return generated journey and task review data, including copied task snapshots and optional source-template ids | Facilitator |
 | Update journey task | PUT | Adjust task details during review or intervention | Facilitator |
@@ -90,6 +91,9 @@ should remain ABP application-service friendly, typically under
   actor.
 - Hire detail and pipeline calls are allowed to trigger on-demand engagement
   computation before returning the response.
+- The hire-creation response should expose account-provisioning outcome,
+  manager-link validation, and welcome-notification status separately from later
+  draft-journey generation.
 - Journey review payloads should expose source-template linkage as optional
   reference metadata only; template fields must not be treated as live joins
   after journey generation.

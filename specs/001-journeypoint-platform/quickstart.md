@@ -79,16 +79,20 @@ Expected result:
 
 ### Milestone 3 - Hire Enrolment and Journey Orchestration
 
-1. Enrol a hire into a published plan.
-2. Confirm the new hire starts in `PendingActivation` and the generated journey
-   starts in `Draft`.
-3. Review the generated draft journey and confirm task payloads include copied
+1. Create a hire against a published plan and confirm the new hire starts in
+   `PendingActivation`.
+2. Confirm a tenant-scoped platform account is created and assigned only the
+   `Enrolee` role, with optional manager linkage accepted only for a same-tenant
+   manager.
+3. Confirm the initial welcome-notification attempt reports either `Sent` or a
+   recoverable failure state without rolling back the hire or account.
+4. Generate the draft journey and confirm it starts in `Draft`.
+5. Review the generated draft journey and confirm task payloads include copied
    snapshot fields plus optional source-template ids.
-4. Edit the source onboarding plan after generation and confirm the draft
+6. Edit the source onboarding plan after generation and confirm the draft
    journey task content does not mutate.
-5. Activate the journey and confirm the hire moves to `Active`, the journey
+7. Activate the journey and confirm the hire moves to `Active`, the journey
    moves to `Active`, and due dates still reflect the hire start date.
-6. Confirm account creation and welcome-notification flow.
 
 ### Milestone 4 - Journey Participation and Human-in-the-Loop AI
 

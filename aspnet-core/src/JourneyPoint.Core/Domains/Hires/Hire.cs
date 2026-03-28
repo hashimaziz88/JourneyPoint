@@ -16,6 +16,7 @@ namespace JourneyPoint.Domains.Hires
         public const int MaxEmailAddressLength = 256;
         public const int MaxRoleTitleLength = 200;
         public const int MaxDepartmentLength = 200;
+        public const int MaxWelcomeNotificationFailureReasonLength = 500;
 
         public int TenantId { get; set; }
 
@@ -46,6 +47,15 @@ namespace JourneyPoint.Domains.Hires
         public DateTime StartDate { get; set; }
 
         public HireLifecycleState Status { get; set; }
+
+        public WelcomeNotificationStatus WelcomeNotificationStatus { get; set; }
+
+        public DateTime? WelcomeNotificationLastAttemptedAt { get; set; }
+
+        public DateTime? WelcomeNotificationSentAt { get; set; }
+
+        [MaxLength(MaxWelcomeNotificationFailureReasonLength)]
+        public string WelcomeNotificationFailureReason { get; set; }
 
         public DateTime? ActivatedAt { get; set; }
 
