@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
@@ -91,7 +92,7 @@ namespace JourneyPoint.Application.Services.HireService
                 input.StartDate,
                 managerUser?.Id);
 
-            var temporaryPassword = "123qwe"; //
+            var temporaryPassword = "123qwe";
             var platformUser = BuildPlatformUser(hire, normalizedEmailAddress);
 
             await _userManager.InitializeOptionsAsync(tenantId);
@@ -107,6 +108,63 @@ namespace JourneyPoint.Application.Services.HireService
             await CurrentUnitOfWork.SaveChangesAsync();
 
             return MapToResultDto(hire);
+        }
+
+        /// <summary>
+        /// Reissues credentials and retries welcome delivery for one pending hire.
+        /// </summary>
+        public async Task<HireEnrolmentResultDto> ResendWelcomeNotificationAsync(EntityDto<Guid> input)
+        {
+            ArgumentNullException.ThrowIfNull(input);
+
+            var hire = await GetHireForEditAsync(input.Id);
+            _hireJourneyManager.EnsureWelcomeNotificationCanBeResent(hire);
+
+            var platformUser = await GetPlatformUserAsync(hire);
+            var temporaryPassword = CreateTemporaryPassword();
+            await ResetPlatformPasswordAsync(platformUser, temporaryPassword);
+
+            var welcomeResult = await SendWelcomeNotificationAsync(hire, platformUser, temporaryPassword);
+            ApplyWelcomeResult(hire, welcomeResult);
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            return MapToResultDto(hire);
+        }
+
+        private static string CreateTemporaryPassword()
+        {
+            const string lowerCharacters = "abcdefghijkmnopqrstuvwxyz";
+            const string upperCharacters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+            const string digitCharacters = "23456789";
+            const string specialCharacters = "!@$?";
+            const int randomCharacterCount = 8;
+
+            Span<byte> randomBytes = stackalloc byte[randomCharacterCount];
+            RandomNumberGenerator.Fill(randomBytes);
+
+            var passwordCharacters = new char[4 + randomCharacterCount];
+            passwordCharacters[0] = lowerCharacters[randomBytes[0] % lowerCharacters.Length];
+            passwordCharacters[1] = upperCharacters[randomBytes[1] % upperCharacters.Length];
+            passwordCharacters[2] = digitCharacters[randomBytes[2] % digitCharacters.Length];
+            passwordCharacters[3] = specialCharacters[randomBytes[3] % specialCharacters.Length];
+
+            for (var index = 0; index < randomCharacterCount; index++)
+            {
+                var sourceCharacters = lowerCharacters + upperCharacters + digitCharacters + specialCharacters;
+                passwordCharacters[index + 4] = sourceCharacters[randomBytes[index] % sourceCharacters.Length];
+            }
+
+            Shuffle(passwordCharacters);
+            return new string(passwordCharacters);
+        }
+
+        private static void Shuffle(char[] value)
+        {
+            for (var index = value.Length - 1; index > 0; index--)
+            {
+                var targetIndex = RandomNumberGenerator.GetInt32(index + 1);
+                (value[index], value[targetIndex]) = (value[targetIndex], value[index]);
+            }
         }
     }
 }

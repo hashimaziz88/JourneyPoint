@@ -127,6 +127,47 @@ namespace JourneyPoint.Application.Services.HireService
             });
         }
 
+        private async Task<Hire> GetHireForEditAsync(Guid hireId)
+        {
+            var hire = await _hireRepository.GetAll()
+                .SingleOrDefaultAsync(existingHire =>
+                    existingHire.Id == hireId &&
+                    existingHire.TenantId == GetRequiredTenantId());
+
+            if (hire == null)
+            {
+                throw new EntityNotFoundException(typeof(Hire), hireId);
+            }
+
+            return hire;
+        }
+
+        private async Task<User> GetPlatformUserAsync(Hire hire)
+        {
+            if (!hire.PlatformUserId.HasValue)
+            {
+                throw new InvalidOperationException("The hire does not yet have a provisioned platform account.");
+            }
+
+            var platformUser = await _userManager.Users.SingleOrDefaultAsync(user =>
+                user.Id == hire.PlatformUserId.Value &&
+                user.TenantId == hire.TenantId &&
+                !user.IsDeleted);
+
+            if (platformUser == null)
+            {
+                throw new EntityNotFoundException(typeof(User), hire.PlatformUserId.Value);
+            }
+
+            return platformUser;
+        }
+
+        private async Task ResetPlatformPasswordAsync(User platformUser, string temporaryPassword)
+        {
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(platformUser);
+            CheckErrors(await _userManager.ResetPasswordAsync(platformUser, resetToken, temporaryPassword));
+        }
+
         private void ApplyWelcomeResult(Hire hire, WelcomeNotificationDispatchResult result)
         {
             if (result.Succeeded)

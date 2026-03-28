@@ -30,5 +30,10 @@ namespace JourneyPoint.Application.Services.HireService
         /// Creates the hire record, platform account, and welcome-notification attempt.
         /// </summary>
         Task<HireEnrolmentResultDto> CreateAsync(CreateHireRequest input);
+
+        /// <summary>
+        /// Reissues credentials and retries the welcome notification for one pending hire.
+        /// </summary>
+        Task<HireEnrolmentResultDto> ResendWelcomeNotificationAsync(EntityDto<Guid> input);
     }
 }
