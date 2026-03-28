@@ -187,6 +187,10 @@ JourneyPoint has three primary domain areas:
   - due date must not be earlier than the hire start date
   - source references are optional and never used as live reads after
     generation
+  - facilitators may edit snapshot fields only while the journey is in `Draft`
+  - facilitator-authored draft tasks must keep null source-template ids
+  - pending draft tasks may be removed during review, but template tasks are
+    never deleted or rewritten as part of review
 - Relationships:
   - many-to-one with `Journey`
   - optional many-to-one with `OnboardingTask`
@@ -238,6 +242,34 @@ JourneyPoint has three primary domain areas:
 5. Simulate a notification failure and confirm the hire and account still
    persist while the hire records `FailedRecoverable` plus safe failure metadata
    only, with no plaintext credential storage.
+
+### JP-016 Planned Application Files
+
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/IJourneyAppService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/JourneyAppService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/JourneyAppService.Support.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/GenerateDraftJourneyRequest.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/JourneyDraftDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/JourneyTaskReviewDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/UpdateJourneyTaskRequest.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/AddJourneyTaskRequest.cs`
+
+### JP-016 Validation Steps
+
+1. Generate a draft journey for a same-tenant hire enrolled against a published
+   plan and confirm the response completes synchronously with copied journey
+   tasks.
+2. Confirm generated tasks preserve module ordering, task ordering, assignment
+   targets, acknowledgement rules, and optional source-template ids from the
+   published plan.
+3. Confirm every generated `DueOn` value equals `Hire.StartDate` plus the
+   copied `DueDayOffset`.
+4. Edit one generated draft task and confirm only the `JourneyTask` snapshot
+   changes while the source onboarding plan/task records remain unchanged.
+5. Add one facilitator-authored draft task and confirm it persists with null
+   source-template ids and valid draft ordering.
+6. Remove one pending draft task and confirm activation rules still evaluate
+   against the updated journey task set without mutating the template.
 
 ### GenerationLog
 

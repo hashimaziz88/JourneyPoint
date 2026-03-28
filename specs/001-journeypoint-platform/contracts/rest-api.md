@@ -47,12 +47,12 @@ should remain ABP application-service friendly, typically under
 | List hires | GET | Return tenant-scoped hires and current statuses | Facilitator, TenantAdmin |
 | Get hire detail | GET | Return hire profile, journey summary, score history, and flags | Facilitator, Manager |
 | Create hire enrolment | POST | Create the hire record, provision a tenant platform account, assign the `Enrolee` role, validate optional manager linkage, initiate welcome notification, and return recoverable notification status | Facilitator |
-| Generate draft journey | POST | Copy the published onboarding plan into a draft journey for an existing hire, preserving source ordering and due-date rules | Facilitator |
+| Generate draft journey | POST | Synchronously copy the published onboarding plan into a draft journey for an existing hire, preserving source ordering, assignment rules, and due-date rules | Facilitator |
 | Resend welcome notification | POST | Retry onboarding credentials delivery | Facilitator |
 | Get draft journey | GET | Return generated journey and task review data, including copied task snapshots and optional source-template ids | Facilitator |
-| Update journey task | PUT | Adjust task details during review or intervention | Facilitator |
-| Add journey task | POST | Add a facilitator-authored task to a journey | Facilitator |
-| Remove pending journey task | DELETE or POST | Remove a pending draft task before activation | Facilitator |
+| Update journey task | PUT | Adjust draft task snapshot details during facilitator review without mutating template records | Facilitator |
+| Add journey task | POST | Add a facilitator-authored draft task to a journey with no source-template linkage | Facilitator |
+| Remove pending journey task | DELETE or POST | Remove a pending draft task before activation without deleting the template source | Facilitator |
 | Activate journey | POST | Transition a journey from draft to active | Facilitator |
 
 ## AI Personalisation
@@ -94,9 +94,14 @@ should remain ABP application-service friendly, typically under
 - The hire-creation response should expose account-provisioning outcome,
   manager-link validation, and welcome-notification status separately from later
   draft-journey generation.
+- Draft generation must complete synchronously for the current milestone rather
+  than delegating task-copy creation to a background job.
 - Journey review payloads should expose source-template linkage as optional
   reference metadata only; template fields must not be treated as live joins
   after journey generation.
+- Draft review mutations must apply only to `JourneyTask` snapshot data and must
+  reject writes that would mutate `OnboardingPlan`, `OnboardingModule`, or
+  `OnboardingTask` records from the source template.
 - Concrete API methods should continue to be exposed through
   interface-and-implementation AppService pairs with DTOs that live beside
   their service slice under `JourneyPoint.Application/Services/<Feature>/Dto/`.

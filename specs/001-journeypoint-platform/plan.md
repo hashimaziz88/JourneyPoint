@@ -29,6 +29,17 @@ state without storing plaintext credentials. The minimal file surface stays in
 DTOs beside their AppServices and identity orchestration kept in the
 Application layer.
 
+The current planning increment for JP-016 focuses milestone 3 synchronous
+journey generation and draft review after enrolment succeeds. This slice will
+introduce a dedicated `JourneyService` application surface that copies published
+plan tasks into `JourneyTask` snapshots, computes due dates directly from the
+hire start date, preserves module/task ordering and assignment rules, and
+supports draft-only review edits, additions, and removals without mutating the
+underlying template records. The minimal file surface stays in
+`aspnet-core/src/JourneyPoint.Application/Services/JourneyService/` with DTOs
+beside the AppService and Core-owned generation rules remaining in
+`HireJourneyManager`.
+
 ## Technical Context
 
 **Language/Version**: C# 12 on .NET 8; TypeScript 5 with React 19 and Next.js 16  
