@@ -47,6 +47,26 @@ namespace JourneyPoint.Domains.Hires
             hire.WelcomeNotificationFailureReason = NormalizeFailureReason(failureReason);
         }
 
+        /// <summary>
+        /// Ensures the hire can receive a reissued welcome notification without disrupting an active onboarding account.
+        /// </summary>
+        public void EnsureWelcomeNotificationCanBeResent(Hire hire)
+        {
+            EnsureHire(hire);
+
+            if (hire.Status != HireLifecycleState.PendingActivation)
+            {
+                throw new InvalidOperationException(
+                    "Welcome notifications can only be resent while the hire is pending activation.");
+            }
+
+            if (!hire.PlatformUserId.HasValue)
+            {
+                throw new InvalidOperationException(
+                    "A platform account must exist before the welcome notification can be resent.");
+            }
+        }
+
         private static DateTime NormalizeNotificationTimestamp(DateTime value)
         {
             return value == default ? DateTime.UtcNow : value;

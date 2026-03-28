@@ -1,13 +1,11 @@
 using System;
 using System.Threading.Tasks;
-using Abp.Dependency;
-
 namespace JourneyPoint.Application.Services.OnboardingDocumentService
 {
     /// <summary>
     /// Defines file storage operations for onboarding enrichment documents.
     /// </summary>
-    public interface IOnboardingDocumentStorage : ITransientDependency
+    public interface IOnboardingDocumentStorage
     {
         /// <summary>
         /// Saves one uploaded file and returns its relative storage path.
