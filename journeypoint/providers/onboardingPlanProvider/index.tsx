@@ -2,18 +2,15 @@
 
 import React, { useContext, useReducer } from "react";
 import { getAxiosInstance } from "@/utils/axiosInstance";
-import {
-    IOnboardingPlanListItemDto,
+import { DEFAULT_PLAN_LIST_SORTING } from "@/constants/plans/list";
+import type {
     ICloneOnboardingPlanRequest,
     ICreateOnboardingPlanRequest,
     IGetOnboardingPlansInput,
     IOnboardingPlanDetailDto,
-    IOnboardingPlanDraft,
-    IOnboardingModuleDraft,
-    IOnboardingTaskDraft,
+    IOnboardingPlanListItemDto,
     IOnboardingTaskEditorValues,
     IUpdateOnboardingPlanRequest,
-    OnboardingPlanStatus,
 } from "@/types/onboarding-plan";
 import {
     getPlanDetailError,
@@ -30,259 +27,29 @@ import {
 } from "./actions";
 import {
     INITIAL_STATE,
-    IOnboardingPlanActionContext,
-    IOnboardingPlanStateContext,
+    type IOnboardingPlanActionContext,
+    type IOnboardingPlanStateContext,
     OnboardingPlanActionContext,
     OnboardingPlanStateContext,
 } from "./context";
 import { OnboardingPlanReducer } from "./reducer";
+import {
+    appendOnboardingPlanDraftModule,
+    appendOnboardingPlanDraftTask,
+    applyOnboardingPlanDraftMetadata,
+    createEmptyOnboardingPlanDraft,
+    mapOnboardingPlanDetailToDraft,
+    normalizeOnboardingPlanDetail,
+    removeOnboardingPlanDraftModule,
+    removeOnboardingPlanDraftTask,
+    reorderOnboardingPlanDraftModule,
+    reorderOnboardingPlanDraftTask,
+    updateOnboardingPlanDraft,
+    updateOnboardingPlanDraftModule,
+    updateOnboardingPlanDraftTask,
+} from "@/utils/plans/onboardingPlanDraft";
 
 const ONBOARDING_PLAN_API_BASE = "/api/services/app/OnboardingPlan";
-const DEFAULT_PLAN_SORTING = "LastUpdatedTime DESC";
-
-const createClientKey = (): string =>
-    typeof globalThis.crypto?.randomUUID === "function"
-        ? globalThis.crypto.randomUUID()
-        : `draft-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-
-const normalizeTasks = (tasks: IOnboardingTaskDraft[]): IOnboardingTaskDraft[] =>
-    [...tasks]
-        .sort((left, right) => left.orderIndex - right.orderIndex)
-        .map((task, index) => ({
-            ...task,
-            orderIndex: index + 1,
-        }));
-
-const normalizeModules = (modules: IOnboardingModuleDraft[]): IOnboardingModuleDraft[] =>
-    [...modules]
-        .sort((left, right) => left.orderIndex - right.orderIndex)
-        .map((module, index) => ({
-            ...module,
-            orderIndex: index + 1,
-            tasks: normalizeTasks(module.tasks),
-        }));
-
-const normalizeDetail = (
-    detail: IOnboardingPlanDetailDto,
-): IOnboardingPlanDetailDto => ({
-    ...detail,
-    modules: [...detail.modules]
-        .sort((left, right) => left.orderIndex - right.orderIndex)
-        .map((module) => ({
-            ...module,
-            tasks: [...module.tasks].sort((left, right) => left.orderIndex - right.orderIndex),
-        })),
-});
-
-const mapDetailToDraft = (detail: IOnboardingPlanDetailDto): IOnboardingPlanDraft => ({
-    id: detail.id,
-    name: detail.name,
-    description: detail.description,
-    targetAudience: detail.targetAudience,
-    durationDays: detail.durationDays,
-    status: detail.status,
-    modules: normalizeModules(
-        detail.modules.map((module) => ({
-            clientKey: module.id,
-            id: module.id,
-            name: module.name,
-            description: module.description,
-            orderIndex: module.orderIndex,
-            tasks: module.tasks.map((task) => ({
-                clientKey: task.id,
-                id: task.id,
-                title: task.title,
-                description: task.description,
-                category: task.category,
-                orderIndex: task.orderIndex,
-                dueDayOffset: task.dueDayOffset,
-                assignmentTarget: task.assignmentTarget,
-                acknowledgementRule: task.acknowledgementRule,
-            })),
-        })),
-    ),
-});
-
-const createEmptyDraft = (): IOnboardingPlanDraft => ({
-    name: "",
-    description: "",
-    targetAudience: "",
-    durationDays: 30,
-    status: OnboardingPlanStatus.Draft,
-    modules: [],
-});
-
-const moveItem = <T,>(items: T[], fromIndex: number, toIndex: number): T[] => {
-    if (fromIndex < 0 || toIndex < 0 || fromIndex >= items.length || toIndex >= items.length) {
-        return items;
-    }
-
-    const clonedItems = [...items];
-    const [movedItem] = clonedItems.splice(fromIndex, 1);
-    clonedItems.splice(toIndex, 0, movedItem);
-    return clonedItems;
-};
-
-const withDraft = (
-    draft: IOnboardingPlanDraft | null | undefined,
-    updater: (currentDraft: IOnboardingPlanDraft) => IOnboardingPlanDraft,
-): IOnboardingPlanDraft | null => {
-    if (!draft) {
-        return null;
-    }
-
-    return updater(draft);
-};
-
-const applyDraftMetadata = (
-    currentDraft: IOnboardingPlanDraft,
-    payload: Partial<IOnboardingPlanDraft>,
-): IOnboardingPlanDraft => ({
-    ...currentDraft,
-    ...payload,
-});
-
-const appendDraftModule = (
-    currentDraft: IOnboardingPlanDraft,
-): IOnboardingPlanDraft => ({
-    ...currentDraft,
-    modules: normalizeModules([
-        ...currentDraft.modules,
-        {
-            clientKey: createClientKey(),
-            name: "",
-            description: "",
-            orderIndex: currentDraft.modules.length + 1,
-            tasks: [],
-        },
-    ]),
-});
-
-const updateDraftModuleDetails = (
-    currentDraft: IOnboardingPlanDraft,
-    moduleClientKey: string,
-    name: string,
-    description: string,
-): IOnboardingPlanDraft => ({
-    ...currentDraft,
-    modules: currentDraft.modules.map((module) =>
-        module.clientKey === moduleClientKey
-            ? { ...module, name, description }
-            : module,
-    ),
-});
-
-const removeDraftModule = (
-    currentDraft: IOnboardingPlanDraft,
-    moduleClientKey: string,
-): IOnboardingPlanDraft => ({
-    ...currentDraft,
-    modules: normalizeModules(
-        currentDraft.modules.filter((module) => module.clientKey !== moduleClientKey),
-    ),
-});
-
-const reorderDraftModule = (
-    currentDraft: IOnboardingPlanDraft,
-    moduleClientKey: string,
-    direction: "up" | "down",
-): IOnboardingPlanDraft => {
-    const currentIndex = currentDraft.modules.findIndex(
-        (module) => module.clientKey === moduleClientKey,
-    );
-    const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
-
-    return {
-        ...currentDraft,
-        modules: normalizeModules(moveItem(currentDraft.modules, currentIndex, targetIndex)),
-    };
-};
-
-const appendDraftTask = (
-    currentDraft: IOnboardingPlanDraft,
-    moduleClientKey: string,
-    payload: IOnboardingTaskEditorValues,
-): IOnboardingPlanDraft => ({
-    ...currentDraft,
-    modules: currentDraft.modules.map((module) =>
-        module.clientKey === moduleClientKey
-            ? {
-                ...module,
-                tasks: normalizeTasks([
-                    ...module.tasks,
-                    {
-                        clientKey: createClientKey(),
-                        orderIndex: module.tasks.length + 1,
-                        ...payload,
-                    },
-                ]),
-            }
-            : module,
-    ),
-});
-
-const updateDraftTaskDetails = (
-    currentDraft: IOnboardingPlanDraft,
-    moduleClientKey: string,
-    taskClientKey: string,
-    payload: IOnboardingTaskEditorValues,
-): IOnboardingPlanDraft => ({
-    ...currentDraft,
-    modules: currentDraft.modules.map((module) =>
-        module.clientKey === moduleClientKey
-            ? {
-                ...module,
-                tasks: module.tasks.map((task) =>
-                    task.clientKey === taskClientKey
-                        ? { ...task, ...payload }
-                        : task,
-                ),
-            }
-            : module,
-    ),
-});
-
-const removeDraftTask = (
-    currentDraft: IOnboardingPlanDraft,
-    moduleClientKey: string,
-    taskClientKey: string,
-): IOnboardingPlanDraft => ({
-    ...currentDraft,
-    modules: currentDraft.modules.map((module) =>
-        module.clientKey === moduleClientKey
-            ? {
-                ...module,
-                tasks: normalizeTasks(
-                    module.tasks.filter((task) => task.clientKey !== taskClientKey),
-                ),
-            }
-            : module,
-    ),
-});
-
-const reorderDraftTask = (
-    currentDraft: IOnboardingPlanDraft,
-    moduleClientKey: string,
-    taskClientKey: string,
-    direction: "up" | "down",
-): IOnboardingPlanDraft => ({
-    ...currentDraft,
-    modules: currentDraft.modules.map((module) => {
-        if (module.clientKey !== moduleClientKey) {
-            return module;
-        }
-
-        const currentIndex = module.tasks.findIndex(
-            (task) => task.clientKey === taskClientKey,
-        );
-        const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
-
-        return {
-            ...module,
-            tasks: normalizeTasks(moveItem(module.tasks, currentIndex, targetIndex)),
-        };
-    }),
-});
 
 const getApiResult = <T,>(response: { data?: { result?: T } & T }): T =>
     response.data?.result ?? (response.data as T);
@@ -299,13 +66,18 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
         dispatch(getPlansPending());
 
         try {
-            const response = await getAxiosInstance().get(`${ONBOARDING_PLAN_API_BASE}/GetPlans`, {
-                params: {
-                    ...request,
-                    sorting: request.sorting ?? DEFAULT_PLAN_SORTING,
+            const response = await getAxiosInstance().get(
+                `${ONBOARDING_PLAN_API_BASE}/GetPlans`,
+                {
+                    params: {
+                        ...request,
+                        sorting: request.sorting ?? DEFAULT_PLAN_LIST_SORTING,
+                    },
                 },
-            });
-            const data = getApiResult<{ items?: IOnboardingPlanListItemDto[]; totalCount?: number }>(response);
+            );
+            const data = getApiResult<{ items?: IOnboardingPlanListItemDto[]; totalCount?: number }>(
+                response,
+            );
 
             dispatch(
                 getPlansSuccess({
@@ -323,14 +95,20 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
         dispatch(getPlanDetailPending());
 
         try {
-            const response = await getAxiosInstance().get(`${ONBOARDING_PLAN_API_BASE}/GetDetail`, {
-                params: { id },
-            });
-            const detail = normalizeDetail(getApiResult<IOnboardingPlanDetailDto>(response));
+            const response = await getAxiosInstance().get(
+                `${ONBOARDING_PLAN_API_BASE}/GetDetail`,
+                {
+                    params: { id },
+                },
+            );
+            const detail = normalizeOnboardingPlanDetail(
+                getApiResult<IOnboardingPlanDetailDto>(response),
+            );
+
             dispatch(
                 getPlanDetailSuccess({
                     selectedPlan: detail,
-                    draftPlan: mapDetailToDraft(detail),
+                    draftPlan: mapOnboardingPlanDetailToDraft(detail),
                 }),
             );
             return detail;
@@ -348,11 +126,14 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
 
         try {
             const response = await request;
-            const detail = normalizeDetail(getApiResult<IOnboardingPlanDetailDto>(response));
+            const detail = normalizeOnboardingPlanDetail(
+                getApiResult<IOnboardingPlanDetailDto>(response),
+            );
+
             dispatch(
                 mutationSuccess({
                     selectedPlan: detail,
-                    draftPlan: mapDetailToDraft(detail),
+                    draftPlan: mapOnboardingPlanDetailToDraft(detail),
                 }),
             );
             return detail;
@@ -385,7 +166,7 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
         runMutation(getAxiosInstance().post(`${ONBOARDING_PLAN_API_BASE}/Clone`, payload));
 
     const initialiseDraft = (): void => {
-        dispatch(setDraft(createEmptyDraft()));
+        dispatch(setDraft(createEmptyOnboardingPlanDraft()));
     };
 
     const resetDraft = (): void => {
@@ -393,9 +174,9 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
     };
 
     const updateDraft = (
-        updater: (currentDraft: IOnboardingPlanDraft) => IOnboardingPlanDraft,
+        updater: Parameters<typeof updateOnboardingPlanDraft>[1],
     ): void => {
-        const updatedDraft = withDraft(state.draftPlan, updater);
+        const updatedDraft = updateOnboardingPlanDraft(state.draftPlan, updater);
 
         if (!updatedDraft) {
             return;
@@ -405,11 +186,11 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
     };
 
     const setDraftMetadata: IOnboardingPlanActionContext["setDraftMetadata"] = (payload) => {
-        updateDraft((currentDraft) => applyDraftMetadata(currentDraft, payload));
+        updateDraft((currentDraft) => applyOnboardingPlanDraftMetadata(currentDraft, payload));
     };
 
     const addModule = (): void => {
-        updateDraft(appendDraftModule);
+        updateDraft(appendOnboardingPlanDraftModule);
     };
 
     const updateModule = (
@@ -418,12 +199,14 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
         description: string,
     ): void => {
         updateDraft((currentDraft) =>
-            updateDraftModuleDetails(currentDraft, moduleClientKey, name, description),
+            updateOnboardingPlanDraftModule(currentDraft, moduleClientKey, name, description),
         );
     };
 
     const removeModule = (moduleClientKey: string): void => {
-        updateDraft((currentDraft) => removeDraftModule(currentDraft, moduleClientKey));
+        updateDraft((currentDraft) =>
+            removeOnboardingPlanDraftModule(currentDraft, moduleClientKey),
+        );
     };
 
     const moveModule = (
@@ -431,7 +214,7 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
         direction: "up" | "down",
     ): void => {
         updateDraft((currentDraft) =>
-            reorderDraftModule(currentDraft, moduleClientKey, direction),
+            reorderOnboardingPlanDraftModule(currentDraft, moduleClientKey, direction),
         );
     };
 
@@ -440,7 +223,7 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
         payload: IOnboardingTaskEditorValues,
     ): void => {
         updateDraft((currentDraft) =>
-            appendDraftTask(currentDraft, moduleClientKey, payload),
+            appendOnboardingPlanDraftTask(currentDraft, moduleClientKey, payload),
         );
     };
 
@@ -450,7 +233,7 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
         payload: IOnboardingTaskEditorValues,
     ): void => {
         updateDraft((currentDraft) =>
-            updateDraftTaskDetails(
+            updateOnboardingPlanDraftTask(
                 currentDraft,
                 moduleClientKey,
                 taskClientKey,
@@ -464,7 +247,7 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
         taskClientKey: string,
     ): void => {
         updateDraft((currentDraft) =>
-            removeDraftTask(currentDraft, moduleClientKey, taskClientKey),
+            removeOnboardingPlanDraftTask(currentDraft, moduleClientKey, taskClientKey),
         );
     };
 
@@ -474,7 +257,7 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
         direction: "up" | "down",
     ): void => {
         updateDraft((currentDraft) =>
-            reorderDraftTask(
+            reorderOnboardingPlanDraftTask(
                 currentDraft,
                 moduleClientKey,
                 taskClientKey,

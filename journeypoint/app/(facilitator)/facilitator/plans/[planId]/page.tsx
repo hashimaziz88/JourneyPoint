@@ -8,6 +8,7 @@ import {
 } from "@/constants/auth/permissions";
 import PlanEditor from "@/components/plans/PlanEditor";
 import withAuth from "@/hoc/withAuth";
+import { OnboardingDocumentProvider } from "@/providers/onboardingDocumentProvider";
 import { OnboardingPlanProvider } from "@/providers/onboardingPlanProvider";
 
 const FacilitatorPlanDetailContent: React.FC = () => {
@@ -19,7 +20,9 @@ const FacilitatorPlanDetailContent: React.FC = () => {
 
 const FacilitatorPlanDetailPage: React.FC = () => (
     <OnboardingPlanProvider>
-        <FacilitatorPlanDetailContent />
+        <OnboardingDocumentProvider>
+            <FacilitatorPlanDetailContent />
+        </OnboardingDocumentProvider>
     </OnboardingPlanProvider>
 );
 

@@ -25,11 +25,16 @@ Do not infer a different feature package from the current branch name. Ignore
 - Use `antd-style`.
 - Do not use inline styles.
 - Do not use untyped `any`.
+- Keep JourneyPoint-owned handwritten frontend source files at or under 350
+  lines. Generated artifacts such as build output are excluded.
 - Keep provider folders on the strict four-file contract only:
   `actions.tsx`, `context.tsx`, `index.tsx`, and `reducer.tsx`.
 - Keep cross-cutting bootstrap and auth/session restoration logic outside
   provider folders.
 - Do not declare regular nested React components inside other component bodies.
+- Do not leave loose helper methods, constants, interfaces, or sample data
+  inside large component or provider files when they belong in `components/`,
+  `types/`, `constants/`, `helpers/`, `hoc/`, or `utils/`.
 - Normalize older company guidance to JourneyPoint's actual stack: do not add
   legacy `pages/`, `getServerSideProps`, `getStaticProps`, or Tailwind-first
   patterns here.

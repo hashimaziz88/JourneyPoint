@@ -70,3 +70,14 @@ export interface IAbpUserConfigurationResponse {
         isEnabled?: boolean;
     } | null;
 }
+
+export interface ILoadedConfiguration {
+    grantedPermissions: string[];
+    isMultiTenancyEnabled: boolean;
+    configurationError: string | null;
+}
+
+export interface IFetchedSessionState {
+    user: IUserLoginResponse;
+    tenant: ITenantInfo | null;
+}

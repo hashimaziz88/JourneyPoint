@@ -1,19 +1,24 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
+import { Spin } from "antd";
 import {
     APP_PERMISSIONS,
     APP_ROLE_NAMES,
 } from "@/constants/auth/permissions";
-import MarkdownImportWorkspace from "@/components/plans/MarkdownImportWorkspace";
+import { APP_ROUTES } from "@/constants/auth/routes";
 import withAuth from "@/hoc/withAuth";
-import { MarkdownImportProvider } from "@/providers/markdownImportProvider";
+import { useRouter } from "next/navigation";
 
-const FacilitatorMarkdownImportPage: React.FC = () => (
-    <MarkdownImportProvider>
-        <MarkdownImportWorkspace />
-    </MarkdownImportProvider>
-);
+const FacilitatorMarkdownImportPage: React.FC = () => {
+    const router = useRouter();
+
+    useEffect(() => {
+        router.replace(APP_ROUTES.facilitatorPlanImport);
+    }, [router]);
+
+    return <Spin size="large" />;
+};
 
 export default withAuth(FacilitatorMarkdownImportPage, {
     requiredPermission: APP_PERMISSIONS.facilitator,

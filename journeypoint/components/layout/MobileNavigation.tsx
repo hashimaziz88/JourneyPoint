@@ -5,18 +5,8 @@ import type { MenuProps } from "antd";
 import { Button, Drawer, Menu } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import { useStyles } from "@/layout/style/style";
+import type { IMobileNavigationProps } from "@/types/layout/navigation";
 import AppShellBrand from "./AppShellBrand";
-
-/**
- * Defines the props required to render the mobile workspace navigation drawer.
- */
-interface IMobileNavigationProps {
-  menuItems: NonNullable<MenuProps["items"]>;
-  onNavigate: (href: string) => void;
-  routeMap: Record<string, string>;
-  selectedMenuKey: string;
-  subtitle: string;
-}
 
 /**
  * Renders the mobile-only navigation entry point and full-screen drawer.

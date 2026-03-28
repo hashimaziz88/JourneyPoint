@@ -18,31 +18,14 @@ import {
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { PlusOutlined } from "@ant-design/icons";
 import { useTenantActions, useTenantState } from "@/providers/tenantProvider";
-import type { ICreateTenantDto, ITenantDto } from "@/types/tenant";
+import type { ITenantDto } from "@/types/tenant";
 import { useStyles } from "@/components/admin/style/style";
+import { TENANT_SUCCESS_MESSAGES } from "@/constants/admin/tenantManager";
+import type { ITenantFormValues } from "@/types/admin/tenantManager";
+import { buildTenantQuery } from "@/utils/admin/tenantManager";
+import { ignoreAsyncError } from "@/utils/async";
 
 const { Title, Text } = Typography;
-const ignoreAsyncError = () => undefined;
-const TENANT_SUCCESS_MESSAGES = {
-  create: "Tenant created successfully.",
-  update: "Tenant updated successfully.",
-  delete: "Tenant deleted successfully.",
-} as const;
-
-interface ITenantFormValues extends ICreateTenantDto {
-  id?: number;
-}
-
-const buildTenantQuery = (
-  searchTerm: string,
-  activeFilter: boolean | undefined,
-  pagination: TablePaginationConfig,
-) => ({
-  keyword: searchTerm || null,
-  isActive: activeFilter ?? null,
-  skipCount: ((pagination.current ?? 1) - 1) * (pagination.pageSize ?? 10),
-  maxResultCount: pagination.pageSize ?? 10,
-});
 
 const TenantManager: React.FC = () => {
   const { styles } = useStyles();

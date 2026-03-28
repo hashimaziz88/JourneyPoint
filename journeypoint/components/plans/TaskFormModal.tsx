@@ -4,20 +4,12 @@ import React, { useEffect } from "react";
 import { Form, Input, InputNumber, Modal, Select } from "antd";
 import {
     DEFAULT_ONBOARDING_TASK_EDITOR_VALUES,
-    IOnboardingTaskDraft,
     IOnboardingTaskEditorValues,
     ONBOARDING_TASK_ACKNOWLEDGEMENT_RULE_OPTIONS,
     ONBOARDING_TASK_ASSIGNMENT_TARGET_OPTIONS,
     ONBOARDING_TASK_CATEGORY_OPTIONS,
 } from "@/types/onboarding-plan";
-
-interface ITaskFormModalProps {
-    editingTask?: IOnboardingTaskDraft | null;
-    isPending: boolean;
-    isVisible: boolean;
-    onCancel: () => void;
-    onSubmit: (values: IOnboardingTaskEditorValues) => Promise<void>;
-}
+import type { ITaskFormModalProps } from "@/types/plans/components";
 
 /**
  * Captures onboarding task fields for create and edit flows.

@@ -18,10 +18,10 @@ import {
     APP_ROUTES,
     buildFacilitatorPlanRoute,
 } from "@/constants/auth/routes";
+import { DEFAULT_PLAN_LIST_QUERY_STATE } from "@/constants/plans/list";
 import PlanCard from "@/components/plans/PlanCard";
 import { useStyles } from "@/components/plans/style/style";
 import {
-    IGetOnboardingPlansInput,
     IOnboardingPlanListItemDto,
     ONBOARDING_PLAN_STATUS_LABELS,
     OnboardingPlanStatus,
@@ -31,31 +31,10 @@ import {
     useOnboardingPlanState,
 } from "@/providers/onboardingPlanProvider";
 import { useRouter } from "next/navigation";
+import type { IPlanListQueryState } from "@/types/plans/components";
+import { buildPlanListRequest } from "@/utils/plans/planList";
 
 const { Paragraph, Title } = Typography;
-
-interface IPlanListQueryState {
-    current: number;
-    keyword: string;
-    maxResultCount: number;
-    status?: OnboardingPlanStatus;
-}
-
-const DEFAULT_QUERY_STATE: IPlanListQueryState = {
-    current: 1,
-    keyword: "",
-    maxResultCount: 6,
-};
-
-const buildPlanListRequest = (
-    query: IPlanListQueryState,
-): IGetOnboardingPlansInput => ({
-    keyword: query.keyword.trim() || null,
-    status: query.status ?? null,
-    skipCount: (query.current - 1) * query.maxResultCount,
-    maxResultCount: query.maxResultCount,
-    sorting: "LastUpdatedTime DESC",
-});
 
 /**
  * Renders the facilitator-facing onboarding plan index and list actions.
@@ -72,7 +51,7 @@ const PlanListView: React.FC = () => {
     const [statusInput, setStatusInput] = useState<
         OnboardingPlanStatus | undefined
     >(undefined);
-    const [query, setQuery] = useState<IPlanListQueryState>(DEFAULT_QUERY_STATE);
+    const [query, setQuery] = useState<IPlanListQueryState>(DEFAULT_PLAN_LIST_QUERY_STATE);
 
     const loadPlans = useEffectEvent(async (): Promise<void> => {
         await getPlans(buildPlanListRequest(query));
@@ -106,7 +85,7 @@ const PlanListView: React.FC = () => {
     const handleResetFilters = (): void => {
         setKeywordInput("");
         setStatusInput(undefined);
-        setQuery(DEFAULT_QUERY_STATE);
+        setQuery(DEFAULT_PLAN_LIST_QUERY_STATE);
     };
 
     const handleClone = async (
@@ -223,19 +202,69 @@ const PlanListView: React.FC = () => {
                         icon={<PlusOutlined />}
                         onClick={() => handleOpen("new")}
                     >
-                        New Plan
+                        Create Manually
                     </Button>
                     <Button
                         icon={<ImportOutlined />}
                         onClick={() =>
                             startTransition(() =>
-                                router.push(APP_ROUTES.facilitatorMarkdownImport),
+                                router.push(APP_ROUTES.facilitatorPlanImport),
                             )
                         }
                     >
-                        Import Markdown
+                        Create From Document
                     </Button>
                 </Space>
+            </div>
+
+            <div className={styles.creationGrid}>
+                <Card className={styles.creationCard}>
+                    <div className={styles.creationCardBody}>
+                        <div>
+                            <Title level={4}>Start Manually</Title>
+                            <Paragraph type="secondary">
+                                Build the draft plan yourself by entering metadata,
+                                adding modules, and defining tasks directly in the
+                                editor.
+                            </Paragraph>
+                        </div>
+
+                        <Button
+                            className={styles.creationAction}
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={() => handleOpen("new")}
+                        >
+                            Open Manual Builder
+                        </Button>
+                    </div>
+                </Card>
+
+                <Card className={styles.creationCard}>
+                    <div className={styles.creationCardBody}>
+                        <div>
+                            <Title level={4}>Start From Markdown or PDF</Title>
+                            <Paragraph type="secondary">
+                                Upload markdown, text, PDF, or image source material.
+                                The backend normalizes it into the same draft-plan DTO
+                                shape, and you review the result before any draft is
+                                saved.
+                            </Paragraph>
+                        </div>
+
+                        <Button
+                            className={styles.creationAction}
+                            icon={<ImportOutlined />}
+                            onClick={() =>
+                                startTransition(() =>
+                                    router.push(APP_ROUTES.facilitatorPlanImport),
+                                )
+                            }
+                        >
+                            Open Document Import
+                        </Button>
+                    </div>
+                </Card>
             </div>
 
             <Card>

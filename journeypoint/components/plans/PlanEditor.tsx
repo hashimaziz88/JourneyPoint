@@ -7,167 +7,35 @@ import React, {
     useMemo,
     useState,
 } from "react";
-import {
-    Alert,
-    Button,
-    Card,
-    Empty,
-    Input,
-    InputNumber,
-    Space,
-    Spin,
-    Typography,
-    message,
-} from "antd";
-import {
-    CopyOutlined,
-    PlusOutlined,
-    RollbackOutlined,
-    SaveOutlined,
-    SendOutlined,
-    StopOutlined,
-} from "@ant-design/icons";
-import {
-    APP_ROUTES,
-    buildFacilitatorPlanRoute,
-} from "@/constants/auth/routes";
-import ModulePanel from "@/components/plans/ModulePanel";
+import { Empty, Space, Spin, message } from "antd";
+import { buildFacilitatorPlanRoute } from "@/constants/auth/routes";
+import DocumentUploadPanel from "@/components/plans/DocumentUploadPanel";
+import PlanEditorHeader from "@/components/plans/PlanEditorHeader";
+import PlanEditorMetadataCard from "@/components/plans/PlanEditorMetadataCard";
+import PlanEditorModulesSection from "@/components/plans/PlanEditorModulesSection";
 import TaskFormModal from "@/components/plans/TaskFormModal";
 import { useStyles } from "@/components/plans/style/style";
-import {
-    ICreateOnboardingPlanRequest,
-    IOnboardingPlanDraft,
-    IOnboardingTaskDraft,
-    IOnboardingTaskEditorValues,
-    IUpdateOnboardingPlanRequest,
-    ONBOARDING_PLAN_STATUS_LABELS,
-    OnboardingPlanStatus,
-} from "@/types/onboarding-plan";
 import {
     useOnboardingPlanActions,
     useOnboardingPlanState,
 } from "@/providers/onboardingPlanProvider";
+import {
+    type IOnboardingTaskEditorValues,
+    OnboardingPlanStatus,
+} from "@/types/onboarding-plan";
+import {
+    buildCreateOnboardingPlanRequest,
+    buildUpdateOnboardingPlanRequest,
+    findDraftTask,
+    isBlankNewDraft,
+    validateDraftForPublish,
+    validateDraftForSave,
+} from "@/utils/plans/planEditor";
 import { useRouter } from "next/navigation";
-
-const { Paragraph, Title } = Typography;
-
-const buildCreateRequest = (
-    draftPlan: IOnboardingPlanDraft,
-): ICreateOnboardingPlanRequest => ({
-    name: draftPlan.name.trim(),
-    description: draftPlan.description.trim(),
-    targetAudience: draftPlan.targetAudience.trim(),
-    durationDays: draftPlan.durationDays,
-    modules: draftPlan.modules.map((module) => ({
-        id: module.id ?? null,
-        name: module.name.trim(),
-        description: module.description.trim(),
-        orderIndex: module.orderIndex,
-        tasks: module.tasks.map((task) => ({
-            id: task.id ?? null,
-            title: task.title.trim(),
-            description: task.description.trim(),
-            category: task.category,
-            orderIndex: task.orderIndex,
-            dueDayOffset: task.dueDayOffset,
-            assignmentTarget: task.assignmentTarget,
-            acknowledgementRule: task.acknowledgementRule,
-        })),
-    })),
-});
-
-const buildUpdateRequest = (
-    draftPlan: IOnboardingPlanDraft,
-): IUpdateOnboardingPlanRequest => ({
-    id: draftPlan.id ?? "",
-    ...buildCreateRequest(draftPlan),
-});
-
-const validateDraftForSave = (draftPlan: IOnboardingPlanDraft): string | null => {
-    if (!draftPlan.name.trim()) {
-        return "Plan name is required.";
-    }
-
-    if (!draftPlan.description.trim()) {
-        return "Plan description is required.";
-    }
-
-    if (!draftPlan.targetAudience.trim()) {
-        return "Target audience is required.";
-    }
-
-    if (draftPlan.durationDays < 1) {
-        return "Duration must be at least one day.";
-    }
-
-    const moduleWithoutName = draftPlan.modules.find((module) => !module.name.trim());
-    if (moduleWithoutName) {
-        return "Each module must have a name before the plan can be saved.";
-    }
-
-    const moduleWithoutDescription = draftPlan.modules.find(
-        (module) => !module.description.trim(),
-    );
-    if (moduleWithoutDescription) {
-        return "Each module must have a description before the plan can be saved.";
-    }
-
-    const invalidTask = draftPlan.modules
-        .flatMap((module) => module.tasks)
-        .find((task) => !task.title.trim() || !task.description.trim());
-
-    if (invalidTask) {
-        return "Each task must have both a title and description before the plan can be saved.";
-    }
-
-    return null;
-};
-
-const validateDraftForPublish = (
-    draftPlan: IOnboardingPlanDraft,
-): string | null => {
-    const saveValidationError = validateDraftForSave(draftPlan);
-
-    if (saveValidationError) {
-        return saveValidationError;
-    }
-
-    if (draftPlan.modules.length === 0) {
-        return "Add at least one module before publishing.";
-    }
-
-    const emptyModule = draftPlan.modules.find((module) => module.tasks.length === 0);
-    if (emptyModule) {
-        return "Each module must contain at least one task before publishing.";
-    }
-
-    return null;
-};
-
-const findDraftTask = (
-    draftPlan: IOnboardingPlanDraft | null | undefined,
-    moduleClientKey: string | null,
-    taskClientKey: string | null,
-): IOnboardingTaskDraft | null => {
-    if (!draftPlan || !moduleClientKey || !taskClientKey) {
-        return null;
-    }
-
-    const parentModule = draftPlan.modules.find(
-        (module) => module.clientKey === moduleClientKey,
-    );
-
-    return parentModule?.tasks.find((task) => task.clientKey === taskClientKey) ?? null;
-};
-
-interface IPlanEditorProps {
-    planId: string;
-}
-
-interface ITaskModalState {
-    moduleClientKey: string;
-    taskClientKey?: string | null;
-}
+import type {
+    IPlanEditorProps,
+    IPlanEditorTaskModalState,
+} from "@/types/plans/components";
 
 /**
  * Renders the facilitator onboarding-plan editor and lifecycle actions.
@@ -195,13 +63,11 @@ const PlanEditor: React.FC<IPlanEditorProps> = ({ planId }) => {
         updatePlan,
         updateTask,
     } = useOnboardingPlanActions();
-    const { draftPlan, isDetailPending, isMutationPending } =
-        useOnboardingPlanState();
-    const [taskModalState, setTaskModalState] = useState<ITaskModalState | null>(
-        null,
-    );
+    const { draftPlan, isDetailPending, isMutationPending } = useOnboardingPlanState();
+    const [taskModalState, setTaskModalState] = useState<IPlanEditorTaskModalState | null>(null);
     const isNewPlan = planId === "new";
     const isDraftEditable = draftPlan?.status === OnboardingPlanStatus.Draft;
+    const showCreationChoice = isNewPlan && isBlankNewDraft(draftPlan);
 
     const loadEditor = useEffectEvent(async (): Promise<void> => {
         if (isNewPlan) {
@@ -251,8 +117,8 @@ const PlanEditor: React.FC<IPlanEditorProps> = ({ planId }) => {
         }
 
         const savedPlan = draftPlan.id
-            ? await updatePlan(buildUpdateRequest(draftPlan))
-            : await createPlan(buildCreateRequest(draftPlan));
+            ? await updatePlan(buildUpdateOnboardingPlanRequest(draftPlan))
+            : await createPlan(buildCreateOnboardingPlanRequest(draftPlan));
 
         if (!savedPlan) {
             messageApi.error("The onboarding plan could not be saved.");
@@ -360,188 +226,44 @@ const PlanEditor: React.FC<IPlanEditorProps> = ({ planId }) => {
     }
 
     return (
-        <Space direction="vertical" size={24} className={styles.pageRoot}>
+        <Space orientation="vertical" size={24} className={styles.pageRoot}>
             {messageContextHolder}
-            <div className={styles.pageHeader}>
-                <div>
-                    <Title level={2} className={styles.pageHeading}>
-                        {isNewPlan ? "New Onboarding Plan" : draftPlan.name || "Plan Editor"}
-                    </Title>
-                    <Paragraph type="secondary">
-                        Keep the template structure ordered and lifecycle-safe for
-                        facilitators.
-                    </Paragraph>
-                </div>
+            <PlanEditorHeader
+                isDraftEditable={isDraftEditable}
+                isMutationPending={isMutationPending}
+                isNewPlan={isNewPlan}
+                planId={draftPlan.id}
+                planName={draftPlan.name}
+                planStatus={draftPlan.status}
+                showCreationChoice={showCreationChoice}
+                onArchive={handleArchive}
+                onClone={handleClone}
+                onPublish={handlePublish}
+                onSave={handleSave}
+            />
 
-                <Space wrap className={styles.pageActions}>
-                    <Button
-                        icon={<RollbackOutlined />}
-                        onClick={() =>
-                            startTransition(() =>
-                                router.push(APP_ROUTES.facilitatorPlans),
-                            )
-                        }
-                    >
-                        Back to Plans
-                    </Button>
-                    <Button
-                        icon={<SaveOutlined />}
-                        type="primary"
-                        onClick={() => void handleSave()}
-                        loading={isMutationPending}
-                        disabled={!isDraftEditable}
-                    >
-                        Save Draft
-                    </Button>
-                    <Button
-                        icon={<SendOutlined />}
-                        onClick={() => void handlePublish()}
-                        loading={isMutationPending}
-                        disabled={!draftPlan.id || !isDraftEditable}
-                    >
-                        Publish
-                    </Button>
-                    <Button
-                        icon={<CopyOutlined />}
-                        onClick={() => void handleClone()}
-                        loading={isMutationPending}
-                        disabled={!draftPlan.id}
-                    >
-                        Clone
-                    </Button>
-                    <Button
-                        icon={<StopOutlined />}
-                        danger
-                        onClick={() => void handleArchive()}
-                        loading={isMutationPending}
-                        disabled={
-                            !draftPlan.id ||
-                            draftPlan.status === OnboardingPlanStatus.Archived
-                        }
-                    >
-                        Archive
-                    </Button>
-                </Space>
-            </div>
+            <PlanEditorMetadataCard
+                draftPlan={draftPlan}
+                isDraftEditable={isDraftEditable}
+                onMetadataChange={setDraftMetadata}
+            />
 
-            {!isDraftEditable ? (
-                <Alert
-                    className={styles.alert}
-                    type="info"
-                    showIcon
-                    message={`This plan is ${ONBOARDING_PLAN_STATUS_LABELS[draftPlan.status].toLowerCase()} and its structure is read-only.`}
-                />
-            ) : null}
+            <DocumentUploadPanel planId={draftPlan.id} planStatus={draftPlan.status} />
 
-            <Card className={styles.editorCard}>
-                <Space direction="vertical" size={16} className={styles.pageRoot}>
-                    <div className={styles.metadataGrid}>
-                        <Input
-                            value={draftPlan.name}
-                            onChange={(event) =>
-                                setDraftMetadata({ name: event.target.value })
-                            }
-                            placeholder="Plan name"
-                            disabled={!isDraftEditable}
-                            maxLength={200}
-                        />
-                        <Input
-                            value={draftPlan.targetAudience}
-                            onChange={(event) =>
-                                setDraftMetadata({
-                                    targetAudience: event.target.value,
-                                })
-                            }
-                            placeholder="Target audience"
-                            disabled={!isDraftEditable}
-                            maxLength={200}
-                        />
-                        <InputNumber
-                            min={1}
-                            precision={0}
-                            value={draftPlan.durationDays}
-                            onChange={(value) =>
-                                setDraftMetadata({ durationDays: value ?? 1 })
-                            }
-                            disabled={!isDraftEditable}
-                        />
-                        <Input value={ONBOARDING_PLAN_STATUS_LABELS[draftPlan.status]} disabled />
-                        <Input.TextArea
-                            className={styles.fullWidthField}
-                            value={draftPlan.description}
-                            onChange={(event) =>
-                                setDraftMetadata({
-                                    description: event.target.value,
-                                })
-                            }
-                            placeholder="Describe the purpose and scope of this plan."
-                            disabled={!isDraftEditable}
-                            rows={5}
-                            maxLength={4000}
-                        />
-                    </div>
-                </Space>
-            </Card>
-
-            <Space direction="vertical" size={16} className={styles.modulesWrap}>
-                <div className={styles.pageHeader}>
-                    <div>
-                        <Title level={3}>Modules</Title>
-                        <Paragraph type="secondary">
-                            Modules become the ordered plan phases used by the builder.
-                        </Paragraph>
-                    </div>
-
-                    <Button
-                        icon={<PlusOutlined />}
-                        type="dashed"
-                        onClick={addModule}
-                        disabled={!isDraftEditable}
-                    >
-                        Add Module
-                    </Button>
-                </div>
-
-                {draftPlan.modules.length === 0 ? (
-                    <Empty
-                        className={styles.emptyState}
-                        description="Start by adding the first onboarding module."
-                    />
-                ) : (
-                    draftPlan.modules.map((module) => (
-                        <ModulePanel
-                            key={module.clientKey}
-                            isReadOnly={!isDraftEditable}
-                            module={module}
-                            moduleCount={draftPlan.modules.length}
-                            onAddTask={() =>
-                                setTaskModalState({
-                                    moduleClientKey: module.clientKey,
-                                })
-                            }
-                            onDeleteTask={(taskClientKey) =>
-                                removeTask(module.clientKey, taskClientKey)
-                            }
-                            onEditTask={(taskClientKey) =>
-                                setTaskModalState({
-                                    moduleClientKey: module.clientKey,
-                                    taskClientKey,
-                                })
-                            }
-                            onModuleChange={(name, description) =>
-                                updateModule(module.clientKey, name, description)
-                            }
-                            onMoveModule={(direction) =>
-                                moveModule(module.clientKey, direction)
-                            }
-                            onMoveTask={(taskClientKey, direction) =>
-                                moveTask(module.clientKey, taskClientKey, direction)
-                            }
-                            onRemoveModule={() => removeModule(module.clientKey)}
-                        />
-                    ))
-                )}
-            </Space>
+            <PlanEditorModulesSection
+                isDraftEditable={isDraftEditable}
+                modules={draftPlan.modules}
+                onAddModule={addModule}
+                onAddTask={(moduleClientKey) => setTaskModalState({ moduleClientKey })}
+                onDeleteTask={removeTask}
+                onEditTask={(moduleClientKey, taskClientKey) =>
+                    setTaskModalState({ moduleClientKey, taskClientKey })
+                }
+                onModuleChange={updateModule}
+                onMoveModule={moveModule}
+                onMoveTask={moveTask}
+                onRemoveModule={removeModule}
+            />
 
             <TaskFormModal
                 editingTask={editingTask}

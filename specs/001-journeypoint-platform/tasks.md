@@ -26,6 +26,12 @@ implemented, demonstrated, and reviewed independently.
 - Backend persistence tasks must keep `DbSet` registration, EF configuration,
   and migrations inside `JourneyPoint.EntityFrameworkCore`; Web.Core and
   Web.Host remain plumbing-only and must not absorb business logic.
+- JourneyPoint-owned frontend and backend source files touched by milestone
+  work must stay at or under 350 lines. Generated files such as EF migration
+  designers, model snapshots, and build output are excluded.
+- Backend methods should prefer guard clauses, early returns, and low nesting;
+  when reusable guard-clause support is introduced, standardize on
+  `Ardalis.GuardClauses`.
 - Frontend tasks must follow the strict provider contract:
   `providers/<feature>Provider/actions.tsx`, `context.tsx`, `index.tsx`, and
   `reducer.tsx` only. Bootstrap or side-effect components belong outside
@@ -40,6 +46,9 @@ implemented, demonstrated, and reviewed independently.
   dedicated module.
 - Frontend provider state, actions, and API contracts must remain explicitly
   typed with no untyped `any`.
+- Touched frontend and backend files must move loose helper methods, constants,
+  interfaces, and sample data into dedicated modules or top-level folders
+  rather than leaving them inside component, provider, or AppService files.
 - New work must move touched code toward these standards even when older repo
   code predates them, including later milestones for hire orchestration,
   participant workspaces, AI review, engagement, and intervention flows.
@@ -106,18 +115,30 @@ in and reach the correct shell without cross-tenant leakage.
 from markdown, and review document-extracted task proposals.
 
 - [x] T019 [P] [US2] Create plan authoring entities in `aspnet-core/src/JourneyPoint.Core/Domains/OnboardingPlans/OnboardingPlan.cs`, `OnboardingModule.cs`, and `OnboardingTask.cs`
-- [ ] T020 [P] [US2] Create enrichment entities in `aspnet-core/src/JourneyPoint.Core/Domains/OnboardingPlans/OnboardingDocument.cs` and `ExtractedTask.cs`
+- [x] T020 [P] [US2] Create enrichment entities in `aspnet-core/src/JourneyPoint.Core/Domains/OnboardingPlans/OnboardingDocument.cs` and `ExtractedTask.cs`
 - [x] T021 [US2] Register onboarding `DbSet` properties and mappings in `aspnet-core/src/JourneyPoint.EntityFrameworkCore/EntityFrameworkCore/JourneyPointDbContext.cs` and related configuration files
 - [x] T022 [US2] Add initial onboarding migration under `aspnet-core/src/JourneyPoint.EntityFrameworkCore/Migrations/`
 - [x] T023 [US2] Implement plan CRUD DTOs and application services in `aspnet-core/src/JourneyPoint.Application/Services/OnboardingPlanService/`
 - [x] T024 [US2] Implement markdown import parsing and draft-save services in `aspnet-core/src/JourneyPoint.Application/Services/MarkdownImportService/`
-- [ ] T025 [US2] Implement document upload, extraction orchestration, and proposal review services in `aspnet-core/src/JourneyPoint.Application/Services/OnboardingDocumentService/`
+- [x] T025 [US2] Implement document upload, extraction orchestration, and proposal review services in `aspnet-core/src/JourneyPoint.Application/Services/OnboardingDocumentService/`
 - [x] T026 [P] [US2] Build facilitator plan list and editor pages in `journeypoint/app/(facilitator)/facilitator/plans/page.tsx` and `journeypoint/app/(facilitator)/facilitator/plans/[planId]/page.tsx`
-- [x] T027 [P] [US2] Build markdown import UI in `journeypoint/app/(facilitator)/facilitator/markdown-import/page.tsx`, `journeypoint/components/plans/MarkdownImportWorkspace.tsx`, and `journeypoint/components/plans/MarkdownPreviewTable.tsx`
+- [x] T027 [P] [US2] Build markdown import UI in `journeypoint/app/(facilitator)/facilitator/plans/import/page.tsx`, `journeypoint/components/plans/MarkdownImportWorkspace.tsx`, and `journeypoint/components/plans/MarkdownPreviewTable.tsx`
 - [x] T028 [P] [US2] Add plan provider state in `journeypoint/providers/onboardingPlanProvider/`
 - [x] T029 [US2] Add plan builder components in `journeypoint/components/plans/PlanCard.tsx`, `PlanEditor.tsx`, `ModulePanel.tsx`, `TaskFormModal.tsx`, and `TaskListEditor.tsx`
+- [x] T059 [US2] Extend JP-012 and JP-011 with Groq-backed document normalization, saved-plan enrichment uploads, and standalone document-import preview/save flow across `aspnet-core/src/JourneyPoint.Application/Services/GroqService/`, `aspnet-core/src/JourneyPoint.Application/Services/DocumentExtractionService/`, and `journeypoint/components/plans/`
 
-**Checkpoint**: Published onboarding plans can be authored and enriched.
+**Checkpoint**: Saved onboarding plans can be authored and enriched, and standalone source documents can be normalized into draft previews.
+
+---
+
+## Phase 4B: Pre-M3 Standards Gate
+
+**Purpose**: Close the remaining M1 and M2 standards mismatches before
+expanding into hire enrolment and journey orchestration.
+
+- [x] T060 Execute the pre-M3 engineering standards sweep across touched JourneyPoint-owned M1 and M2 frontend/backend source, enforcing the 350-line source-file cap, public backend XML comments, guarded low-nesting backend methods, strict provider-folder boundaries, extracted helper/type/constants modules, and the existing bans on inline styles and untyped `any`
+
+**Checkpoint**: The active JourneyPoint-owned M1 and M2 implementation surface satisfies the absorbed engineering standards before US3 work expands the codebase.
 
 ---
 
@@ -191,6 +212,7 @@ engagement data, surfaces at-risk hires, and supports facilitator intervention.
 - [ ] T056 Run milestone smoke validation using `specs/001-journeypoint-platform/quickstart.md`
 - [x] T057 Review issue slicing and milestone readiness in `specs/001-journeypoint-platform/github-roadmap.md`
 - [x] T058 Align repo guidance, Speckit templates, and current M1-owned backend/frontend implementation surfaces to the absorbed company engineering standards before starting M2
+- [x] T061 Enforce the pre-M3 standards gate across the active M2 frontend/backend implementation surface, including the 350-line source-file rule, strict provider-folder boundaries, App Router plus provider-state conventions, and current company structure guidance before starting milestone 3
 
 ---
 
@@ -209,6 +231,8 @@ engagement data, surfaces at-risk hires, and supports facilitator intervention.
 - US1 provides role-specific shell access and should be complete before heavy
   feature routing depends on it.
 - US2 provides published plans that US3 enrolment relies on.
+- The pre-M3 standards gate must close before US3 expands the JourneyPoint
+  codebase beyond the current M1 and M2 implementation surface.
 - US3 provides active journeys required by US4 participant and AI workflows.
 - US5 depends on journey execution data from US3 and US4.
 

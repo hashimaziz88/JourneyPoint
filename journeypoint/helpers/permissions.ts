@@ -1,7 +1,9 @@
-import { APP_PERMISSIONS, APP_ROLE_NAMES } from "@/constants/auth/permissions";
+import {
+  APP_PERMISSIONS,
+  APP_ROLE_NAMES,
+  type AppRoleName,
+} from "@/constants/auth/permissions";
 import { APP_ROUTES } from "@/constants/auth/routes";
-
-type AppRoleName = (typeof APP_ROLE_NAMES)[keyof typeof APP_ROLE_NAMES];
 
 export const extractGrantedPermissions = (
   grantedPermissions?: Record<string, boolean> | null,

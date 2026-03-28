@@ -3,20 +3,10 @@
 import React from "react";
 import { Button, Space, Table, Tag } from "antd";
 import { LockOutlined } from "@ant-design/icons";
-import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
+import type { ColumnsType } from "antd/es/table";
 import type { IUserDto } from "@/types/user";
 import { useStyles } from "@/components/admin/style/style";
-
-interface IUserManagementTableProps {
-  isLoading: boolean;
-  pagination: TablePaginationConfig;
-  totalCount: number;
-  users: IUserDto[];
-  onDelete: (user: IUserDto) => void;
-  onEdit: (user: IUserDto) => void;
-  onPaginationChange: (current: number, pageSize: number) => void;
-  onResetPassword: (user: IUserDto) => void;
-}
+import type { IUserManagementTableProps } from "@/types/admin/userManager";
 
 /**
  * Renders the paged user table and row-level actions for the admin workspace.

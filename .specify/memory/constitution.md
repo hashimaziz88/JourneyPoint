@@ -127,9 +127,19 @@ gates. Delivering demoable increments reduces risk and keeps planning grounded.
   entity method bodies.
 - Public backend classes and public methods MUST include XML comments, and
   non-obvious logic MUST be preceded by a short explanatory comment.
+- JourneyPoint-owned frontend and backend source files touched by product work
+  MUST stay at or under 350 lines. Generated artifacts such as EF migration
+  designer files, model snapshots, and build output are excluded from this cap.
+- Backend methods SHOULD prefer guard clauses, early returns, and low nesting.
+  When a reusable guard-clause library is introduced for JourneyPoint-owned
+  code, the standard choice is `Ardalis.GuardClauses`.
 - Frontend stateful features MUST stay on the strict four-file provider
   contract only: `actions.tsx`, `context.tsx`, `index.tsx`, and `reducer.tsx`.
   Bootstrap or cross-cutting side effects MUST live outside provider folders.
+- Touched frontend and backend files MUST move loose helper methods, constants,
+  interfaces, and sample data into dedicated modules or top-level folders
+  instead of accumulating them inside large component, provider, or service
+  files.
 - Frontend architecture MUST follow Next.js 16 App Router conventions. Older
   Pages Router patterns such as `pages/`, `getServerSideProps`, and
   `getStaticProps` are considered legacy guidance and MUST be translated into

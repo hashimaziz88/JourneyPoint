@@ -24,7 +24,12 @@ When implementing:
 4. keep AI calls backend-only
 5. do not bypass providers in frontend features
 6. do not add inline styling or untyped `any`
-7. keep providers on the strict four-file contract only
-8. do not declare regular nested React components inside component bodies
-9. normalize older external company notes to JourneyPoint's App Router and
+7. keep JourneyPoint-owned handwritten frontend source files at or under 350
+   lines, excluding generated build output
+8. move loose helper methods, constants, interfaces, and sample data into
+   dedicated modules or top-level folders instead of large component or
+   provider files
+9. keep providers on the strict four-file contract only
+10. do not declare regular nested React components inside component bodies
+11. normalize older external company notes to JourneyPoint's App Router and
    `antd-style` stack instead of copying conflicting legacy patterns

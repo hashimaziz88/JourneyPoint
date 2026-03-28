@@ -15,6 +15,8 @@ namespace JourneyPoint.Configuration
 
         public string Model { get; set; } = "llama-3.3-70b-versatile";
 
+        public string VisionModel { get; set; } = "meta-llama/llama-4-scout-17b-16e-instruct";
+
         public int TimeoutSeconds { get; set; } = 60;
 
         /// <summary>

@@ -28,14 +28,14 @@ should remain ABP application-service friendly, typically under
 
 | Capability | Method | Purpose | Primary Actors |
 |-----------|--------|---------|----------------|
-| Preview markdown import | POST | Parse markdown into plan/module/task preview data | Facilitator |
+| Preview document import | POST | Normalize markdown, text, PDF, or image content into plan/module/task preview data | Facilitator |
 | Save imported draft | POST | Persist a facilitator-approved imported plan | Facilitator |
 
 ## Document Enrichment
 
 | Capability | Method | Purpose | Primary Actors |
 |-----------|--------|---------|----------------|
-| Upload plan document | POST | Store a markdown or PDF file against a published plan | Facilitator |
+| Upload plan document | POST | Store a markdown, text, PDF, or image file against a saved non-archived plan | Facilitator |
 | Start extraction | POST | Trigger AI extraction for the uploaded document | Facilitator |
 | List extracted tasks | GET | Return reviewable extraction proposals | Facilitator |
 | Review extracted task | POST | Accept, edit, reject, or assign a proposed task | Facilitator |

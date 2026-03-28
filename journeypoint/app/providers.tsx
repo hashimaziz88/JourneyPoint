@@ -8,10 +8,7 @@ import { AuthProvider } from "@/providers/authProvider";
 import { RoleProvider } from "@/providers/roleProvider";
 import { TenantProvider } from "@/providers/tenantProvider";
 import { UserProvider } from "@/providers/userProvider";
-
-interface IAppProvidersProps {
-  children: React.ReactNode;
-}
+import type { IAppProvidersProps } from "@/types/app/providers";
 
 /**
  * Composes the global JourneyPoint frontend providers in dependency order.

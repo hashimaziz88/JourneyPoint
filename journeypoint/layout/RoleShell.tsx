@@ -3,22 +3,10 @@
 import React, { startTransition, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { APP_ROUTES } from "@/constants/auth/routes";
-import type { IWorkspaceNavigationItem } from "@/constants/global/navigation";
 import { useAppSession } from "@/helpers/useAppSession";
 import Spinner from "@/components/spinner/Spinner";
+import type { IRoleShellProps } from "@/types/layout/shell";
 import AppShell from "./AppShell";
-
-/**
- * Defines the route-shell access and presentation options for a role workspace.
- */
-interface IRoleShellProps {
-  children: React.ReactNode;
-  title: string;
-  subtitle: string;
-  navigationItems: IWorkspaceNavigationItem[];
-  allowedRoles?: string[];
-  allowHost?: boolean;
-}
 
 /**
  * Applies role-aware access control and shared shell rendering to a workspace.

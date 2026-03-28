@@ -7,83 +7,35 @@ import React, {
     useMemo,
     useState,
 } from "react";
-import {
-    Alert,
-    Button,
-    Card,
-    Empty,
-    Input,
-    InputNumber,
-    Space,
-    Typography,
-    Upload,
-    message,
-} from "antd";
+import { Alert, Button, Space, Typography, Upload, message } from "antd";
 import type { UploadProps } from "antd";
 import {
     EyeOutlined,
-    InboxOutlined,
     RollbackOutlined,
     SaveOutlined,
 } from "@ant-design/icons";
-import {
-    APP_ROUTES,
-    buildFacilitatorPlanRoute,
-} from "@/constants/auth/routes";
-import MarkdownPreviewTable from "@/components/plans/MarkdownPreviewTable";
-import MarkdownImportWarnings from "@/components/plans/MarkdownImportWarnings";
+import { APP_ROUTES, buildFacilitatorPlanRoute } from "@/constants/auth/routes";
+import MarkdownImportPreviewCard from "@/components/plans/MarkdownImportPreviewCard";
+import MarkdownImportSourceCard from "@/components/plans/MarkdownImportSourceCard";
 import TaskFormModal from "@/components/plans/TaskFormModal";
 import { useStyles } from "@/components/plans/style/style";
 import {
     useMarkdownImportActions,
     useMarkdownImportState,
 } from "@/providers/markdownImportProvider";
-import type {
-    IOnboardingPlanDraft,
-    IOnboardingTaskDraft,
-    IOnboardingTaskEditorValues,
-} from "@/types/onboarding-plan";
+import type { IOnboardingTaskEditorValues } from "@/types/onboarding-plan";
+import {
+    findImportDraftTask,
+} from "@/utils/plans/markdownImport";
+import { SAMPLE_IMPORT_MARKDOWN } from "@/constants/plans/import";
+import { readFileAsBase64 } from "@/utils/plans/fileUpload";
 import { useRouter } from "next/navigation";
+import type { IMarkdownImportWorkspaceTaskModalState } from "@/types/plans/components";
 
-const { Paragraph, Text, Title } = Typography;
-
-const SAMPLE_MARKDOWN = `# Graduate Cohort Programme
-Description: Multi-week onboarding for the graduate cohort.
-Target Audience: Graduate hires
-Duration Days: 21
-
-## Week 1 - Orientation
-Welcome activities and first-day setup.
-
-| Title | Description | Category | Due | Assigned To | Acknowledgement |
-| --- | --- | --- | --- | --- | --- |
-| Collect laptop | Confirm device handover and login credentials. | Orientation | 0 | Facilitator | Required |
-| Meet your manager | Introductory session with the line manager. | CheckIn | 1 | Manager | Not Required |
-`;
-
-interface ITaskModalState {
-    moduleClientKey: string;
-    taskClientKey: string;
-}
-
-const findDraftTask = (
-    draftPlan: IOnboardingPlanDraft | null | undefined,
-    moduleClientKey: string | null,
-    taskClientKey: string | null,
-): IOnboardingTaskDraft | null => {
-    if (!draftPlan || !moduleClientKey || !taskClientKey) {
-        return null;
-    }
-
-    const parentModule = draftPlan.modules.find(
-        (module) => module.clientKey === moduleClientKey,
-    );
-
-    return parentModule?.tasks.find((task) => task.clientKey === taskClientKey) ?? null;
-};
+const { Paragraph, Title } = Typography;
 
 /**
- * Provides the facilitator markdown import review and draft-save workspace.
+ * Provides the facilitator document-import review and draft-save workspace.
  */
 const MarkdownImportWorkspace: React.FC = () => {
     const { styles } = useStyles();
@@ -97,6 +49,7 @@ const MarkdownImportWorkspace: React.FC = () => {
         saveDraft,
         setPreviewMetadata,
         setSourceContent,
+        setSourceFile,
         updatePreviewModule,
         updatePreviewTask,
     } = useMarkdownImportActions();
@@ -105,11 +58,11 @@ const MarkdownImportWorkspace: React.FC = () => {
         isSavePending,
         previewPlan,
         sourceContent,
+        sourceBase64Content,
+        sourceContentType,
         sourceFileName,
     } = useMarkdownImportState();
-    const [taskModalState, setTaskModalState] = useState<ITaskModalState | null>(
-        null,
-    );
+    const [taskModalState, setTaskModalState] = useState<IMarkdownImportWorkspaceTaskModalState | null>(null);
 
     const resetWorkspace = useEffectEvent((): void => {
         resetImport();
@@ -125,7 +78,7 @@ const MarkdownImportWorkspace: React.FC = () => {
 
     const editingTask = useMemo(
         () =>
-            findDraftTask(
+            findImportDraftTask(
                 previewPlan?.plan,
                 taskModalState?.moduleClientKey ?? null,
                 taskModalState?.taskClientKey ?? null,
@@ -134,20 +87,25 @@ const MarkdownImportWorkspace: React.FC = () => {
     );
 
     const handlePreview = async (): Promise<void> => {
-        if (!sourceContent.trim()) {
-            messageApi.error("Paste markdown content or upload a markdown file first.");
+        const hasTextSource = !!sourceContent.trim();
+        const hasBinarySource = !!sourceBase64Content;
+
+        if (!hasTextSource && !hasBinarySource) {
+            messageApi.error("Paste source content or upload a supported document first.");
             return;
         }
 
         const preview = await previewImport();
 
         if (!preview) {
-            messageApi.error("The markdown content could not be parsed.");
+            messageApi.error("The source document could not be normalized into a plan preview.");
             return;
         }
 
         if (preview.warnings.length > 0) {
-            messageApi.warning("Preview generated with warnings. Review the parsed content before saving.");
+            messageApi.warning(
+                "Preview generated with warnings. Review the parsed content before saving.",
+            );
             return;
         }
 
@@ -194,15 +152,27 @@ const MarkdownImportWorkspace: React.FC = () => {
     };
 
     const handleLoadExample = (): void => {
-        setSourceContent(SAMPLE_MARKDOWN, "sample-onboarding-plan.md");
+        setSourceContent(SAMPLE_IMPORT_MARKDOWN, "sample-onboarding-plan.md");
     };
 
     const uploadProps: UploadProps = {
-        accept: ".md,.markdown,text/markdown,text/plain",
+        accept: ".md,.markdown,.txt,.pdf,.png,.jpg,.jpeg,.webp,text/markdown,text/plain,application/pdf,image/png,image/jpeg,image/webp",
         showUploadList: false,
         beforeUpload: async (file) => {
-            const content = await file.text();
-            setSourceContent(content, file.name);
+            const base64Content = await readFileAsBase64(file);
+            const isTextFile =
+                file.type.startsWith("text/") ||
+                file.name.endsWith(".md") ||
+                file.name.endsWith(".markdown") ||
+                file.name.endsWith(".txt");
+            const textContent = isTextFile ? await file.text() : null;
+
+            setSourceFile({
+                fileName: file.name,
+                contentType: file.type || "application/octet-stream",
+                base64Content,
+                sourceContent: textContent,
+            });
             messageApi.success(`${file.name} loaded for preview.`);
             return Upload.LIST_IGNORE;
         },
@@ -214,12 +184,13 @@ const MarkdownImportWorkspace: React.FC = () => {
             <div className={styles.pageHeader}>
                 <div>
                     <Title level={2} className={styles.pageHeading}>
-                        Import Markdown
+                        Create Plan From Document
                     </Title>
                     <Paragraph type="secondary">
-                        Parse structured markdown into a reviewable onboarding draft.
-                        Nothing is applied automatically. A facilitator must inspect
-                        and approve the preview before the draft is created.
+                        Upload markdown, text, PDF, or image source material and
+                        normalize it into the same reviewable onboarding draft shape used by
+                        the manual builder. Nothing is applied automatically. A facilitator
+                        must inspect and approve the preview before the draft is created.
                     </Paragraph>
                 </div>
 
@@ -227,12 +198,10 @@ const MarkdownImportWorkspace: React.FC = () => {
                     <Button
                         icon={<RollbackOutlined />}
                         onClick={() =>
-                            startTransition(() =>
-                                router.push(APP_ROUTES.facilitatorPlans),
-                            )
+                            startTransition(() => router.push(APP_ROUTES.facilitatorPlans))
                         }
                     >
-                        Back to Plans
+                        Back to Plan Creation
                     </Button>
                     <Button onClick={handleLoadExample}>Load Example</Button>
                     <Button onClick={resetImport}>Reset</Button>
@@ -259,141 +228,28 @@ const MarkdownImportWorkspace: React.FC = () => {
                 className={styles.alert}
                 type="info"
                 showIcon
-                title="Accepted markdown content only affects future journeys once this draft is later used for enrolment."
+                title="Backend AI normalization is review-first. Imported content only affects future journeys once the saved draft is later used for enrolment."
             />
 
             <div className={styles.importGrid}>
-                <Card className={styles.importSourceCard}>
-                    <Space orientation="vertical" size={16} className={styles.pageRoot}>
-                        <div>
-                            <Title level={4}>Source Markdown</Title>
-                            <Paragraph type="secondary">
-                                Use a top-level plan title, optional metadata fields,
-                                `##` module headings, and either markdown task tables
-                                or list rows separated with `|`.
-                            </Paragraph>
-                        </div>
+                <MarkdownImportSourceCard
+                    sourceContent={sourceContent}
+                    sourceContentType={sourceContentType}
+                    sourceFileName={sourceFileName}
+                    uploadProps={uploadProps}
+                    onSourceContentChange={setSourceContent}
+                />
 
-                        <Upload.Dragger {...uploadProps}>
-                            <p className="ant-upload-drag-icon">
-                                <InboxOutlined />
-                            </p>
-                            <p className="ant-upload-text">
-                                Drop a markdown file here or click to load one.
-                            </p>
-                            <p className="ant-upload-hint">
-                                Review is mandatory before any draft is created.
-                            </p>
-                        </Upload.Dragger>
-
-                        {sourceFileName ? (
-                            <Text type="secondary">Loaded file: {sourceFileName}</Text>
-                        ) : null}
-
-                        <Input.TextArea
-                            className={styles.importTextArea}
-                            value={sourceContent}
-                            onChange={(event) =>
-                                setSourceContent(event.target.value, sourceFileName)
-                            }
-                            placeholder="Paste structured markdown here."
-                            rows={18}
-                        />
-                    </Space>
-                </Card>
-
-                <Card className={styles.importPreviewCard}>
-                    <Space orientation="vertical" size={16} className={styles.pageRoot}>
-                        <div>
-                            <Title level={4}>Preview and Review</Title>
-                            <Paragraph type="secondary">
-                                Edit the parsed metadata, remove bad rows, and fix task
-                                content before saving the import as a draft plan.
-                            </Paragraph>
-                        </div>
-
-                        {previewPlan?.plan ? (
-                            <>
-                                <div className={styles.metadataGrid}>
-                                    <Input
-                                        value={previewPlan.plan.name}
-                                        onChange={(event) =>
-                                            setPreviewMetadata({
-                                                name: event.target.value,
-                                            })
-                                        }
-                                        placeholder="Plan name"
-                                        maxLength={200}
-                                    />
-                                    <Input
-                                        value={previewPlan.plan.targetAudience}
-                                        onChange={(event) =>
-                                            setPreviewMetadata({
-                                                targetAudience: event.target.value,
-                                            })
-                                        }
-                                        placeholder="Target audience"
-                                        maxLength={200}
-                                    />
-                                    <InputNumber
-                                        min={1}
-                                        precision={0}
-                                        value={previewPlan.plan.durationDays}
-                                        onChange={(value) =>
-                                            setPreviewMetadata({
-                                                durationDays: value ?? 1,
-                                            })
-                                        }
-                                    />
-                                    <Input value="Draft preview" disabled />
-                                    <Input.TextArea
-                                        className={styles.fullWidthField}
-                                        value={previewPlan.plan.description}
-                                        onChange={(event) =>
-                                            setPreviewMetadata({
-                                                description: event.target.value,
-                                            })
-                                        }
-                                        placeholder="Plan description"
-                                        rows={5}
-                                        maxLength={4000}
-                                    />
-                                </div>
-
-                                <MarkdownImportWarnings
-                                    warnings={previewPlan.warnings}
-                                />
-
-                                {previewPlan.canSave ? null : (
-                                    <Alert
-                                        className={styles.alert}
-                                        type="warning"
-                                        showIcon
-                                        title="This preview still has missing required values. Resolve the highlighted issues before saving."
-                                    />
-                                )}
-
-                                <MarkdownPreviewTable
-                                    modules={previewPlan.plan.modules}
-                                    onEditTask={(moduleClientKey, taskClientKey) =>
-                                        setTaskModalState({
-                                            moduleClientKey,
-                                            taskClientKey,
-                                        })
-                                    }
-                                    onModuleChange={updatePreviewModule}
-                                    onRemoveModule={removePreviewModule}
-                                    onRemoveTask={removePreviewTask}
-                                />
-                            </>
-                        ) : (
-                            <Empty
-                                className={styles.emptyState}
-                                description="Generate a preview to review parsed plan content."
-                            />
-                        )}
-                    </Space>
-                </Card>
+                <MarkdownImportPreviewCard
+                    previewPlan={previewPlan}
+                    onEditTask={(moduleClientKey, taskClientKey) =>
+                        setTaskModalState({ moduleClientKey, taskClientKey })
+                    }
+                    onMetadataChange={setPreviewMetadata}
+                    onModuleChange={updatePreviewModule}
+                    onRemoveModule={removePreviewModule}
+                    onRemoveTask={removePreviewTask}
+                />
             </div>
 
             <TaskFormModal

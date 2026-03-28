@@ -44,6 +44,9 @@ The `angular/` application is out of scope and must be ignored.
 - Use the Next.js App Router rather than legacy `pages/` routing.
 - Do not use inline styles.
 - Do not use `any` in TypeScript.
+- Keep JourneyPoint-owned handwritten frontend and backend source files at or
+  under 350 lines. Generated artifacts such as migration designers, model
+  snapshots, and build output are excluded.
 - Map meaningful implementation work back to the active feature tasks and issue roadmap.
 - Treat the absorbed company standards as binding: backend entities in
   `JourneyPoint.Core/Domains/<DomainArea>/`, `FullAuditedEntity<Guid>` as the
@@ -52,6 +55,8 @@ The `angular/` application is out of scope and must be ignored.
   rules, DTOs next to app services, no domain logic in AppServices, public
   backend classes/methods documented with XML comments, and strict four-file
   provider folders only.
+- Prefer guard clauses, early returns, and low nesting in backend methods; when
+  a reusable guard-clause library is introduced, use `Ardalis.GuardClauses`.
 - Normalize older company frontend notes to the real repo stack: App Router and
   `antd-style` are binding here, so do not introduce legacy Pages Router or
   Tailwind-specific patterns unless the higher-priority project docs are
@@ -59,6 +64,9 @@ The `angular/` application is out of scope and must be ignored.
 - Do not declare regular child React components inside other functional
   component bodies; extract them into `components/` or another dedicated
   module.
+- Do not leave loose helper methods, constants, interfaces, or sample data
+  inside large component, provider, or service files when they belong in
+  dedicated modules or top-level folders.
 
 ## Working Protocol
 

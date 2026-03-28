@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.UI;
+using JourneyPoint.Application.Services.DocumentExtractionService;
+using JourneyPoint.Application.Services.GroqService;
 using JourneyPoint.Application.Services.MarkdownImportService.Dto;
 using JourneyPoint.Application.Services.OnboardingPlanService.Dto;
 using JourneyPoint.Authorization;
@@ -16,11 +18,15 @@ namespace JourneyPoint.Application.Services.MarkdownImportService
     /// Provides markdown onboarding import preview and draft-save orchestration.
     /// </summary>
     [AbpAuthorize(PermissionNames.Pages_JourneyPoint_Facilitator, PermissionNames.Pages_JourneyPoint_TenantAdmin)]
-    public class MarkdownImportAppService : JourneyPointAppServiceBase, IMarkdownImportAppService
+    public partial class MarkdownImportAppService : JourneyPointAppServiceBase, IMarkdownImportAppService
     {
+        private const int MaximumImportSizeBytes = 10 * 1024 * 1024;
+
         private readonly IRepository<OnboardingPlan, Guid> _onboardingPlanRepository;
         private readonly OnboardingPlanManager _onboardingPlanManager;
         private readonly MarkdownImportParser _markdownImportParser;
+        private readonly DocumentContentExtractionService _documentContentExtractionService;
+        private readonly IGroqDocumentNormalizationService _groqDocumentNormalizationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MarkdownImportAppService"/> class.
@@ -28,20 +34,43 @@ namespace JourneyPoint.Application.Services.MarkdownImportService
         public MarkdownImportAppService(
             IRepository<OnboardingPlan, Guid> onboardingPlanRepository,
             OnboardingPlanManager onboardingPlanManager,
-            MarkdownImportParser markdownImportParser)
+            MarkdownImportParser markdownImportParser,
+            DocumentContentExtractionService documentContentExtractionService,
+            IGroqDocumentNormalizationService groqDocumentNormalizationService)
         {
             _onboardingPlanRepository = onboardingPlanRepository;
             _onboardingPlanManager = onboardingPlanManager;
             _markdownImportParser = markdownImportParser;
+            _documentContentExtractionService = documentContentExtractionService;
+            _groqDocumentNormalizationService = groqDocumentNormalizationService;
         }
 
         /// <summary>
         /// Parses markdown content into a reviewable onboarding preview.
         /// </summary>
-        public Task<MarkdownImportPreviewDto> PreviewAsync(PreviewMarkdownImportRequest input)
+        public async Task<MarkdownImportPreviewDto> PreviewAsync(PreviewMarkdownImportRequest input)
         {
-            var preview = _markdownImportParser.Parse(input.MarkdownContent, input.SourceFileName);
-            return Task.FromResult(preview);
+            if (input == null)
+            {
+                throw new UserFriendlyException("Import content is required before a preview can be generated.");
+            }
+
+            var normalizedContentType = NormalizeImportContentType(input.SourceContentType, input.SourceFileName);
+            if (!string.IsNullOrWhiteSpace(input.Base64Content))
+            {
+                var fileBytes = DecodeAndValidateFile(input.Base64Content);
+                return await PreviewFromBinaryAsync(input.SourceFileName, normalizedContentType, fileBytes);
+            }
+
+            if (string.IsNullOrWhiteSpace(input.MarkdownContent))
+            {
+                throw new UserFriendlyException("Paste source content or upload a supported document before previewing.");
+            }
+
+            return await PreviewFromTextAsync(
+                input.MarkdownContent,
+                input.SourceFileName,
+                normalizedContentType);
         }
 
         /// <summary>
@@ -109,65 +138,149 @@ namespace JourneyPoint.Application.Services.MarkdownImportService
             return AbpSession.TenantId.Value;
         }
 
-        private static IEnumerable<MarkdownImportPreviewModuleDto> OrderModules(IEnumerable<MarkdownImportPreviewModuleDto> modules)
+        private async Task<MarkdownImportPreviewDto> PreviewFromTextAsync(
+            string markdownContent,
+            string sourceFileName,
+            string contentType)
         {
-            return (modules ?? Enumerable.Empty<MarkdownImportPreviewModuleDto>())
-                .OrderBy(module => module.OrderIndex)
-                .ThenBy(module => module.Name);
-        }
-
-        private static IEnumerable<MarkdownImportPreviewTaskDto> OrderTasks(IEnumerable<MarkdownImportPreviewTaskDto> tasks)
-        {
-            return (tasks ?? Enumerable.Empty<MarkdownImportPreviewTaskDto>())
-                .OrderBy(task => task.OrderIndex)
-                .ThenBy(task => task.Title);
-        }
-
-        private static OnboardingPlanDetailDto MapToDetailDto(OnboardingPlan plan)
-        {
-            return new OnboardingPlanDetailDto
+            var deterministicPreview = TryParsePreview(markdownContent, sourceFileName);
+            if (IsDeterministicPreviewReady(deterministicPreview))
             {
-                Id = plan.Id,
-                Name = plan.Name,
-                Description = plan.Description,
-                TargetAudience = plan.TargetAudience,
-                DurationDays = plan.DurationDays,
-                Status = plan.Status,
-                Modules = plan.Modules
-                    .OrderBy(module => module.OrderIndex)
-                    .Select(MapModuleDto)
-                    .ToList()
-            };
+                return deterministicPreview;
+            }
+
+            if (_groqDocumentNormalizationService.IsEnabled)
+            {
+                var normalizedPreview = await TryNormalizePreviewAsync(
+                    () => _groqDocumentNormalizationService.NormalizeImportFromTextAsync(
+                        sourceFileName,
+                        contentType,
+                        markdownContent),
+                    deterministicPreview);
+                if (normalizedPreview != null)
+                {
+                    return normalizedPreview;
+                }
+            }
+
+            if (deterministicPreview != null)
+            {
+                return deterministicPreview;
+            }
+
+            throw new UserFriendlyException(
+                "The uploaded content could not be normalized. Enable Groq-backed import normalization or provide structured markdown.");
         }
 
-        private static OnboardingModuleDto MapModuleDto(OnboardingModule module)
+        private async Task<MarkdownImportPreviewDto> PreviewFromBinaryAsync(
+            string sourceFileName,
+            string contentType,
+            byte[] content)
         {
-            return new OnboardingModuleDto
+            var extractedContent = await _documentContentExtractionService.ExtractAsync(
+                sourceFileName,
+                contentType,
+                content);
+
+            if (!string.IsNullOrWhiteSpace(extractedContent.TextContent))
             {
-                Id = module.Id,
-                Name = module.Name,
-                Description = module.Description,
-                OrderIndex = module.OrderIndex,
-                Tasks = module.Tasks
-                    .OrderBy(task => task.OrderIndex)
-                    .Select(MapTaskDto)
-                    .ToList()
-            };
+                var deterministicPreview = TryParsePreview(extractedContent.TextContent, sourceFileName);
+                if (IsDeterministicPreviewReady(deterministicPreview))
+                {
+                    return deterministicPreview;
+                }
+
+                if (_groqDocumentNormalizationService.IsEnabled)
+                {
+                    var normalizedPreview = await TryNormalizePreviewAsync(
+                        () => _groqDocumentNormalizationService.NormalizeImportFromTextAsync(
+                            sourceFileName,
+                            contentType,
+                            extractedContent.TextContent),
+                        deterministicPreview);
+                    if (normalizedPreview != null)
+                    {
+                        return normalizedPreview;
+                    }
+                }
+
+                if (deterministicPreview != null)
+                {
+                    return deterministicPreview;
+                }
+            }
+
+            if (extractedContent.Images.Any() && _groqDocumentNormalizationService.IsEnabled)
+            {
+                var imagePreview = await TryNormalizePreviewAsync(
+                    () => _groqDocumentNormalizationService.NormalizeImportFromImagesAsync(
+                        sourceFileName,
+                        contentType,
+                        extractedContent.Images),
+                    fallbackPreview: null);
+                if (imagePreview != null)
+                {
+                    return imagePreview;
+                }
+            }
+
+            throw new UserFriendlyException(
+                "This document could not be normalized into an onboarding draft preview. Enable Groq-backed document import or upload a text-based source.");
         }
 
-        private static OnboardingTaskDto MapTaskDto(OnboardingTask task)
+        private static bool IsDeterministicPreviewReady(MarkdownImportPreviewDto preview)
         {
-            return new OnboardingTaskDto
+            return preview != null &&
+                   preview.CanSave &&
+                   preview.Warnings.Count == 0;
+        }
+
+        private async Task<MarkdownImportPreviewDto> TryNormalizePreviewAsync(
+            Func<Task<MarkdownImportPreviewDto>> normalizeAsync,
+            MarkdownImportPreviewDto fallbackPreview)
+        {
+            try
             {
-                Id = task.Id,
-                Title = task.Title,
-                Description = task.Description,
-                Category = task.Category,
-                OrderIndex = task.OrderIndex,
-                DueDayOffset = task.DueDayOffset,
-                AssignmentTarget = task.AssignmentTarget,
-                AcknowledgementRule = task.AcknowledgementRule
-            };
+                return await normalizeAsync();
+            }
+            catch
+            {
+                if (fallbackPreview == null)
+                {
+                    return null;
+                }
+
+                AddAiFallbackWarning(fallbackPreview);
+                return fallbackPreview;
+            }
+        }
+
+        private static void AddAiFallbackWarning(MarkdownImportPreviewDto preview)
+        {
+            preview.Warnings ??= new List<MarkdownImportWarningDto>();
+
+            if (preview.Warnings.Any(warning => warning.Code == "AI_UNAVAILABLE"))
+            {
+                return;
+            }
+
+            preview.Warnings.Add(new MarkdownImportWarningDto
+            {
+                Code = "AI_UNAVAILABLE",
+                Message = "AI normalization was unavailable, so the preview is using the parser-only fallback. Review imported fields carefully."
+            });
+        }
+
+        private MarkdownImportPreviewDto TryParsePreview(string markdownContent, string sourceFileName)
+        {
+            try
+            {
+                return _markdownImportParser.Parse(markdownContent, sourceFileName);
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

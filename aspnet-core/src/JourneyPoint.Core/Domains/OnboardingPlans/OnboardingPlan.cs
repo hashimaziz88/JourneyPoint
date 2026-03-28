@@ -20,6 +20,7 @@ namespace JourneyPoint.Domains.OnboardingPlans
         public OnboardingPlan()
         {
             Modules = new Collection<OnboardingModule>();
+            Documents = new Collection<OnboardingDocument>();
         }
 
         public int TenantId { get; set; }
@@ -42,5 +43,7 @@ namespace JourneyPoint.Domains.OnboardingPlans
         public OnboardingPlanStatus Status { get; set; }
 
         public virtual ICollection<OnboardingModule> Modules { get; set; }
+
+        public virtual ICollection<OnboardingDocument> Documents { get; set; }
     }
 }

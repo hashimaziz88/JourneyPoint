@@ -3,28 +3,15 @@
 import React from "react";
 import { Button, Empty, Space, Tag, Typography } from "antd";
 import {
-    IOnboardingTaskDraft,
     ONBOARDING_TASK_ACKNOWLEDGEMENT_RULE_OPTIONS,
     ONBOARDING_TASK_ASSIGNMENT_TARGET_OPTIONS,
     ONBOARDING_TASK_CATEGORY_OPTIONS,
 } from "@/types/onboarding-plan";
 import { useStyles } from "@/components/plans/style/style";
+import type { ITaskListEditorProps } from "@/types/plans/components";
+import { findOptionLabel } from "@/utils/plans/optionLabels";
 
 const { Paragraph, Title } = Typography;
-
-const findOptionLabel = (
-    options: ReadonlyArray<{ label: string; value: number }>,
-    value: number,
-): string => options.find((option) => option.value === value)?.label ?? "Unknown";
-
-interface ITaskListEditorProps {
-    isReadOnly: boolean;
-    onAddTask: () => void;
-    onDeleteTask: (taskClientKey: string) => void;
-    onEditTask: (taskClientKey: string) => void;
-    onMoveTask: (taskClientKey: string, direction: "up" | "down") => void;
-    tasks: IOnboardingTaskDraft[];
-}
 
 /**
  * Renders ordered module tasks and exposes task editing controls.
@@ -41,7 +28,7 @@ const TaskListEditor: React.FC<ITaskListEditorProps> = ({
 
     if (tasks.length === 0) {
         return (
-            <Space direction="vertical" size={16} className={styles.modulesWrap}>
+            <Space orientation="vertical" size={16} className={styles.modulesWrap}>
                 <Empty
                     className={styles.emptyState}
                     description="No tasks have been added to this module yet."
@@ -54,10 +41,10 @@ const TaskListEditor: React.FC<ITaskListEditorProps> = ({
     }
 
     return (
-        <Space direction="vertical" size={16} className={styles.modulesWrap}>
+        <Space orientation="vertical" size={16} className={styles.modulesWrap}>
             {tasks.map((task, index) => (
                 <div key={task.clientKey} className={styles.taskRow}>
-                    <Space direction="vertical" size={12} className={styles.modulesWrap}>
+                    <Space orientation="vertical" size={12} className={styles.modulesWrap}>
                         <div className={styles.taskRowHeader}>
                             <div>
                                 <Title level={5}>

@@ -6,6 +6,7 @@ type MarkdownImportStatePayload = Partial<IMarkdownImportStateContext>;
 
 export enum MarkdownImportActionEnums {
     setSource = "SET_MARKDOWN_IMPORT_SOURCE",
+    setSourceFile = "SET_MARKDOWN_IMPORT_SOURCE_FILE",
     previewPending = "PREVIEW_MARKDOWN_IMPORT_PENDING",
     previewSuccess = "PREVIEW_MARKDOWN_IMPORT_SUCCESS",
     previewError = "PREVIEW_MARKDOWN_IMPORT_ERROR",
@@ -18,12 +19,41 @@ export enum MarkdownImportActionEnums {
 
 export const setSource = createAction<
     MarkdownImportStatePayload,
-    { sourceContent: string; sourceFileName?: string | null }
+    {
+        sourceContent: string;
+        sourceFileName?: string | null;
+        sourceContentType?: string | null;
+    }
 >(
     MarkdownImportActionEnums.setSource,
-    ({ sourceContent, sourceFileName }) => ({
+    ({ sourceContent, sourceFileName, sourceContentType }) => ({
         sourceContent,
         sourceFileName: sourceFileName ?? null,
+        sourceContentType: sourceContentType ?? "text/markdown",
+        sourceBase64Content: null,
+    }),
+);
+
+export const setSourceFile = createAction<
+    MarkdownImportStatePayload,
+    {
+        sourceFileName: string;
+        sourceContentType: string;
+        sourceBase64Content: string;
+        sourceContent?: string | null;
+    }
+>(
+    MarkdownImportActionEnums.setSourceFile,
+    ({
+        sourceFileName,
+        sourceContentType,
+        sourceBase64Content,
+        sourceContent,
+    }) => ({
+        sourceFileName,
+        sourceContentType,
+        sourceBase64Content,
+        sourceContent: sourceContent ?? "",
     }),
 );
 
@@ -110,6 +140,8 @@ export const resetImport = createAction<MarkdownImportStatePayload>(
         isSuccess: false,
         sourceContent: "",
         sourceFileName: null,
+        sourceContentType: null,
+        sourceBase64Content: null,
         previewPlan: null,
     }),
 );

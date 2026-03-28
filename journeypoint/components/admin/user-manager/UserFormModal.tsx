@@ -2,22 +2,10 @@
 
 import React from "react";
 import { Form, Input, Modal, Select, Switch } from "antd";
-import type { FormInstance } from "antd";
-import type { ICreateUserDto, IUserDto } from "@/types/user";
-
-export interface IUserFormValues extends ICreateUserDto {
-  id?: number;
-}
-
-interface IUserFormModalProps {
-  editingUser: IUserDto | null;
-  form: FormInstance<IUserFormValues>;
-  isPending: boolean;
-  isVisible: boolean;
-  onCancel: () => void;
-  onSubmit: (values: IUserFormValues) => Promise<void>;
-  roleOptions: Array<{ label: string; value: string }>;
-}
+import type {
+  IUserFormModalProps,
+  IUserFormValues,
+} from "@/types/admin/userManager";
 
 /**
  * Renders the create/edit user modal used by the admin workspace.

@@ -34,6 +34,9 @@ Rules:
 - use providers for stateful frontend features
 - do not add inline styles
 - do not use untyped `any`
+- keep JourneyPoint-owned handwritten frontend and backend source files at or
+  under 350 lines, excluding generated artifacts such as migration designers,
+  model snapshots, and build output
 - follow the internal backend structure standard: domain entities in
   `JourneyPoint.Core/Domains/<DomainArea>/`, DTOs next to their app services,
   and no domain logic in AppServices
@@ -42,8 +45,13 @@ Rules:
 - use data annotations for entity validation and move aggregate rules into Core
   domain services or managers
 - add XML comments to public backend classes and public methods
+- prefer guard clauses, early returns, and low nesting in backend methods; use
+  `Ardalis.GuardClauses` when reusable guard support is introduced
 - keep provider modules on the strict four-file contract only
 - interpret absorbed company frontend standards through JourneyPoint's real
   stack by using App Router and `antd-style`, not conflicting legacy guidance
 - do not declare regular nested React components inside other functional
   component bodies
+- move loose helper methods, constants, interfaces, and sample data into
+  dedicated modules or top-level folders instead of large component, provider,
+  or service files
