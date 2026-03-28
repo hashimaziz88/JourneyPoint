@@ -9,6 +9,7 @@ export const APP_ROUTES = {
   facilitatorDashboard: "/facilitator/dashboard",
   facilitatorPlans: "/facilitator/plans",
   facilitatorPlanImport: "/facilitator/plans/import",
+  facilitatorHires: "/facilitator/hires",
   managerMyTasks: "/manager/my-tasks",
   enroleeMyJourney: "/enrolee/my-journey",
 };
@@ -20,3 +21,9 @@ export const buildFacilitatorPlanDocumentRoute = (
   planId: string,
   documentId: string,
 ): string => `${buildFacilitatorPlanRoute(planId)}/documents/${documentId}`;
+
+export const buildFacilitatorHireRoute = (hireId: string): string =>
+  `${APP_ROUTES.facilitatorHires}/${hireId}`;
+
+export const buildFacilitatorHireJourneyRoute = (hireId: string): string =>
+  `${buildFacilitatorHireRoute(hireId)}/journey`;

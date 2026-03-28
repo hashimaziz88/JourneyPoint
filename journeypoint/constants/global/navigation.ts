@@ -71,6 +71,14 @@ export const FACILITATOR_NAVIGATION_ITEMS: IWorkspaceNavigationItem[] = [
     description: "Create, refine, publish, and clone onboarding templates",
     iconKey: "plans",
   },
+  {
+    key: "facilitator-hires",
+    label: "Hires",
+    href: APP_ROUTES.facilitatorHires,
+    permission: APP_PERMISSIONS.facilitator,
+    description: "Manage enrolled hires and review journey activation state",
+    iconKey: "facilitator",
+  },
 ];
 
 export const MANAGER_NAVIGATION_ITEMS: IWorkspaceNavigationItem[] = [
