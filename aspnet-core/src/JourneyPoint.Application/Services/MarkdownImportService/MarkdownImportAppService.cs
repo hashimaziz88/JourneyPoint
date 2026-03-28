@@ -206,19 +206,23 @@ namespace JourneyPoint.Application.Services.MarkdownImportService
             string contentType)
         {
             var deterministicPreview = TryParsePreview(markdownContent, sourceFileName);
-            if (deterministicPreview != null &&
-                deterministicPreview.CanSave &&
-                deterministicPreview.Warnings.Count == 0)
+            if (IsDeterministicPreviewReady(deterministicPreview))
             {
                 return deterministicPreview;
             }
 
             if (_groqDocumentNormalizationService.IsEnabled)
             {
-                return await _groqDocumentNormalizationService.NormalizeImportFromTextAsync(
-                    sourceFileName,
-                    contentType,
-                    markdownContent);
+                var normalizedPreview = await TryNormalizePreviewAsync(
+                    () => _groqDocumentNormalizationService.NormalizeImportFromTextAsync(
+                        sourceFileName,
+                        contentType,
+                        markdownContent),
+                    deterministicPreview);
+                if (normalizedPreview != null)
+                {
+                    return normalizedPreview;
+                }
             }
 
             if (deterministicPreview != null)
@@ -243,19 +247,23 @@ namespace JourneyPoint.Application.Services.MarkdownImportService
             if (!string.IsNullOrWhiteSpace(extractedContent.TextContent))
             {
                 var deterministicPreview = TryParsePreview(extractedContent.TextContent, sourceFileName);
-                if (deterministicPreview != null &&
-                    deterministicPreview.CanSave &&
-                    deterministicPreview.Warnings.Count == 0)
+                if (IsDeterministicPreviewReady(deterministicPreview))
                 {
                     return deterministicPreview;
                 }
 
                 if (_groqDocumentNormalizationService.IsEnabled)
                 {
-                    return await _groqDocumentNormalizationService.NormalizeImportFromTextAsync(
-                        sourceFileName,
-                        contentType,
-                        extractedContent.TextContent);
+                    var normalizedPreview = await TryNormalizePreviewAsync(
+                        () => _groqDocumentNormalizationService.NormalizeImportFromTextAsync(
+                            sourceFileName,
+                            contentType,
+                            extractedContent.TextContent),
+                        deterministicPreview);
+                    if (normalizedPreview != null)
+                    {
+                        return normalizedPreview;
+                    }
                 }
 
                 if (deterministicPreview != null)
@@ -266,14 +274,63 @@ namespace JourneyPoint.Application.Services.MarkdownImportService
 
             if (extractedContent.Images.Any() && _groqDocumentNormalizationService.IsEnabled)
             {
-                return await _groqDocumentNormalizationService.NormalizeImportFromImagesAsync(
-                    sourceFileName,
-                    contentType,
-                    extractedContent.Images);
+                var imagePreview = await TryNormalizePreviewAsync(
+                    () => _groqDocumentNormalizationService.NormalizeImportFromImagesAsync(
+                        sourceFileName,
+                        contentType,
+                        extractedContent.Images),
+                    fallbackPreview: null);
+                if (imagePreview != null)
+                {
+                    return imagePreview;
+                }
             }
 
             throw new UserFriendlyException(
                 "This document could not be normalized into an onboarding draft preview. Enable Groq-backed document import or upload a text-based source.");
+        }
+
+        private static bool IsDeterministicPreviewReady(MarkdownImportPreviewDto preview)
+        {
+            return preview != null &&
+                   preview.CanSave &&
+                   preview.Warnings.Count == 0;
+        }
+
+        private async Task<MarkdownImportPreviewDto> TryNormalizePreviewAsync(
+            Func<Task<MarkdownImportPreviewDto>> normalizeAsync,
+            MarkdownImportPreviewDto fallbackPreview)
+        {
+            try
+            {
+                return await normalizeAsync();
+            }
+            catch
+            {
+                if (fallbackPreview == null)
+                {
+                    return null;
+                }
+
+                AddAiFallbackWarning(fallbackPreview);
+                return fallbackPreview;
+            }
+        }
+
+        private static void AddAiFallbackWarning(MarkdownImportPreviewDto preview)
+        {
+            preview.Warnings ??= new List<MarkdownImportWarningDto>();
+
+            if (preview.Warnings.Any(warning => warning.Code == "AI_UNAVAILABLE"))
+            {
+                return;
+            }
+
+            preview.Warnings.Add(new MarkdownImportWarningDto
+            {
+                Code = "AI_UNAVAILABLE",
+                Message = "AI normalization was unavailable, so the preview is using the parser-only fallback. Review imported fields carefully."
+            });
         }
 
         private MarkdownImportPreviewDto TryParsePreview(string markdownContent, string sourceFileName)

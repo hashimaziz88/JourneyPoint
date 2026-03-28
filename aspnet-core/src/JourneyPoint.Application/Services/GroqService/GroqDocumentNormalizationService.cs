@@ -284,7 +284,7 @@ namespace JourneyPoint.Application.Services.GroqService
             string sourceFileName)
         {
             var moduleInputs = payload.Modules ?? new List<GroqImportModule>();
-            var warnings = (payload.Warnings ?? new List<GroqWarning>())
+            var warnings = (payload.Warnings ?? new List<JsonElement>())
                 .Select(MapWarning)
                 .ToList();
 
@@ -437,17 +437,82 @@ namespace JourneyPoint.Application.Services.GroqService
                 : OnboardingTaskAcknowledgementRule.NotRequired;
         }
 
-        private static MarkdownImportWarningDto MapWarning(GroqWarning warning)
+        private static MarkdownImportWarningDto MapWarning(JsonElement warningElement)
         {
+            if (warningElement.ValueKind == JsonValueKind.String)
+            {
+                return new MarkdownImportWarningDto
+                {
+                    Code = "AI_INFERENCE",
+                    Message = NormalizeWarningMessage(warningElement.GetString()),
+                };
+            }
+
+            if (warningElement.ValueKind != JsonValueKind.Object)
+            {
+                return new MarkdownImportWarningDto
+                {
+                    Code = "AI_INFERENCE",
+                    Message = "The import required AI-assisted inference.",
+                };
+            }
+
+            var code = ReadWarningString(warningElement, "code");
+            var message = ReadWarningString(warningElement, "message");
+
             return new MarkdownImportWarningDto
             {
-                Code = string.IsNullOrWhiteSpace(warning.Code) ? "AI_INFERENCE" : warning.Code.Trim(),
-                Message = string.IsNullOrWhiteSpace(warning.Message)
-                    ? "The import required AI-assisted inference."
-                    : warning.Message.Trim(),
-                LineNumber = warning.LineNumber,
-                SectionName = warning.SectionName
+                Code = string.IsNullOrWhiteSpace(code) ? "AI_INFERENCE" : code.Trim(),
+                Message = NormalizeWarningMessage(message),
+                LineNumber = ReadWarningInt32(warningElement, "lineNumber"),
+                SectionName = ReadWarningString(warningElement, "sectionName")
             };
+        }
+
+        private static string NormalizeWarningMessage(string message)
+        {
+            return string.IsNullOrWhiteSpace(message)
+                ? "The import required AI-assisted inference."
+                : message.Trim();
+        }
+
+        private static string ReadWarningString(JsonElement warningElement, string propertyName)
+        {
+            if (!warningElement.TryGetProperty(propertyName, out var propertyValue))
+            {
+                return null;
+            }
+
+            return propertyValue.ValueKind switch
+            {
+                JsonValueKind.String => propertyValue.GetString(),
+                JsonValueKind.Number => propertyValue.GetRawText(),
+                JsonValueKind.True => bool.TrueString,
+                JsonValueKind.False => bool.FalseString,
+                _ => null
+            };
+        }
+
+        private static int? ReadWarningInt32(JsonElement warningElement, string propertyName)
+        {
+            if (!warningElement.TryGetProperty(propertyName, out var propertyValue))
+            {
+                return null;
+            }
+
+            if (propertyValue.ValueKind == JsonValueKind.Number &&
+                propertyValue.TryGetInt32(out var lineNumber))
+            {
+                return lineNumber;
+            }
+
+            if (propertyValue.ValueKind == JsonValueKind.String &&
+                int.TryParse(propertyValue.GetString(), out lineNumber))
+            {
+                return lineNumber;
+            }
+
+            return null;
         }
 
         private static string NormalizeRequiredText(string value, string fallback, int maxLength)
@@ -521,7 +586,7 @@ namespace JourneyPoint.Application.Services.GroqService
             public List<GroqImportModule> Modules { get; set; }
 
             [JsonPropertyName("warnings")]
-            public List<GroqWarning> Warnings { get; set; }
+            public List<JsonElement> Warnings { get; set; }
         }
 
         private sealed class GroqImportModule
@@ -593,19 +658,5 @@ namespace JourneyPoint.Application.Services.GroqService
             public string AcknowledgementRule { get; set; }
         }
 
-        private sealed class GroqWarning
-        {
-            [JsonPropertyName("code")]
-            public string Code { get; set; }
-
-            [JsonPropertyName("message")]
-            public string Message { get; set; }
-
-            [JsonPropertyName("lineNumber")]
-            public int? LineNumber { get; set; }
-
-            [JsonPropertyName("sectionName")]
-            public string SectionName { get; set; }
-        }
     }
 }

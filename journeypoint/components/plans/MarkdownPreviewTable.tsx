@@ -166,6 +166,7 @@ const MarkdownPreviewTable: React.FC<IMarkdownPreviewTableProps> = ({
                                     dataSource={tableData}
                                     pagination={false}
                                     rowKey="clientKey"
+                                    scroll={{ x: "max-content" }}
                                 />
                             </div>
                         </Space>
