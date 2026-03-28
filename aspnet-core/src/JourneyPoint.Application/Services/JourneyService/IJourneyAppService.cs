@@ -16,7 +16,7 @@ namespace JourneyPoint.Application.Services.JourneyService
         Task<JourneyDraftDto> GenerateDraftAsync(GenerateDraftJourneyRequest input);
 
         /// <summary>
-        /// Returns the current draft journey for one hire.
+        /// Returns the current generated journey review state for one hire.
         /// </summary>
         Task<JourneyDraftDto> GetDraftAsync(Guid hireId);
 

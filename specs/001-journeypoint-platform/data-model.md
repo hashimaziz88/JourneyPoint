@@ -271,6 +271,49 @@ JourneyPoint has three primary domain areas:
 6. Remove one pending draft task and confirm activation rules still evaluate
    against the updated journey task set without mutating the template.
 
+### JP-017 Planned Frontend Files
+
+- `journeypoint/app/(facilitator)/facilitator/hires/page.tsx`
+- `journeypoint/app/(facilitator)/facilitator/hires/[hireId]/page.tsx`
+- `journeypoint/app/(facilitator)/facilitator/hires/[hireId]/journey/page.tsx`
+- `journeypoint/providers/hireProvider/actions.tsx`
+- `journeypoint/providers/hireProvider/context.tsx`
+- `journeypoint/providers/hireProvider/index.tsx`
+- `journeypoint/providers/hireProvider/reducer.tsx`
+- `journeypoint/providers/journeyProvider/actions.tsx`
+- `journeypoint/providers/journeyProvider/context.tsx`
+- `journeypoint/providers/journeyProvider/index.tsx`
+- `journeypoint/providers/journeyProvider/reducer.tsx`
+- `journeypoint/components/hires/HireListView.tsx`
+- `journeypoint/components/hires/HireDetailView.tsx`
+- `journeypoint/components/journey/JourneyReviewView.tsx`
+- `journeypoint/components/hires/style/style.ts`
+- `journeypoint/components/journey/style/style.ts`
+- `journeypoint/types/hire/index.ts`
+- `journeypoint/types/journey/index.ts`
+- `journeypoint/constants/hire/list.ts`
+- `journeypoint/constants/journey/review.ts`
+- `journeypoint/utils/hire/list.ts`
+- `journeypoint/utils/journey/review.ts`
+- `journeypoint/constants/auth/routes.ts`
+
+### JP-017 Validation Steps
+
+1. Open the facilitator hire list page and confirm it loads same-tenant hires
+   with lifecycle and welcome-notification summaries through `hireProvider`.
+2. Filter or refresh the hire list and confirm provider-backed query state
+   updates the rendered list without route mismatches or inline style usage.
+3. Open one hire detail page and confirm it shows hire identity, plan linkage,
+   manager association, account/welcome status, and current journey summary.
+4. Navigate from the hire detail page to the journey review page and confirm the
+   route loads draft task snapshots through `journeyProvider`.
+5. Update one draft task, add one facilitator-authored task, and remove one
+   pending draft task from the review page while confirming the UI rehydrates
+   from backend responses instead of mutating template state locally.
+6. Activate the draft journey from the review page and confirm the provider
+   refreshes to show the activated journey state and disables draft-only review
+   controls.
+
 ### GenerationLog
 
 - Purpose: audit every AI personalisation or extraction workflow

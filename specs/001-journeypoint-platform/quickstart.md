@@ -98,6 +98,13 @@ Expected result:
    records do not mutate.
 8. Activate the journey and confirm the hire moves to `Active`, the journey
    moves to `Active`, and due dates still reflect the hire start date.
+9. Open the facilitator hire list page and confirm same-tenant hires render
+   with lifecycle and welcome-notification summaries.
+10. Open one hire detail page and confirm hire metadata, manager/account state,
+   and journey summary render correctly.
+11. Open the facilitator journey review page, repeat the draft-edit flow through
+   the UI, activate the journey, and confirm provider-backed state refreshes
+   without route or styling regressions.
 
 ### Milestone 4 - Journey Participation and Human-in-the-Loop AI
 

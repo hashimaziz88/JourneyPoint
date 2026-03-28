@@ -40,6 +40,14 @@ underlying template records. The minimal file surface stays in
 beside the AppService and Core-owned generation rules remaining in
 `HireJourneyManager`.
 
+The current planning increment for JP-017 focuses milestone 3 facilitator UI
+delivery on top of the hire-enrolment and journey-review backend. This slice
+will add App Router pages for the hire list, hire detail, and journey review
+workspace; activation controls tied to the draft-review flow; strict
+provider-backed state for hire queries and journey review mutations; and
+`antd-style` presentation components that keep helpers, constants, and typed
+contracts extracted into their dedicated frontend folders.
+
 ## Technical Context
 
 **Language/Version**: C# 12 on .NET 8; TypeScript 5 with React 19 and Next.js 16  

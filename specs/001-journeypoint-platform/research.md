@@ -228,3 +228,40 @@
   review edits back to `OnboardingTask` was rejected because both approaches
   conflict with the product requirement for per-hire review without template
   mutation.
+
+## Decision 22: Split facilitator M3 UI into dedicated hire-list, hire-detail, and journey-review routes
+
+- Decision: JP-017 should use three App Router pages under the facilitator route
+  group: a tenant-scoped hire index, a hire detail page, and a dedicated journey
+  review page nested under the selected hire.
+- Rationale: This keeps each page under the repo's file-size and readability
+  standards while matching the natural facilitator workflow from cohort browse,
+  to hire context, to detailed draft review and activation.
+- Alternatives considered: Rendering the full journey review editor inline on
+  the hire list or collapsing hire detail and journey review into one oversized
+  page was rejected because it would increase route complexity and produce
+  harder-to-maintain frontend files.
+
+## Decision 23: Use separate provider slices for hire queries and journey review mutations
+
+- Decision: JP-017 should introduce `hireProvider` for list/detail state and
+  `journeyProvider` for draft review, task mutations, and activation.
+- Rationale: The provider contract is mandatory in this frontend, and splitting
+  hire queries from journey review mutations limits avoidable rerenders while
+  keeping provider folders on the strict four-file shape.
+- Alternatives considered: Reusing one provider for both pages or colocating all
+  state inside route components was rejected because it would blur concerns and
+  conflict with the current repo state-management pattern.
+
+## Decision 24: Keep journey review state server-authoritative after each mutation
+
+- Decision: The journey-review UI should treat backend responses as the source
+  of truth after generate, update, add, remove, and activate actions rather than
+  maintaining a long-lived client-only shadow draft.
+- Rationale: The backend already owns due-date calculation, ordering validation,
+  and draft activation rules, so rehydrating from server responses reduces drift
+  and keeps review state consistent across refreshes and later facilitator UI
+  additions.
+- Alternatives considered: Holding the editable journey draft entirely in client
+  state until a later save was rejected because it would duplicate backend rules
+  in the browser and increase mismatch risk for ordering and activation logic.

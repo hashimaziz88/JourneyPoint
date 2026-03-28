@@ -59,12 +59,12 @@ namespace JourneyPoint.Application.Services.JourneyService
         }
 
         /// <summary>
-        /// Returns the current draft journey for one hire.
+        /// Returns the current generated journey review state for one hire.
         /// </summary>
         public async Task<JourneyDraftDto> GetDraftAsync(Guid hireId)
         {
             var hire = await GetHireWithJourneyAsync(hireId, GetRequiredTenantId());
-            EnsureDraftJourneyExists(hire);
+            EnsureJourneyExists(hire);
             return MapToDraftDto(hire, hire.Journey);
         }
 

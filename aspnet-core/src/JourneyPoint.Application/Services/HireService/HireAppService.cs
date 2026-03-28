@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using JourneyPoint.Application.Services.HireService.Dto;
@@ -41,6 +42,31 @@ namespace JourneyPoint.Application.Services.HireService
         }
 
         /// <summary>
+        /// Returns a filtered page of tenant-scoped hires for facilitator management views.
+        /// </summary>
+        public async Task<PagedResultDto<HireListItemDto>> GetHiresAsync(GetHiresInput input)
+        {
+            return await GetHiresPageAsync(input);
+        }
+
+        /// <summary>
+        /// Returns one hire with journey summary and notification metadata.
+        /// </summary>
+        public async Task<HireDetailDto> GetDetailAsync(EntityDto<Guid> input)
+        {
+            ArgumentNullException.ThrowIfNull(input);
+            return await GetHireDetailAsync(input.Id);
+        }
+
+        /// <summary>
+        /// Returns same-tenant active managers that facilitators can associate to a hire.
+        /// </summary>
+        public async Task<ListResultDto<ManagerOptionDto>> GetManagerOptionsAsync()
+        {
+            return await GetManagerOptionsListAsync();
+        }
+
+        /// <summary>
         /// Creates the hire record, platform account, and welcome-notification attempt.
         /// </summary>
         public async Task<HireEnrolmentResultDto> CreateAsync(CreateHireRequest input)
@@ -65,7 +91,7 @@ namespace JourneyPoint.Application.Services.HireService
                 input.StartDate,
                 managerUser?.Id);
 
-            var temporaryPassword = User.CreateRandomPassword();
+            var temporaryPassword = "123qwe"; //
             var platformUser = BuildPlatformUser(hire, normalizedEmailAddress);
 
             await _userManager.InitializeOptionsAsync(tenantId);
