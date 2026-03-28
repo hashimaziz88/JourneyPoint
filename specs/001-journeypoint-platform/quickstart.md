@@ -42,6 +42,27 @@ Expected result:
 - Backend Groq settings include a valid model and API key.
 - Frontend environment points to the backend base URL or proxy entrypoint.
 
+## Standards Validation Expectations
+
+- New backend entities follow the active spec package contract:
+  `FullAuditedEntity<Guid>` by default, data-annotation validation, and domain
+  manager/service ownership for aggregate rules.
+- New application-service slices expose interface-and-implementation pairs,
+  keep DTOs under `JourneyPoint.Application/Services/<Feature>/Dto/`, and use
+  repositories instead of direct `DbContext` access.
+- New persistence slices register `DbSet` properties, keep EF-only concerns in
+  `JourneyPoint.EntityFrameworkCore`, and generate migrations from that layer.
+- New Web.Core and Web.Host changes stay plumbing-only.
+- New frontend provider work preserves the four-file provider contract and
+  keeps bootstrap or side-effect logic outside provider folders.
+- New frontend route and data-loading work preserves Next.js App Router
+  patterns and does not regress to legacy `pages/`, `getServerSideProps`, or
+  `getStaticProps` approaches.
+- New frontend styling work uses `antd-style` and dedicated style modules
+  rather than inline styles or Tailwind-first deviations.
+- New frontend provider, component, and API-contract work keeps TypeScript
+  types explicit and avoids untyped `any`.
+
 ## Milestone Validation Flow
 
 ### Milestone 1 - Foundation and Access Control
@@ -53,8 +74,8 @@ Expected result:
 ### Milestone 2 - Plan Authoring and Content Ingestion
 
 1. Create a draft onboarding plan manually.
-2. Import a markdown onboarding table into a second draft plan.
-3. Upload a document to a published plan and review extracted task proposals.
+2. Import rough markdown or a document into a second draft plan through the review preview.
+3. Upload a document to a saved plan and review extracted task proposals.
 
 ### Milestone 3 - Hire Enrolment and Journey Orchestration
 
@@ -75,6 +96,8 @@ Expected result:
 2. Open a hire detail view and confirm historical snapshots appear.
 3. Acknowledge and resolve an at-risk flag while preserving the intervention
    record.
+4. Confirm touched backend and frontend surfaces still satisfy the package-wide
+   engineering standards listed above.
 
 ## Seed Data Expectations
 

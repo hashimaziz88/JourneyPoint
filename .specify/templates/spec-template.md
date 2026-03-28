@@ -5,6 +5,20 @@
 **Status**: Draft  
 **Input**: User description: "$ARGUMENTS"
 
+## Standards Context
+
+<!--
+  ACTION REQUIRED: Confirm any repo-specific engineering standards that must
+  govern implementation. This includes absorbed internal company standards from
+  the project guidance and any local architectural contracts. For frontend
+  features, explicitly state how older company guidance was normalized to the
+  repo's real stack, such as Next.js App Router replacing legacy Pages Router
+  APIs and `antd-style` replacing conflicting styling guidance.
+-->
+
+- [Document required engineering standards or note that the project guidance
+  already defines them]
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--
@@ -126,3 +140,5 @@
 - [Assumption about scope boundaries, e.g., "Mobile support is out of scope for v1"]
 - [Assumption about data/environment, e.g., "Existing authentication system will be reused"]
 - [Dependency on existing system/service, e.g., "Requires access to the existing user profile API"]
+- [Assumption about engineering standards and structural constraints if they
+  materially affect implementation]

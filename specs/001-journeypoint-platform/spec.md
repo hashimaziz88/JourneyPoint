@@ -40,30 +40,33 @@ correct role-specific shell without exposing another tenant's data.
 ### User Story 2 - Author and Enrich Reusable Onboarding Plans (Priority: P1)
 
 As a facilitator, I need to create onboarding plans manually, import plan
-content from markdown, and enrich published plans with AI-reviewed document
-extractions so I can reuse structured onboarding content instead of recreating
-it for every intake.
+content from rough markdown or uploaded documents, and enrich saved plans with
+AI-reviewed document extractions so I can reuse structured onboarding content
+instead of recreating it for every intake.
 
 **Why this priority**: Reusable onboarding plans are the core asset that powers
 every subsequent journey. Without them, enrolment and tracking have nothing to
 deliver.
 
 **Independent Test**: This story is independently valuable if a facilitator can
-create a draft plan, import structured markdown into modules and tasks, upload a
-document to a published plan, review extracted task suggestions, and publish the
-resulting plan for future enrolments.
+create a draft plan, import rough markdown or a standalone document into modules
+and tasks through a reviewable preview, upload a document to a saved plan,
+review extracted task suggestions, and publish the resulting plan for future
+enrolments.
 
 **Acceptance Scenarios**:
 
 1. **Given** a facilitator is editing a draft plan, **When** they add or reorder
    modules and tasks, **Then** the system preserves the intended module order and
    task due-day offsets.
-2. **Given** a facilitator pastes structured markdown or uploads a markdown
-   file, **When** the system parses headings and task rows, **Then** the
-   facilitator sees a preview they can edit before saving a new draft plan.
-3. **Given** a facilitator uploads a document to a published plan, **When** the
-   system proposes extracted tasks, **Then** the facilitator can accept, edit,
-   or reject each proposal before any new template tasks are added to the plan.
+2. **Given** a facilitator pastes rough markdown or uploads a markdown, text,
+   PDF, or image file, **When** the system normalizes the source into the plan
+   DTO shape, **Then** the facilitator sees a preview they can edit before
+   saving a new draft plan.
+3. **Given** a facilitator uploads a document to a saved non-archived plan,
+   **When** the system proposes extracted tasks, **Then** the facilitator can
+   accept, edit, or reject each proposal before any new template tasks are
+   added to the plan.
 
 ---
 
@@ -180,15 +183,18 @@ surfaces at-risk flags, and lets a facilitator capture intervention actions.
   within modules, including due-day offsets, assignment targets, and
   acknowledgement requirements.
 - **FR-006**: The system MUST allow facilitators to import a draft onboarding
-  plan from structured markdown content.
-- **FR-007**: The markdown import flow MUST preview detected modules and tasks
-  before saving a new draft plan.
-- **FR-008**: The system MUST allow facilitators to upload a PDF or markdown
-  document to an existing published plan for enrichment.
+  plan from rough markdown, text, PDF, or image source content through a
+  backend normalization flow.
+- **FR-007**: The document import flow MUST preview detected or AI-normalized
+  modules and tasks before saving a new draft plan.
+- **FR-008**: The system MUST allow facilitators to upload a PDF, markdown,
+  text, or image document to an existing saved non-archived plan for
+  enrichment.
 - **FR-009**: The system MUST track uploaded document metadata, extraction
   status, and counts of proposed and accepted tasks.
 - **FR-010**: The system MUST convert extracted document content into
-  reviewable task proposals instead of applying them automatically.
+  reviewable task proposals or draft-plan previews instead of applying them
+  automatically.
 - **FR-011**: Facilitators MUST be able to accept, edit, reject, and assign
   extracted task proposals before they become plan tasks.
 - **FR-012**: Accepted extracted tasks MUST affect future journeys only and MUST
@@ -240,6 +246,54 @@ surfaces at-risk flags, and lets a facilitator capture intervention actions.
   a trend chart and intervention review.
 - **FR-035**: The system MUST support a demo-ready seed state containing at
   least two distinct tenants and hires across multiple engagement bands.
+
+### Implementation Governance Requirements
+
+- **IGR-001**: All new JourneyPoint backend entities MUST follow the internal
+  backend standard by defaulting to `FullAuditedEntity<Guid>` unless this
+  feature package is explicitly amended with another key strategy.
+- **IGR-002**: Backend entity property validation MUST prefer data annotations
+  such as `[Required]`, `[MaxLength]`, `[Range]`, and `[ForeignKey]`.
+- **IGR-003**: Aggregate and cross-entity business rules MUST live in
+  `JourneyPoint.Core` domain managers/services rather than in entity method
+  bodies or AppServices.
+- **IGR-004**: Application-service implementation MUST preserve
+  interface-and-implementation pairs, DTOs under
+  `JourneyPoint.Application/Services/<Feature>/Dto/`, and repository usage
+  rather than direct `DbContext` access.
+- **IGR-005**: Persistence-specific concerns such as `DbSet` registration,
+  table naming, enum conversion, indexes, and migrations MUST remain in
+  `JourneyPoint.EntityFrameworkCore`.
+- **IGR-006**: `JourneyPoint.Web.Core` and `JourneyPoint.Web.Host` MUST remain
+  plumbing-only layers with no business logic introduced there.
+- **IGR-007**: Public JourneyPoint-owned backend classes and public methods
+  MUST include XML summary comments, and non-obvious logic MUST be explained
+  with concise inline comments.
+- **IGR-008**: New milestone work across plan authoring, hire orchestration,
+  participant flows, and intelligence MUST move touched code toward these
+  standards even when older scaffolded code predates them.
+- **IGR-009**: JourneyPoint frontend work MUST use Next.js 16 App Router
+  conventions rather than legacy Pages Router APIs such as `pages/`,
+  `getServerSideProps`, or `getStaticProps`.
+- **IGR-010**: JourneyPoint frontend styling MUST use `antd-style` and repo
+  styling patterns; inline styles and Tailwind-first deviations are out of
+  scope unless the project guidance is explicitly amended.
+- **IGR-011**: Stateful frontend features MUST use the strict four-file
+  provider contract and keep bootstrap or cross-cutting side effects outside
+  provider folders.
+- **IGR-012**: Frontend TypeScript MUST avoid untyped `any`, keep provider and
+  API contracts explicitly typed, and extract regular nested React components
+  into dedicated top-level modules.
+- **IGR-013**: JourneyPoint-owned frontend and backend source files touched by
+  milestone work MUST stay at or under 350 lines. Generated files such as EF
+  migration designers, model snapshots, and build output are excluded.
+- **IGR-014**: Backend methods MUST favor guard clauses, early returns, and
+  readable low-nesting flow; when reusable guard-clause support is introduced,
+  the standard library choice MUST be `Ardalis.GuardClauses`.
+- **IGR-015**: Touched frontend and backend implementation MUST move loose
+  helper methods, constants, interfaces, and sample data into dedicated
+  modules or top-level folders instead of leaving them inside large component,
+  provider, or AppService files.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -308,3 +362,18 @@ surfaces at-risk flags, and lets a facilitator capture intervention actions.
   background scheduler before the final milestone.
 - The Angular application is legacy reference material only and is out of scope
   for the current JourneyPoint roadmap.
+- New JourneyPoint product entities should default to `FullAuditedEntity<Guid>`
+  unless a later spec amendment explicitly records another key strategy.
+- Entity validation should prefer data annotations, while aggregate and
+  cross-entity rules should live in Core domain managers/services rather than
+  entity method bodies.
+- Application services should keep interface-and-implementation pairs, DTOs
+  under `JourneyPoint.Application/Services/<Feature>/Dto/`, and repository
+  usage instead of direct `DbContext` access.
+- Web.Core and Web.Host remain plumbing layers only; new product business logic
+  belongs in Core, Application, or EntityFrameworkCore according to layer
+  responsibility.
+- Frontend work should interpret the absorbed company standards through
+  JourneyPoint's actual stack: App Router, TypeScript, Ant Design, and
+  `antd-style`, rather than copying conflicting legacy Pages Router or
+  Tailwind-first guidance literally.

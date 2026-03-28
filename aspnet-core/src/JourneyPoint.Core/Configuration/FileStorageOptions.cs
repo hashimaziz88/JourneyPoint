@@ -1,5 +1,8 @@
 namespace JourneyPoint.Configuration
 {
+    /// <summary>
+    /// Defines configurable settings for JourneyPoint file storage.
+    /// </summary>
     public class FileStorageOptions
     {
         public string Provider { get; set; } = "FileSystem";

@@ -3,17 +3,14 @@
 import React from "react";
 import { Card, Col, Row, Space, Typography } from "antd";
 import { useAppSession } from "@/helpers/useAppSession";
+import type { IWorkspaceOverviewProps } from "@/types/layout/shell";
 import { useStyles } from "./style/style";
 
 const { Paragraph, Title, Text } = Typography;
 
-interface IWorkspaceOverviewProps {
-  title: string;
-  description: string;
-  currentFocus: string;
-  nextMilestoneHint: string;
-}
-
+/**
+ * Renders the interim role workspace overview used during the foundation phase.
+ */
 const WorkspaceOverview: React.FC<IWorkspaceOverviewProps> = ({
   currentFocus,
   description,

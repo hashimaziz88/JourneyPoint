@@ -5,6 +5,8 @@ export const APP_ROLE_NAMES = {
   enrolee: "Enrolee",
 } as const;
 
+export type AppRoleName = (typeof APP_ROLE_NAMES)[keyof typeof APP_ROLE_NAMES];
+
 export const APP_PERMISSIONS = {
   journeyPoint: "Pages.JourneyPoint",
   tenantAdmin: "Pages.JourneyPoint.TenantAdmin",

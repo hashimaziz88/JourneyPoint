@@ -12,6 +12,23 @@ description: "Task list template for feature implementation"
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
+## Engineering Standards Overlay
+
+- Add task wording that reflects any mandatory repo engineering standards from
+  the constitution and project guide.
+- Include file paths that preserve the intended architecture and folder
+  contracts for the project.
+- Do not generate tasks that place DTOs in domain layers, mix business logic
+  into presentation-only surfaces, or violate documented provider/component
+  structure rules.
+- When backend standards require `FullAuditedEntity<Guid>`, data annotations,
+  and domain managers/services for aggregate rules, reflect that explicitly in
+  the task wording for the affected files.
+- When frontend standards apply, generate tasks that preserve Next.js App
+  Router structure, strict four-file provider folders, `antd-style` styling,
+  typed contracts, and extraction of regular nested components into dedicated
+  files.
+
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel (different files, no dependencies)
@@ -24,6 +41,10 @@ description: "Task list template for feature implementation"
 - **Web app**: `backend/src/`, `frontend/src/`
 - **Mobile**: `api/src/`, `ios/src/` or `android/src/`
 - Paths shown below assume single project - adjust based on plan.md structure
+
+For JourneyPoint-like App Router frontends, prefer concrete paths such as
+`journeypoint/app/`, `journeypoint/components/`, `journeypoint/providers/`,
+`journeypoint/types/`, and `journeypoint/utils/`.
 
 <!-- 
   ============================================================================

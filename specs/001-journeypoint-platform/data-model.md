@@ -8,6 +8,20 @@ JourneyPoint has three primary domain areas:
 2. Journey enrolment and execution
 3. Engagement intelligence and intervention
 
+## Entity Implementation Contract
+
+- New JourneyPoint product entities should default to `FullAuditedEntity<Guid>`
+  unless the active spec explicitly records another key strategy.
+- Property validation should prefer data annotations such as `[Required]`,
+  `[MaxLength]`, `[Range]`, and `[ForeignKey]`.
+- Aggregate and cross-entity rules should live in Core domain managers/services
+  rather than entity method bodies.
+- EF-specific concerns such as table naming, enum conversion, and composite
+  uniqueness belong in `JourneyPoint.EntityFrameworkCore`.
+- The same contract applies to future entities in the onboarding, hires,
+  engagement, and audit domains unless a later approved spec amendment records
+  a narrower exception.
+
 ## Entity Inventory
 
 | Entity | Purpose | Key Relationships |
@@ -37,7 +51,7 @@ JourneyPoint has three primary domain areas:
 ### OnboardingModule
 
 - Purpose: define ordered phases that also drive pipeline columns
-- Core fields: onboarding plan id, name, description, order index, day offset
+- Core fields: onboarding plan id, name, description, order index
 - Relationships:
   - many-to-one with `OnboardingPlan`
   - one-to-many with `OnboardingTask`
@@ -45,15 +59,16 @@ JourneyPoint has three primary domain areas:
 ### OnboardingTask
 
 - Purpose: define reusable template work before a hire exists
-- Core fields: module id, title, description, category, day offset, assigned-to
-  role, acknowledgement requirement
+- Core fields: module id, title, description, category, order index, due-day
+  offset, assigned-to role, acknowledgement requirement
 - Relationships:
   - many-to-one with `OnboardingModule`
   - optional one-to-many source relationship to `JourneyTask`
 
 ### OnboardingDocument
 
-- Purpose: track uploaded markdown or PDF enrichment content
+- Purpose: track uploaded markdown, text, PDF, or image enrichment content for
+  saved plans
 - Core fields: plan id, file name, storage path, file type, extraction status,
   extracted task count, accepted task count
 - Relationships:

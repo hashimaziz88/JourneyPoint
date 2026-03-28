@@ -3,7 +3,8 @@
 **Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
 **Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
 
-**Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
+**Note**: This template is filled in by the `/speckit.plan` command. See
+`.specify/templates/plan-template.md` for the execution workflow.
 
 ## Summary
 
@@ -21,11 +22,18 @@
 **Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
 **Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
 **Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
+**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]  
 **Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]  
 **Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
 **Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
 **Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+
+**Standards Alignment**: [Summarize any repo-specific engineering standards that
+must govern implementation, such as layer boundaries, provider contracts,
+documentation rules, structural constraints from the project guidance, default
+entity key strategy, validation approach, whether domain managers/services
+must carry aggregate rules, whether frontend work must use App Router instead
+of legacy Pages Router APIs, and whether styling must use `antd-style`]
 
 ## Constitution Check
 
@@ -33,18 +41,24 @@
 
 [Gates determined based on constitution file]
 
+- Confirm the plan reflects any absorbed internal engineering standards defined
+  by the repo guidance, not only the feature requirements.
+- Confirm any imported company frontend rules are normalized to the repo's real
+  stack instead of being copied literally when they conflict with App Router or
+  `antd-style`.
+
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
 specs/[###-feature]/
-├── plan.md              # This file (/speckit.plan command output)
-├── research.md          # Phase 0 output (/speckit.plan command)
-├── data-model.md        # Phase 1 output (/speckit.plan command)
-├── quickstart.md        # Phase 1 output (/speckit.plan command)
-├── contracts/           # Phase 1 output (/speckit.plan command)
-└── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
+|-- plan.md              # This file (/speckit.plan command output)
+|-- research.md          # Phase 0 output (/speckit.plan command)
+|-- data-model.md        # Phase 1 output (/speckit.plan command)
+|-- quickstart.md        # Phase 1 output (/speckit.plan command)
+|-- contracts/           # Phase 1 output (/speckit.plan command)
+`-- tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
 ```
 
 ### Source Code (repository root)
@@ -58,37 +72,37 @@ specs/[###-feature]/
 ```text
 # [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
 src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+|-- models/
+|-- services/
+|-- cli/
+`-- lib/
 
 tests/
-├── contract/
-├── integration/
-└── unit/
+|-- contract/
+|-- integration/
+`-- unit/
 
 # [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
 backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
+|-- src/
+|   |-- models/
+|   |-- services/
+|   `-- api/
+`-- tests/
 
 frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
+|-- app/
+|-- components/
+|-- providers/
+|-- types/
+`-- utils/
 
 # [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
 api/
-└── [same as backend above]
+`-- [same as backend above]
 
 ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+`-- [platform-specific structure: feature modules, UI flows, platform tests]
 ```
 
 **Structure Decision**: [Document the selected structure and reference the real
@@ -99,6 +113,6 @@ directories captured above]
 > **Fill ONLY if Constitution Check has violations that must be justified**
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
+|-----------|------------|--------------------------------------|
 | [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
 | [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |

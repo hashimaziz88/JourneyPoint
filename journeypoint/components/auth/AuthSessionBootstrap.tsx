@@ -2,8 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { useAuthActions } from "@/providers/authProvider";
-
-const ignoreAsyncError = () => undefined;
+import { ignoreAsyncError } from "@/utils/async";
 
 const AuthSessionBootstrap: React.FC = () => {
     const { refreshSession } = useAuthActions();

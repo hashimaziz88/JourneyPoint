@@ -32,4 +32,4 @@ export const INITIAL_STATE: IRoleStateContext = {
 };
 
 export const RoleStateContext = createContext<IRoleStateContext>(INITIAL_STATE);
-export const RoleActionContext = createContext<IRoleActionContext>(undefined!);
+export const RoleActionContext = createContext<IRoleActionContext | undefined>(undefined);

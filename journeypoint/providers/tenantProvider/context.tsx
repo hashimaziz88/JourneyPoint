@@ -28,4 +28,4 @@ export const INITIAL_STATE: ITenantStateContext = {
 };
 
 export const TenantStateContext = createContext<ITenantStateContext>(INITIAL_STATE);
-export const TenantActionContext = createContext<ITenantActionContext>(undefined!);
+export const TenantActionContext = createContext<ITenantActionContext | undefined>(undefined);

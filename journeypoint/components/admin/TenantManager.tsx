@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useEffectEvent, useState } from "react";
 import {
   Button,
   Card,
@@ -18,31 +18,14 @@ import {
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { PlusOutlined } from "@ant-design/icons";
 import { useTenantActions, useTenantState } from "@/providers/tenantProvider";
-import type { ICreateTenantDto, ITenantDto } from "@/types/tenant";
+import type { ITenantDto } from "@/types/tenant";
 import { useStyles } from "@/components/admin/style/style";
+import { TENANT_SUCCESS_MESSAGES } from "@/constants/admin/tenantManager";
+import type { ITenantFormValues } from "@/types/admin/tenantManager";
+import { buildTenantQuery } from "@/utils/admin/tenantManager";
+import { ignoreAsyncError } from "@/utils/async";
 
 const { Title, Text } = Typography;
-const ignoreAsyncError = () => undefined;
-const TENANT_SUCCESS_MESSAGES = {
-  create: "Tenant created successfully.",
-  update: "Tenant updated successfully.",
-  delete: "Tenant deleted successfully.",
-} as const;
-
-interface ITenantFormValues extends ICreateTenantDto {
-  id?: number;
-}
-
-const buildTenantQuery = (
-  searchTerm: string,
-  activeFilter: boolean | undefined,
-  pagination: TablePaginationConfig,
-) => ({
-  keyword: searchTerm || null,
-  isActive: activeFilter ?? null,
-  skipCount: ((pagination.current ?? 1) - 1) * (pagination.pageSize ?? 10),
-  maxResultCount: pagination.pageSize ?? 10,
-});
 
 const TenantManager: React.FC = () => {
   const { styles } = useStyles();
@@ -60,13 +43,17 @@ const TenantManager: React.FC = () => {
   const [form] = Form.useForm<ITenantFormValues>();
   const [messageApi, messageContextHolder] = message.useMessage();
 
-  useEffect(() => {
-    const loadTenants = async () => {
-      await getAll(buildTenantQuery(searchTerm, activeFilter, pagination));
-    };
+  const loadTenants = useEffectEvent(async (): Promise<void> => {
+    await getAll(buildTenantQuery(searchTerm, activeFilter, pagination));
+  });
 
+  const refreshTenants = useEffectEvent(async (): Promise<void> => {
+    await getAll(buildTenantQuery(searchTerm, activeFilter, pagination));
+  });
+
+  useEffect(() => {
     loadTenants().catch(ignoreAsyncError);
-  }, [activeFilter, getAll, pagination, pagination.pageSize, searchTerm]);
+  }, [activeFilter, pagination, pagination.pageSize, searchTerm]);
 
   useEffect(() => {
     if (!awaitingMutation || tenantState.isPending) {
@@ -84,10 +71,6 @@ const TenantManager: React.FC = () => {
 
       messageApi.success(successMessage);
       globalThis.setTimeout(() => {
-        const refreshTenants = async () => {
-          await getAll(buildTenantQuery(searchTerm, activeFilter, pagination));
-        };
-
         setAwaitingMutation(null);
         setModalOpen(false);
         setEditingTenant(null);
@@ -99,7 +82,6 @@ const TenantManager: React.FC = () => {
     activeFilter,
     awaitingMutation,
     form,
-    getAll,
     messageApi,
     pagination,
     pagination.pageSize,

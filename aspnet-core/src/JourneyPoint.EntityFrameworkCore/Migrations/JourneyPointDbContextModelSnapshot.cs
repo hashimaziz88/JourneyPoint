@@ -1580,6 +1580,350 @@ namespace JourneyPoint.Migrations
                     b.ToTable("AbpUsers");
                 });
 
+            modelBuilder.Entity("JourneyPoint.Domains.OnboardingPlans.ExtractedTask", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AcknowledgementRule")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("AppliedOnboardingTaskId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AssignmentTarget")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<int>("DueDayOffset")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("OnboardingDocumentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ReviewStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<long?>("ReviewedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("ReviewedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("SuggestedModuleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OnboardingDocumentId");
+
+                    b.HasIndex("SuggestedModuleId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("OnboardingDocumentId", "ReviewStatus");
+
+                    b.ToTable("ExtractedTasks", (string)null);
+                });
+
+            modelBuilder.Entity("JourneyPoint.Domains.OnboardingPlans.OnboardingDocument", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AcceptedTaskCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ExtractedTaskCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ExtractionCompletedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FailureReason")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)");
+
+                    b.Property<long>("FileSizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("OnboardingPlanId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("StoragePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OnboardingPlanId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("OnboardingPlanId", "Status");
+
+                    b.ToTable("OnboardingDocuments", (string)null);
+                });
+
+            modelBuilder.Entity("JourneyPoint.Domains.OnboardingPlans.OnboardingModule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("OnboardingPlanId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OnboardingPlanId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("OnboardingPlanId", "OrderIndex")
+                        .IsUnique();
+
+                    b.ToTable("OnboardingModules", (string)null);
+                });
+
+            modelBuilder.Entity("JourneyPoint.Domains.OnboardingPlans.OnboardingPlan", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<int>("DurationDays")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TargetAudience")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TenantId", "Status");
+
+                    b.ToTable("OnboardingPlans", (string)null);
+                });
+
+            modelBuilder.Entity("JourneyPoint.Domains.OnboardingPlans.OnboardingTask", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AcknowledgementRule")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("AssignmentTarget")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<int>("DueDayOffset")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("OnboardingModuleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OnboardingModuleId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("OnboardingModuleId", "OrderIndex")
+                        .IsUnique();
+
+                    b.ToTable("OnboardingTasks", (string)null);
+                });
+
             modelBuilder.Entity("JourneyPoint.MultiTenancy.Tenant", b =>
                 {
                     b.Property<int>("Id")
@@ -1862,6 +2206,50 @@ namespace JourneyPoint.Migrations
                     b.Navigation("LastModifierUser");
                 });
 
+            modelBuilder.Entity("JourneyPoint.Domains.OnboardingPlans.ExtractedTask", b =>
+                {
+                    b.HasOne("JourneyPoint.Domains.OnboardingPlans.OnboardingDocument", "OnboardingDocument")
+                        .WithMany("ExtractedTasks")
+                        .HasForeignKey("OnboardingDocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OnboardingDocument");
+                });
+
+            modelBuilder.Entity("JourneyPoint.Domains.OnboardingPlans.OnboardingDocument", b =>
+                {
+                    b.HasOne("JourneyPoint.Domains.OnboardingPlans.OnboardingPlan", "OnboardingPlan")
+                        .WithMany("Documents")
+                        .HasForeignKey("OnboardingPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OnboardingPlan");
+                });
+
+            modelBuilder.Entity("JourneyPoint.Domains.OnboardingPlans.OnboardingModule", b =>
+                {
+                    b.HasOne("JourneyPoint.Domains.OnboardingPlans.OnboardingPlan", "OnboardingPlan")
+                        .WithMany("Modules")
+                        .HasForeignKey("OnboardingPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OnboardingPlan");
+                });
+
+            modelBuilder.Entity("JourneyPoint.Domains.OnboardingPlans.OnboardingTask", b =>
+                {
+                    b.HasOne("JourneyPoint.Domains.OnboardingPlans.OnboardingModule", "OnboardingModule")
+                        .WithMany("Tasks")
+                        .HasForeignKey("OnboardingModuleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OnboardingModule");
+                });
+
             modelBuilder.Entity("JourneyPoint.MultiTenancy.Tenant", b =>
                 {
                     b.HasOne("JourneyPoint.Authorization.Users.User", "CreatorUser")
@@ -1958,6 +2346,23 @@ namespace JourneyPoint.Migrations
                     b.Navigation("Settings");
 
                     b.Navigation("Tokens");
+                });
+
+            modelBuilder.Entity("JourneyPoint.Domains.OnboardingPlans.OnboardingDocument", b =>
+                {
+                    b.Navigation("ExtractedTasks");
+                });
+
+            modelBuilder.Entity("JourneyPoint.Domains.OnboardingPlans.OnboardingModule", b =>
+                {
+                    b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("JourneyPoint.Domains.OnboardingPlans.OnboardingPlan", b =>
+                {
+                    b.Navigation("Documents");
+
+                    b.Navigation("Modules");
                 });
 #pragma warning restore 612, 618
         }

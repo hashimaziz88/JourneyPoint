@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useEffectEvent, useMemo, useState } from "react";
 import {
   Button,
   Card,
@@ -17,20 +17,14 @@ import {
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { PlusOutlined } from "@ant-design/icons";
 import { useRoleActions, useRoleState } from "@/providers/roleProvider";
-import type { ICreateRoleDto, IFlatPermissionDto, IPermissionDto, IRoleDto } from "@/types/role";
+import type { IFlatPermissionDto, IPermissionDto, IRoleDto } from "@/types/role";
 import { useStyles } from "@/components/admin/style/style";
+import { ROLE_SUCCESS_MESSAGES } from "@/constants/admin/roleManager";
+import type { IRoleFormValues } from "@/types/admin/roleManager";
+import { buildRoleQuery } from "@/utils/admin/roleManager";
+import { ignoreAsyncError } from "@/utils/async";
 
 const { Title, Text } = Typography;
-const ignoreAsyncError = () => undefined;
-const ROLE_SUCCESS_MESSAGES = {
-  create: "Role created successfully.",
-  update: "Role updated successfully.",
-  delete: "Role deleted successfully.",
-} as const;
-
-interface IRoleFormValues extends ICreateRoleDto {
-  id?: number;
-}
 
 const RoleManager: React.FC = () => {
   const { styles } = useStyles();
@@ -62,18 +56,18 @@ const RoleManager: React.FC = () => {
     [availablePermissions],
   );
 
-  useEffect(() => {
-    const loadRoles = async () => {
-      await getAllPermissions();
-      await getAll({
-        keyword: searchTerm || null,
-        skipCount: ((pagination.current ?? 1) - 1) * (pagination.pageSize ?? 10),
-        maxResultCount: pagination.pageSize ?? 10,
-      });
-    };
+  const loadRoles = useEffectEvent(async (): Promise<void> => {
+    await getAllPermissions();
+    await getAll(buildRoleQuery(searchTerm, pagination));
+  });
 
+  const refreshRoles = useEffectEvent(async (): Promise<void> => {
+    await getAll(buildRoleQuery(searchTerm, pagination));
+  });
+
+  useEffect(() => {
     loadRoles().catch(ignoreAsyncError);
-  }, [getAll, getAllPermissions, pagination, pagination.pageSize, searchTerm]);
+  }, [pagination, pagination.pageSize, searchTerm]);
 
   useEffect(() => {
     if (!awaitingMutation || roleState.isPending) {
@@ -91,14 +85,6 @@ const RoleManager: React.FC = () => {
 
       messageApi.success(successMessage);
       globalThis.setTimeout(() => {
-        const refreshRoles = async () => {
-          await getAll({
-            keyword: searchTerm || null,
-            skipCount: ((pagination.current ?? 1) - 1) * (pagination.pageSize ?? 10),
-            maxResultCount: pagination.pageSize ?? 10,
-          });
-        };
-
         setAwaitingMutation(null);
         setModalOpen(false);
         setEditingRole(null);
@@ -109,7 +95,6 @@ const RoleManager: React.FC = () => {
   }, [
     awaitingMutation,
     form,
-    getAll,
     messageApi,
     pagination,
     pagination.pageSize,

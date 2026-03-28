@@ -20,7 +20,7 @@ loop AI, and engagement intelligence with intervention workflows.
 **Target Platform**: Web application delivered as an ABP API backend and a Next.js frontend  
 **Project Type**: Multi-tenant web application monorepo  
 **Performance Goals**: Hire enrolment to journey draft under 60 seconds for the demo plan; pipeline and hire detail loads under 3 seconds for seeded demo data; markdown import preview under 10 seconds for standard onboarding tables  
-**Constraints**: Preserve ABP multi-tenancy, keep AI backend-only and facilitator-triggered, keep engagement scoring on-demand for the current scope, ignore the Angular app, avoid inline styles and untyped `any` in frontend work  
+**Constraints**: Preserve ABP multi-tenancy, keep AI backend-only and facilitator-triggered, keep engagement scoring on-demand for the current scope, ignore the Angular app, avoid inline styles and untyped `any` in frontend work, follow the internal ABP backend structure rules, keep provider state on the strict four-file contract, and extract regular nested components into dedicated files  
 **Scale/Scope**: 11 core entities, 4 roles, 2 seeded tenants, 5 milestones, 25+ implementation issues, 1 end-to-end platform roadmap
 
 ## Constitution Check
@@ -95,6 +95,77 @@ delivery surfaces. New onboarding, journey, and intelligence domains will be
 added inside the empty backend `Domains/` and `Services/` folders, while the
 frontend will expand into role-specific route groups, providers, components,
 types, and constants. The `angular/` directory remains explicitly out of scope.
+
+## Company Standards Alignment
+
+- These standards apply across the full five-milestone JourneyPoint roadmap,
+  not only the current onboarding slice. Every future domain, AppService, EF
+  mapping, migration, and frontend/provider addition must inherit the same
+  rules unless a later approved spec amendment records an exception.
+- Backend domain entities will be created under
+  `aspnet-core/src/JourneyPoint.Core/Domains/<DomainArea>/` using audited ABP
+  entity bases, explicit enums/constants, tenant-safe ownership, and XML
+  comments on public classes and methods.
+- New JourneyPoint product entities should default to `FullAuditedEntity<Guid>`
+  unless the active spec explicitly records another key strategy.
+- Entity validation should prefer data annotations, while aggregate and
+  cross-entity rules should live in Core domain managers/services rather than
+  entity method bodies.
+- Backend implementation should preserve one-way dependencies only:
+  `JourneyPoint.Web.Host` -> `JourneyPoint.Web.Core` ->
+  `JourneyPoint.Application`, with `JourneyPoint.Application` and
+  `JourneyPoint.EntityFrameworkCore` both depending downward on
+  `JourneyPoint.Core`.
+- Backend DTOs belong next to the app service that uses them under
+  `aspnet-core/src/JourneyPoint.Application/Services/<Feature>/Dto/`; DTOs do
+  not belong in the domain layer.
+- Application services orchestrate use cases, while reusable business logic
+  remains in domain services or the domain model.
+- New application-service slices should keep interface-and-implementation pairs
+  and use repository injection rather than direct `DbContext` access.
+- `JourneyPoint.Web.Core` and `JourneyPoint.Web.Host` stay as plumbing-only
+  layers; new business use cases must surface through Application services
+  rather than host/controller logic.
+- EF Core mappings and migrations should express persistence-only concerns that
+  cannot or should not live in data annotations, such as table naming, enum
+  conversions, indexes, and delete behavior.
+- Frontend stateful modules must keep the strict provider folder contract:
+  `actions.tsx`, `context.tsx`, `index.tsx`, and `reducer.tsx` only.
+- Frontend route and data-loading work must use Next.js App Router patterns
+  rather than legacy `pages/`, `getServerSideProps`, or `getStaticProps`
+  approaches from older company notes.
+- Frontend styling must use `antd-style` and existing repo patterns rather than
+  Tailwind-specific guidance from older notes.
+- Frontend bootstrap, session restoration, and other cross-cutting behavior
+  must live outside provider folders.
+- Regular React components must not declare child component definitions inside
+  their function bodies; reusable children belong in `journeypoint/components/`
+  or another dedicated top-level module.
+- Frontend provider actions, state, and API contracts must stay explicitly
+  typed and must not use untyped `any`.
+- JourneyPoint-owned frontend and backend source files touched by milestone
+  work must stay at or under 350 lines. Generated files such as EF migration
+  designers, model snapshots, and build output are excluded from this limit.
+- Backend methods should prefer guard clauses, early returns, and low nesting.
+  When reusable guard-clause support is introduced, standardize on
+  `Ardalis.GuardClauses`.
+- Touched frontend and backend files should move loose helper methods,
+  constants, interfaces, and sample data into dedicated modules or top-level
+  folders instead of expanding component, provider, or service files
+  indefinitely.
+
+## Pre-M3 Standards Gate
+
+- Milestone 3 planning and implementation assume a pre-M3 engineering standards
+  sweep closes the remaining M1 and M2 JourneyPoint-owned source mismatches
+  before new hire-orchestration scope expands the codebase further.
+- The pre-M3 gate covers the hard 350-line source-file rule, public backend XML
+  comments, guard-clause-friendly low-nesting backend methods, strict
+  provider-folder boundaries, extracted helper/type/constants modules, and the
+  existing ban on inline styles and untyped `any`.
+- Generated artifacts such as EF migration designers, model snapshots, and
+  build output remain excluded from the 350-line rule, but JourneyPoint-owned
+  handwritten source must comply before US3 begins.
 
 ## Complexity Tracking
 

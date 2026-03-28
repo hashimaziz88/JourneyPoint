@@ -9,12 +9,11 @@ import { ApartmentOutlined, CheckCircleOutlined, LockOutlined, MailOutlined } fr
 import { useAppSession } from "@/helpers/useAppSession";
 import { useAuthActions, useAuthState } from "@/providers/authProvider";
 import { LoginFieldType } from "@/types/auth/formTypes";
+import type { TenantResolveStatus } from "@/types/auth/login";
+import { ignoreAsyncError } from "@/utils/async";
 import { useStyles } from "./style/style";
 
 const { Title, Text } = Typography;
-const ignoreAsyncError = () => undefined;
-
-type TenantResolveStatus = "idle" | "resolving" | "resolved" | "not_found";
 
 const LoginForm: React.FC = () => {
   const router = useRouter();

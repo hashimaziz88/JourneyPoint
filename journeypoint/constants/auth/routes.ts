@@ -7,6 +7,16 @@ export const APP_ROUTES = {
   roles: "/dashboard/roles",
   tenants: "/dashboard/tenants",
   facilitatorDashboard: "/facilitator/dashboard",
+  facilitatorPlans: "/facilitator/plans",
+  facilitatorPlanImport: "/facilitator/plans/import",
   managerMyTasks: "/manager/my-tasks",
   enroleeMyJourney: "/enrolee/my-journey",
 };
+
+export const buildFacilitatorPlanRoute = (planId: string): string =>
+  `${APP_ROUTES.facilitatorPlans}/${planId}`;
+
+export const buildFacilitatorPlanDocumentRoute = (
+  planId: string,
+  documentId: string,
+): string => `${buildFacilitatorPlanRoute(planId)}/documents/${documentId}`;

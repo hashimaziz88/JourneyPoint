@@ -89,21 +89,52 @@ Total canonical issues: 30
 
 ### M2 - Plan Authoring and Content Ingestion
 
+Milestone gate: begin M2 only after the current M1-owned guidance, shared
+frontend shell/auth surfaces, and JourneyPoint-owned backend foundation files
+have been normalized to the absorbed company engineering standards.
+
+All remaining milestones inherit the same engineering baseline: new backend
+entities default to `FullAuditedEntity<Guid>` unless this feature package says
+otherwise, aggregate rules live in Core domain managers/services, DTOs stay
+beside AppServices, persistence-only concerns stay in
+`JourneyPoint.EntityFrameworkCore`, and Web.Core/Web.Host stay plumbing-only.
+Frontend work across all remaining milestones must use Next.js App Router,
+strict four-file provider folders, `antd-style`, typed contracts with no
+untyped `any`, and extracted top-level components rather than regular nested
+component declarations.
+JourneyPoint-owned handwritten frontend and backend source touched by delivery
+work must also stay at or under 350 lines before M3 begins, excluding generated
+artifacts such as migration designers, model snapshots, and build output.
+
+### M3 pre-gate
+
+Begin milestone 3 only after the active M1 and M2 implementation surface has
+passed a standards sweep covering the 350-line handwritten-source limit,
+public backend XML comments, guard-clause-friendly low-nesting backend methods,
+strict provider-folder boundaries, extracted helper/type/constants modules, and
+the existing bans on inline styles and untyped `any`.
+
 1. **JP-007 - Model onboarding plan, module, and template task entities**
    - Labels: backend, domain
-   - Scope: reusable onboarding template entities and relationships
+   - Scope: reusable onboarding template entities and relationships using the
+     current backend standard for `FullAuditedEntity<Guid>`, data-annotation
+     validation, and Core domain-manager rule ownership
    - Depends on: JP-006
 2. **JP-008 - Add onboarding persistence and migration support**
    - Labels: backend, database
-   - Scope: DbContext registration and initial onboarding migration
+   - Scope: `DbSet` registration, EF configuration only for persistence-only
+     concerns, and the initial onboarding migration
    - Depends on: JP-007
 3. **JP-009 - Implement onboarding plan CRUD application services**
    - Labels: backend, api
-   - Scope: list, detail, create, update, publish, archive, clone flows
+   - Scope: interface-and-implementation AppService pairs, DTOs under
+     `Services/OnboardingPlanService/Dto/`, and list/detail/create/update/
+     publish/archive/clone flows
    - Depends on: JP-008
 4. **JP-010 - Build facilitator plan builder UI and provider state**
    - Labels: frontend, ux
-   - Scope: plan list, plan editor, module/task editing, provider state
+   - Scope: App Router plan list and editor routes, module/task editing,
+     strict provider-folder state, and `antd-style`-based UI composition
    - Depends on: JP-009
 5. **JP-011 - Implement markdown import preview and draft-save flow**
    - Labels: backend, frontend, import
@@ -111,30 +142,36 @@ Total canonical issues: 30
    - Depends on: JP-009
 6. **JP-012 - Implement document upload and extraction proposal review**
    - Labels: backend, frontend, ai
-   - Scope: upload storage, extraction orchestration, review UI, accept/edit/reject flow
+   - Scope: upload storage, extraction orchestration, Groq-backed normalization for rough markdown and documents, standalone draft-import preview, review UI, and accept/edit/reject flow
    - Depends on: JP-009
 
 ### M3 - Hire Enrolment and Journey Orchestration
 
 1. **JP-013 - Model hire, journey, and journey task entities**
    - Labels: backend, domain
-   - Scope: hire lifecycle plus journey draft and task-copy model
+   - Scope: hire lifecycle plus journey draft and task-copy model using the
+     active backend standard for audited `Guid` entities, data annotations, and
+     Core-owned aggregate rules
    - Depends on: JP-008
 2. **JP-014 - Add hire and journey persistence with follow-up migration**
    - Labels: backend, database
-   - Scope: DbContext and migration updates for hire and journey aggregates
+   - Scope: `DbSet` registration, EF configuration for persistence-only
+     concerns, and migration updates for hire and journey aggregates
    - Depends on: JP-013
 3. **JP-015 - Implement hire enrolment, account creation, and welcome-notification flow**
    - Labels: backend, onboarding
-   - Scope: create hire, create account, assign role, send credentials
+   - Scope: repository-driven application services, DTOs, create hire, create
+     account, assign role, and send credentials
    - Depends on: JP-014
 4. **JP-016 - Implement synchronous journey generation and draft review services**
    - Labels: backend, onboarding
-   - Scope: copy plan tasks, compute due dates, draft review updates
+   - Scope: repository-driven application services and domain services to copy
+     plan tasks, compute due dates, and support draft review updates
    - Depends on: JP-015
 5. **JP-017 - Build facilitator hire management and journey review UI**
    - Labels: frontend, ux
-   - Scope: hire list, hire detail, journey review page, activation controls
+   - Scope: App Router hire list, hire detail, journey review routes,
+     activation controls, typed providers, and `antd-style` styling
    - Depends on: JP-016
 6. **JP-018 - Add storage and resend-recovery support for onboarding communications**
    - Labels: backend, operations
@@ -145,50 +182,62 @@ Total canonical issues: 30
 
 1. **JP-019 - Add AI audit logging for personalisation and extraction**
    - Labels: backend, ai, audit
-   - Scope: generation logs with outcome summary and timing
+   - Scope: audited `Guid`-key audit entities plus outcome summary and timing
    - Depends on: JP-012
 2. **JP-020 - Implement Groq journey personalisation service and selective acceptance workflow**
    - Labels: backend, ai
-   - Scope: request assembly, diff-ready response parsing, selective apply
+   - Scope: backend-only application/domain services for request assembly,
+     diff-ready response parsing, and selective apply
    - Depends on: JP-019
 3. **JP-021 - Build enrolee journey dashboard and task detail workflow**
    - Labels: frontend, enrolee
-   - Scope: module-grouped tasks, acknowledgement flow, mark-complete behavior
+   - Scope: App Router journey routes, module-grouped tasks, acknowledgement
+     flow, mark-complete behavior, and typed provider-backed state
    - Depends on: JP-017
 4. **JP-022 - Build manager task workspace**
    - Labels: frontend, manager
-   - Scope: direct-report task list and manager completion flow
+   - Scope: App Router manager routes, direct-report task list, manager
+     completion flow, and typed provider-backed state
    - Depends on: JP-017
 5. **JP-023 - Build facilitator personalisation diff UI**
    - Labels: frontend, ai
-   - Scope: before/after comparison, per-task accept/reject, apply action
+   - Scope: App Router facilitator routes, before/after comparison, per-task
+     accept/reject, apply action, and `antd-style`-based diff presentation
    - Depends on: JP-020
 6. **JP-024 - Connect participant provider state across enrolee, manager, and facilitator flows**
    - Labels: frontend, state
-   - Scope: journey provider updates and cross-role task refresh behavior
+   - Scope: strict four-file providers, journey provider updates, and
+     cross-role task refresh behavior without cross-cutting leakage into
+     provider folders
    - Depends on: JP-021, JP-022, JP-023
 
 ### M5 - Intelligence, Interventions, and Demo Readiness
 
 1. **JP-025 - Model engagement snapshots and at-risk flags**
    - Labels: backend, domain, analytics
-   - Scope: append-only score history and intervention records
+   - Scope: append-only score history and intervention records using the active
+     backend standard for audited entities, data annotations, and Core-owned
+     rule logic
    - Depends on: JP-014
 2. **JP-026 - Implement engagement scoring domain service**
    - Labels: backend, analytics
-   - Scope: completion, recency, overdue, composite score, classification logic
+   - Scope: Core domain service for completion, recency, overdue, composite
+     score, and classification logic
    - Depends on: JP-025
 3. **JP-027 - Implement pipeline, hire intelligence, and intervention application services**
    - Labels: backend, api, analytics
-   - Scope: on-demand computation, flag raising, flag resolution, profile payloads
+   - Scope: interface-and-implementation AppService pairs, DTOs, on-demand
+     computation, flag raising, flag resolution, and profile payloads
    - Depends on: JP-026
 4. **JP-028 - Build facilitator pipeline board and engagement badges**
    - Labels: frontend, analytics
-   - Scope: Kanban board, filters, score badges, hire cards
+   - Scope: App Router pipeline routes, Kanban board, filters, score badges,
+     hire cards, typed providers, and `antd-style`-based presentation
    - Depends on: JP-027
 5. **JP-029 - Build score trend chart and intervention history UI**
    - Labels: frontend, analytics
-   - Scope: hire detail chart, active flag panel, intervention notes and history
+   - Scope: App Router hire detail routes, score chart, active flag panel,
+     intervention notes and history with typed provider-backed state
    - Depends on: JP-027
 6. **JP-030 - Seed demo tenants and run milestone validation walkthrough**
    - Labels: backend, demo, validation
