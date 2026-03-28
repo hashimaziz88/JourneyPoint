@@ -11,6 +11,13 @@ foundation and access control, plan authoring and content ingestion, hire
 enrolment and journey orchestration, participant experience with human-in-the-
 loop AI, and engagement intelligence with intervention workflows.
 
+The current planning increment for JP-013 focuses milestone 3 domain modeling on
+`Hire`, `Journey`, and `JourneyTask` under
+`aspnet-core/src/JourneyPoint.Core/Domains/Hires/`, keeping the initial slice
+minimal: audited `Guid` entities, explicit lifecycle enums, copied task
+snapshots that preserve optional source-template linkage, and a Core-owned
+domain manager for aggregate validation and state transitions.
+
 ## Technical Context
 
 **Language/Version**: C# 12 on .NET 8; TypeScript 5 with React 19 and Next.js 16  

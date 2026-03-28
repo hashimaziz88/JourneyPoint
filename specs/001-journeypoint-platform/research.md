@@ -76,3 +76,69 @@
 - Alternatives considered: Introducing a different state library or bypassing
   providers inside page components was rejected because it would fragment the
   frontend architecture.
+
+## Decision 9: Use a hire lifecycle that tracks onboarding readiness separately from journey state
+
+- Decision: Model `HireLifecycleState` as `PendingActivation`, `Active`,
+  `Completed`, and `Exited`.
+- Rationale: Hire state needs to answer business questions that are broader than
+  the journey itself, especially the gap between enrolment and activation and
+  the possibility of a hire leaving before onboarding completes.
+- Alternatives considered: Reusing journey status as the only hire lifecycle was
+  rejected because it makes hire-level reporting and exit handling ambiguous.
+
+## Decision 10: Keep journey lifecycle minimal and aligned to the spec
+
+- Decision: Model `JourneyStatus` as `Draft`, `Active`, `Paused`, and
+  `Completed`.
+- Rationale: The active spec already describes these states, and they cleanly
+  separate pre-activation review from live execution without introducing extra
+  cancellation rules into the first milestone-3 domain slice.
+- Alternatives considered: Adding a `Cancelled` status now was rejected because
+  hire exit can be represented by `HireLifecycleState.Exited` plus a paused
+  journey until a concrete cancellation requirement exists.
+
+## Decision 11: Keep journey tasks as copied snapshots with optional source-template references
+
+- Decision: Each `JourneyTask` should persist copied task and module snapshot
+  fields, plus optional `SourceOnboardingTaskId` and `SourceOnboardingModuleId`
+  references back to the template records.
+- Rationale: This keeps generated journeys stable after activation, supports
+  facilitator draft edits without mutating templates, and still preserves
+  lineage for audit, review, and future refresh logic.
+- Alternatives considered: Reading task content directly from `OnboardingTask`
+  after generation was rejected because later template edits would leak into
+  already-generated journeys.
+
+## Decision 12: Avoid a separate journey-module entity in the initial M3 slice
+
+- Decision: Do not introduce `JourneyModule` in JP-013; instead, store module
+  snapshot title and order directly on `JourneyTask`.
+- Rationale: The user requested a minimal domain file set, and module grouping
+  for draft review and participant views can still be reconstructed from task
+  snapshots without another aggregate layer.
+- Alternatives considered: Adding a dedicated journey-module entity now was
+  rejected because it increases file count, persistence complexity, and
+  migration scope before a clear mutation requirement exists.
+
+## Decision 13: Keep journey-task completion state minimal and derive overdue status
+
+- Decision: Persist `JourneyTaskStatus` as `Pending` or `Completed`, and derive
+  overdue status from `DueOn` plus current time rather than storing a separate
+  overdue state.
+- Rationale: This matches the on-demand engagement model, avoids time-driven
+  mutation churn, and keeps the first hire-orchestration domain slice smaller.
+- Alternatives considered: Persisting `Overdue` as a first-class stored status
+  was rejected because it would require extra lifecycle transitions without
+  changing the facilitator or participant flows in milestone 3.
+
+## Decision 14: Centralize generation and lifecycle validation in a minimal Core manager
+
+- Decision: Introduce a single `HireJourneyManager` plus a small validation
+  partial to create hires, generate draft journeys, copy journey tasks, and
+  enforce state transitions and tenant-safe ownership checks.
+- Rationale: This preserves the repo's current Core-manager pattern and keeps
+  AppServices orchestration-only.
+- Alternatives considered: Putting these rules on entities or directly in
+  AppServices was rejected because it conflicts with the absorbed backend
+  standards and makes later M3/M4 extension harder.
