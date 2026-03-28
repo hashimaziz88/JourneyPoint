@@ -7,7 +7,7 @@ import React, {
     useMemo,
     useState,
 } from "react";
-import { Alert, Button, Card, Empty, Space, Spin, Tag, Typography, message } from "antd";
+import { Alert, Button, Empty, Space, Spin, Typography, message } from "antd";
 import {
     ReloadOutlined,
     RollbackOutlined,
@@ -16,74 +16,29 @@ import {
 } from "@ant-design/icons";
 import { buildFacilitatorPlanRoute } from "@/constants/auth/routes";
 import ExtractedProposalEditorModal from "@/components/plans/ExtractedProposalEditorModal";
-import ExtractedProposalList from "@/components/plans/ExtractedProposalList";
+import DocumentReviewProposalPanel from "@/components/plans/DocumentReviewProposalPanel";
+import DocumentReviewSummaryCard from "@/components/plans/DocumentReviewSummaryCard";
 import { useStyles } from "@/components/plans/style/style";
 import {
     useOnboardingDocumentActions,
     useOnboardingDocumentState,
 } from "@/providers/onboardingDocumentProvider";
-import type {
-    IExtractedTaskProposalDto,
-    IExtractedTaskProposalEditorValues,
-} from "@/types/onboarding-document";
+import type { IExtractedTaskProposalEditorValues } from "@/types/onboarding-document";
 import {
-    ONBOARDING_DOCUMENT_STATUS_LABELS,
     OnboardingDocumentStatus,
     ExtractedTaskReviewStatus,
 } from "@/types/onboarding-document";
+import type {
+    IDocumentReviewWorkspaceProps,
+    IProposalModalState,
+} from "@/types/plans/components";
 import { useRouter } from "next/navigation";
+import {
+    findDocumentProposal,
+    getDocumentStatusAlertContent,
+} from "@/utils/plans/documentReview";
 
-const { Paragraph, Text, Title } = Typography;
-
-const formatDateTime = (value?: string | null): string => {
-    if (!value) {
-        return "Not available";
-    }
-
-    return new Intl.DateTimeFormat("en-ZA", {
-        dateStyle: "medium",
-        timeStyle: "short",
-    }).format(new Date(value));
-};
-
-const getDocumentStatusColor = (
-    status: OnboardingDocumentStatus,
-): "blue" | "green" | "default" | "red" => {
-    if (status === OnboardingDocumentStatus.ReadyForReview) {
-        return "blue";
-    }
-
-    if (status === OnboardingDocumentStatus.Applied) {
-        return "green";
-    }
-
-    if (status === OnboardingDocumentStatus.Failed) {
-        return "red";
-    }
-
-    return "default";
-};
-
-const findProposal = (
-    proposals: IExtractedTaskProposalDto[] | undefined,
-    proposalId: string | null,
-): IExtractedTaskProposalDto | null => {
-    if (!proposalId) {
-        return null;
-    }
-
-    return proposals?.find((proposal) => proposal.id === proposalId) ?? null;
-};
-
-interface IDocumentReviewWorkspaceProps {
-    documentId: string;
-    planId: string;
-}
-
-interface IProposalModalState {
-    mode: "accept" | "edit";
-    proposalId: string;
-}
+const { Paragraph, Title } = Typography;
 
 /**
  * Provides facilitator review over one uploaded enrichment document and its proposals.
@@ -131,7 +86,11 @@ const DocumentReviewWorkspace: React.FC<IDocumentReviewWorkspaceProps> = ({
     }, [documentId]);
 
     const editingProposal = useMemo(
-        () => findProposal(selectedDocument?.proposals, proposalModalState?.proposalId ?? null),
+        () =>
+            findDocumentProposal(
+                selectedDocument?.proposals,
+                proposalModalState?.proposalId ?? null,
+            ),
         [proposalModalState?.proposalId, selectedDocument?.proposals],
     );
 
@@ -246,6 +205,8 @@ const DocumentReviewWorkspace: React.FC<IDocumentReviewWorkspaceProps> = ({
         );
     }
 
+    const statusAlert = getDocumentStatusAlertContent(selectedDocument);
+
     return (
         <Space orientation="vertical" size={24} className={styles.pageRoot}>
             {messageContextHolder}
@@ -308,102 +269,32 @@ const DocumentReviewWorkspace: React.FC<IDocumentReviewWorkspaceProps> = ({
 
             <Alert
                 className={styles.alert}
-                type={
-                    selectedDocument.status === OnboardingDocumentStatus.Failed
-                        ? "error"
-                        : selectedDocument.status === OnboardingDocumentStatus.Applied
-                            ? "success"
-                            : "info"
-                }
+                type={statusAlert.type}
                 showIcon
-                title={
-                    selectedDocument.status === OnboardingDocumentStatus.Failed
-                        ? "Extraction failed for this document."
-                        : selectedDocument.status === OnboardingDocumentStatus.Applied
-                            ? "Accepted proposals have been applied to the onboarding plan."
-                            : "Accepted proposals affect future journeys only."
-                }
-                description={
-                    selectedDocument.status === OnboardingDocumentStatus.Failed
-                        ? selectedDocument.failureReason ??
-                            "Review the uploaded file and try extraction again."
-                        : selectedDocument.status === OnboardingDocumentStatus.Applied
-                            ? "Existing generated journeys are unchanged. New journeys will include the accepted tasks."
-                            : "Nothing is added automatically. Existing journeys remain unchanged even after accepted proposals are applied."
-                }
+                title={statusAlert.title}
+                description={statusAlert.description}
             />
 
             <div className={styles.reviewGrid}>
-                <Card>
-                    <Space orientation="vertical" size={16} className={styles.pageRoot}>
-                        <div className={styles.documentCardHeader}>
-                            <div>
-                                <Title level={4}>{selectedDocument.fileName}</Title>
-                                <Paragraph type="secondary">
-                                    {selectedDocument.planName}
-                                </Paragraph>
-                            </div>
-
-                            <Tag color={getDocumentStatusColor(selectedDocument.status)}>
-                                {ONBOARDING_DOCUMENT_STATUS_LABELS[selectedDocument.status]}
-                            </Tag>
-                        </div>
-
-                        <div className={styles.documentStatGrid}>
-                            <div className={styles.statBlock}>
-                                <Text type="secondary">Proposals</Text>
-                                <Title level={5}>{selectedDocument.extractedTaskCount}</Title>
-                            </div>
-                            <div className={styles.statBlock}>
-                                <Text type="secondary">Accepted</Text>
-                                <Title level={5}>{selectedDocument.acceptedTaskCount}</Title>
-                            </div>
-                            <div className={styles.statBlock}>
-                                <Text type="secondary">Applied</Text>
-                                <Title level={5}>{selectedDocument.appliedTaskCount}</Title>
-                            </div>
-                        </div>
-
-                        <Space orientation="vertical" size={8}>
-                            <Text type="secondary">
-                                Uploaded {formatDateTime(selectedDocument.creationTime)}
-                            </Text>
-                            <Text type="secondary">
-                                Extraction finished {formatDateTime(selectedDocument.extractionCompletedTime)}
-                            </Text>
-                        </Space>
-                    </Space>
-                </Card>
-
-                <Card>
-                    <Space orientation="vertical" size={16} className={styles.pageRoot}>
-                        <div>
-                            <Title level={3}>Extracted Task Proposals</Title>
-                            <Paragraph type="secondary">
-                                Edit or reject noisy suggestions, then accept only the tasks that should be added to the plan.
-                            </Paragraph>
-                        </div>
-
-                        <ExtractedProposalList
-                            availableModules={selectedDocument.availableModules}
-                            isPending={isMutationPending}
-                            onAccept={(proposalId) =>
-                                setProposalModalState({
-                                    mode: "accept",
-                                    proposalId,
-                                })
-                            }
-                            onEdit={(proposalId) =>
-                                setProposalModalState({
-                                    mode: "edit",
-                                    proposalId,
-                                })
-                            }
-                            onReject={handleReject}
-                            proposals={selectedDocument.proposals}
-                        />
-                    </Space>
-                </Card>
+                <DocumentReviewSummaryCard document={selectedDocument} />
+                <DocumentReviewProposalPanel
+                    availableModules={selectedDocument.availableModules}
+                    isPending={isMutationPending}
+                    onAccept={(proposalId) =>
+                        setProposalModalState({
+                            mode: "accept",
+                            proposalId,
+                        })
+                    }
+                    onEdit={(proposalId) =>
+                        setProposalModalState({
+                            mode: "edit",
+                            proposalId,
+                        })
+                    }
+                    onReject={handleReject}
+                    proposals={selectedDocument.proposals}
+                />
             </div>
 
             <ExtractedProposalEditorModal

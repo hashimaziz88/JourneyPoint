@@ -6,32 +6,15 @@ import type { TablePaginationConfig } from "antd/es/table";
 import { PlusOutlined } from "@ant-design/icons";
 import { useStyles } from "@/components/admin/style/style";
 import ResetPasswordModal from "@/components/admin/user-manager/ResetPasswordModal";
-import UserFormModal, {
-  type IUserFormValues,
-} from "@/components/admin/user-manager/UserFormModal";
+import UserFormModal from "@/components/admin/user-manager/UserFormModal";
 import UserManagementTable from "@/components/admin/user-manager/UserManagementTable";
 import { useUserActions, useUserState } from "@/providers/userProvider";
 import type { IResetPasswordDto, IUserDto } from "@/types/user";
+import { USER_SUCCESS_MESSAGES } from "@/constants/admin/userManager";
+import type { IUserFormValues } from "@/types/admin/userManager";
+import { buildUserQuery } from "@/utils/admin/userManager";
 
 const { Title, Text } = Typography;
-
-const USER_SUCCESS_MESSAGES = {
-  create: "User created successfully.",
-  update: "User updated successfully.",
-  delete: "User deleted successfully.",
-  reset: "Password reset successfully.",
-} as const;
-
-const buildUserQuery = (
-  searchTerm: string,
-  activeFilter: boolean | undefined,
-  pagination: TablePaginationConfig,
-) => ({
-  keyword: searchTerm || null,
-  isActive: activeFilter ?? null,
-  skipCount: ((pagination.current ?? 1) - 1) * (pagination.pageSize ?? 10),
-  maxResultCount: pagination.pageSize ?? 10,
-});
 
 /**
  * Renders the host and tenant user-management workspace.

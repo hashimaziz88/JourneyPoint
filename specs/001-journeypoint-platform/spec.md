@@ -284,6 +284,16 @@ surfaces at-risk flags, and lets a facilitator capture intervention actions.
 - **IGR-012**: Frontend TypeScript MUST avoid untyped `any`, keep provider and
   API contracts explicitly typed, and extract regular nested React components
   into dedicated top-level modules.
+- **IGR-013**: JourneyPoint-owned frontend and backend source files touched by
+  milestone work MUST stay at or under 350 lines. Generated files such as EF
+  migration designers, model snapshots, and build output are excluded.
+- **IGR-014**: Backend methods MUST favor guard clauses, early returns, and
+  readable low-nesting flow; when reusable guard-clause support is introduced,
+  the standard library choice MUST be `Ardalis.GuardClauses`.
+- **IGR-015**: Touched frontend and backend implementation MUST move loose
+  helper methods, constants, interfaces, and sample data into dedicated
+  modules or top-level folders instead of leaving them inside large component,
+  provider, or AppService files.
 
 ### Key Entities *(include if feature involves data)*
 

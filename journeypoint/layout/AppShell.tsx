@@ -3,61 +3,21 @@
 import React, { startTransition, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { MenuProps } from "antd";
-import {
-  ApartmentOutlined,
-  DashboardOutlined,
-  LogoutOutlined,
-  ProfileOutlined,
-  SafetyCertificateOutlined,
-  SolutionOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { LogoutOutlined } from "@ant-design/icons";
 import { Button, Grid, Layout, Menu, Space, Tag, Typography } from "antd";
 import { APP_ROUTES } from "@/constants/auth/routes";
-import type { IWorkspaceNavigationItem, NavigationIconKey } from "@/constants/global/navigation";
+import { NAVIGATION_ICONS } from "@/constants/layout/appShell";
 import { useAuthActions } from "@/providers/authProvider";
 import AppShellBrand from "@/components/layout/AppShellBrand";
 import MobileNavigation from "@/components/layout/MobileNavigation";
+import type { IAppShellProps } from "@/types/layout/shell";
+import { ignoreAsyncError } from "@/utils/async";
+import { getSelectedMenuKey } from "@/utils/layout/appShell";
 import { useStyles } from "./style/style";
 
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;
-const ignoreAsyncError = () => undefined;
-
-const NAVIGATION_ICONS: Record<NavigationIconKey, React.ReactNode> = {
-  dashboard: <DashboardOutlined />,
-  tenants: <ApartmentOutlined />,
-  users: <TeamOutlined />,
-  roles: <SafetyCertificateOutlined />,
-  plans: <ProfileOutlined />,
-  facilitator: <SolutionOutlined />,
-  manager: <TeamOutlined />,
-  enrolee: <UserOutlined />,
-};
-
-interface IAppShellProps {
-  children: React.ReactNode;
-  navigationItems: IWorkspaceNavigationItem[];
-  scopeLabel: string;
-  title: string;
-  subtitle: string;
-  userDisplayName?: string | null;
-}
-
-/**
- * Resolves the active navigation item for the current route.
- */
-const getSelectedMenuKey = (
-  pathname: string,
-  navigationItems: IWorkspaceNavigationItem[],
-): string => {
-  const sortedItems = [...navigationItems].sort((left, right) => right.href.length - left.href.length);
-  const selectedItem = sortedItems.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`));
-
-  return selectedItem?.key ?? navigationItems[0]?.key ?? "workspace";
-};
 
 /**
  * Renders the shared JourneyPoint workspace shell for host and tenant routes.

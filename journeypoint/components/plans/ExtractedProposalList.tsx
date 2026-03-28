@@ -3,10 +3,6 @@
 import React from "react";
 import { Button, Card, Empty, Space, Tag, Typography } from "antd";
 import { useStyles } from "@/components/plans/style/style";
-import type {
-    IDocumentModuleOptionDto,
-    IExtractedTaskProposalDto,
-} from "@/types/onboarding-document";
 import {
     EXTRACTED_TASK_REVIEW_STATUS_LABELS,
     ExtractedTaskReviewStatus,
@@ -16,51 +12,11 @@ import {
     ONBOARDING_TASK_ASSIGNMENT_TARGET_OPTIONS,
     ONBOARDING_TASK_CATEGORY_OPTIONS,
 } from "@/types/onboarding-plan";
+import type { IExtractedProposalListProps } from "@/types/plans/components";
+import { findOptionLabel, getModuleName } from "@/utils/plans/optionLabels";
+import { getProposalStatusColor } from "@/utils/plans/proposalEditor";
 
 const { Paragraph, Title } = Typography;
-
-const findOptionLabel = (
-    options: ReadonlyArray<{ label: string; value: number }>,
-    value: number,
-): string => options.find((option) => option.value === value)?.label ?? "Unknown";
-
-const getProposalStatusColor = (
-    status: ExtractedTaskReviewStatus,
-): "blue" | "green" | "red" | "default" => {
-    if (status === ExtractedTaskReviewStatus.Accepted) {
-        return "green";
-    }
-
-    if (status === ExtractedTaskReviewStatus.Rejected) {
-        return "red";
-    }
-
-    if (status === ExtractedTaskReviewStatus.Pending) {
-        return "blue";
-    }
-
-    return "default";
-};
-
-const getModuleName = (
-    modules: IDocumentModuleOptionDto[],
-    moduleId?: string | null,
-): string => {
-    if (!moduleId) {
-        return "No module selected";
-    }
-
-    return modules.find((module) => module.id === moduleId)?.name ?? "Unknown module";
-};
-
-interface IExtractedProposalListProps {
-    availableModules: IDocumentModuleOptionDto[];
-    isPending: boolean;
-    onAccept: (proposalId: string) => void;
-    onEdit: (proposalId: string) => void;
-    onReject: (proposalId: string) => Promise<void>;
-    proposals: IExtractedTaskProposalDto[];
-}
 
 /**
  * Renders reviewable extracted-task proposals and exposes facilitator actions.

@@ -3,8 +3,6 @@
 import React, { useEffect } from "react";
 import { Form, Input, InputNumber, Modal, Select } from "antd";
 import type {
-    IDocumentModuleOptionDto,
-    IExtractedTaskProposalDto,
     IExtractedTaskProposalEditorValues,
 } from "@/types/onboarding-document";
 import { DEFAULT_EXTRACTED_TASK_PROPOSAL_EDITOR_VALUES } from "@/types/onboarding-document";
@@ -13,34 +11,8 @@ import {
     ONBOARDING_TASK_ASSIGNMENT_TARGET_OPTIONS,
     ONBOARDING_TASK_CATEGORY_OPTIONS,
 } from "@/types/onboarding-plan";
-
-interface IExtractedProposalEditorModalProps {
-    availableModules: IDocumentModuleOptionDto[];
-    isPending: boolean;
-    isVisible: boolean;
-    mode: "accept" | "edit";
-    onCancel: () => void;
-    onSubmit: (values: IExtractedTaskProposalEditorValues) => Promise<void>;
-    proposal?: IExtractedTaskProposalDto | null;
-}
-
-const mapProposalToEditorValues = (
-    proposal?: IExtractedTaskProposalDto | null,
-): IExtractedTaskProposalEditorValues => {
-    if (!proposal) {
-        return DEFAULT_EXTRACTED_TASK_PROPOSAL_EDITOR_VALUES;
-    }
-
-    return {
-        suggestedModuleId: proposal.suggestedModuleId ?? null,
-        title: proposal.title,
-        description: proposal.description,
-        category: proposal.category,
-        dueDayOffset: proposal.dueDayOffset,
-        assignmentTarget: proposal.assignmentTarget,
-        acknowledgementRule: proposal.acknowledgementRule,
-    };
-};
+import type { IExtractedProposalEditorModalProps } from "@/types/plans/components";
+import { mapProposalToEditorValues } from "@/utils/plans/proposalEditor";
 
 /**
  * Captures facilitator edits before a proposal is updated or accepted.

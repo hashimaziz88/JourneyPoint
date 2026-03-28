@@ -3,40 +3,19 @@
 import React from "react";
 import { Button, Card, Input, Space, Table, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import type {
-    IOnboardingModuleDraft,
-    IOnboardingTaskDraft,
-} from "@/types/onboarding-plan";
 import {
     ONBOARDING_TASK_ACKNOWLEDGEMENT_RULE_OPTIONS,
     ONBOARDING_TASK_ASSIGNMENT_TARGET_OPTIONS,
     ONBOARDING_TASK_CATEGORY_OPTIONS,
 } from "@/types/onboarding-plan";
 import { useStyles } from "@/components/plans/style/style";
+import type {
+    IMarkdownPreviewTableProps,
+    IMarkdownPreviewTaskRow,
+} from "@/types/plans/components";
+import { findOptionLabel } from "@/utils/plans/optionLabels";
 
 const { Paragraph, Title } = Typography;
-
-const findOptionLabel = (
-    options: ReadonlyArray<{ label: string; value: number }>,
-    value: number,
-): string => options.find((option) => option.value === value)?.label ?? "Unknown";
-
-interface IMarkdownPreviewTableProps {
-    modules: IOnboardingModuleDraft[];
-    onEditTask: (moduleClientKey: string, taskClientKey: string) => void;
-    onModuleChange: (
-        moduleClientKey: string,
-        name: string,
-        description: string,
-    ) => void;
-    onRemoveModule: (moduleClientKey: string) => void;
-    onRemoveTask: (moduleClientKey: string, taskClientKey: string) => void;
-}
-
-interface IMarkdownPreviewTaskRow extends IOnboardingTaskDraft {
-    key: string;
-    moduleClientKey: string;
-}
 
 /**
  * Renders editable markdown-import preview modules and parsed task rows.

@@ -3,42 +3,14 @@
 import React from "react";
 import { Button, Card, Space, Tag, Typography } from "antd";
 import {
-    IOnboardingPlanListItemDto,
     ONBOARDING_PLAN_STATUS_LABELS,
     OnboardingPlanStatus,
 } from "@/types/onboarding-plan";
 import { useStyles } from "@/components/plans/style/style";
+import type { IPlanCardProps } from "@/types/plans/components";
+import { formatPlanUpdatedTime, getPlanStatusColor } from "@/utils/plans/planCard";
 
 const { Paragraph, Text, Title } = Typography;
-
-const formatUpdatedTime = (value: string): string =>
-    new Intl.DateTimeFormat("en-ZA", {
-        dateStyle: "medium",
-        timeStyle: "short",
-    }).format(new Date(value));
-
-const getStatusColor = (
-    status: OnboardingPlanStatus,
-): "blue" | "green" | "default" => {
-    if (status === OnboardingPlanStatus.Published) {
-        return "green";
-    }
-
-    if (status === OnboardingPlanStatus.Draft) {
-        return "blue";
-    }
-
-    return "default";
-};
-
-interface IPlanCardProps {
-    isActionPending: boolean;
-    onArchive: (plan: IOnboardingPlanListItemDto) => Promise<void>;
-    onClone: (plan: IOnboardingPlanListItemDto) => Promise<void>;
-    onOpen: (planId: string) => void;
-    onPublish: (plan: IOnboardingPlanListItemDto) => Promise<void>;
-    plan: IOnboardingPlanListItemDto;
-}
 
 /**
  * Renders one onboarding-plan list card and its lifecycle actions.
@@ -75,7 +47,7 @@ const PlanCard: React.FC<IPlanCardProps> = ({
                         <Paragraph type="secondary">{plan.targetAudience}</Paragraph>
                     </div>
 
-                    <Tag color={getStatusColor(plan.status)}>
+                    <Tag color={getPlanStatusColor(plan.status)}>
                         {ONBOARDING_PLAN_STATUS_LABELS[plan.status]}
                     </Tag>
                 </div>
@@ -96,7 +68,7 @@ const PlanCard: React.FC<IPlanCardProps> = ({
                 </div>
 
                 <Text type="secondary">
-                    Updated {formatUpdatedTime(plan.lastUpdatedTime)}
+                    Updated {formatPlanUpdatedTime(plan.lastUpdatedTime)}
                 </Text>
 
                 <Space wrap className={styles.planCardActions}>

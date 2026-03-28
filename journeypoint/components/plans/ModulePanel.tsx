@@ -2,24 +2,11 @@
 
 import React from "react";
 import { Button, Card, Input, Space, Typography } from "antd";
-import { IOnboardingModuleDraft } from "@/types/onboarding-plan";
 import TaskListEditor from "@/components/plans/TaskListEditor";
 import { useStyles } from "@/components/plans/style/style";
+import type { IModulePanelProps } from "@/types/plans/components";
 
 const { Paragraph, Title } = Typography;
-
-interface IModulePanelProps {
-    isReadOnly: boolean;
-    module: IOnboardingModuleDraft;
-    moduleCount: number;
-    onAddTask: () => void;
-    onDeleteTask: (taskClientKey: string) => void;
-    onEditTask: (taskClientKey: string) => void;
-    onModuleChange: (name: string, description: string) => void;
-    onMoveModule: (direction: "up" | "down") => void;
-    onMoveTask: (taskClientKey: string, direction: "up" | "down") => void;
-    onRemoveModule: () => void;
-}
 
 /**
  * Renders one ordered onboarding module and its nested task editor.

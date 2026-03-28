@@ -5,21 +5,11 @@ import { extractGrantedPermissions } from "@/helpers/permissions";
 import type {
   IAbpUserConfigurationResponse,
   ICurrentLoginInformationsResponse,
+  IFetchedSessionState,
+  ILoadedConfiguration,
   ITenantInfo,
-  IUserLoginResponse,
 } from "@/types/auth";
 import { getAxiosInstance } from "@/utils/axiosInstance";
-
-export interface ILoadedConfiguration {
-  grantedPermissions: string[];
-  isMultiTenancyEnabled: boolean;
-  configurationError: string | null;
-}
-
-export interface IFetchedSessionState {
-  user: IUserLoginResponse;
-  tenant: ITenantInfo | null;
-}
 
 const INITIAL_CONFIGURATION: ILoadedConfiguration = {
   grantedPermissions: [],

@@ -2,17 +2,8 @@
 
 import React from "react";
 import { Form, Input, Modal } from "antd";
-import type { FormInstance } from "antd";
-import type { IResetPasswordDto, IUserDto } from "@/types/user";
-
-interface IResetPasswordModalProps {
-  form: FormInstance<IResetPasswordDto>;
-  isPending: boolean;
-  isVisible: boolean;
-  onCancel: () => void;
-  onSubmit: (values: IResetPasswordDto) => Promise<void>;
-  resettingUser: IUserDto | null;
-}
+import type { IResetPasswordDto } from "@/types/user";
+import type { IResetPasswordModalProps } from "@/types/admin/userManager";
 
 /**
  * Renders the password-reset modal for the selected user.

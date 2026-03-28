@@ -3,15 +3,9 @@
 import React from "react";
 import { Typography } from "antd";
 import { useStyles } from "@/layout/style/style";
+import type { IAppShellBrandProps } from "@/types/layout/navigation";
 
 const { Title, Text } = Typography;
-
-/**
- * Displays the shared JourneyPoint brand block inside workspace navigation.
- */
-interface IAppShellBrandProps {
-  subtitle: string;
-}
 
 /**
  * Renders the shared workspace navigation brand header.

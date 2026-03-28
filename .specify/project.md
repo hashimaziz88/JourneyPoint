@@ -16,7 +16,6 @@ surfacing at-risk interventions early.
    `.github/copilot-instructions.md`
 5. Codex supplements in `.codex/`
 6. supporting repo-local company reference copies in `docs/company-standards/`
-6. supporting repo-local company reference copies in `docs/company-standards/`
 
 If two documents disagree, prefer the higher item in this list and update the
 lower one before continuing.
@@ -36,6 +35,9 @@ side references.
   standards.
 - Frontend expectations follow the supplied Next.js, TypeScript, and strict
   provider-pattern standards.
+- JourneyPoint-owned frontend and backend source files touched by milestone
+  work are now subject to a hard 350-line limit, excluding generated files
+  such as migration designers, model snapshots, and build output.
 - Those frontend standards are interpreted through JourneyPoint's actual stack:
   Next.js 16 App Router, React 19, TypeScript, Ant Design, and `antd-style`.
   Conflicting legacy references such as `pages/`, `getServerSideProps`,
@@ -105,12 +107,21 @@ specs/     # Active Spec Kit feature packages
   rather than embedding them directly in entity method bodies.
 - Add XML comments to public backend classes and public methods, plus short
   comments for non-obvious logic.
+- Keep JourneyPoint-owned source files at or under 350 lines unless they are
+  generated artifacts such as EF migration designers, snapshots, or build
+  output.
+- Prefer guard clauses and early returns in backend methods; use
+  `Ardalis.GuardClauses` when introducing reusable guard-clause support.
 - Prefer guarded, small, cohesive methods and classes; replace magic numbers
   with constants or enums.
 - Keep regular React components free of nested component declarations; extract
   child components into `components/` or another dedicated module.
 - Keep provider state, actions, and API contracts explicitly typed; use
   `unknown` instead of `any` when a boundary is temporarily uncertain.
+- Keep loose helper methods, interfaces, constants, and sample data in
+  dedicated modules or top-level folders such as `components/`, `layout/`,
+  `types/`, `constants/`, `helpers/`, `hoc/`, and `utils/` rather than inside
+  large component, provider, or service files.
 - Keep all AI calls in backend services only.
 - Treat Boxfusion and DeptDemo as separate tenants in every plan, seed dataset,
   and demo workflow.

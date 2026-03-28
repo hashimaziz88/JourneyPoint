@@ -26,6 +26,12 @@ implemented, demonstrated, and reviewed independently.
 - Backend persistence tasks must keep `DbSet` registration, EF configuration,
   and migrations inside `JourneyPoint.EntityFrameworkCore`; Web.Core and
   Web.Host remain plumbing-only and must not absorb business logic.
+- JourneyPoint-owned frontend and backend source files touched by milestone
+  work must stay at or under 350 lines. Generated files such as EF migration
+  designers, model snapshots, and build output are excluded.
+- Backend methods should prefer guard clauses, early returns, and low nesting;
+  when reusable guard-clause support is introduced, standardize on
+  `Ardalis.GuardClauses`.
 - Frontend tasks must follow the strict provider contract:
   `providers/<feature>Provider/actions.tsx`, `context.tsx`, `index.tsx`, and
   `reducer.tsx` only. Bootstrap or side-effect components belong outside
@@ -40,6 +46,9 @@ implemented, demonstrated, and reviewed independently.
   dedicated module.
 - Frontend provider state, actions, and API contracts must remain explicitly
   typed with no untyped `any`.
+- Touched frontend and backend files must move loose helper methods, constants,
+  interfaces, and sample data into dedicated modules or top-level folders
+  rather than leaving them inside component, provider, or AppService files.
 - New work must move touched code toward these standards even when older repo
   code predates them, including later milestones for hire orchestration,
   participant workspaces, AI review, engagement, and intervention flows.
@@ -122,6 +131,17 @@ from markdown, and review document-extracted task proposals.
 
 ---
 
+## Phase 4B: Pre-M3 Standards Gate
+
+**Purpose**: Close the remaining M1 and M2 standards mismatches before
+expanding into hire enrolment and journey orchestration.
+
+- [x] T060 Execute the pre-M3 engineering standards sweep across touched JourneyPoint-owned M1 and M2 frontend/backend source, enforcing the 350-line source-file cap, public backend XML comments, guarded low-nesting backend methods, strict provider-folder boundaries, extracted helper/type/constants modules, and the existing bans on inline styles and untyped `any`
+
+**Checkpoint**: The active JourneyPoint-owned M1 and M2 implementation surface satisfies the absorbed engineering standards before US3 work expands the codebase.
+
+---
+
 ## Phase 5: User Story 3 - Enrol Hires and Generate Reviewable Journeys (Priority: P1)
 
 **Goal**: Convert published plans into reviewable hire-specific journeys.
@@ -192,6 +212,7 @@ engagement data, surfaces at-risk hires, and supports facilitator intervention.
 - [ ] T056 Run milestone smoke validation using `specs/001-journeypoint-platform/quickstart.md`
 - [x] T057 Review issue slicing and milestone readiness in `specs/001-journeypoint-platform/github-roadmap.md`
 - [x] T058 Align repo guidance, Speckit templates, and current M1-owned backend/frontend implementation surfaces to the absorbed company engineering standards before starting M2
+- [x] T061 Enforce the pre-M3 standards gate across the active M2 frontend/backend implementation surface, including the 350-line source-file rule, strict provider-folder boundaries, App Router plus provider-state conventions, and current company structure guidance before starting milestone 3
 
 ---
 
@@ -210,6 +231,8 @@ engagement data, surfaces at-risk hires, and supports facilitator intervention.
 - US1 provides role-specific shell access and should be complete before heavy
   feature routing depends on it.
 - US2 provides published plans that US3 enrolment relies on.
+- The pre-M3 standards gate must close before US3 expands the JourneyPoint
+  codebase beyond the current M1 and M2 implementation surface.
 - US3 provides active journeys required by US4 participant and AI workflows.
 - US5 depends on journey execution data from US3 and US4.
 

@@ -143,6 +143,29 @@ types, and constants. The `angular/` directory remains explicitly out of scope.
   or another dedicated top-level module.
 - Frontend provider actions, state, and API contracts must stay explicitly
   typed and must not use untyped `any`.
+- JourneyPoint-owned frontend and backend source files touched by milestone
+  work must stay at or under 350 lines. Generated files such as EF migration
+  designers, model snapshots, and build output are excluded from this limit.
+- Backend methods should prefer guard clauses, early returns, and low nesting.
+  When reusable guard-clause support is introduced, standardize on
+  `Ardalis.GuardClauses`.
+- Touched frontend and backend files should move loose helper methods,
+  constants, interfaces, and sample data into dedicated modules or top-level
+  folders instead of expanding component, provider, or service files
+  indefinitely.
+
+## Pre-M3 Standards Gate
+
+- Milestone 3 planning and implementation assume a pre-M3 engineering standards
+  sweep closes the remaining M1 and M2 JourneyPoint-owned source mismatches
+  before new hire-orchestration scope expands the codebase further.
+- The pre-M3 gate covers the hard 350-line source-file rule, public backend XML
+  comments, guard-clause-friendly low-nesting backend methods, strict
+  provider-folder boundaries, extracted helper/type/constants modules, and the
+  existing ban on inline styles and untyped `any`.
+- Generated artifacts such as EF migration designers, model snapshots, and
+  build output remain excluded from the 350-line rule, but JourneyPoint-owned
+  handwritten source must comply before US3 begins.
 
 ## Complexity Tracking
 

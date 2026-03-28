@@ -102,6 +102,17 @@ Frontend work across all remaining milestones must use Next.js App Router,
 strict four-file provider folders, `antd-style`, typed contracts with no
 untyped `any`, and extracted top-level components rather than regular nested
 component declarations.
+JourneyPoint-owned handwritten frontend and backend source touched by delivery
+work must also stay at or under 350 lines before M3 begins, excluding generated
+artifacts such as migration designers, model snapshots, and build output.
+
+### M3 pre-gate
+
+Begin milestone 3 only after the active M1 and M2 implementation surface has
+passed a standards sweep covering the 350-line handwritten-source limit,
+public backend XML comments, guard-clause-friendly low-nesting backend methods,
+strict provider-folder boundaries, extracted helper/type/constants modules, and
+the existing bans on inline styles and untyped `any`.
 
 1. **JP-007 - Model onboarding plan, module, and template task entities**
    - Labels: backend, domain

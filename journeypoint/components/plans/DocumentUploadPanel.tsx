@@ -15,78 +15,16 @@ import {
     OnboardingDocumentStatus,
 } from "@/types/onboarding-document";
 import { OnboardingPlanStatus } from "@/types/onboarding-plan";
+import type { IDocumentUploadPanelProps } from "@/types/plans/components";
+import {
+    formatDocumentDateTime,
+    formatFileSize,
+    getDocumentStatusColor,
+} from "@/utils/plans/documentReview";
+import { readFileAsBase64 } from "@/utils/plans/fileUpload";
 import { useRouter } from "next/navigation";
 
 const { Paragraph, Text, Title } = Typography;
-
-const formatDateTime = (value?: string | null): string => {
-    if (!value) {
-        return "Not available";
-    }
-
-    return new Intl.DateTimeFormat("en-ZA", {
-        dateStyle: "medium",
-        timeStyle: "short",
-    }).format(new Date(value));
-};
-
-const formatFileSize = (value: number): string => {
-    if (value < 1024) {
-        return `${value} B`;
-    }
-
-    if (value < 1024 * 1024) {
-        return `${(value / 1024).toFixed(1)} KB`;
-    }
-
-    return `${(value / (1024 * 1024)).toFixed(1)} MB`;
-};
-
-const getDocumentStatusColor = (
-    status: OnboardingDocumentStatus,
-): "blue" | "green" | "default" | "red" => {
-    if (status === OnboardingDocumentStatus.ReadyForReview) {
-        return "blue";
-    }
-
-    if (status === OnboardingDocumentStatus.Applied) {
-        return "green";
-    }
-
-    if (status === OnboardingDocumentStatus.Failed) {
-        return "red";
-    }
-
-    return "default";
-};
-
-const readFileAsBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-
-        reader.onload = () => {
-            if (typeof reader.result !== "string") {
-                reject(new Error("The uploaded file could not be read."));
-                return;
-            }
-
-            const base64Content = reader.result.includes(",")
-                ? reader.result.split(",")[1]
-                : reader.result;
-            resolve(base64Content);
-        };
-
-        reader.onerror = () => {
-            reject(new Error("The uploaded file could not be read."));
-        };
-
-        reader.readAsDataURL(file);
-    });
-
-interface IDocumentUploadPanelProps {
-    planId?: string | null;
-    planStatus: OnboardingPlanStatus;
-}
 
 /**
  * Handles document upload and document-list access for one onboarding plan.
@@ -276,11 +214,11 @@ const DocumentUploadPanel: React.FC<IDocumentUploadPanelProps> = ({
 
                                 <Space orientation="vertical" size={8}>
                                     <Text type="secondary">
-                                        Uploaded {formatDateTime(document.creationTime)}
+                                        Uploaded {formatDocumentDateTime(document.creationTime)}
                                     </Text>
                                     {document.extractionCompletedTime ? (
                                         <Text type="secondary">
-                                            Extraction finished {formatDateTime(document.extractionCompletedTime)}
+                                            Extraction finished {formatDocumentDateTime(document.extractionCompletedTime)}
                                         </Text>
                                     ) : null}
                                     {document.failureReason ? (

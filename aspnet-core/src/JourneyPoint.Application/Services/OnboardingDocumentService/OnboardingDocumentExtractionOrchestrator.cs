@@ -18,7 +18,7 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
         private readonly IOnboardingDocumentStorage _onboardingDocumentStorage;
         private readonly MarkdownImportParser _markdownImportParser;
         private readonly DocumentContentExtractionService _documentContentExtractionService;
-        private readonly GroqDocumentNormalizationService _groqDocumentNormalizationService;
+        private readonly IGroqDocumentNormalizationService _groqDocumentNormalizationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OnboardingDocumentExtractionOrchestrator"/> class.
@@ -27,7 +27,7 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
             IOnboardingDocumentStorage onboardingDocumentStorage,
             MarkdownImportParser markdownImportParser,
             DocumentContentExtractionService documentContentExtractionService,
-            GroqDocumentNormalizationService groqDocumentNormalizationService)
+            IGroqDocumentNormalizationService groqDocumentNormalizationService)
         {
             _onboardingDocumentStorage = onboardingDocumentStorage;
             _markdownImportParser = markdownImportParser;
