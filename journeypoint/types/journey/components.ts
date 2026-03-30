@@ -4,6 +4,9 @@ import type {
     IEnroleeJourneyModuleGroupDto,
     IEnroleeJourneyTaskDetailDto,
     IEnroleeJourneyTaskListItemDto,
+    IManagerAssignedTaskDto,
+    IManagerDirectReportTaskGroupDto,
+    IManagerTaskWorkspaceDto,
     IJourneyDraftDto,
     IJourneyModuleGroup,
     IJourneyTaskReviewDto,
@@ -58,4 +61,18 @@ export interface IJourneyTaskAcknowledgementPanelProps {
     task: IEnroleeJourneyTaskDetailDto;
     isPending: boolean;
     onAcknowledge: () => Promise<boolean>;
+}
+
+export interface IManagerTaskWorkspaceViewProps {
+    workspace?: IManagerTaskWorkspaceDto | null;
+    isPending: boolean;
+    isMutationPending: boolean;
+    onRefresh: () => Promise<void>;
+    onComplete: (journeyTaskId: string) => Promise<boolean>;
+}
+
+export interface IManagerDirectReportSectionProps {
+    directReport: IManagerDirectReportTaskGroupDto;
+    isMutationPending: boolean;
+    onComplete: (task: IManagerAssignedTaskDto) => Promise<void>;
 }

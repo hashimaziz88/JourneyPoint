@@ -26,9 +26,19 @@ namespace JourneyPoint.Application.Services.JourneyService
         Task<EnroleeJourneyDashboardDto> GetMyJourneyAsync();
 
         /// <summary>
+        /// Returns the direct-report manager workspace for the signed-in manager.
+        /// </summary>
+        Task<ManagerTaskWorkspaceDto> GetManagerTasksAsync();
+
+        /// <summary>
         /// Returns one detailed participant task view for the signed-in enrolee.
         /// </summary>
         Task<EnroleeJourneyTaskDetailDto> GetMyTaskAsync(Guid journeyTaskId);
+
+        /// <summary>
+        /// Returns one manager-assigned task for the signed-in manager.
+        /// </summary>
+        Task<ManagerAssignedTaskDto> GetManagerTaskAsync(Guid journeyTaskId);
 
         /// <summary>
         /// Records acknowledgement for one participant task when required.
@@ -39,6 +49,11 @@ namespace JourneyPoint.Application.Services.JourneyService
         /// Completes one participant task after all checks succeed.
         /// </summary>
         Task<EnroleeJourneyTaskDetailDto> CompleteMyTaskAsync(CompleteJourneyTaskRequest input);
+
+        /// <summary>
+        /// Completes one manager-assigned task after all checks succeed.
+        /// </summary>
+        Task<ManagerTaskWorkspaceDto> CompleteManagerTaskAsync(CompleteJourneyTaskRequest input);
 
         /// <summary>
         /// Updates one draft journey task snapshot during facilitator review.

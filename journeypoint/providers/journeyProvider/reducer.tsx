@@ -12,6 +12,10 @@ export const JourneyReducer = handleActions<IJourneyStateContext, Partial<IJourn
         [JourneyActionEnums.getMyJourneySuccess]: (state, action) => ({ ...state, ...action.payload }),
         [JourneyActionEnums.getMyJourneyError]: (state, action) => ({ ...state, ...action.payload }),
 
+        [JourneyActionEnums.getManagerTasksPending]: (state, action) => ({ ...state, ...action.payload }),
+        [JourneyActionEnums.getManagerTasksSuccess]: (state, action) => ({ ...state, ...action.payload }),
+        [JourneyActionEnums.getManagerTasksError]: (state, action) => ({ ...state, ...action.payload }),
+
         [JourneyActionEnums.getMyTaskPending]: (state, action) => ({ ...state, ...action.payload }),
         [JourneyActionEnums.getMyTaskSuccess]: (state, action) => ({ ...state, ...action.payload }),
         [JourneyActionEnums.getMyTaskError]: (state, action) => ({ ...state, ...action.payload }),
@@ -23,6 +27,10 @@ export const JourneyReducer = handleActions<IJourneyStateContext, Partial<IJourn
         [JourneyActionEnums.participantMutationPending]: (state, action) => ({ ...state, ...action.payload }),
         [JourneyActionEnums.participantMutationSuccess]: (state, action) => ({ ...state, ...action.payload }),
         [JourneyActionEnums.participantMutationError]: (state, action) => ({ ...state, ...action.payload }),
+
+        [JourneyActionEnums.managerMutationPending]: (state, action) => ({ ...state, ...action.payload }),
+        [JourneyActionEnums.managerMutationSuccess]: (state, action) => ({ ...state, ...action.payload }),
+        [JourneyActionEnums.managerMutationError]: (state, action) => ({ ...state, ...action.payload }),
 
         [JourneyActionEnums.resetJourney]: (state, action) => ({ ...state, ...action.payload }),
     },

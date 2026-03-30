@@ -1,8 +1,13 @@
 "use client";
 
 import React, { useContext, useReducer } from "react";
+import { JOURNEY_API_BASE } from "@/constants/journey/api";
 import { getAxiosInstance } from "@/utils/axiosInstance";
+import { getJourneyApiResult } from "@/utils/journey/provider";
 import {
+    getManagerTasksError,
+    getManagerTasksPending,
+    getManagerTasksSuccess,
     getMyJourneyError,
     getMyJourneyPending,
     getMyJourneySuccess,
@@ -12,6 +17,9 @@ import {
     getJourneyError,
     getJourneyPending,
     getJourneySuccess,
+    managerMutationError,
+    managerMutationPending,
+    managerMutationSuccess,
     mutationError,
     mutationPending,
     mutationSuccess,
@@ -32,30 +40,11 @@ import {
     type IGenerateDraftJourneyRequest,
     type IJourneyActionContext,
     type IJourneyDraftDto,
+    type IManagerTaskWorkspaceDto,
     type IJourneyStateContext,
     type IUpdateJourneyTaskRequest,
 } from "./context";
 import { JourneyReducer } from "./reducer";
-
-const JOURNEY_API_BASE = "/api/services/app/Journey";
-
-const getApiResult = <T,>(response: { data?: { result?: T } | T }): T => {
-    const { data } = response;
-
-    if (
-        data &&
-        typeof data === "object" &&
-        "result" in (data as Record<string, unknown>)
-    ) {
-        return (data as { result?: T }).result as T;
-    }
-
-    return data as T;
-};
-
-/**
- * Provides facilitator journey generation, review, and activation state.
- */
 export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [state, dispatch] = useReducer(JourneyReducer, INITIAL_STATE);
 
@@ -66,7 +55,7 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
             const response = await getAxiosInstance().get(`${JOURNEY_API_BASE}/GetDraft`, {
                 params: { hireId },
             });
-            const journey = getApiResult<IJourneyDraftDto>(response);
+            const journey = getJourneyApiResult<IJourneyDraftDto>(response);
 
             dispatch(getJourneySuccess(journey));
             return journey;
@@ -77,12 +66,28 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
     };
 
+    const getManagerTasks = async (): Promise<IManagerTaskWorkspaceDto | null> => {
+        dispatch(getManagerTasksPending());
+
+        try {
+            const response = await getAxiosInstance().get(`${JOURNEY_API_BASE}/GetManagerTasks`);
+            const managerWorkspace = getJourneyApiResult<IManagerTaskWorkspaceDto | null>(response);
+
+            dispatch(getManagerTasksSuccess(managerWorkspace));
+            return managerWorkspace;
+        } catch (error) {
+            console.error(error);
+            dispatch(getManagerTasksError());
+            return null;
+        }
+    };
+
     const getMyJourney = async (): Promise<IEnroleeJourneyDashboardDto | null> => {
         dispatch(getMyJourneyPending());
 
         try {
             const response = await getAxiosInstance().get(`${JOURNEY_API_BASE}/GetMyJourney`);
-            const myJourney = getApiResult<IEnroleeJourneyDashboardDto | null>(response);
+            const myJourney = getJourneyApiResult<IEnroleeJourneyDashboardDto | null>(response);
 
             dispatch(getMyJourneySuccess(myJourney));
             return myJourney;
@@ -97,12 +102,11 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         journeyTaskId: string,
     ): Promise<IEnroleeJourneyTaskDetailDto | null> => {
         dispatch(getMyTaskPending());
-
         try {
             const response = await getAxiosInstance().get(`${JOURNEY_API_BASE}/GetMyTask`, {
                 params: { journeyTaskId },
             });
-            const selectedTask = getApiResult<IEnroleeJourneyTaskDetailDto>(response);
+            const selectedTask = getJourneyApiResult<IEnroleeJourneyTaskDetailDto>(response);
 
             dispatch(getMyTaskSuccess(selectedTask));
             return selectedTask;
@@ -123,7 +127,7 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
                 `${JOURNEY_API_BASE}/GenerateDraft`,
                 payload,
             );
-            const journey = getApiResult<IJourneyDraftDto>(response);
+            const journey = getJourneyApiResult<IJourneyDraftDto>(response);
 
             dispatch(mutationSuccess(journey));
             return journey;
@@ -139,8 +143,7 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
             const response = await getAxiosInstance().get(`${JOURNEY_API_BASE}/GetDraft`, {
                 params: { hireId },
             });
-            const journey = getApiResult<IJourneyDraftDto>(response);
-
+            const journey = getJourneyApiResult<IJourneyDraftDto>(response);
             dispatch(mutationSuccess(journey));
             return journey;
         } catch (error) {
@@ -213,7 +216,7 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
             const response = await getAxiosInstance().post(`${JOURNEY_API_BASE}/Activate`, null, {
                 params: { hireId },
             });
-            const journey = getApiResult<IJourneyDraftDto>(response);
+            const journey = getJourneyApiResult<IJourneyDraftDto>(response);
 
             dispatch(mutationSuccess(journey));
             return journey;
@@ -234,8 +237,8 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
                     params: { journeyTaskId },
                 }),
             ]);
-            const myJourney = getApiResult<IEnroleeJourneyDashboardDto | null>(myJourneyResponse);
-            const selectedTask = getApiResult<IEnroleeJourneyTaskDetailDto>(taskResponse);
+            const myJourney = getJourneyApiResult<IEnroleeJourneyDashboardDto | null>(myJourneyResponse);
+            const selectedTask = getJourneyApiResult<IEnroleeJourneyTaskDetailDto>(taskResponse);
 
             dispatch(participantMutationSuccess({ myJourney, selectedTask }));
             return selectedTask;
@@ -246,11 +249,31 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
     };
 
+    const completeManagerTask = async (
+        payload: ICompleteJourneyTaskRequest,
+    ): Promise<IManagerTaskWorkspaceDto | null> => {
+        dispatch(managerMutationPending());
+
+        try {
+            const response = await getAxiosInstance().post(
+                `${JOURNEY_API_BASE}/CompleteManagerTask`,
+                payload,
+            );
+            const managerWorkspace = getJourneyApiResult<IManagerTaskWorkspaceDto | null>(response);
+
+            dispatch(managerMutationSuccess(managerWorkspace));
+            return managerWorkspace;
+        } catch (error) {
+            console.error(error);
+            dispatch(managerMutationError());
+            return null;
+        }
+    };
+
     const acknowledgeMyTask = async (
         payload: IAcknowledgeJourneyTaskRequest,
     ): Promise<IEnroleeJourneyTaskDetailDto | null> => {
         dispatch(participantMutationPending());
-
         try {
             await getAxiosInstance().post(`${JOURNEY_API_BASE}/AcknowledgeMyTask`, payload);
             return await refreshMyJourneyState(payload.journeyTaskId);
@@ -265,7 +288,6 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         payload: ICompleteJourneyTaskRequest,
     ): Promise<IEnroleeJourneyTaskDetailDto | null> => {
         dispatch(participantMutationPending());
-
         try {
             await getAxiosInstance().post(`${JOURNEY_API_BASE}/CompleteMyTask`, payload);
             return await refreshMyJourneyState(payload.journeyTaskId);
@@ -285,10 +307,12 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
             <JourneyActionContext.Provider
                 value={{
                     getDraft,
+                    getManagerTasks,
                     getMyJourney,
                     getMyTask,
                     acknowledgeMyTask,
                     completeMyTask,
+                    completeManagerTask,
                     generateDraft,
                     updateTask,
                     addTask,

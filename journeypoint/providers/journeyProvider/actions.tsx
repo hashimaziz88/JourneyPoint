@@ -3,6 +3,7 @@ import type {
     IEnroleeJourneyDashboardDto,
     IEnroleeJourneyTaskDetailDto,
     IJourneyDraftDto,
+    IManagerTaskWorkspaceDto,
     IJourneyStateContext,
 } from "./context";
 
@@ -17,6 +18,10 @@ export enum JourneyActionEnums {
     getMyJourneySuccess = "GET_MY_JOURNEY_SUCCESS",
     getMyJourneyError = "GET_MY_JOURNEY_ERROR",
 
+    getManagerTasksPending = "GET_MANAGER_TASKS_PENDING",
+    getManagerTasksSuccess = "GET_MANAGER_TASKS_SUCCESS",
+    getManagerTasksError = "GET_MANAGER_TASKS_ERROR",
+
     getMyTaskPending = "GET_MY_TASK_PENDING",
     getMyTaskSuccess = "GET_MY_TASK_SUCCESS",
     getMyTaskError = "GET_MY_TASK_ERROR",
@@ -28,6 +33,10 @@ export enum JourneyActionEnums {
     participantMutationPending = "PARTICIPANT_MUTATION_PENDING",
     participantMutationSuccess = "PARTICIPANT_MUTATION_SUCCESS",
     participantMutationError = "PARTICIPANT_MUTATION_ERROR",
+
+    managerMutationPending = "MANAGER_MUTATION_PENDING",
+    managerMutationSuccess = "MANAGER_MUTATION_SUCCESS",
+    managerMutationError = "MANAGER_MUTATION_ERROR",
 
     resetJourney = "RESET_JOURNEY",
 }
@@ -96,6 +105,41 @@ export const getMyJourneyError = createAction<JourneyStatePayload>(
         isError: true,
         isSuccess: false,
         myJourney: null,
+    }),
+);
+
+export const getManagerTasksPending = createAction<JourneyStatePayload>(
+    JourneyActionEnums.getManagerTasksPending,
+    () => ({
+        isPending: true,
+        isDetailPending: true,
+        isError: false,
+        isSuccess: false,
+    }),
+);
+
+export const getManagerTasksSuccess = createAction<
+    JourneyStatePayload,
+    IManagerTaskWorkspaceDto | null
+>(
+    JourneyActionEnums.getManagerTasksSuccess,
+    (managerWorkspace) => ({
+        isPending: false,
+        isDetailPending: false,
+        isError: false,
+        isSuccess: true,
+        managerWorkspace,
+    }),
+);
+
+export const getManagerTasksError = createAction<JourneyStatePayload>(
+    JourneyActionEnums.getManagerTasksError,
+    () => ({
+        isPending: false,
+        isDetailPending: false,
+        isError: true,
+        isSuccess: false,
+        managerWorkspace: null,
     }),
 );
 
@@ -202,6 +246,40 @@ export const participantMutationError = createAction<JourneyStatePayload>(
     }),
 );
 
+export const managerMutationPending = createAction<JourneyStatePayload>(
+    JourneyActionEnums.managerMutationPending,
+    () => ({
+        isPending: true,
+        isMutationPending: true,
+        isError: false,
+        isSuccess: false,
+    }),
+);
+
+export const managerMutationSuccess = createAction<
+    JourneyStatePayload,
+    IManagerTaskWorkspaceDto | null
+>(
+    JourneyActionEnums.managerMutationSuccess,
+    (managerWorkspace) => ({
+        isPending: false,
+        isMutationPending: false,
+        isError: false,
+        isSuccess: true,
+        managerWorkspace,
+    }),
+);
+
+export const managerMutationError = createAction<JourneyStatePayload>(
+    JourneyActionEnums.managerMutationError,
+    () => ({
+        isPending: false,
+        isMutationPending: false,
+        isError: true,
+        isSuccess: false,
+    }),
+);
+
 export const resetJourney = createAction<JourneyStatePayload>(
     JourneyActionEnums.resetJourney,
     () => ({
@@ -212,6 +290,7 @@ export const resetJourney = createAction<JourneyStatePayload>(
         isSuccess: false,
         journey: null,
         myJourney: null,
+        managerWorkspace: null,
         selectedTask: null,
     }),
 );

@@ -7,6 +7,7 @@ export type {
     IEnroleeJourneyTaskDetailDto,
     IGenerateDraftJourneyRequest,
     IJourneyDraftDto,
+    IManagerTaskWorkspaceDto,
     IUpdateJourneyTaskRequest,
 } from "@/types/journey";
 import type {
@@ -17,6 +18,7 @@ import type {
     IEnroleeJourneyTaskDetailDto,
     IGenerateDraftJourneyRequest,
     IJourneyDraftDto,
+    IManagerTaskWorkspaceDto,
     IUpdateJourneyTaskRequest,
 } from "@/types/journey";
 
@@ -28,12 +30,14 @@ export interface IJourneyStateContext {
     isMutationPending: boolean;
     journey?: IJourneyDraftDto | null;
     myJourney?: IEnroleeJourneyDashboardDto | null;
+    managerWorkspace?: IManagerTaskWorkspaceDto | null;
     selectedTask?: IEnroleeJourneyTaskDetailDto | null;
 }
 
 export interface IJourneyActionContext {
     getDraft: (hireId: string) => Promise<IJourneyDraftDto | null>;
     getMyJourney: () => Promise<IEnroleeJourneyDashboardDto | null>;
+    getManagerTasks: () => Promise<IManagerTaskWorkspaceDto | null>;
     getMyTask: (journeyTaskId: string) => Promise<IEnroleeJourneyTaskDetailDto | null>;
     acknowledgeMyTask: (
         payload: IAcknowledgeJourneyTaskRequest,
@@ -41,6 +45,7 @@ export interface IJourneyActionContext {
     completeMyTask: (
         payload: ICompleteJourneyTaskRequest,
     ) => Promise<IEnroleeJourneyTaskDetailDto | null>;
+    completeManagerTask: (payload: ICompleteJourneyTaskRequest) => Promise<IManagerTaskWorkspaceDto | null>;
     generateDraft: (payload: IGenerateDraftJourneyRequest) => Promise<IJourneyDraftDto | null>;
     updateTask: (
         hireId: string,
@@ -65,6 +70,7 @@ export const INITIAL_STATE: IJourneyStateContext = {
     isMutationPending: false,
     journey: null,
     myJourney: null,
+    managerWorkspace: null,
     selectedTask: null,
 };
 
