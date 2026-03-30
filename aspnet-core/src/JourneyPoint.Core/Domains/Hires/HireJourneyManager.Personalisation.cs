@@ -36,6 +36,7 @@ namespace JourneyPoint.Domains.Hires
             journeyTask.AcknowledgementRule = acknowledgementRule;
             journeyTask.DueDayOffset = EnsureDueDayOffset(dueDayOffset);
             journeyTask.DueOn = CalculateDueOn(hire.StartDate, journeyTask.DueDayOffset);
+            journeyTask.PersonalisedAt = DateTime.UtcNow;
         }
 
         private static void EnsurePersonalisationEligibleTaskForHire(Hire hire, Journey journey, JourneyTask journeyTask)

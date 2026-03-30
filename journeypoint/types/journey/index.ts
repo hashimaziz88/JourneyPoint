@@ -74,3 +74,64 @@ export interface IJourneyModuleGroup {
     moduleOrderIndex: number;
     tasks: IJourneyTaskReviewDto[];
 }
+
+export interface IEnroleeJourneyTaskListItemDto {
+    journeyTaskId: string;
+    title: string;
+    descriptionPreview: string;
+    dueOn: string;
+    status: JourneyTaskStatus;
+    acknowledgementRule: OnboardingTaskAcknowledgementRule;
+    acknowledgedAt?: string | null;
+    isOverdue: boolean;
+    isPersonalised: boolean;
+}
+
+export interface IEnroleeJourneyModuleGroupDto {
+    moduleKey: string;
+    moduleTitle: string;
+    moduleOrderIndex: number;
+    totalTaskCount: number;
+    completedTaskCount: number;
+    pendingTaskCount: number;
+    tasks: IEnroleeJourneyTaskListItemDto[];
+}
+
+export interface IEnroleeJourneyDashboardDto {
+    journeyId: string;
+    hireId: string;
+    status: JourneyStatus;
+    activatedAt?: string | null;
+    totalTaskCount: number;
+    completedTaskCount: number;
+    overdueTaskCount: number;
+    modules: IEnroleeJourneyModuleGroupDto[];
+}
+
+export interface IEnroleeJourneyTaskDetailDto {
+    journeyTaskId: string;
+    journeyId: string;
+    moduleTitle: string;
+    moduleOrderIndex: number;
+    taskOrderIndex: number;
+    title: string;
+    description: string;
+    dueOn: string;
+    status: JourneyTaskStatus;
+    acknowledgementRule: OnboardingTaskAcknowledgementRule;
+    acknowledgedAt?: string | null;
+    completedAt?: string | null;
+    isOverdue: boolean;
+    isPersonalised: boolean;
+    personalisedAt?: string | null;
+    canAcknowledge: boolean;
+    canComplete: boolean;
+}
+
+export interface IAcknowledgeJourneyTaskRequest {
+    journeyTaskId: string;
+}
+
+export interface ICompleteJourneyTaskRequest {
+    journeyTaskId: string;
+}

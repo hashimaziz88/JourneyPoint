@@ -27,7 +27,7 @@ const ModulePanel: React.FC<IModulePanelProps> = ({
 
     return (
         <Card className={styles.moduleCard}>
-            <Space direction="vertical" size={16} className={styles.modulesWrap}>
+            <Space orientation="vertical" size={16} className={styles.modulesWrap}>
                 <div className={styles.moduleHeader}>
                     <div>
                         <Title level={4}>Module {module.orderIndex}</Title>

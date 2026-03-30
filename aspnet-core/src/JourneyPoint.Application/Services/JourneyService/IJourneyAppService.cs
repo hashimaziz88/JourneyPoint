@@ -21,6 +21,26 @@ namespace JourneyPoint.Application.Services.JourneyService
         Task<JourneyDraftDto> GetDraftAsync(Guid hireId);
 
         /// <summary>
+        /// Returns the active journey dashboard for the signed-in enrolee.
+        /// </summary>
+        Task<EnroleeJourneyDashboardDto> GetMyJourneyAsync();
+
+        /// <summary>
+        /// Returns one detailed participant task view for the signed-in enrolee.
+        /// </summary>
+        Task<EnroleeJourneyTaskDetailDto> GetMyTaskAsync(Guid journeyTaskId);
+
+        /// <summary>
+        /// Records acknowledgement for one participant task when required.
+        /// </summary>
+        Task<EnroleeJourneyTaskDetailDto> AcknowledgeMyTaskAsync(AcknowledgeJourneyTaskRequest input);
+
+        /// <summary>
+        /// Completes one participant task after all checks succeed.
+        /// </summary>
+        Task<EnroleeJourneyTaskDetailDto> CompleteMyTaskAsync(CompleteJourneyTaskRequest input);
+
+        /// <summary>
         /// Updates one draft journey task snapshot during facilitator review.
         /// </summary>
         Task<JourneyTaskReviewDto> UpdateTaskAsync(Guid journeyTaskId, UpdateJourneyTaskRequest input);

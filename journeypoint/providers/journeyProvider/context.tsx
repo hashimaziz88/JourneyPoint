@@ -1,12 +1,20 @@
 import { createContext } from "react";
 export type {
     IAddJourneyTaskRequest,
+    IAcknowledgeJourneyTaskRequest,
+    ICompleteJourneyTaskRequest,
+    IEnroleeJourneyDashboardDto,
+    IEnroleeJourneyTaskDetailDto,
     IGenerateDraftJourneyRequest,
     IJourneyDraftDto,
     IUpdateJourneyTaskRequest,
 } from "@/types/journey";
 import type {
     IAddJourneyTaskRequest,
+    IAcknowledgeJourneyTaskRequest,
+    ICompleteJourneyTaskRequest,
+    IEnroleeJourneyDashboardDto,
+    IEnroleeJourneyTaskDetailDto,
     IGenerateDraftJourneyRequest,
     IJourneyDraftDto,
     IUpdateJourneyTaskRequest,
@@ -19,10 +27,20 @@ export interface IJourneyStateContext {
     isDetailPending: boolean;
     isMutationPending: boolean;
     journey?: IJourneyDraftDto | null;
+    myJourney?: IEnroleeJourneyDashboardDto | null;
+    selectedTask?: IEnroleeJourneyTaskDetailDto | null;
 }
 
 export interface IJourneyActionContext {
     getDraft: (hireId: string) => Promise<IJourneyDraftDto | null>;
+    getMyJourney: () => Promise<IEnroleeJourneyDashboardDto | null>;
+    getMyTask: (journeyTaskId: string) => Promise<IEnroleeJourneyTaskDetailDto | null>;
+    acknowledgeMyTask: (
+        payload: IAcknowledgeJourneyTaskRequest,
+    ) => Promise<IEnroleeJourneyTaskDetailDto | null>;
+    completeMyTask: (
+        payload: ICompleteJourneyTaskRequest,
+    ) => Promise<IEnroleeJourneyTaskDetailDto | null>;
     generateDraft: (payload: IGenerateDraftJourneyRequest) => Promise<IJourneyDraftDto | null>;
     updateTask: (
         hireId: string,
@@ -46,6 +64,8 @@ export const INITIAL_STATE: IJourneyStateContext = {
     isDetailPending: false,
     isMutationPending: false,
     journey: null,
+    myJourney: null,
+    selectedTask: null,
 };
 
 export const JourneyStateContext = createContext<IJourneyStateContext>(INITIAL_STATE);

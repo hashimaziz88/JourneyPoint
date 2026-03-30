@@ -44,7 +44,7 @@ const JourneyTaskEditorModal: React.FC<IJourneyTaskEditorModalProps> = ({
             title={task ? "Edit Draft Task" : "Add Draft Task"}
             open={isOpen}
             onCancel={onCancel}
-            destroyOnClose
+            destroyOnHidden
             footer={[
                 <Button key="cancel" onClick={onCancel}>
                     Cancel

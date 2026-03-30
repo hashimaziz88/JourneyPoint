@@ -72,5 +72,7 @@ namespace JourneyPoint.Domains.Hires
         public DateTime? CompletedAt { get; set; }
 
         public long? CompletedByUserId { get; set; }
+
+        public DateTime? PersonalisedAt { get; set; }
     }
 }

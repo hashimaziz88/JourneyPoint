@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.Authorization;
 using Abp.Domain.Entities;
 using JourneyPoint.Application.Services.GroqService;
 using JourneyPoint.Application.Services.JourneyService.Dto;
+using JourneyPoint.Authorization;
 using JourneyPoint.Domains.Audit;
 using JourneyPoint.Domains.Hires;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +21,7 @@ namespace JourneyPoint.Application.Services.JourneyService
         /// <summary>
         /// Requests diff-ready AI personalisation revisions for one journey.
         /// </summary>
+        [AbpAuthorize(PermissionNames.Pages_JourneyPoint_Facilitator, PermissionNames.Pages_JourneyPoint_TenantAdmin)]
         public async Task<JourneyPersonalisationProposalDto> RequestPersonalisationAsync(
             RequestJourneyPersonalisationRequest input)
         {
@@ -47,6 +50,7 @@ namespace JourneyPoint.Application.Services.JourneyService
         /// <summary>
         /// Applies selected AI personalisation revisions to one journey.
         /// </summary>
+        [AbpAuthorize(PermissionNames.Pages_JourneyPoint_Facilitator, PermissionNames.Pages_JourneyPoint_TenantAdmin)]
         public async Task<JourneyDraftDto> ApplyPersonalisationAsync(
             ApplyJourneyPersonalisationRequest input)
         {

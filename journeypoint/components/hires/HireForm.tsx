@@ -48,7 +48,7 @@ const HireForm: React.FC<IHireFormProps> = ({
             title="Enrol Hire"
             open={isOpen}
             onCancel={onCancel}
-            destroyOnClose
+            destroyOnHidden
             footer={[
                 <Button key="cancel" onClick={onCancel}>
                     Cancel

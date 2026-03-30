@@ -8,9 +8,21 @@ export const JourneyReducer = handleActions<IJourneyStateContext, Partial<IJourn
         [JourneyActionEnums.getJourneySuccess]: (state, action) => ({ ...state, ...action.payload }),
         [JourneyActionEnums.getJourneyError]: (state, action) => ({ ...state, ...action.payload }),
 
+        [JourneyActionEnums.getMyJourneyPending]: (state, action) => ({ ...state, ...action.payload }),
+        [JourneyActionEnums.getMyJourneySuccess]: (state, action) => ({ ...state, ...action.payload }),
+        [JourneyActionEnums.getMyJourneyError]: (state, action) => ({ ...state, ...action.payload }),
+
+        [JourneyActionEnums.getMyTaskPending]: (state, action) => ({ ...state, ...action.payload }),
+        [JourneyActionEnums.getMyTaskSuccess]: (state, action) => ({ ...state, ...action.payload }),
+        [JourneyActionEnums.getMyTaskError]: (state, action) => ({ ...state, ...action.payload }),
+
         [JourneyActionEnums.mutationPending]: (state, action) => ({ ...state, ...action.payload }),
         [JourneyActionEnums.mutationSuccess]: (state, action) => ({ ...state, ...action.payload }),
         [JourneyActionEnums.mutationError]: (state, action) => ({ ...state, ...action.payload }),
+
+        [JourneyActionEnums.participantMutationPending]: (state, action) => ({ ...state, ...action.payload }),
+        [JourneyActionEnums.participantMutationSuccess]: (state, action) => ({ ...state, ...action.payload }),
+        [JourneyActionEnums.participantMutationError]: (state, action) => ({ ...state, ...action.payload }),
 
         [JourneyActionEnums.resetJourney]: (state, action) => ({ ...state, ...action.payload }),
     },

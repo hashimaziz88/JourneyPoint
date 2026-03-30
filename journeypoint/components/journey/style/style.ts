@@ -53,13 +53,30 @@ export const useStyles = createStyles(({ css, token }) => ({
         width: 100%;
     `,
 
+    participantModuleBody: css`
+        width: 100%;
+    `,
+
     taskList: css`
         display: grid;
         gap: 12px;
         width: 100%;
     `,
 
+    participantTaskList: css`
+        display: grid;
+        gap: 12px;
+        width: 100%;
+    `,
+
     taskCard: css`
+        border: 1px solid ${token.colorBorderSecondary};
+        border-radius: 12px;
+        padding: 16px;
+        background: ${token.colorBgContainer};
+    `,
+
+    participantTaskCard: css`
         border: 1px solid ${token.colorBorderSecondary};
         border-radius: 12px;
         padding: 16px;
@@ -74,10 +91,50 @@ export const useStyles = createStyles(({ css, token }) => ({
         width: 100%;
     `,
 
+    participantTaskHeader: css`
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        width: 100%;
+
+        @media (max-width: 768px) {
+            flex-direction: column;
+        }
+    `,
+
+    taskHeading: css`
+        margin-bottom: 8px !important;
+    `,
+
+    taskPreview: css`
+        margin-bottom: 12px !important;
+    `,
+
+    taskLink: css`
+        color: ${token.colorPrimary};
+        font-weight: 500;
+    `,
+
     taskMetaTags: css`
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
+    `,
+
+    moduleProgressRow: css`
+        display: grid;
+        grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+        gap: 16px;
+        align-items: center;
+
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+        }
+    `,
+
+    progressBar: css`
+        width: 100%;
     `,
 
     taskActions: css`
@@ -95,6 +152,28 @@ export const useStyles = createStyles(({ css, token }) => ({
     emptyState: css`
         width: 100%;
         padding: 48px 0;
+    `,
+
+    inlineParagraph: css`
+        margin-bottom: 0 !important;
+    `,
+
+    detailBody: css`
+        white-space: pre-wrap;
+        margin-bottom: 0 !important;
+    `,
+
+    backLink: css`
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        color: ${token.colorPrimary};
+        font-weight: 500;
+    `,
+
+    fullWidthStack: css`
+        width: 100%;
     `,
 
     formGrid: css`

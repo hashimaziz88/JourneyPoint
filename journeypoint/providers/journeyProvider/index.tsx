@@ -3,15 +3,28 @@
 import React, { useContext, useReducer } from "react";
 import { getAxiosInstance } from "@/utils/axiosInstance";
 import {
+    getMyJourneyError,
+    getMyJourneyPending,
+    getMyJourneySuccess,
+    getMyTaskError,
+    getMyTaskPending,
+    getMyTaskSuccess,
     getJourneyError,
     getJourneyPending,
     getJourneySuccess,
     mutationError,
     mutationPending,
     mutationSuccess,
+    participantMutationError,
+    participantMutationPending,
+    participantMutationSuccess,
     resetJourney as resetJourneyAction,
 } from "./actions";
 import {
+    type IAcknowledgeJourneyTaskRequest,
+    type ICompleteJourneyTaskRequest,
+    type IEnroleeJourneyDashboardDto,
+    type IEnroleeJourneyTaskDetailDto,
     INITIAL_STATE,
     JourneyActionContext,
     JourneyStateContext,
@@ -26,8 +39,19 @@ import { JourneyReducer } from "./reducer";
 
 const JOURNEY_API_BASE = "/api/services/app/Journey";
 
-const getApiResult = <T,>(response: { data?: { result?: T } & T }): T =>
-    response.data?.result ?? (response.data as T);
+const getApiResult = <T,>(response: { data?: { result?: T } | T }): T => {
+    const { data } = response;
+
+    if (
+        data &&
+        typeof data === "object" &&
+        "result" in (data as Record<string, unknown>)
+    ) {
+        return (data as { result?: T }).result as T;
+    }
+
+    return data as T;
+};
 
 /**
  * Provides facilitator journey generation, review, and activation state.
@@ -49,6 +73,42 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         } catch (error) {
             console.error(error);
             dispatch(getJourneyError());
+            return null;
+        }
+    };
+
+    const getMyJourney = async (): Promise<IEnroleeJourneyDashboardDto | null> => {
+        dispatch(getMyJourneyPending());
+
+        try {
+            const response = await getAxiosInstance().get(`${JOURNEY_API_BASE}/GetMyJourney`);
+            const myJourney = getApiResult<IEnroleeJourneyDashboardDto | null>(response);
+
+            dispatch(getMyJourneySuccess(myJourney));
+            return myJourney;
+        } catch (error) {
+            console.error(error);
+            dispatch(getMyJourneyError());
+            return null;
+        }
+    };
+
+    const getMyTask = async (
+        journeyTaskId: string,
+    ): Promise<IEnroleeJourneyTaskDetailDto | null> => {
+        dispatch(getMyTaskPending());
+
+        try {
+            const response = await getAxiosInstance().get(`${JOURNEY_API_BASE}/GetMyTask`, {
+                params: { journeyTaskId },
+            });
+            const selectedTask = getApiResult<IEnroleeJourneyTaskDetailDto>(response);
+
+            dispatch(getMyTaskSuccess(selectedTask));
+            return selectedTask;
+        } catch (error) {
+            console.error(error);
+            dispatch(getMyTaskError());
             return null;
         }
     };
@@ -164,6 +224,58 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
     };
 
+    const refreshMyJourneyState = async (
+        journeyTaskId: string,
+    ): Promise<IEnroleeJourneyTaskDetailDto | null> => {
+        try {
+            const [myJourneyResponse, taskResponse] = await Promise.all([
+                getAxiosInstance().get(`${JOURNEY_API_BASE}/GetMyJourney`),
+                getAxiosInstance().get(`${JOURNEY_API_BASE}/GetMyTask`, {
+                    params: { journeyTaskId },
+                }),
+            ]);
+            const myJourney = getApiResult<IEnroleeJourneyDashboardDto | null>(myJourneyResponse);
+            const selectedTask = getApiResult<IEnroleeJourneyTaskDetailDto>(taskResponse);
+
+            dispatch(participantMutationSuccess({ myJourney, selectedTask }));
+            return selectedTask;
+        } catch (error) {
+            console.error(error);
+            dispatch(participantMutationError());
+            return null;
+        }
+    };
+
+    const acknowledgeMyTask = async (
+        payload: IAcknowledgeJourneyTaskRequest,
+    ): Promise<IEnroleeJourneyTaskDetailDto | null> => {
+        dispatch(participantMutationPending());
+
+        try {
+            await getAxiosInstance().post(`${JOURNEY_API_BASE}/AcknowledgeMyTask`, payload);
+            return await refreshMyJourneyState(payload.journeyTaskId);
+        } catch (error) {
+            console.error(error);
+            dispatch(participantMutationError());
+            return null;
+        }
+    };
+
+    const completeMyTask = async (
+        payload: ICompleteJourneyTaskRequest,
+    ): Promise<IEnroleeJourneyTaskDetailDto | null> => {
+        dispatch(participantMutationPending());
+
+        try {
+            await getAxiosInstance().post(`${JOURNEY_API_BASE}/CompleteMyTask`, payload);
+            return await refreshMyJourneyState(payload.journeyTaskId);
+        } catch (error) {
+            console.error(error);
+            dispatch(participantMutationError());
+            return null;
+        }
+    };
+
     const resetJourney = (): void => {
         dispatch(resetJourneyAction());
     };
@@ -173,6 +285,10 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
             <JourneyActionContext.Provider
                 value={{
                     getDraft,
+                    getMyJourney,
+                    getMyTask,
+                    acknowledgeMyTask,
+                    completeMyTask,
                     generateDraft,
                     updateTask,
                     addTask,
