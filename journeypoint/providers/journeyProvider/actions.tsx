@@ -1,11 +1,14 @@
 import { createAction } from "redux-actions";
+import { buildInitialPersonalisationDecisions } from "@/utils/journey/personalisation";
 import type {
     IEnroleeJourneyDashboardDto,
     IEnroleeJourneyTaskDetailDto,
     IJourneyDraftDto,
+    IJourneyPersonalisationDecisionItem,
+    IJourneyPersonalisationProposalDto,
     IManagerTaskWorkspaceDto,
-    IJourneyStateContext,
-} from "./context";
+} from "@/types/journey";
+import type { IJourneyStateContext } from "./context";
 
 type JourneyStatePayload = Partial<IJourneyStateContext>;
 
@@ -37,6 +40,12 @@ export enum JourneyActionEnums {
     managerMutationPending = "MANAGER_MUTATION_PENDING",
     managerMutationSuccess = "MANAGER_MUTATION_SUCCESS",
     managerMutationError = "MANAGER_MUTATION_ERROR",
+
+    personalisationPending = "PERSONALISATION_PENDING",
+    personalisationRequestSuccess = "PERSONALISATION_REQUEST_SUCCESS",
+    personalisationError = "PERSONALISATION_ERROR",
+    setPersonalisationDecisions = "SET_PERSONALISATION_DECISIONS",
+    clearPersonalisationReview = "CLEAR_PERSONALISATION_REVIEW",
 
     resetJourney = "RESET_JOURNEY",
 }
@@ -196,6 +205,8 @@ export const mutationSuccess = createAction<JourneyStatePayload, IJourneyDraftDt
         isError: false,
         isSuccess: true,
         journey,
+        personalisationProposal: null,
+        personalisationDecisions: [],
     }),
 );
 
@@ -280,17 +291,72 @@ export const managerMutationError = createAction<JourneyStatePayload>(
     }),
 );
 
+export const personalisationPending = createAction<JourneyStatePayload>(
+    JourneyActionEnums.personalisationPending,
+    () => ({
+        isPersonalisationPending: true,
+        isError: false,
+        isSuccess: false,
+    }),
+);
+
+export const personalisationRequestSuccess = createAction<
+    JourneyStatePayload,
+    IJourneyPersonalisationProposalDto
+>(
+    JourneyActionEnums.personalisationRequestSuccess,
+    (personalisationProposal) => ({
+        isPersonalisationPending: false,
+        isError: false,
+        isSuccess: true,
+        personalisationProposal,
+        personalisationDecisions:
+            buildInitialPersonalisationDecisions(personalisationProposal),
+    }),
+);
+
+export const personalisationError = createAction<JourneyStatePayload>(
+    JourneyActionEnums.personalisationError,
+    () => ({
+        isPersonalisationPending: false,
+        isError: true,
+        isSuccess: false,
+    }),
+);
+
+export const setPersonalisationDecisions = createAction<
+    JourneyStatePayload,
+    IJourneyPersonalisationDecisionItem[]
+>(
+    JourneyActionEnums.setPersonalisationDecisions,
+    (personalisationDecisions) => ({
+        personalisationDecisions,
+    }),
+);
+
+export const clearPersonalisationReview = createAction<JourneyStatePayload>(
+    JourneyActionEnums.clearPersonalisationReview,
+    () => ({
+        isPersonalisationPending: false,
+        personalisationProposal: null,
+        personalisationDecisions: [],
+    }),
+);
+
 export const resetJourney = createAction<JourneyStatePayload>(
     JourneyActionEnums.resetJourney,
     () => ({
         isPending: false,
         isDetailPending: false,
         isMutationPending: false,
+        isPersonalisationPending: false,
         isError: false,
         isSuccess: false,
         journey: null,
         myJourney: null,
         managerWorkspace: null,
         selectedTask: null,
+        personalisationProposal: null,
+        personalisationDecisions: [],
     }),
 );

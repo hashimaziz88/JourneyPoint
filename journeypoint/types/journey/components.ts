@@ -1,5 +1,6 @@
 import type {
     IAddJourneyTaskRequest,
+    IJourneyTaskPersonalisationDiffDto,
     IEnroleeJourneyDashboardDto,
     IEnroleeJourneyModuleGroupDto,
     IEnroleeJourneyTaskDetailDto,
@@ -11,6 +12,7 @@ import type {
     IJourneyModuleGroup,
     IJourneyTaskReviewDto,
     IUpdateJourneyTaskRequest,
+    JourneyPersonalisationDecision,
 } from "@/types/journey";
 
 export interface IJourneyReviewViewProps {
@@ -20,6 +22,7 @@ export interface IJourneyReviewViewProps {
 export interface IJourneyTaskListProps {
     isEditable: boolean;
     isMutationPending: boolean;
+    highlightedTaskIds?: string[];
     modules: IJourneyModuleGroup[];
     onEditTask: (task: IJourneyTaskReviewDto) => void;
     onRemoveTask: (task: IJourneyTaskReviewDto) => Promise<void>;
@@ -75,4 +78,17 @@ export interface IManagerDirectReportSectionProps {
     directReport: IManagerDirectReportTaskGroupDto;
     isMutationPending: boolean;
     onComplete: (task: IManagerAssignedTaskDto) => Promise<void>;
+}
+
+export interface IPersonalisationDiffProps {
+    hireId: string;
+}
+
+export interface IPersonalisationDiffCardProps {
+    diff: IJourneyTaskPersonalisationDiffDto;
+    decision: JourneyPersonalisationDecision;
+    onDecisionChange: (
+        journeyTaskId: string,
+        decision: JourneyPersonalisationDecision,
+    ) => void;
 }

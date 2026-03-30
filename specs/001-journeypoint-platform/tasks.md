@@ -174,7 +174,7 @@ review AI-generated journey revisions before applying them.
 - [x] T040 [US4] Extend journey application services for diff review and selective acceptance in `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/`
 - [x] T041 [P] [US4] Build enrolee journey pages in `journeypoint/app/(enrolee)/my-journey/page.tsx` and `journeypoint/app/(enrolee)/my-journey/tasks/[taskId]/page.tsx`
 - [x] T042 [P] [US4] Build manager task page in `journeypoint/app/(manager)/my-tasks/page.tsx`
-- [ ] T043 [P] [US4] Add participant components in `journeypoint/components/journey/PersonalisationDiff.tsx` and `journeypoint/components/journey/JourneyTaskList.tsx`
+- [x] T043 [P] [US4] Add participant components in `journeypoint/components/journey/PersonalisationDiff.tsx` and `journeypoint/components/journey/JourneyTaskList.tsx`
 - [ ] T044 [US4] Add manager and enrolee action handling in `journeypoint/providers/journeyProvider/` and `journeypoint/providers/userProvider/`
 
 **Checkpoint**: Participant workspaces and AI review flow are demonstrable.
