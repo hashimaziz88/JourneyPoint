@@ -550,6 +550,79 @@ JourneyPoint has three primary domain areas:
 7. Apply AI personalisation to a pending task, reload the enrolee dashboard,
    and confirm the personalised indicator persists from durable task metadata.
 
+### FacilitatorJourneyPersonalisationReviewState (Transient Frontend Contract)
+
+- Purpose: hold one facilitator-reviewed AI personalisation proposal alongside
+  the existing journey review workspace
+- Core fields:
+  - generation log id
+  - journey id
+  - requested at
+  - summary
+  - per-task diff items
+  - selected journey task ids
+  - rejected journey task ids or equivalent explicit selection state
+  - applyable accepted count
+- Validation:
+  - proposal state is transient and lives only in typed provider state during a
+    facilitator review session
+  - selections default to unreviewed or not accepted until the facilitator
+    explicitly accepts a task diff
+  - rejected or untouched diffs must not be included in the apply request
+  - clearing the review or successfully applying accepted diffs drops the local
+    proposal state and reloads the authoritative backend journey snapshot
+
+### FacilitatorJourneyTaskDiffReview (Transient Frontend Contract)
+
+- Purpose: represent one facilitator-visible before/after review card for an AI
+  task revision
+- Core fields:
+  - journey task id
+  - module title
+  - task order index
+  - baseline snapshot timestamp
+  - changed field list
+  - current field values
+  - proposed field values
+  - rationale
+  - acceptance status
+- Validation:
+  - cards are derived directly from `JourneyTaskPersonalisationDiffDto`
+  - only diffs with at least one changed field should render in the review list
+  - acceptance state is UI-only until the facilitator invokes apply
+
+### JP-023 Planned Frontend Files
+
+- `journeypoint/app/(facilitator)/facilitator/hires/[hireId]/journey/page.tsx`
+- `journeypoint/components/journey/JourneyReviewView.tsx`
+- `journeypoint/components/journey/PersonalisationDiff.tsx`
+- `journeypoint/components/journey/PersonalisationDiffCard.tsx`
+- `journeypoint/providers/journeyProvider/actions.tsx`
+- `journeypoint/providers/journeyProvider/context.tsx`
+- `journeypoint/providers/journeyProvider/index.tsx`
+- `journeypoint/providers/journeyProvider/reducer.tsx`
+- `journeypoint/components/journey/style/style.ts`
+- `journeypoint/types/journey/index.ts`
+- `journeypoint/types/journey/components.ts`
+- `journeypoint/constants/journey/personalisation.ts`
+- `journeypoint/utils/journey/personalisation.ts`
+
+### JP-023 Validation Steps
+
+1. Open the facilitator journey review route for a same-tenant draft or active
+   journey and request AI personalisation.
+2. Confirm the page renders one proposal summary plus per-task before/after
+   diff cards with changed-field cues and rationale instead of raw JSON.
+3. Accept some task diffs, reject others, and confirm the apply action counts
+   only the accepted selections.
+4. Apply the accepted subset and confirm only those pending journey tasks
+   change while rejected or untouched diffs do not.
+5. Confirm the proposal state clears or refreshes after apply so the screen
+   reflects the authoritative backend draft rather than stale selections.
+6. Trigger a request that returns no valid diffs or a backend error and confirm
+   the UI surfaces a clear empty or failure state without breaking the existing
+   draft-review workflow.
+
 ## Engagement Intelligence and Intervention
 
 ### EngagementSnapshot

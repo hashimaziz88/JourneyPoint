@@ -74,6 +74,18 @@ participant DTOs and active-journey actions, plus
 `journeypoint/providers/journeyProvider/`, and dedicated journey component,
 type, constant, util, and style modules in the Next.js frontend.
 
+The current planning increment for JP-023 focuses milestone 4 facilitator UI
+delivery for AI personalisation review on top of the existing journey review
+route and JP-020 backend endpoints. This slice will embed a clear before/after
+diff workspace into the facilitator journey review screen, keep proposal and
+selection state transient inside the typed `journeyProvider`, allow explicit
+per-task accept or reject decisions, and submit only facilitator-approved
+revisions back to the backend before rehydrating the authoritative journey
+snapshot. The minimal file surface stays in
+ `journeypoint/app/(facilitator)/facilitator/hires/[hireId]/journey/page.tsx`,
+ `journeypoint/components/journey/`, `journeypoint/providers/journeyProvider/`,
+ and dedicated `types/`, `constants/`, and `utils/` journey modules.
+
 ### JP-020 Primary Risks
 
 - Long journeys can produce oversized prompts or slow Groq responses, so the
@@ -97,6 +109,19 @@ type, constant, util, and style modules in the Next.js frontend.
 - Acknowledgement and completion must be enforced server-side against tenant,
   assignee, journey-status, and task-status rules; disabling buttons in the UI
   alone would not protect role-safe task execution.
+
+### JP-023 Primary Risks
+
+- Personalisation responses can contain many task diffs, so the facilitator
+  review UI must stay scannable by grouping changes per task with clear
+  before/after presentation instead of rendering one overwhelming free-form
+  block.
+- The returned proposal is transient, so provider state must keep acceptance
+  and rejection selections separate from the authoritative journey draft to
+  avoid accidental local mutation of review data before apply succeeds.
+- Apply actions must submit only accepted diffs and then refresh the backend
+  draft state; otherwise stale proposal state can linger on-screen after the
+  journey snapshot has already changed.
 
 ## Technical Context
 

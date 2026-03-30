@@ -122,13 +122,15 @@ Expected result:
 6. Attempt to access another participant's task id and confirm the backend
    rejects the request.
 7. Sign in as a manager and complete a manager-assigned task.
-8. Trigger AI personalisation as a facilitator for a same-tenant draft or
-   active journey and confirm the response returns a diff preview without
-   mutating any tasks yet.
-9. Review the returned per-task diff and apply only a subset of the proposed
-   changes.
-10. Confirm only the selected pending task snapshots change, while unselected
-    tasks and source onboarding templates remain unchanged.
+8. Open the facilitator journey review page, trigger AI personalisation for a
+   same-tenant draft or active journey, and confirm the response renders a
+   clear per-task before/after diff review state without mutating any tasks
+   yet.
+9. Accept some task diffs, reject others, and confirm the apply action reflects
+   only the accepted selection count.
+10. Apply the accepted subset and confirm only the selected pending task
+    snapshots change, while rejected or unselected diffs and source onboarding
+    templates remain unchanged.
 11. Reload the enrolee dashboard after an applied AI revision and confirm the
     personalised indicator persists on the affected task.
 12. Re-run the flow after manually editing a task between request and apply, and
