@@ -135,3 +135,44 @@ export interface IAcknowledgeJourneyTaskRequest {
 export interface ICompleteJourneyTaskRequest {
     journeyTaskId: string;
 }
+
+export interface IManagerAssignedTaskDto {
+    journeyTaskId: string;
+    journeyId: string;
+    hireId: string;
+    hireFullName: string;
+    roleTitle?: string | null;
+    department?: string | null;
+    moduleTitle: string;
+    moduleOrderIndex: number;
+    taskOrderIndex: number;
+    title: string;
+    description: string;
+    dueOn: string;
+    status: JourneyTaskStatus;
+    completedAt?: string | null;
+    isOverdue: boolean;
+    isPersonalised: boolean;
+    personalisedAt?: string | null;
+    canComplete: boolean;
+}
+
+export interface IManagerDirectReportTaskGroupDto {
+    hireId: string;
+    journeyId: string;
+    hireFullName: string;
+    roleTitle?: string | null;
+    department?: string | null;
+    pendingTaskCount: number;
+    completedTaskCount: number;
+    tasks: IManagerAssignedTaskDto[];
+}
+
+export interface IManagerTaskWorkspaceDto {
+    directReportCount: number;
+    totalTaskCount: number;
+    pendingTaskCount: number;
+    completedTaskCount: number;
+    overdueTaskCount: number;
+    directReports: IManagerDirectReportTaskGroupDto[];
+}
