@@ -1,20 +1,58 @@
 "use client";
 
-import React from "react";
-import WorkspaceOverview from "@/layout/WorkspaceOverview";
-import withAuth from "@/hoc/withAuth";
+import React, { useEffect, useEffectEvent } from "react";
+import ManagerTaskWorkspaceView from "@/components/journey/ManagerTaskWorkspaceView";
 import { APP_PERMISSIONS, APP_ROLE_NAMES } from "@/constants/auth/permissions";
+import withAuth from "@/hoc/withAuth";
+import {
+    JourneyProvider,
+    useJourneyActions,
+    useJourneyState,
+} from "@/providers/journeyProvider";
+
+const ManagerMyTasksContent: React.FC = () => {
+    const { completeManagerTask, getManagerTasks, resetJourney } = useJourneyActions();
+    const { isDetailPending, isMutationPending, managerWorkspace } = useJourneyState();
+
+    const loadWorkspace = useEffectEvent(async (): Promise<void> => {
+        await getManagerTasks();
+    });
+
+    const clearWorkspace = useEffectEvent((): void => {
+        resetJourney();
+    });
+
+    useEffect(() => {
+        void loadWorkspace();
+
+        return () => {
+            clearWorkspace();
+        };
+    }, []);
+
+    return (
+        <ManagerTaskWorkspaceView
+            workspace={managerWorkspace}
+            isPending={isDetailPending}
+            isMutationPending={isMutationPending}
+            onRefresh={async () => {
+                await getManagerTasks();
+            }}
+            onComplete={async (journeyTaskId) => {
+                const result = await completeManagerTask({ journeyTaskId });
+                return Boolean(result);
+            }}
+        />
+    );
+};
 
 const ManagerMyTasksPage: React.FC = () => (
-  <WorkspaceOverview
-    title="Manager Task Workspace"
-    description="Managers are now routed into a dedicated workspace where their role-specific task surface will be added without exposing admin or facilitator views."
-    currentFocus="Role-safe access and workspace routing are in place for manager accounts."
-    nextMilestoneHint="Upcoming work will connect direct-report task lists and completion flows to this route."
-  />
+    <JourneyProvider>
+        <ManagerMyTasksContent />
+    </JourneyProvider>
 );
 
 export default withAuth(ManagerMyTasksPage, {
-  requiredPermission: APP_PERMISSIONS.manager,
-  allowedRoles: [APP_ROLE_NAMES.manager],
+    requiredPermission: APP_PERMISSIONS.manager,
+    allowedRoles: [APP_ROLE_NAMES.manager],
 });
