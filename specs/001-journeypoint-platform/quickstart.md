@@ -140,11 +140,17 @@ Expected result:
 
 ### Milestone 5 - Intelligence and Interventions
 
-1. Open the pipeline and confirm scores are computed.
-2. Open a hire detail view and confirm historical snapshots appear.
-3. Acknowledge and resolve an at-risk flag while preserving the intervention
-   record.
-4. Confirm touched backend and frontend surfaces still satisfy the package-wide
+1. Open the pipeline and confirm engagement computation appends a fresh
+   snapshot instead of overwriting prior history.
+2. Open a hire detail view and confirm historical snapshots appear in
+   chronological order for the same hire and journey.
+3. Drive a hire below the at-risk threshold and confirm one unresolved flag is
+   raised with the original classification and raised-at context preserved.
+4. Acknowledge the active flag and confirm the record shows acknowledgement
+   metadata without being resolved yet.
+5. Resolve the flag and confirm the same record now includes resolution
+   metadata while preserving the original raised and acknowledged history.
+6. Confirm touched backend and frontend surfaces still satisfy the package-wide
    engineering standards listed above.
 
 ## Seed Data Expectations

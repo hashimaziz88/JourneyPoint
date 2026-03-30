@@ -627,20 +627,94 @@ JourneyPoint has three primary domain areas:
 
 ### EngagementSnapshot
 
-- Purpose: append-only history for scores and trend chart rendering
-- Core fields: hire id, journey id, completion rate, days since last activity,
-  overdue count, composite score, classification, computed at
+- Purpose: append-only engagement history for scoring, trend charts, and
+  facilitator intelligence views
+- Core fields:
+  - tenant id
+  - hire id
+  - journey id
+  - completion rate
+  - days since last activity
+  - overdue task count
+  - composite score
+  - classification
+  - computed at
+- Validation:
+  - every snapshot belongs to the same tenant as the referenced hire and
+    journey
+  - snapshots are append-only and are never updated in place to represent a
+    later computation
+  - `ComputedAt` reflects the time of the scoring run and is required
+  - `CompositeScore` must stay within the scoring range defined by the later
+    engagement service
+  - a snapshot may be recorded only for an existing hire and its linked journey
 - Relationships:
   - many-to-one with `Hire`
   - many-to-one with `Journey`
 
 ### AtRiskFlag
 
-- Purpose: facilitator intervention record for disengaged hires
-- Core fields: hire id, raised at, classification at raise, acknowledged by
-  user id, acknowledged at, intervention notes, resolved at, resolution type
+- Lifecycle: Active -> Acknowledged -> Resolved
+- Purpose: durable facilitator intervention record for disengaged hires
+- Core fields:
+  - tenant id
+  - hire id
+  - journey id
+  - raised at
+  - classification at raise
+  - current status
+  - acknowledged by user id
+  - acknowledged at
+  - acknowledgement notes
+  - resolved by user id
+  - resolved at
+  - resolution type
+  - resolution notes
+- Validation:
+  - every flag belongs to the same tenant as the referenced hire and journey
+  - only one unresolved flag may exist per hire at a time in the initial M5
+    slice
+  - acknowledgement fields remain null until a facilitator explicitly
+    acknowledges the active flag
+  - resolution fields remain null until the flag is resolved manually or
+    automatically
+  - resolving a flag preserves the record and must not delete or overwrite the
+    original raised-at context
 - Relationships:
   - many-to-one with `Hire`
+  - many-to-one with `Journey`
+
+### AtRiskFlagStatus
+
+- Lifecycle: Active -> Acknowledged -> Resolved
+- Purpose: distinguish an unresolved risk signal from one that has been seen by
+  a facilitator and one that has been fully resolved
+
+### AtRiskResolutionType
+
+- Purpose: classify how an at-risk episode ended, such as manual facilitator
+  resolution or automatic recovery after the hire returned to a healthy score
+
+### JP-025 Planned Domain Files
+
+- `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementSnapshot.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/AtRiskFlag.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/AtRiskFlagStatus.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/AtRiskResolutionType.cs`
+
+### JP-025 Validation Steps
+
+1. Create two engagement snapshots for the same hire and journey and confirm
+   both rows persist in chronological history rather than overwriting the prior
+   computation.
+2. Confirm every snapshot and at-risk flag record carries the same tenant
+   ownership as the referenced hire and journey.
+3. Raise an at-risk flag for a hire and confirm a second unresolved flag cannot
+   be created until the first one has been resolved.
+4. Acknowledge an active flag and confirm acknowledgement metadata is recorded
+   without resolving the intervention.
+5. Resolve the flag and confirm the record keeps its original raised-at and
+   acknowledgement context while adding resolution metadata.
 
 ## Derived Rules
 
