@@ -8,6 +8,7 @@ import {
 } from "@/constants/auth/permissions";
 import HireDetailView from "@/components/hires/HireDetailView";
 import withAuth from "@/hoc/withAuth";
+import { EngagementProvider } from "@/providers/engagementProvider";
 import { HireProvider } from "@/providers/hireProvider";
 
 const FacilitatorHireDetailContent: React.FC = () => {
@@ -19,7 +20,9 @@ const FacilitatorHireDetailContent: React.FC = () => {
 
 const FacilitatorHireDetailPage: React.FC = () => (
     <HireProvider>
-        <FacilitatorHireDetailContent />
+        <EngagementProvider>
+            <FacilitatorHireDetailContent />
+        </EngagementProvider>
     </HireProvider>
 );
 

@@ -1,12 +1,6 @@
-import type {
-    EngagementClassification,
-    IPipelineBoardDto,
-    IPipelineColumnDto,
-    IPipelineHireCardDto,
-} from "@/types/pipeline";
-
+import type { EngagementClassification } from "@/types/engagement";
+import type { IPipelineBoardDto, IPipelineColumnDto, IPipelineHireCardDto } from "@/types/pipeline";
 export type IPipelineBoardViewProps = Record<string, never>;
-
 export interface IPipelineKanbanProps {
     columns: IPipelineColumnDto[];
     onOpenHire: (hireId: string) => void;
