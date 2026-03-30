@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 using JourneyPoint.Application.Services.DocumentExtractionService;
 using JourneyPoint.Application.Services.MarkdownImportService.Dto;
@@ -40,7 +41,8 @@ namespace JourneyPoint.Application.Services.GroqService
             OnboardingPlan plan,
             string sourceFileName,
             string contentType,
-            string rawText);
+            string rawText,
+            Guid? onboardingDocumentId = null);
 
         /// <summary>
         /// Extracts plan-linked proposal candidates from image content.
@@ -49,6 +51,7 @@ namespace JourneyPoint.Application.Services.GroqService
             OnboardingPlan plan,
             string sourceFileName,
             string contentType,
-            IReadOnlyCollection<DocumentImageContent> images);
+            IReadOnlyCollection<DocumentImageContent> images,
+            Guid? onboardingDocumentId = null);
     }
 }
