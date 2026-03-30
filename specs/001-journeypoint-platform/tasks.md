@@ -196,7 +196,7 @@ engagement data, surfaces at-risk hires, and supports facilitator intervention.
 - [x] T049 [P] [US5] Build facilitator pipeline page in `journeypoint/app/(facilitator)/pipeline/page.tsx`
 - [x] T050 [P] [US5] Add engagement and pipeline provider state in `journeypoint/providers/engagementProvider/` and `journeypoint/providers/pipelineProvider/`
 - [x] T051 [P] [US5] Build intelligence components in `journeypoint/components/pipeline/PipelineKanban.tsx`, `PipelineColumn.tsx`, `HirePipelineCard.tsx`, `journeypoint/components/engagement/EngagementBadge.tsx`, `AtRiskFlagPanel.tsx`, and `journeypoint/components/journey/ScoreTrendChart.tsx`
-- [ ] T052 [US5] Seed Boxfusion and DeptDemo demo data in `aspnet-core/src/JourneyPoint.EntityFrameworkCore/EntityFrameworkCore/Seed/`
+- [x] T052 [US5] Seed Boxfusion and DeptDemo demo data in `aspnet-core/src/JourneyPoint.EntityFrameworkCore/EntityFrameworkCore/Seed/`
 - [x] T053 [US5] Add facilitator intervention capture and flag history UI in `journeypoint/app/(facilitator)/hires/[hireId]/page.tsx`
 
 **Checkpoint**: Intelligence, flags, pipeline, and intervention flows are demonstrable.

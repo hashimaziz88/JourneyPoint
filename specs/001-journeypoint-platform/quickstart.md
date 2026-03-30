@@ -21,6 +21,7 @@ Expected result:
 - database migrations apply successfully
 - ABP API starts
 - Swagger is available
+- host, default, Boxfusion, and DeptDemo seed data is available after the migrator completes
 
 ## Frontend Setup
 
@@ -179,3 +180,42 @@ Expected result:
 - DeptDemo tenant contains a government onboarding programme with at least two
   hires at different journey stages.
 - Four roles exist: TenantAdmin, Facilitator, Manager, Enrolee.
+
+## Demo Login Matrix
+
+All demo users use password `123qwe`.
+
+### Boxfusion
+
+- Tenant: `boxfusion`
+- Tenant admin: username `admin`
+- Facilitator: username `facilitator.boxfusion`
+- Manager: username `manager.boxfusion`
+- Enrolees:
+  - `alex.boxfusion`
+  - `nomsa.boxfusion`
+  - `thabo.boxfusion`
+
+### DeptDemo
+
+- Tenant: `deptdemo`
+- Tenant admin: username `admin`
+- Facilitator: username `facilitator.deptdemo`
+- Manager: username `manager.deptdemo`
+- Enrolees:
+  - `ayanda.deptdemo`
+  - `musa.deptdemo`
+
+## Demo Walkthrough Notes
+
+- Use Boxfusion for the full active-product loop: hire detail, manager tasks,
+  enrolee journey participation, pipeline, score history, and intervention
+  views.
+- Use DeptDemo to demonstrate journey-stage variation:
+  - `Ayanda Govender` starts in `PendingActivation` with a `Draft` journey and
+    a recoverable welcome-notification failure.
+  - `Musa Dlamini` starts in the completed column with completed-journey
+    history.
+- The Boxfusion cohort is intentionally seeded so the next live pipeline or
+  hire-intelligence load recomputes into one `Healthy`, one `NeedsAttention`,
+  and one `AtRisk` hire without manual data patching.
