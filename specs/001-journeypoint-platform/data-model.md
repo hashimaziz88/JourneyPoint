@@ -181,6 +181,7 @@ JourneyPoint has three primary domain areas:
   - acknowledged at
   - completed at
   - completed by user id
+  - personalised at
 - Validation:
   - task order must be unique within a journey module snapshot
   - due day offset cannot be negative
@@ -191,6 +192,8 @@ JourneyPoint has three primary domain areas:
   - facilitator-authored draft tasks must keep null source-template ids
   - pending draft tasks may be removed during review, but template tasks are
     never deleted or rewritten as part of review
+  - `PersonalisedAt` is null until facilitator-approved AI revisions are
+    applied to that task and is not set for ordinary manual draft edits
 - Relationships:
   - many-to-one with `Journey`
   - optional many-to-one with `OnboardingTask`
@@ -317,11 +320,308 @@ JourneyPoint has three primary domain areas:
 ### GenerationLog
 
 - Purpose: audit every AI personalisation or extraction workflow
-- Core fields: journey id, hire id, prompt summary, raw response summary, tasks
-  revised, tasks added, duration, status
+- Core fields:
+  - workflow type
+  - status
+  - hire id
+  - journey id
+  - onboarding plan id
+  - onboarding document id
+  - model name
+  - prompt summary
+  - response summary
+  - failure reason
+  - tasks revised
+  - tasks added
+  - started at
+  - completed at
+  - duration milliseconds
 - Relationships:
   - many-to-one with `Journey`
   - many-to-one with `Hire`
+  - many-to-one with `OnboardingPlan`
+  - many-to-one with `OnboardingDocument`
+
+### JourneyPersonalisationProposal (Transient Application Contract)
+
+- Purpose: represent one facilitator-reviewed AI personalisation preview before
+  any change is applied to the journey
+- Core fields:
+  - generation log id
+  - hire id
+  - journey id
+  - model name
+  - requested at
+  - summary
+  - revised task count
+  - task diffs
+- Validation:
+  - generated only for a same-tenant journey in `Draft` or `Active`
+  - includes only tasks that remain eligible for revision at request time
+  - is transient for JP-020 and is not persisted as a separate aggregate
+  - proposal payloads may revise existing task snapshots only and may not add
+    or remove tasks
+- Relationships:
+  - one-to-one with one `GenerationLog` for the originating AI run
+  - many-to-one with `Journey`
+  - many-to-one with `Hire`
+
+### JourneyTaskPersonalisationDiff (Transient Application Contract)
+
+- Purpose: carry one diff-ready proposed revision for one existing journey task
+- Core fields:
+  - journey task id
+  - baseline snapshot timestamp
+  - current snapshot fields
+  - proposed snapshot fields
+  - revision rationale
+  - changed field list
+- Validation:
+  - `JourneyTaskId` must resolve to an existing same-tenant task on the target
+    journey
+  - completed tasks are not eligible for personalisation diffs
+  - unsupported fields, duplicate task ids, and add/remove semantics are
+    rejected during parsing
+  - apply requests must fail if the current task no longer matches the reviewed
+    baseline timestamp
+
+### JP-020 Planned Application Files
+
+- `aspnet-core/src/JourneyPoint.Application/Services/GroqService/IGroqJourneyPersonalisationService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/GroqService/GroqJourneyPersonalisationService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/GroqService/GroqJourneyPersonalisationPromptFactory.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/GroqService/GroqJourneyPersonalisationContracts.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/GroqService/GroqJourneyPersonalisationMapper.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/JourneyAppService.Personalisation.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/RequestJourneyPersonalisationRequest.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/JourneyPersonalisationProposalDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/JourneyTaskPersonalisationDiffDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/ApplyJourneyPersonalisationRequest.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/ApplyJourneyPersonalisationSelectionDto.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/HireJourneyManager.Personalisation.cs`
+
+### JP-020 Validation Steps
+
+1. Request personalisation for a same-tenant journey in `Draft` or `Active`
+   and confirm the backend returns a diff-ready proposal without mutating any
+   `JourneyTask` records yet.
+2. Confirm the proposal payload includes only eligible pending tasks and that
+   each diff references an existing `JourneyTaskId` plus a baseline snapshot
+   timestamp from the reviewed task state.
+3. Simulate malformed or out-of-scope model output and confirm unsupported
+   fields, duplicate task ids, and add/remove semantics are rejected rather than
+   silently applied.
+4. Apply only a subset of the returned diffs and confirm the selected task
+   snapshots change while unselected tasks remain unchanged.
+5. Edit one task after requesting personalisation and then try to apply the old
+   diff; confirm the request is rejected as stale and requires a fresh
+   personalisation run.
+6. Confirm the personalisation request writes one `GenerationLog` row with
+   workflow type `Personalisation`, timing metadata, status, and proposed
+   revision counts.
+
+### EnroleeJourneyDashboard (Transient Application Contract)
+
+- Purpose: return the active journey workspace for the signed-in enrolee
+- Core fields:
+  - journey id
+  - hire id
+  - journey status
+  - activated at
+  - total task count
+  - completed task count
+  - overdue task count
+  - module groups
+- Validation:
+  - resolves only the signed-in enrolee's same-tenant active journey
+  - excludes facilitator draft-review metadata and source-template ids
+  - groups tasks by copied module snapshot title and order
+- Relationships:
+  - one-to-one with one `Journey`
+  - one-to-many with `EnroleeJourneyModuleGroup`
+
+### EnroleeJourneyModuleGroup (Transient Application Contract)
+
+- Purpose: present one dashboard module section with progress totals
+- Core fields:
+  - module key
+  - module title
+  - module order index
+  - total task count
+  - completed task count
+  - pending task count
+  - task list items
+- Validation:
+  - groups are ordered by copied `ModuleOrderIndex`
+  - task list items inside a group are ordered by copied `TaskOrderIndex`
+
+### EnroleeJourneyTaskListItem (Transient Application Contract)
+
+- Purpose: carry dashboard-ready task summary data for one participant-owned
+  task card or list row
+- Core fields:
+  - journey task id
+  - title
+  - short description preview
+  - due on
+  - status
+  - acknowledgement rule
+  - acknowledged at
+  - assignment target
+  - is overdue
+  - is personalised
+- Validation:
+  - list items are returned only for enrolee-assigned tasks in the current
+    enrolee's active journey
+  - `IsPersonalised` derives from persisted task metadata rather than transient
+    AI proposal state
+
+### EnroleeJourneyTaskDetail (Transient Application Contract)
+
+- Purpose: power the dedicated enrolee task-detail page and action controls
+- Core fields:
+  - journey task id
+  - journey id
+  - module title
+  - module order index
+  - task order index
+  - title
+  - description
+  - due on
+  - status
+  - acknowledgement rule
+  - acknowledged at
+  - completed at
+  - is personalised
+  - personalised at
+  - can acknowledge
+  - can complete
+- Validation:
+  - resolves only one same-tenant active enrolee task owned by the signed-in
+    participant
+  - completion is disabled until acknowledgement is recorded when the task rule
+    requires it
+  - completed tasks remain readable but cannot be completed again
+
+### JP-021 Planned Application and Frontend Files
+
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/IJourneyAppService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/JourneyAppService.Participant.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/EnroleeJourneyDashboardDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/EnroleeJourneyModuleGroupDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/EnroleeJourneyTaskListItemDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/EnroleeJourneyTaskDetailDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/AcknowledgeJourneyTaskRequest.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/CompleteJourneyTaskRequest.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/HireJourneyManager.Participant.cs`
+- `journeypoint/app/(enrolee)/enrolee/my-journey/page.tsx`
+- `journeypoint/app/(enrolee)/enrolee/my-journey/tasks/[taskId]/page.tsx`
+- `journeypoint/providers/journeyProvider/actions.tsx`
+- `journeypoint/providers/journeyProvider/context.tsx`
+- `journeypoint/providers/journeyProvider/index.tsx`
+- `journeypoint/providers/journeyProvider/reducer.tsx`
+- `journeypoint/components/journey/EnroleeJourneyDashboardView.tsx`
+- `journeypoint/components/journey/EnroleeJourneyModuleSection.tsx`
+- `journeypoint/components/journey/JourneyTaskDetailView.tsx`
+- `journeypoint/components/journey/JourneyTaskAcknowledgementPanel.tsx`
+- `journeypoint/components/journey/style/style.ts`
+- `journeypoint/types/journey/index.ts`
+- `journeypoint/types/journey/components.ts`
+- `journeypoint/constants/journey/dashboard.ts`
+- `journeypoint/constants/auth/routes.ts`
+- `journeypoint/utils/journey/dashboard.ts`
+
+### JP-021 Validation Steps
+
+1. Sign in as an enrolee with an active same-tenant journey and confirm the
+   dashboard route loads only that journey grouped by copied module snapshots.
+2. Confirm dashboard task rows show status, due date, acknowledgement state,
+   and participant-visible personalisation indicators without exposing
+   facilitator draft metadata.
+3. Open one enrolee-assigned task detail page and confirm the full description,
+   due date, acknowledgement requirement, and personalised indicator render from
+   provider-backed state.
+4. Attempt to complete a task that requires acknowledgement and confirm the UI
+   blocks completion until acknowledgement succeeds through the backend action.
+5. Acknowledge and then complete an eligible task, and confirm both the detail
+   view and dashboard progress counters refresh from backend responses.
+6. Attempt direct access to another enrolee's task or a manager-assigned task
+   and confirm the backend rejects the request rather than leaking task data.
+7. Apply AI personalisation to a pending task, reload the enrolee dashboard,
+   and confirm the personalised indicator persists from durable task metadata.
+
+### FacilitatorJourneyPersonalisationReviewState (Transient Frontend Contract)
+
+- Purpose: hold one facilitator-reviewed AI personalisation proposal alongside
+  the existing journey review workspace
+- Core fields:
+  - generation log id
+  - journey id
+  - requested at
+  - summary
+  - per-task diff items
+  - selected journey task ids
+  - rejected journey task ids or equivalent explicit selection state
+  - applyable accepted count
+- Validation:
+  - proposal state is transient and lives only in typed provider state during a
+    facilitator review session
+  - selections default to unreviewed or not accepted until the facilitator
+    explicitly accepts a task diff
+  - rejected or untouched diffs must not be included in the apply request
+  - clearing the review or successfully applying accepted diffs drops the local
+    proposal state and reloads the authoritative backend journey snapshot
+
+### FacilitatorJourneyTaskDiffReview (Transient Frontend Contract)
+
+- Purpose: represent one facilitator-visible before/after review card for an AI
+  task revision
+- Core fields:
+  - journey task id
+  - module title
+  - task order index
+  - baseline snapshot timestamp
+  - changed field list
+  - current field values
+  - proposed field values
+  - rationale
+  - acceptance status
+- Validation:
+  - cards are derived directly from `JourneyTaskPersonalisationDiffDto`
+  - only diffs with at least one changed field should render in the review list
+  - acceptance state is UI-only until the facilitator invokes apply
+
+### JP-023 Planned Frontend Files
+
+- `journeypoint/app/(facilitator)/facilitator/hires/[hireId]/journey/page.tsx`
+- `journeypoint/components/journey/JourneyReviewView.tsx`
+- `journeypoint/components/journey/PersonalisationDiff.tsx`
+- `journeypoint/components/journey/PersonalisationDiffCard.tsx`
+- `journeypoint/providers/journeyProvider/actions.tsx`
+- `journeypoint/providers/journeyProvider/context.tsx`
+- `journeypoint/providers/journeyProvider/index.tsx`
+- `journeypoint/providers/journeyProvider/reducer.tsx`
+- `journeypoint/components/journey/style/style.ts`
+- `journeypoint/types/journey/index.ts`
+- `journeypoint/types/journey/components.ts`
+- `journeypoint/constants/journey/personalisation.ts`
+- `journeypoint/utils/journey/personalisation.ts`
+
+### JP-023 Validation Steps
+
+1. Open the facilitator journey review route for a same-tenant draft or active
+   journey and request AI personalisation.
+2. Confirm the page renders one proposal summary plus per-task before/after
+   diff cards with changed-field cues and rationale instead of raw JSON.
+3. Accept some task diffs, reject others, and confirm the apply action counts
+   only the accepted selections.
+4. Apply the accepted subset and confirm only those pending journey tasks
+   change while rejected or untouched diffs do not.
+5. Confirm the proposal state clears or refreshes after apply so the screen
+   reflects the authoritative backend draft rather than stale selections.
+6. Trigger a request that returns no valid diffs or a backend error and confirm
+   the UI surfaces a clear empty or failure state without breaking the existing
+   draft-review workflow.
 
 ## Engagement Intelligence and Intervention
 

@@ -21,6 +21,41 @@ namespace JourneyPoint.Application.Services.JourneyService
         Task<JourneyDraftDto> GetDraftAsync(Guid hireId);
 
         /// <summary>
+        /// Returns the active journey dashboard for the signed-in enrolee.
+        /// </summary>
+        Task<EnroleeJourneyDashboardDto> GetMyJourneyAsync();
+
+        /// <summary>
+        /// Returns the direct-report manager workspace for the signed-in manager.
+        /// </summary>
+        Task<ManagerTaskWorkspaceDto> GetManagerTasksAsync();
+
+        /// <summary>
+        /// Returns one detailed participant task view for the signed-in enrolee.
+        /// </summary>
+        Task<EnroleeJourneyTaskDetailDto> GetMyTaskAsync(Guid journeyTaskId);
+
+        /// <summary>
+        /// Returns one manager-assigned task for the signed-in manager.
+        /// </summary>
+        Task<ManagerAssignedTaskDto> GetManagerTaskAsync(Guid journeyTaskId);
+
+        /// <summary>
+        /// Records acknowledgement for one participant task when required.
+        /// </summary>
+        Task<EnroleeJourneyTaskDetailDto> AcknowledgeMyTaskAsync(AcknowledgeJourneyTaskRequest input);
+
+        /// <summary>
+        /// Completes one participant task after all checks succeed.
+        /// </summary>
+        Task<EnroleeJourneyTaskDetailDto> CompleteMyTaskAsync(CompleteJourneyTaskRequest input);
+
+        /// <summary>
+        /// Completes one manager-assigned task after all checks succeed.
+        /// </summary>
+        Task<ManagerTaskWorkspaceDto> CompleteManagerTaskAsync(CompleteJourneyTaskRequest input);
+
+        /// <summary>
         /// Updates one draft journey task snapshot during facilitator review.
         /// </summary>
         Task<JourneyTaskReviewDto> UpdateTaskAsync(Guid journeyTaskId, UpdateJourneyTaskRequest input);
@@ -34,6 +69,16 @@ namespace JourneyPoint.Application.Services.JourneyService
         /// Removes one pending task from a draft journey before activation.
         /// </summary>
         Task RemovePendingTaskAsync(Guid journeyTaskId);
+
+        /// <summary>
+        /// Requests diff-ready AI personalisation revisions for one journey.
+        /// </summary>
+        Task<JourneyPersonalisationProposalDto> RequestPersonalisationAsync(RequestJourneyPersonalisationRequest input);
+
+        /// <summary>
+        /// Applies selected AI personalisation revisions to one journey.
+        /// </summary>
+        Task<JourneyDraftDto> ApplyPersonalisationAsync(ApplyJourneyPersonalisationRequest input);
 
         /// <summary>
         /// Activates the generated journey for one hire after review is complete.

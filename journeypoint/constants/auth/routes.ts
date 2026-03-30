@@ -27,3 +27,6 @@ export const buildFacilitatorHireRoute = (hireId: string): string =>
 
 export const buildFacilitatorHireJourneyRoute = (hireId: string): string =>
   `${buildFacilitatorHireRoute(hireId)}/journey`;
+
+export const buildEnroleeJourneyTaskRoute = (taskId: string): string =>
+  `${APP_ROUTES.enroleeMyJourney}/tasks/${taskId}`;

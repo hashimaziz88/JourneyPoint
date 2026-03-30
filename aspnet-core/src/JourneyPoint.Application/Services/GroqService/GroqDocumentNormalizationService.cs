@@ -7,11 +7,10 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Abp.Dependency;
+using JourneyPoint.Application.Services.AuditService;
 using JourneyPoint.Application.Services.DocumentExtractionService;
 using JourneyPoint.Application.Services.MarkdownImportService.Dto;
-using JourneyPoint.Application.Services.OnboardingDocumentService;
 using JourneyPoint.Configuration;
-using JourneyPoint.Domains.OnboardingPlans;
 using Microsoft.Extensions.Options;
 
 namespace JourneyPoint.Application.Services.GroqService
@@ -19,7 +18,7 @@ namespace JourneyPoint.Application.Services.GroqService
     /// <summary>
     /// Uses backend-only Groq calls to normalize onboarding source material into DTO-shaped previews and proposals.
     /// </summary>
-    public class GroqDocumentNormalizationService : IGroqDocumentNormalizationService, ITransientDependency
+    public partial class GroqDocumentNormalizationService : IGroqDocumentNormalizationService, ITransientDependency
     {
         private static readonly JsonSerializerOptions SerializerOptions = new JsonSerializerOptions
         {
@@ -27,13 +26,17 @@ namespace JourneyPoint.Application.Services.GroqService
         };
 
         private readonly GroqOptions _groqOptions;
+        private readonly IAiAuditLogService _aiAuditLogService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroqDocumentNormalizationService"/> class.
         /// </summary>
-        public GroqDocumentNormalizationService(IOptions<GroqOptions> groqOptions)
+        public GroqDocumentNormalizationService(
+            IOptions<GroqOptions> groqOptions,
+            IAiAuditLogService aiAuditLogService)
         {
             _groqOptions = groqOptions?.Value ?? throw new ArgumentNullException(nameof(groqOptions));
+            _aiAuditLogService = aiAuditLogService ?? throw new ArgumentNullException(nameof(aiAuditLogService));
         }
 
         /// <summary>
@@ -79,50 +82,6 @@ namespace JourneyPoint.Application.Services.GroqService
                 BuildImageMessages(prompt, images));
             var payload = DeserializeRequired<GroqImportResponse>(responseText);
             return GroqDocumentNormalizationMapper.MapImportPreview(payload, sourceFileName);
-        }
-
-        /// <summary>
-        /// Extracts reviewable plan-linked task proposals from raw text content.
-        /// </summary>
-        public async Task<IReadOnlyCollection<ExtractedTaskCandidate>> ExtractPlanProposalsFromTextAsync(
-            OnboardingPlan plan,
-            string sourceFileName,
-            string contentType,
-            string rawText)
-        {
-            EnsureEnabled();
-
-            var prompt = GroqDocumentNormalizationPromptFactory.BuildProposalPrompt(
-                plan,
-                sourceFileName,
-                contentType);
-            var responseText = await RequestJsonAsync(
-                _groqOptions.Model,
-                BuildTextMessages(prompt, rawText));
-            var payload = DeserializeRequired<GroqProposalResponse>(responseText);
-            return GroqDocumentNormalizationMapper.MapProposalCandidates(plan, payload);
-        }
-
-        /// <summary>
-        /// Extracts reviewable plan-linked task proposals from image content.
-        /// </summary>
-        public async Task<IReadOnlyCollection<ExtractedTaskCandidate>> ExtractPlanProposalsFromImagesAsync(
-            OnboardingPlan plan,
-            string sourceFileName,
-            string contentType,
-            IReadOnlyCollection<DocumentImageContent> images)
-        {
-            EnsureEnabled();
-
-            var prompt = GroqDocumentNormalizationPromptFactory.BuildProposalPrompt(
-                plan,
-                sourceFileName,
-                contentType);
-            var responseText = await RequestJsonAsync(
-                ResolveVisionModel(),
-                BuildImageMessages(prompt, images));
-            var payload = DeserializeRequired<GroqProposalResponse>(responseText);
-            return GroqDocumentNormalizationMapper.MapProposalCandidates(plan, payload);
         }
 
         private void EnsureEnabled()

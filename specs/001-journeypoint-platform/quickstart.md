@@ -108,10 +108,35 @@ Expected result:
 
 ### Milestone 4 - Journey Participation and Human-in-the-Loop AI
 
-1. Sign in as an enrolee and complete a task.
-2. Sign in as a manager and complete a manager-assigned task.
-3. Trigger AI personalisation as a facilitator, review the diff, and accept a
-   subset of the proposed changes.
+1. Sign in as an enrolee and open `/enrolee/my-journey`.
+2. Confirm the dashboard shows only the signed-in enrolee's active journey,
+   grouped by module, with task status, due dates, and any personalised task
+   indicators.
+3. Open one task detail route and confirm the task description,
+   acknowledgement requirement, completion state, and personalised indicator
+   match the dashboard summary.
+4. Attempt to complete an acknowledgement-gated task and confirm completion is
+   blocked until acknowledgement is submitted successfully.
+5. Acknowledge and complete an eligible enrolee-owned task, then reload the
+   dashboard and confirm module progress and task status update correctly.
+6. Attempt to access another participant's task id and confirm the backend
+   rejects the request.
+7. Sign in as a manager and complete a manager-assigned task.
+8. Open the facilitator journey review page, trigger AI personalisation for a
+   same-tenant draft or active journey, and confirm the response renders a
+   clear per-task before/after diff review state without mutating any tasks
+   yet.
+9. Accept some task diffs, reject others, and confirm the apply action reflects
+   only the accepted selection count.
+10. Apply the accepted subset and confirm only the selected pending task
+    snapshots change, while rejected or unselected diffs and source onboarding
+    templates remain unchanged.
+11. Reload the enrolee dashboard after an applied AI revision and confirm the
+    personalised indicator persists on the affected task.
+12. Re-run the flow after manually editing a task between request and apply, and
+    confirm the stale apply is rejected until a fresh diff is generated.
+13. Confirm the personalisation request writes an AI audit record with workflow
+    type `Personalisation`, status, timing, and revision summary metadata.
 
 ### Milestone 5 - Intelligence and Interventions
 

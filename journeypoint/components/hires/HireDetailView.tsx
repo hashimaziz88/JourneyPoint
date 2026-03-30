@@ -122,7 +122,7 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
             {selectedHire.welcomeNotificationFailureReason ? (
                 <Alert
                     type="warning"
-                    message="Welcome notification needs facilitator follow-up."
+                    title="Welcome notification needs facilitator follow-up."
                     description={selectedHire.welcomeNotificationFailureReason}
                 />
             ) : null}
@@ -157,7 +157,7 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
                     </Descriptions>
                 </Card>
 
-                <Space direction="vertical" size={16}>
+                <Space orientation="vertical" size={16}>
                     <Card title="Journey Summary">
                         {selectedHire.journey ? (
                             <div className={styles.summaryGrid}>

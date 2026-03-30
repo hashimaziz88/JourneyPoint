@@ -59,17 +59,18 @@ should remain ABP application-service friendly, typically under
 
 | Capability | Method | Purpose | Primary Actors |
 |-----------|--------|---------|----------------|
-| Request personalisation | POST | Trigger facilitator-approved journey personalisation | Facilitator |
-| Review personalisation diff | GET | Return before/after task comparison data | Facilitator |
-| Apply selected revisions | POST | Persist approved task revisions and audit metadata | Facilitator |
+| Request personalisation diff | POST | Trigger backend-only Groq personalisation for one same-tenant journey and return a diff-ready proposal payload plus generation-log metadata | Facilitator |
+| Apply selected revisions | POST | Persist only facilitator-approved task revisions after re-validating task eligibility and baseline snapshot timestamps | Facilitator |
 
 ## Participant Workspaces
 
 | Capability | Method | Purpose | Primary Actors |
 |-----------|--------|---------|----------------|
-| Get my journey | GET | Return active journey view for the current enrolee | Enrolee |
-| Get journey task detail | GET | Return a detailed task view | Enrolee, Manager |
-| Complete my task | POST | Mark an enrolee-owned task complete | Enrolee |
+| Get my journey dashboard | GET | Return the current enrolee's active journey grouped by module with task status, due dates, and personalisation indicators | Enrolee |
+| Get my journey task detail | GET | Return one detailed enrolee task view with acknowledgement, completion, and personalisation metadata | Enrolee |
+| Acknowledge my task | POST | Record acknowledgement on one acknowledgement-gated enrolee task before completion | Enrolee |
+| Complete my task | POST | Mark an eligible enrolee-owned task complete after assignment and acknowledgement checks | Enrolee |
+| Get journey task detail | GET | Return a detailed task view | Manager |
 | Get manager task list | GET | Return manager-assigned tasks across direct reports | Manager |
 | Complete manager task | POST | Mark a manager-owned task complete | Manager |
 
@@ -105,6 +106,27 @@ should remain ABP application-service friendly, typically under
 - Draft review mutations must apply only to `JourneyTask` snapshot data and must
   reject writes that would mutate `OnboardingPlan`, `OnboardingModule`, or
   `OnboardingTask` records from the source template.
+- JP-020 personalisation preview is transient in the first slice and is
+  returned inline from the request call rather than being stored as a separate
+  proposal aggregate for later retrieval.
+- Facilitator personalisation review should be driven from the existing journey
+  review route, which consumes the inline proposal payload and presents
+  explicit per-task accept or reject controls before any apply request is sent.
+- Personalisation requests may revise only existing `JourneyTask` snapshot
+  fields; task creation and task removal remain outside the AI contract.
+- Apply requests should include only the facilitator-accepted selections from
+  the reviewed proposal; rejected or untouched diffs must be omitted from the
+  payload.
+- Apply requests must include enough baseline task metadata to reject stale
+  proposals when a facilitator or participant has already changed the task
+  after the diff was generated.
+- Participant journey responses should use dedicated dashboard and task-detail
+  DTOs rather than reusing facilitator draft-review payloads.
+- Participant acknowledge and complete actions must re-validate tenant context,
+  active-journey state, task ownership, assignment target, and current task
+  status on the backend.
+- Participant-visible personalisation indicators should reflect durable applied
+  AI changes only and must not be sourced from transient proposal payloads.
 - Concrete API methods should continue to be exposed through
   interface-and-implementation AppService pairs with DTOs that live beside
   their service slice under `JourneyPoint.Application/Services/<Feature>/Dto/`.

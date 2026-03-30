@@ -19,6 +19,7 @@ import {
     ReloadOutlined,
 } from "@ant-design/icons";
 import { useStyles } from "@/components/journey/style/style";
+import PersonalisationDiff from "@/components/journey/PersonalisationDiff";
 import JourneyTaskEditorModal from "@/components/journey/JourneyTaskEditorModal";
 import JourneyTaskList from "@/components/journey/JourneyTaskList";
 import {
@@ -44,6 +45,7 @@ import {
     groupJourneyTasksByModule,
     isJourneyDraftEditable,
 } from "@/utils/journey/review";
+import { getHighlightedTaskIds } from "@/utils/journey/personalisation";
 
 const { Paragraph, Title } = Typography;
 
@@ -67,7 +69,12 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
         resetJourney,
         updateTask,
     } = useJourneyActions();
-    const { isDetailPending, isMutationPending, journey } = useJourneyState();
+    const {
+        isDetailPending,
+        isMutationPending,
+        journey,
+        personalisationProposal,
+    } = useJourneyState();
     const [editingTask, setEditingTask] = useState<IJourneyTaskReviewDto | null>(null);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
@@ -110,8 +117,8 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
         const result = editingTask
             ? await updateTask(hireId, editingTask.id, payload)
             : journey
-              ? await addTask(hireId, journey.journeyId, payload)
-              : null;
+                ? await addTask(hireId, journey.journeyId, payload)
+                : null;
 
         if (!result) {
             messageApi.error("The journey task change could not be saved.");
@@ -158,6 +165,7 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
 
     const isEditable = isJourneyDraftEditable(journey);
     const modules = groupJourneyTasksByModule(journey);
+    const highlightedTaskIds = getHighlightedTaskIds(personalisationProposal);
 
     return (
         <Space orientation="vertical" size={24} className={styles.pageRoot}>
@@ -255,19 +263,20 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
                     {isEditable ? (
                         <Alert
                             type="info"
-                            message="Draft review is open."
+                            title="Draft review is open."
                             description="Edits here change only this hire's journey snapshot. The source onboarding plan stays unchanged."
                         />
                     ) : (
                         <Alert
                             type="success"
-                            message="Journey review is locked."
+                            title="Journey review is locked."
                             description="This journey is no longer in draft, so task snapshots are read-only."
                         />
                     )}
 
                     <Card className={styles.sectionCard}>
                         <JourneyTaskList
+                            highlightedTaskIds={highlightedTaskIds}
                             isEditable={isEditable}
                             isMutationPending={isMutationPending}
                             modules={modules}
@@ -278,6 +287,8 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
                             onRemoveTask={handleRemoveTask}
                         />
                     </Card>
+
+                    <PersonalisationDiff hireId={hireId} />
                 </>
             )}
 

@@ -1,9 +1,18 @@
 import type {
     IAddJourneyTaskRequest,
+    IJourneyTaskPersonalisationDiffDto,
+    IEnroleeJourneyDashboardDto,
+    IEnroleeJourneyModuleGroupDto,
+    IEnroleeJourneyTaskDetailDto,
+    IEnroleeJourneyTaskListItemDto,
+    IManagerAssignedTaskDto,
+    IManagerDirectReportTaskGroupDto,
+    IManagerTaskWorkspaceDto,
     IJourneyDraftDto,
     IJourneyModuleGroup,
     IJourneyTaskReviewDto,
     IUpdateJourneyTaskRequest,
+    JourneyPersonalisationDecision,
 } from "@/types/journey";
 
 export interface IJourneyReviewViewProps {
@@ -13,6 +22,7 @@ export interface IJourneyReviewViewProps {
 export interface IJourneyTaskListProps {
     isEditable: boolean;
     isMutationPending: boolean;
+    highlightedTaskIds?: string[];
     modules: IJourneyModuleGroup[];
     onEditTask: (task: IJourneyTaskReviewDto) => void;
     onRemoveTask: (task: IJourneyTaskReviewDto) => Promise<void>;
@@ -25,4 +35,60 @@ export interface IJourneyTaskEditorModalProps {
     onSubmit: (payload: IUpdateJourneyTaskRequest | IAddJourneyTaskRequest) => Promise<void>;
     task?: IJourneyTaskReviewDto | null;
     journey?: IJourneyDraftDto | null;
+}
+
+export interface IEnroleeJourneyDashboardViewProps {
+    dashboard?: IEnroleeJourneyDashboardDto | null;
+    isPending: boolean;
+    onRefresh: () => Promise<void>;
+}
+
+export interface IEnroleeJourneyModuleSectionProps {
+    module: IEnroleeJourneyModuleGroupDto;
+}
+
+export interface IJourneyTaskDetailViewProps {
+    task?: IEnroleeJourneyTaskDetailDto | null;
+    isPending: boolean;
+    isMutationPending: boolean;
+    onRefresh: () => Promise<void>;
+    onAcknowledge: (task: IEnroleeJourneyTaskDetailDto) => Promise<boolean>;
+    onComplete: (task: IEnroleeJourneyTaskDetailDto) => Promise<boolean>;
+}
+
+export interface IEnroleeJourneyTaskSummaryCardProps {
+    task: IEnroleeJourneyTaskListItemDto;
+}
+
+export interface IJourneyTaskAcknowledgementPanelProps {
+    task: IEnroleeJourneyTaskDetailDto;
+    isPending: boolean;
+    onAcknowledge: () => Promise<boolean>;
+}
+
+export interface IManagerTaskWorkspaceViewProps {
+    workspace?: IManagerTaskWorkspaceDto | null;
+    isPending: boolean;
+    isMutationPending: boolean;
+    onRefresh: () => Promise<void>;
+    onComplete: (journeyTaskId: string) => Promise<boolean>;
+}
+
+export interface IManagerDirectReportSectionProps {
+    directReport: IManagerDirectReportTaskGroupDto;
+    isMutationPending: boolean;
+    onComplete: (task: IManagerAssignedTaskDto) => Promise<void>;
+}
+
+export interface IPersonalisationDiffProps {
+    hireId: string;
+}
+
+export interface IPersonalisationDiffCardProps {
+    diff: IJourneyTaskPersonalisationDiffDto;
+    decision: JourneyPersonalisationDecision;
+    onDecisionChange: (
+        journeyTaskId: string,
+        decision: JourneyPersonalisationDecision,
+    ) => void;
 }

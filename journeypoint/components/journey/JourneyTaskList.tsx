@@ -20,6 +20,7 @@ const { Paragraph, Text, Title } = Typography;
  * Renders the ordered draft-journey task groups for facilitator review.
  */
 const JourneyTaskList: React.FC<IJourneyTaskListProps> = ({
+    highlightedTaskIds = [],
     isEditable,
     isMutationPending,
     modules,
@@ -46,8 +47,16 @@ const JourneyTaskList: React.FC<IJourneyTaskListProps> = ({
                     className={styles.moduleCard}
                 >
                     <div className={styles.taskList}>
-                        {module.tasks.map((task) => (
-                            <div key={task.id} className={styles.taskCard}>
+                        {module.tasks.map((task) => {
+                            const isHighlighted = highlightedTaskIds.includes(task.id);
+
+                            return (
+                                <div
+                                    key={task.id}
+                                    className={`${styles.taskCard} ${
+                                        isHighlighted ? styles.taskCardHighlighted : ""
+                                    }`}
+                                >
                                 <div className={styles.taskHeader}>
                                     <div>
                                         <Title level={5}>
@@ -92,6 +101,9 @@ const JourneyTaskList: React.FC<IJourneyTaskListProps> = ({
                                             task.acknowledgementRule,
                                         )}
                                     </Tag>
+                                    {isHighlighted ? (
+                                        <Tag color="cyan">AI proposal pending</Tag>
+                                    ) : null}
                                     <Tag>Due day {task.dueDayOffset}</Tag>
                                     <Tag color={task.sourceOnboardingTaskId ? "processing" : "purple"}>
                                         {task.sourceOnboardingTaskId ? "Template-derived" : "Facilitator-authored"}
@@ -116,8 +128,9 @@ const JourneyTaskList: React.FC<IJourneyTaskListProps> = ({
                                         <Paragraph>{formatDisplayDate(task.completedAt)}</Paragraph>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                                </div>
+                            );
+                        })}
                     </div>
                 </Card>
             ))}

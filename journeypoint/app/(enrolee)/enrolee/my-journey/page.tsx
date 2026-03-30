@@ -1,20 +1,53 @@
 "use client";
 
-import React from "react";
-import WorkspaceOverview from "@/layout/WorkspaceOverview";
-import withAuth from "@/hoc/withAuth";
+import React, { useEffect, useEffectEvent } from "react";
+import EnroleeJourneyDashboardView from "@/components/journey/EnroleeJourneyDashboardView";
 import { APP_PERMISSIONS, APP_ROLE_NAMES } from "@/constants/auth/permissions";
+import withAuth from "@/hoc/withAuth";
+import {
+    JourneyProvider,
+    useJourneyActions,
+    useJourneyState,
+} from "@/providers/journeyProvider";
+
+const EnroleeMyJourneyContent: React.FC = () => {
+    const { getMyJourney, resetJourney } = useJourneyActions();
+    const { isDetailPending, myJourney } = useJourneyState();
+
+    const loadDashboard = useEffectEvent(async (): Promise<void> => {
+        await getMyJourney();
+    });
+
+    const clearDashboard = useEffectEvent((): void => {
+        resetJourney();
+    });
+
+    useEffect(() => {
+        void loadDashboard();
+
+        return () => {
+            clearDashboard();
+        };
+    }, []);
+
+    return (
+        <EnroleeJourneyDashboardView
+            dashboard={myJourney}
+            isPending={isDetailPending}
+            onRefresh={async () => {
+                await getMyJourney();
+            }}
+        />
+    );
+};
 
 const EnroleeMyJourneyPage: React.FC = () => (
-  <WorkspaceOverview
-    title="My Journey"
-    description="Enrolees are now routed into a dedicated onboarding workspace so future journey content can be delivered without exposing admin or facilitator surfaces."
-    currentFocus="Role-safe access and landing behavior are active for enrolee accounts."
-    nextMilestoneHint="Upcoming work will attach real journey modules, task detail views, and acknowledgements to this route."
-  />
+    <JourneyProvider>
+        <EnroleeMyJourneyContent />
+    </JourneyProvider>
 );
 
 export default withAuth(EnroleeMyJourneyPage, {
-  requiredPermission: APP_PERMISSIONS.enrolee,
-  allowedRoles: [APP_ROLE_NAMES.enrolee],
+    requiredPermission: APP_PERMISSIONS.enrolee,
+    allowedRoles: [APP_ROLE_NAMES.enrolee],
 });

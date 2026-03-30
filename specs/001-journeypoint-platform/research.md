@@ -265,3 +265,156 @@
 - Alternatives considered: Holding the editable journey draft entirely in client
   state until a later save was rejected because it would duplicate backend rules
   in the browser and increase mismatch risk for ordering and activation logic.
+
+## Decision 25: Assemble personalisation requests from current journey snapshots and only eligible pending tasks
+
+- Decision: JP-020 should build the Groq personalisation request from the
+  tenant-scoped hire, journey, onboarding-plan metadata, and only the current
+  pending `JourneyTask` snapshot fields that are eligible for revision.
+- Rationale: The model needs enough context to personalize wording and timing,
+  but sending only pending task snapshots keeps prompt size, latency, and token
+  cost bounded while avoiding accidental proposals against completed work.
+- Alternatives considered: Sending the full historical journey payload or
+  re-reading live template tasks was rejected because it would bloat the prompt
+  and weaken the snapshot-based journey model.
+
+## Decision 26: Return the personalisation diff preview inline instead of persisting a separate proposal aggregate
+
+- Decision: The request-personalisation endpoint should return a transient
+  diff-ready proposal payload immediately, and JP-020 should not introduce a new
+  persisted proposal entity before the facilitator applies selected changes.
+- Rationale: The system already has append-only `GenerationLog` audit records
+  for the AI run, while keeping the diff preview transient avoids another table,
+  another lifecycle, and another source of drift between review and apply.
+- Alternatives considered: Persisting a long-lived proposal aggregate was
+  rejected because it adds storage and cleanup complexity before there is a
+  proven workflow need for saved drafts of AI suggestions.
+
+## Decision 27: Parse Groq output into strict per-task field deltas only
+
+- Decision: The Groq response contract should be keyed to existing
+  `JourneyTaskId` values and limited to whitelisted editable snapshot fields
+  such as title, description, category, assignment target, acknowledgement
+  rule, and due-day offset.
+- Rationale: JP-020 is a selective-revision flow, not a second draft-generation
+  engine, so the parser must reject add/remove semantics, unknown task ids,
+  duplicate task proposals, and unsupported fields before anything reaches the
+  facilitator review step.
+- Alternatives considered: Allowing the model to add/remove tasks or return
+  free-form markdown diffs was rejected because it would be harder to validate,
+  harder to review safely, and contrary to the spec assumption that AI
+  personalisation revises existing tasks only.
+
+## Decision 28: Protect selective apply with baseline snapshot timestamps
+
+- Decision: Each task diff should include a baseline timestamp derived from the
+  current `JourneyTask` snapshot, and apply requests must fail when the current
+  task no longer matches that reviewed baseline.
+- Rationale: Facilitators can still edit draft or active journey tasks manually,
+  so this check prevents stale AI diffs from overwriting newer human-reviewed
+  content.
+- Alternatives considered: Blindly applying the selected changes or persisting
+  a heavyweight server-side proposal lock was rejected because one is unsafe and
+  the other adds unnecessary complexity for the first personalisation slice.
+
+## Decision 29: Reuse GenerationLog for personalisation runs and store proposal counts in audit metadata
+
+- Decision: Every JP-020 personalisation request should write one
+  `GenerationLog` row with `WorkflowType = Personalisation`, timing metadata,
+  model name, prompt/response summaries, and the count of revised tasks
+  proposed by the model.
+- Rationale: JP-019 already introduced the reusable audit trail, and JP-020
+  should consume that existing append-only model instead of inventing a second
+  audit store for personalisation.
+- Alternatives considered: Auditing only successful applies or adding a
+  personalisation-specific audit table was rejected because it would weaken
+  traceability and duplicate audit behavior across AI flows.
+
+## Decision 30: Split enrolee participation into a dashboard route plus a dedicated task-detail route
+
+- Decision: JP-021 should replace the placeholder enrolee landing page with a
+  module-grouped dashboard at `journeypoint/app/(enrolee)/enrolee/my-journey/page.tsx`
+  and a nested task-detail route at
+  `journeypoint/app/(enrolee)/enrolee/my-journey/tasks/[taskId]/page.tsx`.
+- Rationale: The current repo already uses role-shell route groups such as
+  `(facilitator)/facilitator/...` and `(enrolee)/enrolee/...`, and splitting the
+  participant workspace into a dashboard and task detail keeps each page under
+  the repository's file-size and readability standards.
+- Alternatives considered: Keeping a single oversized dashboard-only page or
+  inventing a second enrolee route tree outside the existing role shell was
+  rejected because it would either bloat one page or fight the live App Router
+  structure.
+
+## Decision 31: Use participant-specific journey contracts instead of reusing facilitator draft-review DTOs
+
+- Decision: JP-021 should add a participant-safe read/action surface under
+  `JourneyService` that returns active-journey dashboard and task-detail DTOs
+  for enrolees, while keeping facilitator draft-review contracts separate.
+- Rationale: The current `JourneyDraftDto` and review endpoints expose
+  source-template ids, draft-only controls, and facilitator mutation semantics
+  that do not belong in an enrolee-facing workspace.
+- Alternatives considered: Reusing `GetDraftAsync` and filtering fields in the
+  browser was rejected because it would overexpose facilitator-oriented data and
+  blur the separation between draft review and active journey participation.
+
+## Decision 32: Model acknowledgement as an explicit participant action before completion when required
+
+- Decision: Enrolee task execution should use a separate acknowledge action and
+  a separate complete action, with backend validation enforcing acknowledgement
+  first whenever the task's rule requires it.
+- Rationale: A two-step flow keeps the task-detail UI clear, preserves the
+  meaning of `AcknowledgedAt` and `CompletedAt`, and avoids implicit completion
+  side effects that are harder to explain or audit.
+- Alternatives considered: Auto-acknowledging on completion or collapsing both
+  transitions into one opaque endpoint was rejected because it hides an
+  important onboarding control and weakens task-state clarity.
+
+## Decision 33: Persist a durable task-level personalisation marker for participant views
+
+- Decision: JP-021 should expose participant-visible personalisation indicators
+  from durable `JourneyTask` metadata, using a nullable timestamp marker that is
+  set only when facilitator-approved AI revisions are actually applied.
+- Rationale: Enrolee dashboards reload independently of the facilitator session,
+  so participant views need a persistent way to show that a task has been
+  tailored without relying on transient proposal payloads or in-memory state.
+- Alternatives considered: Inferring indicators from the current source
+  template, from transient frontend provider state, or from aggregate
+  `GenerationLog` summaries was rejected because those approaches cannot
+  reliably identify which active tasks were actually personalised after reload.
+
+## Decision 34: Embed facilitator personalisation review into the existing journey-review route
+
+- Decision: JP-023 should extend the existing facilitator journey review page at
+  `journeypoint/app/(facilitator)/facilitator/hires/[hireId]/journey/page.tsx`
+  rather than introducing a second facilitator route just for AI review.
+- Rationale: Facilitators already generate, edit, and activate journey drafts in
+  that workspace, so keeping personalisation review in the same screen reduces
+  route churn and keeps draft context, hire context, and apply actions together.
+- Alternatives considered: Creating a separate personalisation route was
+  rejected because it would duplicate journey-loading logic and fragment the
+  facilitator review workflow.
+
+## Decision 35: Keep AI proposal review state transient in the journey provider
+
+- Decision: JP-023 should store the returned `JourneyPersonalisationProposal`
+  plus explicit accept/reject selections in typed `journeyProvider` state until
+  the facilitator applies or clears the review.
+- Rationale: The backend already treats the proposal as transient and
+  append-only audit is handled by `GenerationLog`, so the frontend should keep
+  review state lightweight and session-scoped while still allowing deliberate
+  per-task review actions.
+- Alternatives considered: Persisting facilitator selection state separately or
+  encoding selections into component-local state only was rejected because the
+  first adds needless storage complexity and the second makes refresh and shared
+  page interactions brittle.
+
+## Decision 36: Default diff proposals to explicit facilitator acceptance instead of implicit apply-all
+
+- Decision: Each returned task diff should start unselected in the UI and
+  require an explicit accept action before it is included in the apply payload.
+- Rationale: Human-governed AI is a core product rule, and explicit accept or
+  reject controls make facilitator intent visible while preventing a large
+  proposal from being accidentally applied wholesale.
+- Alternatives considered: Auto-selecting all diffs or treating unopened diffs
+  as implicitly accepted was rejected because both approaches weaken review
+  clarity and make selective acceptance less trustworthy.

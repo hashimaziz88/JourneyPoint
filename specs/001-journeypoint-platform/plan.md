@@ -48,6 +48,81 @@ provider-backed state for hire queries and journey review mutations; and
 `antd-style` presentation components that keep helpers, constants, and typed
 contracts extracted into their dedicated frontend folders.
 
+The current planning increment for JP-020 focuses milestone 4 backend-only
+Groq journey personalisation and facilitator-controlled selective acceptance.
+This slice will assemble request context from a tenant-scoped journey plus its
+eligible pending task snapshots, parse the Groq response into diff-ready
+per-task revisions keyed to existing `JourneyTask` ids, and let facilitators
+apply only the selected revisions after re-validating task status and baseline
+snapshot timestamps. The minimal file surface spans
+`aspnet-core/src/JourneyPoint.Application/Services/GroqService/` for prompt,
+contract, parsing, and audit-writing concerns, plus
+`aspnet-core/src/JourneyPoint.Application/Services/JourneyService/` and
+`aspnet-core/src/JourneyPoint.Core/Domains/Hires/` for selective-apply
+orchestration and draft-safe task mutation rules.
+
+The current planning increment for JP-021 focuses milestone 4 enrolee
+participation UX on top of the active journey and personalisation backend. This
+slice will replace the placeholder enrolee landing page with a module-grouped
+dashboard and nested task-detail route under the existing enrolee role shell,
+extend participant-safe journey reads and actions for acknowledgement and task
+completion, and surface durable personalisation indicators without exposing the
+facilitator draft-review contract to enrolee pages. The minimal file surface
+spans `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/` for
+participant DTOs and active-journey actions, plus
+`journeypoint/app/(enrolee)/enrolee/my-journey/`,
+`journeypoint/providers/journeyProvider/`, and dedicated journey component,
+type, constant, util, and style modules in the Next.js frontend.
+
+The current planning increment for JP-023 focuses milestone 4 facilitator UI
+delivery for AI personalisation review on top of the existing journey review
+route and JP-020 backend endpoints. This slice will embed a clear before/after
+diff workspace into the facilitator journey review screen, keep proposal and
+selection state transient inside the typed `journeyProvider`, allow explicit
+per-task accept or reject decisions, and submit only facilitator-approved
+revisions back to the backend before rehydrating the authoritative journey
+snapshot. The minimal file surface stays in
+ `journeypoint/app/(facilitator)/facilitator/hires/[hireId]/journey/page.tsx`,
+ `journeypoint/components/journey/`, `journeypoint/providers/journeyProvider/`,
+ and dedicated `types/`, `constants/`, and `utils/` journey modules.
+
+### JP-020 Primary Risks
+
+- Long journeys can produce oversized prompts or slow Groq responses, so the
+  request assembly must stay concise and include only the journey, hire, and
+  pending-task context needed for personalisation.
+- Model output can hallucinate unknown task ids or unsupported mutations, so
+  response parsing must use a strict JSON contract and whitelist only mutable
+  snapshot fields on existing tasks.
+- A facilitator can edit the journey between requesting and applying a diff, so
+  selective apply must fail fast when a task's baseline timestamp no longer
+  matches the proposal that was reviewed.
+
+### JP-021 Primary Risks
+
+- The current `JourneyAppService` surface is facilitator-oriented, so
+  participant endpoints must expose a narrower active-journey contract that
+  cannot leak draft-only metadata or mutation controls into enrolee pages.
+- Participant-facing personalisation indicators need durable task-level metadata
+  after JP-020 applies AI changes; otherwise a refreshed dashboard cannot
+  distinguish applied AI tailoring from ordinary facilitator edits.
+- Acknowledgement and completion must be enforced server-side against tenant,
+  assignee, journey-status, and task-status rules; disabling buttons in the UI
+  alone would not protect role-safe task execution.
+
+### JP-023 Primary Risks
+
+- Personalisation responses can contain many task diffs, so the facilitator
+  review UI must stay scannable by grouping changes per task with clear
+  before/after presentation instead of rendering one overwhelming free-form
+  block.
+- The returned proposal is transient, so provider state must keep acceptance
+  and rejection selections separate from the authoritative journey draft to
+  avoid accidental local mutation of review data before apply succeeds.
+- Apply actions must submit only accepted diffs and then refresh the backend
+  draft state; otherwise stale proposal state can linger on-screen after the
+  journey snapshot has already changed.
+
 ## Technical Context
 
 **Language/Version**: C# 12 on .NET 8; TypeScript 5 with React 19 and Next.js 16  

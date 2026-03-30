@@ -1,36 +1,77 @@
 "use client";
 
 import React, { useContext, useReducer } from "react";
-import { getAxiosInstance } from "@/utils/axiosInstance";
 import {
+    buildApplyPersonalisationRequest,
+    updatePersonalisationDecision,
+} from "@/utils/journey/personalisation";
+import {
+    acknowledgeMyJourneyTask,
+    activateJourney,
+    addJourneyTask,
+    applyJourneyPersonalisation,
+    completeManagerJourneyTask,
+    completeMyJourneyTask,
+    fetchJourneyDraft,
+    fetchManagerTasks,
+    fetchMyJourney,
+    fetchMyTask,
+    generateJourneyDraft,
+    removePendingJourneyTask,
+    requestJourneyPersonalisation,
+    updateJourneyTask,
+} from "@/utils/journey/provider";
+import {
+    clearPersonalisationReview as clearPersonalisationReviewAction,
     getJourneyError,
     getJourneyPending,
     getJourneySuccess,
+    getManagerTasksError,
+    getManagerTasksPending,
+    getManagerTasksSuccess,
+    getMyJourneyError,
+    getMyJourneyPending,
+    getMyJourneySuccess,
+    getMyTaskError,
+    getMyTaskPending,
+    getMyTaskSuccess,
+    managerMutationError,
+    managerMutationPending,
+    managerMutationSuccess,
     mutationError,
     mutationPending,
     mutationSuccess,
+    participantMutationError,
+    participantMutationPending,
+    participantMutationSuccess,
+    personalisationError,
+    personalisationPending,
+    personalisationRequestSuccess,
     resetJourney as resetJourneyAction,
+    setPersonalisationDecisions,
 } from "./actions";
 import {
     INITIAL_STATE,
     JourneyActionContext,
     JourneyStateContext,
-    type IAddJourneyTaskRequest,
-    type IGenerateDraftJourneyRequest,
     type IJourneyActionContext,
-    type IJourneyDraftDto,
     type IJourneyStateContext,
-    type IUpdateJourneyTaskRequest,
 } from "./context";
 import { JourneyReducer } from "./reducer";
-
-const JOURNEY_API_BASE = "/api/services/app/Journey";
-
-const getApiResult = <T,>(response: { data?: { result?: T } & T }): T =>
-    response.data?.result ?? (response.data as T);
+import type {
+    IAcknowledgeJourneyTaskRequest,
+    IAddJourneyTaskRequest,
+    ICompleteJourneyTaskRequest,
+    IGenerateDraftJourneyRequest,
+    IJourneyDraftDto,
+    IJourneyPersonalisationProposalDto,
+    IRequestJourneyPersonalisationRequest,
+    IUpdateJourneyTaskRequest,
+    JourneyPersonalisationDecision,
+} from "@/types/journey";
 
 /**
- * Provides facilitator journey generation, review, and activation state.
+ * Provides typed journey state and actions for facilitator, manager, and enrolee flows.
  */
 export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [state, dispatch] = useReducer(JourneyReducer, INITIAL_STATE);
@@ -39,16 +80,54 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         dispatch(getJourneyPending());
 
         try {
-            const response = await getAxiosInstance().get(`${JOURNEY_API_BASE}/GetDraft`, {
-                params: { hireId },
-            });
-            const journey = getApiResult<IJourneyDraftDto>(response);
-
+            const journey = await fetchJourneyDraft(hireId);
             dispatch(getJourneySuccess(journey));
             return journey;
         } catch (error) {
             console.error(error);
             dispatch(getJourneyError());
+            return null;
+        }
+    };
+
+    const getMyJourney = async () => {
+        dispatch(getMyJourneyPending());
+
+        try {
+            const myJourney = await fetchMyJourney();
+            dispatch(getMyJourneySuccess(myJourney));
+            return myJourney;
+        } catch (error) {
+            console.error(error);
+            dispatch(getMyJourneyError());
+            return null;
+        }
+    };
+
+    const getManagerTasks = async () => {
+        dispatch(getManagerTasksPending());
+
+        try {
+            const managerWorkspace = await fetchManagerTasks();
+            dispatch(getManagerTasksSuccess(managerWorkspace));
+            return managerWorkspace;
+        } catch (error) {
+            console.error(error);
+            dispatch(getManagerTasksError());
+            return null;
+        }
+    };
+
+    const getMyTask = async (journeyTaskId: string) => {
+        dispatch(getMyTaskPending());
+
+        try {
+            const selectedTask = await fetchMyTask(journeyTaskId);
+            dispatch(getMyTaskSuccess(selectedTask));
+            return selectedTask;
+        } catch (error) {
+            console.error(error);
+            dispatch(getMyTaskError());
             return null;
         }
     };
@@ -59,12 +138,7 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         dispatch(mutationPending());
 
         try {
-            const response = await getAxiosInstance().post(
-                `${JOURNEY_API_BASE}/GenerateDraft`,
-                payload,
-            );
-            const journey = getApiResult<IJourneyDraftDto>(response);
-
+            const journey = await generateJourneyDraft(payload);
             dispatch(mutationSuccess(journey));
             return journey;
         } catch (error) {
@@ -74,13 +148,11 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
     };
 
-    const refreshAfterMutation = async (hireId: string): Promise<IJourneyDraftDto | null> => {
+    const refreshAfterDraftMutation = async (
+        hireId: string,
+    ): Promise<IJourneyDraftDto | null> => {
         try {
-            const response = await getAxiosInstance().get(`${JOURNEY_API_BASE}/GetDraft`, {
-                params: { hireId },
-            });
-            const journey = getApiResult<IJourneyDraftDto>(response);
-
+            const journey = await fetchJourneyDraft(hireId);
             dispatch(mutationSuccess(journey));
             return journey;
         } catch (error) {
@@ -98,10 +170,8 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         dispatch(mutationPending());
 
         try {
-            await getAxiosInstance().put(`${JOURNEY_API_BASE}/UpdateTask`, payload, {
-                params: { journeyTaskId },
-            });
-            return await refreshAfterMutation(hireId);
+            await updateJourneyTask(journeyTaskId, payload);
+            return await refreshAfterDraftMutation(hireId);
         } catch (error) {
             console.error(error);
             dispatch(mutationError());
@@ -117,10 +187,8 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         dispatch(mutationPending());
 
         try {
-            await getAxiosInstance().post(`${JOURNEY_API_BASE}/AddTask`, payload, {
-                params: { journeyId },
-            });
-            return await refreshAfterMutation(hireId);
+            await addJourneyTask(journeyId, payload);
+            return await refreshAfterDraftMutation(hireId);
         } catch (error) {
             console.error(error);
             dispatch(mutationError());
@@ -135,10 +203,8 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         dispatch(mutationPending());
 
         try {
-            await getAxiosInstance().delete(`${JOURNEY_API_BASE}/RemovePendingTask`, {
-                params: { journeyTaskId },
-            });
-            return await refreshAfterMutation(hireId);
+            await removePendingJourneyTask(journeyTaskId);
+            return await refreshAfterDraftMutation(hireId);
         } catch (error) {
             console.error(error);
             dispatch(mutationError());
@@ -146,20 +212,130 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
     };
 
+    const requestPersonalisationAction = async (
+        payload: IRequestJourneyPersonalisationRequest,
+    ): Promise<IJourneyPersonalisationProposalDto | null> => {
+        dispatch(personalisationPending());
+
+        try {
+            const proposal = await requestJourneyPersonalisation(payload);
+            dispatch(personalisationRequestSuccess(proposal));
+            return proposal;
+        } catch (error) {
+            console.error(error);
+            dispatch(personalisationError());
+            return null;
+        }
+    };
+
+    const applyPersonalisationAction = async (): Promise<IJourneyDraftDto | null> => {
+        const payload = buildApplyPersonalisationRequest(
+            state.personalisationProposal,
+            state.personalisationDecisions,
+        );
+
+        if (!payload) {
+            return null;
+        }
+
+        dispatch(personalisationPending());
+
+        try {
+            const journey = await applyJourneyPersonalisation(payload);
+            dispatch(mutationSuccess(journey));
+            return journey;
+        } catch (error) {
+            console.error(error);
+            dispatch(personalisationError());
+            return null;
+        }
+    };
+
+    const setPersonalisationDecisionAction = (
+        journeyTaskId: string,
+        decision: JourneyPersonalisationDecision,
+    ): void => {
+        const nextDecisions = updatePersonalisationDecision(
+            state.personalisationDecisions,
+            journeyTaskId,
+            decision,
+        );
+
+        dispatch(setPersonalisationDecisions(nextDecisions));
+    };
+
+    const clearPersonalisationReview = (): void => {
+        dispatch(clearPersonalisationReviewAction());
+    };
+
     const activate = async (hireId: string): Promise<IJourneyDraftDto | null> => {
         dispatch(mutationPending());
 
         try {
-            const response = await getAxiosInstance().post(`${JOURNEY_API_BASE}/Activate`, null, {
-                params: { hireId },
-            });
-            const journey = getApiResult<IJourneyDraftDto>(response);
-
+            const journey = await activateJourney(hireId);
             dispatch(mutationSuccess(journey));
             return journey;
         } catch (error) {
             console.error(error);
             dispatch(mutationError());
+            return null;
+        }
+    };
+
+    const refreshParticipantState = async (journeyTaskId: string) => {
+        try {
+            const [myJourney, selectedTask] = await Promise.all([
+                fetchMyJourney(),
+                fetchMyTask(journeyTaskId),
+            ]);
+
+            dispatch(participantMutationSuccess({ myJourney, selectedTask }));
+            return selectedTask;
+        } catch (error) {
+            console.error(error);
+            dispatch(participantMutationError());
+            return null;
+        }
+    };
+
+    const acknowledgeMyTask = async (
+        payload: IAcknowledgeJourneyTaskRequest,
+    ) => {
+        dispatch(participantMutationPending());
+
+        try {
+            await acknowledgeMyJourneyTask(payload);
+            return await refreshParticipantState(payload.journeyTaskId);
+        } catch (error) {
+            console.error(error);
+            dispatch(participantMutationError());
+            return null;
+        }
+    };
+
+    const completeMyTask = async (payload: ICompleteJourneyTaskRequest) => {
+        dispatch(participantMutationPending());
+
+        try {
+            await completeMyJourneyTask(payload);
+            return await refreshParticipantState(payload.journeyTaskId);
+        } catch (error) {
+            console.error(error);
+            dispatch(participantMutationError());
+            return null;
+        }
+    };
+
+    const completeManagerTask = async (payload: ICompleteJourneyTaskRequest) => {
+        dispatch(managerMutationPending());
+
+        try {
+            const managerWorkspace = await completeManagerJourneyTask(payload);
+            dispatch(managerMutationSuccess(managerWorkspace));
+            return managerWorkspace;
+        } catch (error) {
+            console.error(error);
+            dispatch(managerMutationError());
             return null;
         }
     };
@@ -173,10 +349,20 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
             <JourneyActionContext.Provider
                 value={{
                     getDraft,
+                    getMyJourney,
+                    getManagerTasks,
+                    getMyTask,
+                    acknowledgeMyTask,
+                    completeMyTask,
+                    completeManagerTask,
                     generateDraft,
                     updateTask,
                     addTask,
                     removePendingTask,
+                    requestPersonalisation: requestPersonalisationAction,
+                    applyPersonalisation: applyPersonalisationAction,
+                    setPersonalisationDecision: setPersonalisationDecisionAction,
+                    clearPersonalisationReview,
                     activate,
                     resetJourney,
                 }}
