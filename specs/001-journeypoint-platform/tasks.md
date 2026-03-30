@@ -170,8 +170,8 @@ review the task list, and activate the journey.
 review AI-generated journey revisions before applying them.
 
 - [x] T038 [P] [US4] Create AI audit entity in `aspnet-core/src/JourneyPoint.Core/Domains/Audit/GenerationLog.cs`
-- [ ] T039 [US4] Implement Groq extraction and personalisation client services in `aspnet-core/src/JourneyPoint.Application/Services/GroqService/`
-- [ ] T040 [US4] Extend journey application services for diff review and selective acceptance in `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/`
+- [x] T039 [US4] Implement Groq extraction and personalisation client services in `aspnet-core/src/JourneyPoint.Application/Services/GroqService/`
+- [x] T040 [US4] Extend journey application services for diff review and selective acceptance in `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/`
 - [ ] T041 [P] [US4] Build enrolee journey pages in `journeypoint/app/(enrolee)/my-journey/page.tsx` and `journeypoint/app/(enrolee)/my-journey/tasks/[taskId]/page.tsx`
 - [ ] T042 [P] [US4] Build manager task page in `journeypoint/app/(manager)/my-tasks/page.tsx`
 - [ ] T043 [P] [US4] Add participant components in `journeypoint/components/journey/PersonalisationDiff.tsx` and `journeypoint/components/journey/JourneyTaskList.tsx`

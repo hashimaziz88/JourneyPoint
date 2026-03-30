@@ -24,7 +24,7 @@ namespace JourneyPoint.Application.Services.AuditService
         /// <summary>
         /// Persists one completed AI workflow audit record.
         /// </summary>
-        public async Task WriteAsync(AiAuditLogRequest request)
+        public async Task<Guid> WriteAsync(AiAuditLogRequest request)
         {
             ArgumentNullException.ThrowIfNull(request);
 
@@ -57,6 +57,7 @@ namespace JourneyPoint.Application.Services.AuditService
             };
 
             await _generationLogRepository.InsertAsync(log);
+            return log.Id;
         }
 
         private static DateTime NormalizeTimestamp(DateTime value)

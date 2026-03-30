@@ -36,6 +36,16 @@ namespace JourneyPoint.Application.Services.JourneyService
         Task RemovePendingTaskAsync(Guid journeyTaskId);
 
         /// <summary>
+        /// Requests diff-ready AI personalisation revisions for one journey.
+        /// </summary>
+        Task<JourneyPersonalisationProposalDto> RequestPersonalisationAsync(RequestJourneyPersonalisationRequest input);
+
+        /// <summary>
+        /// Applies selected AI personalisation revisions to one journey.
+        /// </summary>
+        Task<JourneyDraftDto> ApplyPersonalisationAsync(ApplyJourneyPersonalisationRequest input);
+
+        /// <summary>
         /// Activates the generated journey for one hire after review is complete.
         /// </summary>
         Task<JourneyDraftDto> ActivateAsync(Guid hireId);

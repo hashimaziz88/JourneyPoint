@@ -110,8 +110,17 @@ Expected result:
 
 1. Sign in as an enrolee and complete a task.
 2. Sign in as a manager and complete a manager-assigned task.
-3. Trigger AI personalisation as a facilitator, review the diff, and accept a
-   subset of the proposed changes.
+3. Trigger AI personalisation as a facilitator for a same-tenant draft or
+   active journey and confirm the response returns a diff preview without
+   mutating any tasks yet.
+4. Review the returned per-task diff and apply only a subset of the proposed
+   changes.
+5. Confirm only the selected pending task snapshots change, while unselected
+   tasks and source onboarding templates remain unchanged.
+6. Re-run the flow after manually editing a task between request and apply, and
+   confirm the stale apply is rejected until a fresh diff is generated.
+7. Confirm the personalisation request writes an AI audit record with workflow
+   type `Personalisation`, status, timing, and revision summary metadata.
 
 ### Milestone 5 - Intelligence and Interventions
 

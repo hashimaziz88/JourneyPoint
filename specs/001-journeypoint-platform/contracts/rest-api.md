@@ -59,9 +59,8 @@ should remain ABP application-service friendly, typically under
 
 | Capability | Method | Purpose | Primary Actors |
 |-----------|--------|---------|----------------|
-| Request personalisation | POST | Trigger facilitator-approved journey personalisation | Facilitator |
-| Review personalisation diff | GET | Return before/after task comparison data | Facilitator |
-| Apply selected revisions | POST | Persist approved task revisions and audit metadata | Facilitator |
+| Request personalisation diff | POST | Trigger backend-only Groq personalisation for one same-tenant journey and return a diff-ready proposal payload plus generation-log metadata | Facilitator |
+| Apply selected revisions | POST | Persist only facilitator-approved task revisions after re-validating task eligibility and baseline snapshot timestamps | Facilitator |
 
 ## Participant Workspaces
 
@@ -105,6 +104,14 @@ should remain ABP application-service friendly, typically under
 - Draft review mutations must apply only to `JourneyTask` snapshot data and must
   reject writes that would mutate `OnboardingPlan`, `OnboardingModule`, or
   `OnboardingTask` records from the source template.
+- JP-020 personalisation preview is transient in the first slice and is
+  returned inline from the request call rather than being stored as a separate
+  proposal aggregate for later retrieval.
+- Personalisation requests may revise only existing `JourneyTask` snapshot
+  fields; task creation and task removal remain outside the AI contract.
+- Apply requests must include enough baseline task metadata to reject stale
+  proposals when a facilitator or participant has already changed the task
+  after the diff was generated.
 - Concrete API methods should continue to be exposed through
   interface-and-implementation AppService pairs with DTOs that live beside
   their service slice under `JourneyPoint.Application/Services/<Feature>/Dto/`.

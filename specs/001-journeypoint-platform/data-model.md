@@ -317,11 +317,105 @@ JourneyPoint has three primary domain areas:
 ### GenerationLog
 
 - Purpose: audit every AI personalisation or extraction workflow
-- Core fields: journey id, hire id, prompt summary, raw response summary, tasks
-  revised, tasks added, duration, status
+- Core fields:
+  - workflow type
+  - status
+  - hire id
+  - journey id
+  - onboarding plan id
+  - onboarding document id
+  - model name
+  - prompt summary
+  - response summary
+  - failure reason
+  - tasks revised
+  - tasks added
+  - started at
+  - completed at
+  - duration milliseconds
 - Relationships:
   - many-to-one with `Journey`
   - many-to-one with `Hire`
+  - many-to-one with `OnboardingPlan`
+  - many-to-one with `OnboardingDocument`
+
+### JourneyPersonalisationProposal (Transient Application Contract)
+
+- Purpose: represent one facilitator-reviewed AI personalisation preview before
+  any change is applied to the journey
+- Core fields:
+  - generation log id
+  - hire id
+  - journey id
+  - model name
+  - requested at
+  - summary
+  - revised task count
+  - task diffs
+- Validation:
+  - generated only for a same-tenant journey in `Draft` or `Active`
+  - includes only tasks that remain eligible for revision at request time
+  - is transient for JP-020 and is not persisted as a separate aggregate
+  - proposal payloads may revise existing task snapshots only and may not add
+    or remove tasks
+- Relationships:
+  - one-to-one with one `GenerationLog` for the originating AI run
+  - many-to-one with `Journey`
+  - many-to-one with `Hire`
+
+### JourneyTaskPersonalisationDiff (Transient Application Contract)
+
+- Purpose: carry one diff-ready proposed revision for one existing journey task
+- Core fields:
+  - journey task id
+  - baseline snapshot timestamp
+  - current snapshot fields
+  - proposed snapshot fields
+  - revision rationale
+  - changed field list
+- Validation:
+  - `JourneyTaskId` must resolve to an existing same-tenant task on the target
+    journey
+  - completed tasks are not eligible for personalisation diffs
+  - unsupported fields, duplicate task ids, and add/remove semantics are
+    rejected during parsing
+  - apply requests must fail if the current task no longer matches the reviewed
+    baseline timestamp
+
+### JP-020 Planned Application Files
+
+- `aspnet-core/src/JourneyPoint.Application/Services/GroqService/IGroqJourneyPersonalisationService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/GroqService/GroqJourneyPersonalisationService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/GroqService/GroqJourneyPersonalisationPromptFactory.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/GroqService/GroqJourneyPersonalisationContracts.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/GroqService/GroqJourneyPersonalisationMapper.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/JourneyAppService.Personalisation.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/RequestJourneyPersonalisationRequest.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/JourneyPersonalisationProposalDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/JourneyTaskPersonalisationDiffDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/ApplyJourneyPersonalisationRequest.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/ApplyJourneyPersonalisationSelectionDto.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/HireJourneyManager.Personalisation.cs`
+
+### JP-020 Validation Steps
+
+1. Request personalisation for a same-tenant journey in `Draft` or `Active`
+   and confirm the backend returns a diff-ready proposal without mutating any
+   `JourneyTask` records yet.
+2. Confirm the proposal payload includes only eligible pending tasks and that
+   each diff references an existing `JourneyTaskId` plus a baseline snapshot
+   timestamp from the reviewed task state.
+3. Simulate malformed or out-of-scope model output and confirm unsupported
+   fields, duplicate task ids, and add/remove semantics are rejected rather than
+   silently applied.
+4. Apply only a subset of the returned diffs and confirm the selected task
+   snapshots change while unselected tasks remain unchanged.
+5. Edit one task after requesting personalisation and then try to apply the old
+   diff; confirm the request is rejected as stale and requires a fresh
+   personalisation run.
+6. Confirm the personalisation request writes one `GenerationLog` row with
+   workflow type `Personalisation`, timing metadata, status, and proposed
+   revision counts.
 
 ## Engagement Intelligence and Intervention
 
