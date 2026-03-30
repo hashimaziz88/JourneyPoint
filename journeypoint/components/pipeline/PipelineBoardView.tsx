@@ -24,7 +24,7 @@ import {
     PIPELINE_CLASSIFICATION_OPTIONS,
 } from "@/constants/pipeline/filters";
 import { usePipelineActions, usePipelineState } from "@/providers/pipelineProvider";
-import type { EngagementClassification } from "@/types/pipeline";
+import type { EngagementClassification } from "@/types/engagement";
 import type { IPipelineBoardViewProps } from "@/types/pipeline/components";
 import { formatDisplayDateTime } from "@/utils/date";
 import { getPipelineSummaryMetrics } from "@/utils/pipeline/board";

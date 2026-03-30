@@ -1,8 +1,4 @@
-export enum EngagementClassification {
-    Healthy = 1,
-    NeedsAttention = 2,
-    AtRisk = 3,
-}
+import type { EngagementClassification } from "@/types/engagement";
 
 export interface IGetPipelineBoardInput {
     keyword?: string | null;
