@@ -29,6 +29,8 @@ export enum UserActionEnums {
     resetPasswordPending = "RESET_PASSWORD_PENDING",
     resetPasswordSuccess = "RESET_PASSWORD_SUCCESS",
     resetPasswordError = "RESET_PASSWORD_ERROR",
+
+    resetState = "RESET_USER_STATE",
 }
 
 export const getAllUsersPending = createAction<IUserStateContext>(
@@ -140,4 +142,17 @@ export const resetPasswordSuccess = createAction<IUserStateContext>(
 export const resetPasswordError = createAction<IUserStateContext>(
     UserActionEnums.resetPasswordError,
     () => ({ isPending: false, isError: true, isSuccess: false })
+);
+
+export const resetState = createAction<IUserStateContext>(
+    UserActionEnums.resetState,
+    () => ({
+        isPending: false,
+        isError: false,
+        isSuccess: false,
+        users: [],
+        currentUser: null,
+        totalCount: 0,
+        availableRoles: [],
+    }),
 );

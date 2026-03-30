@@ -18,6 +18,7 @@ import {
   getUserError,
   getUserPending,
   getUserSuccess,
+  resetState as resetUserState,
   resetPasswordError,
   resetPasswordPending,
   resetPasswordSuccess,
@@ -152,6 +153,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const resetState = (): void => {
+    dispatch(resetUserState());
+  };
+
   return (
     <UserStateContext.Provider value={state}>
       <UserActionContext.Provider
@@ -163,6 +168,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           deleteUser,
           getRoles,
           resetPassword,
+          resetState,
         }}
       >
         {children}

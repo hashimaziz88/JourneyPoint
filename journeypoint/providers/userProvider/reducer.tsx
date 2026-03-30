@@ -31,6 +31,8 @@ export const UserReducer = handleActions<IUserStateContext, Partial<IUserStateCo
         [UserActionEnums.resetPasswordPending]: (state, action) => ({ ...state, ...action.payload }),
         [UserActionEnums.resetPasswordSuccess]: (state, action) => ({ ...state, ...action.payload }),
         [UserActionEnums.resetPasswordError]: (state, action) => ({ ...state, ...action.payload }),
+
+        [UserActionEnums.resetState]: (state, action) => ({ ...state, ...action.payload }),
     },
     INITIAL_STATE,
 );

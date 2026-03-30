@@ -20,6 +20,7 @@ export interface IUserActionContext {
     deleteUser: (id: number) => Promise<void>;
     getRoles: () => Promise<void>;
     resetPassword: (dto: IResetPasswordDto) => Promise<void>;
+    resetState: () => void;
 }
 
 export const INITIAL_STATE: IUserStateContext = {
