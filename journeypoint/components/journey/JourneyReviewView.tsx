@@ -110,8 +110,8 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
         const result = editingTask
             ? await updateTask(hireId, editingTask.id, payload)
             : journey
-              ? await addTask(hireId, journey.journeyId, payload)
-              : null;
+                ? await addTask(hireId, journey.journeyId, payload)
+                : null;
 
         if (!result) {
             messageApi.error("The journey task change could not be saved.");
@@ -255,13 +255,13 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
                     {isEditable ? (
                         <Alert
                             type="info"
-                            message="Draft review is open."
+                            title="Draft review is open."
                             description="Edits here change only this hire's journey snapshot. The source onboarding plan stays unchanged."
                         />
                     ) : (
                         <Alert
                             type="success"
-                            message="Journey review is locked."
+                            title="Journey review is locked."
                             description="This journey is no longer in draft, so task snapshots are read-only."
                         />
                     )}
