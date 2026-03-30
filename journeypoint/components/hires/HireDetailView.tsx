@@ -13,6 +13,10 @@ import {
     Tag,
     Typography,
 } from "antd";
+import AtRiskFlagPanel from "@/components/engagement/AtRiskFlagPanel";
+import EngagementBadge from "@/components/engagement/EngagementBadge";
+import InterventionHistoryPanel from "@/components/engagement/InterventionHistoryPanel";
+import ScoreTrendChart from "@/components/journey/ScoreTrendChart";
 import { ArrowRightOutlined, ReloadOutlined } from "@ant-design/icons";
 import {
     HIRE_STATUS_LABELS,
@@ -26,7 +30,15 @@ import {
 } from "@/constants/journey/review";
 import { useStyles } from "@/components/hires/style/style";
 import { buildFacilitatorHireJourneyRoute } from "@/constants/auth/routes";
+import {
+    useEngagementActions,
+    useEngagementState,
+} from "@/providers/engagementProvider";
 import { useHireActions, useHireState } from "@/providers/hireProvider";
+import type {
+    IAcknowledgeAtRiskFlagRequest,
+    IResolveAtRiskFlagRequest,
+} from "@/types/engagement";
 import type { IHireDetailViewProps } from "@/types/hire/components";
 import { formatDisplayDate, formatDisplayDateTime } from "@/utils/date";
 import { useRouter } from "next/navigation";
@@ -40,14 +52,22 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
     const { styles } = useStyles();
     const router = useRouter();
     const { getHireDetail, resetSelectedHire } = useHireActions();
+    const {
+        acknowledgeAtRiskFlag,
+        getHireIntelligence,
+        resetHireIntelligence,
+        resolveAtRiskFlag,
+    } = useEngagementActions();
     const { isDetailPending, selectedHire } = useHireState();
+    const { isMutationPending, isPending, selectedHireIntelligence } = useEngagementState();
 
     const loadHireEffect = useEffectEvent(async (): Promise<void> => {
-        await getHireDetail(hireId);
+        await Promise.all([getHireDetail(hireId), getHireIntelligence(hireId)]);
     });
 
     const clearSelectedHire = useEffectEvent((): void => {
         resetSelectedHire();
+        resetHireIntelligence();
     });
 
     useEffect(() => {
@@ -59,7 +79,7 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
     }, [hireId]);
 
     const refreshHire = async (): Promise<void> => {
-        await getHireDetail(hireId);
+        await Promise.all([getHireDetail(hireId), getHireIntelligence(hireId)]);
     };
 
     const handleOpenJourney = (): void => {
@@ -68,13 +88,23 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
         });
     };
 
-    if (isDetailPending && !selectedHire) {
+    const handleAcknowledgeFlag = async (
+        payload: IAcknowledgeAtRiskFlagRequest,
+    ): Promise<boolean> => Boolean(await acknowledgeAtRiskFlag(hireId, payload));
+
+    const handleResolveFlag = async (
+        payload: IResolveAtRiskFlagRequest,
+    ): Promise<boolean> => Boolean(await resolveAtRiskFlag(hireId, payload));
+
+    if ((isDetailPending || isPending) && !selectedHire) {
         return <Spin size="large" className={styles.loadingWrap} />;
     }
 
     if (!selectedHire) {
         return <Empty className={styles.emptyState} description="Hire record not found." />;
     }
+
+    const currentSnapshot = selectedHireIntelligence?.currentSnapshot;
 
     return (
         <Space orientation="vertical" size={24} className={styles.pageRoot}>
@@ -98,13 +128,21 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
                         ) : (
                             <Tag>No journey generated</Tag>
                         )}
+                        {currentSnapshot ? (
+                            <EngagementBadge
+                                classification={currentSnapshot.classification}
+                                compositeScore={currentSnapshot.compositeScore}
+                                hasActiveAtRiskFlag={Boolean(selectedHireIntelligence?.activeFlag)}
+                                compact
+                            />
+                        ) : null}
                     </Space>
                 </div>
 
                 <Space wrap className={styles.pageActions}>
                     <Button
                         icon={<ReloadOutlined />}
-                        loading={isDetailPending}
+                        loading={isDetailPending || isPending}
                         onClick={() => void refreshHire()}
                     >
                         Refresh
@@ -193,7 +231,73 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
                             </Descriptions.Item>
                         </Descriptions>
                     </Card>
+
+                    <Card title="Current Engagement">
+                        {currentSnapshot ? (
+                            <Space orientation="vertical" size={16} className={styles.pageRoot}>
+                                <EngagementBadge
+                                    classification={currentSnapshot.classification}
+                                    compositeScore={currentSnapshot.compositeScore}
+                                    hasActiveAtRiskFlag={Boolean(selectedHireIntelligence?.activeFlag)}
+                                />
+                                <div className={styles.summaryGrid}>
+                                    <Statistic
+                                        title="Composite score"
+                                        value={currentSnapshot.compositeScore}
+                                        precision={0}
+                                        suffix="%"
+                                    />
+                                    <Statistic
+                                        title="Completion rate"
+                                        value={currentSnapshot.completionRate}
+                                        precision={0}
+                                        suffix="%"
+                                    />
+                                    <Statistic
+                                        title="Days since activity"
+                                        value={currentSnapshot.daysSinceLastActivity}
+                                    />
+                                    <Statistic
+                                        title="Overdue tasks"
+                                        value={currentSnapshot.overdueTaskCount}
+                                    />
+                                    <Statistic
+                                        title="Snapshots"
+                                        value={selectedHireIntelligence?.snapshotHistory.length ?? 0}
+                                    />
+                                </div>
+                                <Paragraph type="secondary">
+                                    Current stage: {selectedHireIntelligence?.currentStageTitle || "Not available"}
+                                </Paragraph>
+                                <Paragraph type="secondary">
+                                    Resolved interventions: {selectedHireIntelligence?.resolvedFlags.length ?? 0}
+                                </Paragraph>
+                            </Space>
+                        ) : (
+                            <Paragraph type="secondary">
+                                Engagement snapshots will appear here after the intelligence
+                                service computes the first score for this hire.
+                            </Paragraph>
+                        )}
+                    </Card>
                 </Space>
+            </div>
+
+            <ScoreTrendChart
+                currentSnapshot={currentSnapshot}
+                snapshotHistory={selectedHireIntelligence?.snapshotHistory ?? []}
+            />
+
+            <div className={styles.detailGrid}>
+                <AtRiskFlagPanel
+                    activeFlag={selectedHireIntelligence?.activeFlag}
+                    isPending={isMutationPending}
+                    onAcknowledge={handleAcknowledgeFlag}
+                    onResolve={handleResolveFlag}
+                />
+                <InterventionHistoryPanel
+                    resolvedFlags={selectedHireIntelligence?.resolvedFlags ?? []}
+                />
             </div>
         </Space>
     );

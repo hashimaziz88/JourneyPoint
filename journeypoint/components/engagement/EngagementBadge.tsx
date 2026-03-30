@@ -3,10 +3,11 @@
 import React from "react";
 import { Space, Tag } from "antd";
 import {
+    AT_RISK_BADGE_LABEL,
     ENGAGEMENT_CLASSIFICATION_COLORS,
     ENGAGEMENT_CLASSIFICATION_LABELS,
-} from "@/constants/pipeline/filters";
-import type { IEngagementBadgeProps } from "@/types/pipeline/components";
+} from "@/constants/engagement/badge";
+import type { IEngagementBadgeProps } from "@/types/engagement/components";
 import { formatPercentage } from "@/utils/pipeline/board";
 
 /**
@@ -16,13 +17,16 @@ const EngagementBadge: React.FC<IEngagementBadgeProps> = ({
     classification,
     compositeScore,
     hasActiveAtRiskFlag,
+    compact = false,
 }) => (
     <Space wrap size={[8, 8]}>
         <Tag color={ENGAGEMENT_CLASSIFICATION_COLORS[classification]}>
             {ENGAGEMENT_CLASSIFICATION_LABELS[classification]}
         </Tag>
-        <Tag>{formatPercentage(compositeScore)} score</Tag>
-        {hasActiveAtRiskFlag ? <Tag color="error">At-risk flag active</Tag> : null}
+        {compact || compositeScore === undefined ? null : (
+            <Tag>{formatPercentage(compositeScore)} score</Tag>
+        )}
+        {hasActiveAtRiskFlag ? <Tag color="error">{AT_RISK_BADGE_LABEL}</Tag> : null}
     </Space>
 );
 
