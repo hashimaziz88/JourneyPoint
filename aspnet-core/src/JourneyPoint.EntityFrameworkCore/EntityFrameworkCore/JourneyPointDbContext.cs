@@ -1,6 +1,7 @@
 using Abp.Zero.EntityFrameworkCore;
 using JourneyPoint.Authorization.Roles;
 using JourneyPoint.Authorization.Users;
+using JourneyPoint.Domains.Audit;
 using JourneyPoint.Domains.Hires;
 using JourneyPoint.Domains.OnboardingPlans;
 using JourneyPoint.MultiTenancy;
@@ -52,6 +53,11 @@ namespace JourneyPoint.EntityFrameworkCore
         /// Gets or sets copied journey tasks persisted per hire journey.
         /// </summary>
         public DbSet<JourneyTask> JourneyTasks { get; set; }
+
+        /// <summary>
+        /// Gets or sets append-only AI workflow audit records.
+        /// </summary>
+        public DbSet<GenerationLog> GenerationLogs { get; set; }
 
         public JourneyPointDbContext(DbContextOptions<JourneyPointDbContext> options)
             : base(options)

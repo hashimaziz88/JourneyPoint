@@ -169,7 +169,7 @@ review the task list, and activate the journey.
 **Independent Test**: Enrolees and managers complete tasks, and facilitators can
 review AI-generated journey revisions before applying them.
 
-- [ ] T038 [P] [US4] Create AI audit entity in `aspnet-core/src/JourneyPoint.Core/Domains/Audit/GenerationLog.cs`
+- [x] T038 [P] [US4] Create AI audit entity in `aspnet-core/src/JourneyPoint.Core/Domains/Audit/GenerationLog.cs`
 - [ ] T039 [US4] Implement Groq extraction and personalisation client services in `aspnet-core/src/JourneyPoint.Application/Services/GroqService/`
 - [ ] T040 [US4] Extend journey application services for diff review and selective acceptance in `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/`
 - [ ] T041 [P] [US4] Build enrolee journey pages in `journeypoint/app/(enrolee)/my-journey/page.tsx` and `journeypoint/app/(enrolee)/my-journey/tasks/[taskId]/page.tsx`

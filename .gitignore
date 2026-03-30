@@ -424,3 +424,6 @@ aspnet-core/.dotnet-home/.dotnet/TelemetryStorageService/20260327081344_fb8bd7f2
 /aspnet-core/.localappdata/NuGet/v3-cache
 /aspnet-core/.nuget-packages
 /.dotnet-home/.dotnet/TelemetryStorageService
+/.appdata/NuGet
+/.dotnet-tools
+/.nuget-packages
