@@ -10,6 +10,7 @@ export const APP_ROUTES = {
   facilitatorPlans: "/facilitator/plans",
   facilitatorPlanImport: "/facilitator/plans/import",
   facilitatorHires: "/facilitator/hires",
+  facilitatorPipeline: "/facilitator/pipeline",
   managerMyTasks: "/manager/my-tasks",
   enroleeMyJourney: "/enrolee/my-journey",
 };

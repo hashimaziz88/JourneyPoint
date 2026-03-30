@@ -575,3 +575,52 @@
 - Alternatives considered: Returning only raw snapshots and flags or splitting
   current versus historical data into many smaller endpoints was rejected
   because it would complicate provider state and broaden frontend orchestration.
+
+## Decision 49: Deliver pipeline analytics in one dedicated facilitator route
+
+- Decision: JP-028 should add one dedicated App Router page at
+  `journeypoint/app/(facilitator)/facilitator/pipeline/page.tsx` rather than
+  embedding the board into the facilitator dashboard or hire list.
+- Rationale: The pipeline is its own milestone-5 workspace with filters,
+  cross-hire comparisons, and drill-in behavior that would overcrowd an
+  existing route.
+- Alternatives considered: Rendering the board inline on the facilitator
+  dashboard or inside the hire list was rejected because both would combine too
+  many unrelated responsibilities into one page.
+
+## Decision 50: Render module-derived columns directly from the backend payload
+
+- Decision: JP-028 should render pipeline columns from the ordered
+  `PipelineColumnDto` list returned by `EngagementAppService`, preserving the
+  module-derived columns plus the completion column exactly as scored on the
+  backend.
+- Rationale: JP-027 already centralizes current-stage derivation, and redoing
+  that logic in the browser would risk mismatches between the board and hire
+  intelligence views.
+- Alternatives considered: Hardcoding known module names or rebuilding columns
+  client-side from hire cards was rejected because both approaches drift from
+  the authoritative backend response.
+
+## Decision 51: Use lightweight reusable engagement badges on hire cards
+
+- Decision: JP-028 should introduce small presentational badges for engagement
+  classification and active at-risk visibility, keeping score text secondary to
+  clear visual state on each pipeline card.
+- Rationale: Facilitators need to scan many hires quickly, so compact badge
+  language communicates risk and health faster than verbose analytics text.
+- Alternatives considered: Displaying only raw scores or using large text-only
+  status blocks was rejected because both make the board harder to scan at a
+  glance.
+
+## Decision 52: Keep pipeline filtering provider-backed and server-authoritative
+
+- Decision: JP-028 should introduce a dedicated `pipelineProvider` that stores
+  the current keyword and classification filters plus the latest typed board
+  payload, and should refetch from the backend when filters change instead of
+  re-filtering a stale local board.
+- Rationale: Engagement snapshots are computed on demand in JP-027, so fresh
+  backend reads are part of the product behavior and should remain the source
+  of truth for filtered boards.
+- Alternatives considered: Filtering a previously loaded board entirely in
+  local component state was rejected because it can hide newly computed
+  engagement changes and make pipeline cards stale across facilitator actions.

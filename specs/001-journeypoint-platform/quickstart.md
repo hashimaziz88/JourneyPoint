@@ -160,8 +160,17 @@ Expected result:
 8. Re-open the same pipeline or hire view in a single request path and confirm
    the response does not create duplicate snapshots for the same hire inside
    that one response assembly.
-9. Confirm touched backend and frontend surfaces still satisfy the package-wide
-  engineering standards listed above.
+9. Open the facilitator pipeline page and confirm the board renders the
+   backend-provided module-derived columns plus the completion column in the
+   same order as the API payload.
+10. Apply a keyword or engagement-classification filter and confirm the page
+    refreshes from a fresh backend pipeline response rather than reclassifying
+    stale local cards.
+11. Confirm each pipeline card surfaces engagement and at-risk visibility
+    through reusable badges and allows drill-in into the selected hire detail
+    or intelligence view.
+12. Confirm touched backend and frontend surfaces still satisfy the package-wide
+    engineering standards listed above.
 
 ## Seed Data Expectations
 

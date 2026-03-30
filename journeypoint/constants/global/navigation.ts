@@ -7,6 +7,7 @@ export type NavigationIconKey =
   | "users"
   | "roles"
   | "plans"
+  | "pipeline"
   | "facilitator"
   | "manager"
   | "enrolee";
@@ -78,6 +79,14 @@ export const FACILITATOR_NAVIGATION_ITEMS: IWorkspaceNavigationItem[] = [
     permission: APP_PERMISSIONS.facilitator,
     description: "Manage enrolled hires and review journey activation state",
     iconKey: "facilitator",
+  },
+  {
+    key: "facilitator-pipeline",
+    label: "Pipeline",
+    href: APP_ROUTES.facilitatorPipeline,
+    permission: APP_PERMISSIONS.facilitator,
+    description: "Monitor module-stage progress, engagement health, and at-risk visibility",
+    iconKey: "pipeline",
   },
 ];
 
