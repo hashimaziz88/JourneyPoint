@@ -455,3 +455,53 @@
   single mutable flag reused forever was rejected because the former creates
   noisy intervention state and the latter collapses distinct risk episodes into
   one record.
+
+## Decision 40: Use a weighted 0..100 composite score with bounded sub-scores
+
+- Decision: JP-026 should compute one `CompositeScore` in the `0..100` range
+  from three bounded sub-scores: completion contributes 50%, recency
+  contributes 30%, and overdue-task pressure contributes 20%.
+- Rationale: Completion is the clearest progress signal, but recency and
+  overdue work still need enough weight to surface stalled journeys before task
+  completion alone makes the hire look healthier than they are.
+- Alternatives considered: Equal weighting was rejected because it
+  over-amplifies overdue count on journeys with few tasks, and a completion-only
+  score was rejected because it hides disengagement until too late.
+
+## Decision 41: Normalize recency and overdue inputs with simple clamped rules
+
+- Decision: JP-026 should normalize recency to `100` when activity is recent
+  and linearly decay it to `0` by day 14, while overdue pressure should start
+  at `100` and lose `25` points per overdue task with a floor at `0`.
+- Rationale: These rules are deterministic, easy to explain in demos, and
+  small enough to keep the first scoring service transparent without introducing
+  opaque heuristics or tenant-tunable weights.
+- Alternatives considered: Exponential decay and more granular penalty curves
+  were rejected because they are harder to reason about during milestone-5
+  validation and provide little immediate product value.
+
+## Decision 42: Use three shared classification bands for all facilitator reads
+
+- Decision: JP-026 should map the composite score into the shared bands
+  `Healthy` for scores `>= 75`, `NeedsAttention` for scores `>= 50` and `< 75`,
+  and `AtRisk` for scores `< 50`.
+- Rationale: These thresholds align with the existing product language in the
+  active spec and keep automated at-risk flag behavior easy to predict once
+  JP-027 starts raising and resolving flags from the computed classification.
+- Alternatives considered: More bands were rejected because the UI and seed
+  data only require the three existing states, and a higher at-risk threshold
+  was rejected because it would flood milestone-5 demos with false positives.
+
+## Decision 43: Keep engagement scoring as a pure Core service reused on demand
+
+- Decision: JP-026 should introduce a pure `EngagementScoreService` in
+  `JourneyPoint.Core/Domains/Engagement/` with no repository or EF dependencies,
+  returning one deterministic result object that pipeline and hire-detail
+  application services can both call during on-demand reads.
+- Rationale: This preserves ABP layer boundaries, prevents duplicated formulas
+  across future AppServices, and matches the approved on-demand scoring model in
+  the active spec.
+- Alternatives considered: Putting formulas directly in `EngagementAppService`
+  or persisting precomputed score state on every task mutation was rejected
+  because both approaches increase drift risk and conflict with the current
+  milestone scope.

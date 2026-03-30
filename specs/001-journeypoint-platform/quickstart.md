@@ -140,17 +140,22 @@ Expected result:
 
 ### Milestone 5 - Intelligence and Interventions
 
-1. Open the pipeline and confirm engagement computation appends a fresh
+1. Run the shared engagement scoring service with representative task-state
+   inputs and confirm completion, recency, overdue, and composite values are
+   all bounded in the `0..100` range.
+2. Confirm the same scoring input returns the same classification result for
+   both pipeline-style and hire-detail-style callers.
+3. Open the pipeline and confirm engagement computation appends a fresh
    snapshot instead of overwriting prior history.
-2. Open a hire detail view and confirm historical snapshots appear in
+4. Open a hire detail view and confirm historical snapshots appear in
    chronological order for the same hire and journey.
-3. Drive a hire below the at-risk threshold and confirm one unresolved flag is
+5. Drive a hire below the at-risk threshold and confirm one unresolved flag is
    raised with the original classification and raised-at context preserved.
-4. Acknowledge the active flag and confirm the record shows acknowledgement
+6. Acknowledge the active flag and confirm the record shows acknowledgement
    metadata without being resolved yet.
-5. Resolve the flag and confirm the same record now includes resolution
+7. Resolve the flag and confirm the same record now includes resolution
    metadata while preserving the original raised and acknowledged history.
-6. Confirm touched backend and frontend surfaces still satisfy the package-wide
+8. Confirm touched backend and frontend surfaces still satisfy the package-wide
    engineering standards listed above.
 
 ## Seed Data Expectations

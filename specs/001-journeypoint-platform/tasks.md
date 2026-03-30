@@ -191,7 +191,7 @@ engagement data, surfaces at-risk hires, and supports facilitator intervention.
 
 - [x] T045 [P] [US5] Create engagement entities in `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementSnapshot.cs` and `AtRiskFlag.cs`
 - [ ] T046 [US5] Register engagement persistence and migration updates in `aspnet-core/src/JourneyPoint.EntityFrameworkCore/EntityFrameworkCore/JourneyPointDbContext.cs` and `aspnet-core/src/JourneyPoint.EntityFrameworkCore/Migrations/`
-- [ ] T047 [US5] Implement engagement scoring domain service in `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementScoreService.cs`
+- [x] T047 [US5] Implement engagement scoring domain service in `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementScoreService.cs`
 - [ ] T048 [US5] Implement pipeline, hire intelligence, and intervention services in `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/`
 - [ ] T049 [P] [US5] Build facilitator pipeline page in `journeypoint/app/(facilitator)/pipeline/page.tsx`
 - [ ] T050 [P] [US5] Add engagement and pipeline provider state in `journeypoint/providers/engagementProvider/` and `journeypoint/providers/pipelineProvider/`

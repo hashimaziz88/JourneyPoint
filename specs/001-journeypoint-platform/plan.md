@@ -95,6 +95,17 @@ same-tenant ownership through `Hire` and `Journey`, and keep the initial file
 surface minimal so persistence and scoring work in JP-026 and JP-027 can build
 directly on the model.
 
+The current planning increment for JP-026 focuses milestone 5 engagement
+scoring in the Core layer. This slice will introduce a reusable
+`EngagementScoreService` under
+`aspnet-core/src/JourneyPoint.Core/Domains/Engagement/` that combines
+completion, recency, and overdue-task inputs into one composite `0..100` score
+ plus a shared `Healthy`, `NeedsAttention`, or `AtRisk` classification. The
+service will stay AppService-agnostic so both the future pipeline and
+hire-intelligence application slices can call the same computation path during
+their on-demand reads without duplicating formulas or drifting on threshold
+behavior.
+
 ### JP-020 Primary Risks
 
 - Long journeys can produce oversized prompts or slow Groq responses, so the
@@ -142,6 +153,18 @@ directly on the model.
 - Tenant safety depends on flag and snapshot ownership flowing through the
   existing hire and journey aggregates; standalone records without scoped
   foreign keys would weaken later service-layer filtering.
+
+### JP-026 Primary Risks
+
+- Scoring can become hard to trust if completion, recency, and overdue signals
+  are blended differently across features, so one Core service must own the
+  composite formula and classification thresholds.
+- Overdue penalties can dominate the score too aggressively for longer journeys
+  if they are not clamped, so the formula must use bounded sub-scores rather
+  than unbounded count subtraction.
+- Pipeline and hire-detail reads are on-demand in the current scope, so the
+  service contract must be lightweight, deterministic, and free of repository
+  or infrastructure dependencies.
 
 ## Technical Context
 
