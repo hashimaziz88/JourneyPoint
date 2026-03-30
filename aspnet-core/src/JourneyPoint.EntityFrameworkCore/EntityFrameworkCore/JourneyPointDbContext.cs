@@ -2,6 +2,7 @@ using Abp.Zero.EntityFrameworkCore;
 using JourneyPoint.Authorization.Roles;
 using JourneyPoint.Authorization.Users;
 using JourneyPoint.Domains.Audit;
+using JourneyPoint.Domains.Engagement;
 using JourneyPoint.Domains.Hires;
 using JourneyPoint.Domains.OnboardingPlans;
 using JourneyPoint.MultiTenancy;
@@ -58,6 +59,16 @@ namespace JourneyPoint.EntityFrameworkCore
         /// Gets or sets append-only AI workflow audit records.
         /// </summary>
         public DbSet<GenerationLog> GenerationLogs { get; set; }
+
+        /// <summary>
+        /// Gets or sets append-only engagement score history rows.
+        /// </summary>
+        public DbSet<EngagementSnapshot> EngagementSnapshots { get; set; }
+
+        /// <summary>
+        /// Gets or sets durable at-risk intervention records.
+        /// </summary>
+        public DbSet<AtRiskFlag> AtRiskFlags { get; set; }
 
         public JourneyPointDbContext(DbContextOptions<JourneyPointDbContext> options)
             : base(options)
