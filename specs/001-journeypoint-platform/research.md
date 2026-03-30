@@ -418,3 +418,209 @@
 - Alternatives considered: Auto-selecting all diffs or treating unopened diffs
   as implicitly accepted was rejected because both approaches weaken review
   clarity and make selective acceptance less trustworthy.
+
+## Decision 37: Keep engagement history append-only and tenant-scoped
+
+- Decision: JP-025 should model `EngagementSnapshot` as an append-only,
+  same-tenant historical record linked to both `Hire` and `Journey`, with one
+  row written per engagement computation instead of updating a current-score
+  record in place.
+- Rationale: Pipeline trends, score-history charts, and intervention auditing
+  depend on preserved point-in-time metrics rather than only the latest score.
+- Alternatives considered: Storing only a current score on `Hire` or updating
+  the latest snapshot row was rejected because it destroys historical context
+  and weakens the intervention story.
+
+## Decision 38: Treat at-risk flags as durable intervention records with a simple lifecycle
+
+- Decision: JP-025 should model `AtRiskFlag` as a durable intervention record
+  with lifecycle `Active -> Acknowledged -> Resolved`, preserving
+  acknowledgement and resolution metadata instead of deleting or overwriting old
+  flags.
+- Rationale: Facilitators need to see when a hire first became at risk, who
+  acknowledged the problem, and how it was later resolved.
+- Alternatives considered: Soft-deleting old flags or storing only a boolean
+  at-risk marker on `Hire` was rejected because both approaches lose the
+  operational history required for review and demo scenarios.
+
+## Decision 39: Allow one unresolved at-risk flag per hire in the initial M5 slice
+
+- Decision: JP-025 should enforce at most one unresolved `AtRiskFlag` for a
+  hire at a time, while still allowing future risk episodes to create new rows
+  once the prior flag has been resolved.
+- Rationale: This keeps intervention workflows simple for milestone 5 and
+  matches the active spec requirement that a new flag is raised only when one
+  does not already exist.
+- Alternatives considered: Allowing multiple concurrent active flags or a
+  single mutable flag reused forever was rejected because the former creates
+  noisy intervention state and the latter collapses distinct risk episodes into
+  one record.
+
+## Decision 40: Use a weighted 0..100 composite score with bounded sub-scores
+
+- Decision: JP-026 should compute one `CompositeScore` in the `0..100` range
+  from three bounded sub-scores: completion contributes 50%, recency
+  contributes 30%, and overdue-task pressure contributes 20%.
+- Rationale: Completion is the clearest progress signal, but recency and
+  overdue work still need enough weight to surface stalled journeys before task
+  completion alone makes the hire look healthier than they are.
+- Alternatives considered: Equal weighting was rejected because it
+  over-amplifies overdue count on journeys with few tasks, and a completion-only
+  score was rejected because it hides disengagement until too late.
+
+## Decision 41: Normalize recency and overdue inputs with simple clamped rules
+
+- Decision: JP-026 should normalize recency to `100` when activity is recent
+  and linearly decay it to `0` by day 14, while overdue pressure should start
+  at `100` and lose `25` points per overdue task with a floor at `0`.
+- Rationale: These rules are deterministic, easy to explain in demos, and
+  small enough to keep the first scoring service transparent without introducing
+  opaque heuristics or tenant-tunable weights.
+- Alternatives considered: Exponential decay and more granular penalty curves
+  were rejected because they are harder to reason about during milestone-5
+  validation and provide little immediate product value.
+
+## Decision 42: Use three shared classification bands for all facilitator reads
+
+- Decision: JP-026 should map the composite score into the shared bands
+  `Healthy` for scores `>= 75`, `NeedsAttention` for scores `>= 50` and `< 75`,
+  and `AtRisk` for scores `< 50`.
+- Rationale: These thresholds align with the existing product language in the
+  active spec and keep automated at-risk flag behavior easy to predict once
+  JP-027 starts raising and resolving flags from the computed classification.
+- Alternatives considered: More bands were rejected because the UI and seed
+  data only require the three existing states, and a higher at-risk threshold
+  was rejected because it would flood milestone-5 demos with false positives.
+
+## Decision 43: Keep engagement scoring as a pure Core service reused on demand
+
+- Decision: JP-026 should introduce a pure `EngagementScoreService` in
+  `JourneyPoint.Core/Domains/Engagement/` with no repository or EF dependencies,
+  returning one deterministic result object that pipeline and hire-detail
+  application services can both call during on-demand reads.
+- Rationale: This preserves ABP layer boundaries, prevents duplicated formulas
+  across future AppServices, and matches the approved on-demand scoring model in
+  the active spec.
+- Alternatives considered: Putting formulas directly in `EngagementAppService`
+  or persisting precomputed score state on every task mutation was rejected
+  because both approaches increase drift risk and conflict with the current
+  milestone scope.
+
+## Decision 44: Expose milestone-5 analytics through one dedicated Engagement AppService
+
+- Decision: JP-027 should introduce `IEngagementAppService` and
+  `EngagementAppService` under
+  `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/`,
+  rather than spreading facilitator analytics endpoints across `HireService`
+  and `JourneyService`.
+- Rationale: Pipeline, hire-intelligence, and intervention flows all depend on
+  the same repositories, scoring service, and at-risk flag rules, so one
+  service slice keeps DTOs and orchestration cohesive.
+- Alternatives considered: Extending `HireAppService` for profile analytics and
+  creating a separate pipeline service was rejected because it would duplicate
+  engagement-computation orchestration and split the intervention model across
+  multiple service boundaries.
+
+## Decision 45: Compute at most once per hire within a single request path
+
+- Decision: JP-027 should run on-demand engagement computation once per hire
+  per application-service request, reuse that in-memory result while shaping the
+  response, and append exactly one new `EngagementSnapshot` row for that request
+  path.
+- Rationale: This still satisfies the spec's on-demand behavior while avoiding
+  accidental duplicate snapshots from repeated scoring calls inside one pipeline
+  or hire-detail response assembly.
+- Alternatives considered: Debouncing across separate HTTP requests was
+  rejected because it weakens the explicit “compute on open” requirement, and
+  writing a snapshot every time any internal helper needs the score was
+  rejected because it creates noisy history with no product value.
+
+## Decision 46: Raise and resolve at-risk flags from classification transitions
+
+- Decision: JP-027 should raise a new `Active` flag only when the latest
+  computed classification is `AtRisk` and no unresolved flag exists for the
+  hire, leave unresolved flags open while the classification remains
+  `NeedsAttention` or `AtRisk`, and auto-resolve the unresolved flag only when
+  the classification returns to `Healthy`.
+- Rationale: This matches the approved milestone-5 lifecycle, keeps unresolved
+  interventions stable while a hire is still struggling, and avoids noisy flag
+  churn when a hire moves between `NeedsAttention` and `AtRisk`.
+- Alternatives considered: Raising separate flags for both `NeedsAttention` and
+  `AtRisk`, or auto-resolving as soon as the score rises above the at-risk
+  threshold, was rejected because both options would create confusing
+  facilitator history.
+
+## Decision 47: Keep acknowledgement and manual resolution as explicit facilitator actions
+
+- Decision: JP-027 should allow acknowledgement only for `Active` flags and
+  manual resolution for `Active` or `Acknowledged` flags, recording notes,
+  acting user id, and timestamps without overwriting prior raised or
+  acknowledgement context.
+- Rationale: These rules keep the intervention history auditable and simple for
+  later UI flows, while making repeated or invalid actions fail fast.
+- Alternatives considered: Idempotent no-op acknowledgements or allowing
+  resolution of already resolved flags was rejected because it hides operator
+  mistakes and weakens lifecycle clarity.
+
+## Decision 48: Shape pipeline and hire-detail payloads around current intelligence plus history
+
+- Decision: JP-027 should return a pipeline payload grouped into ordered module
+  columns plus a final completion column, with each card containing hire
+  identity, current module stage, latest score/classification, and active-flag
+  visibility; the hire-detail payload should include hire summary, current
+  intelligence, recent snapshot history, active flag, and resolved intervention
+  history.
+- Rationale: This gives JP-028 and JP-029 the typed backend contracts they need
+  without forcing frontend joins across unrelated analytics endpoints.
+- Alternatives considered: Returning only raw snapshots and flags or splitting
+  current versus historical data into many smaller endpoints was rejected
+  because it would complicate provider state and broaden frontend orchestration.
+
+## Decision 49: Deliver pipeline analytics in one dedicated facilitator route
+
+- Decision: JP-028 should add one dedicated App Router page at
+  `journeypoint/app/(facilitator)/facilitator/pipeline/page.tsx` rather than
+  embedding the board into the facilitator dashboard or hire list.
+- Rationale: The pipeline is its own milestone-5 workspace with filters,
+  cross-hire comparisons, and drill-in behavior that would overcrowd an
+  existing route.
+- Alternatives considered: Rendering the board inline on the facilitator
+  dashboard or inside the hire list was rejected because both would combine too
+  many unrelated responsibilities into one page.
+
+## Decision 50: Render module-derived columns directly from the backend payload
+
+- Decision: JP-028 should render pipeline columns from the ordered
+  `PipelineColumnDto` list returned by `EngagementAppService`, preserving the
+  module-derived columns plus the completion column exactly as scored on the
+  backend.
+- Rationale: JP-027 already centralizes current-stage derivation, and redoing
+  that logic in the browser would risk mismatches between the board and hire
+  intelligence views.
+- Alternatives considered: Hardcoding known module names or rebuilding columns
+  client-side from hire cards was rejected because both approaches drift from
+  the authoritative backend response.
+
+## Decision 51: Use lightweight reusable engagement badges on hire cards
+
+- Decision: JP-028 should introduce small presentational badges for engagement
+  classification and active at-risk visibility, keeping score text secondary to
+  clear visual state on each pipeline card.
+- Rationale: Facilitators need to scan many hires quickly, so compact badge
+  language communicates risk and health faster than verbose analytics text.
+- Alternatives considered: Displaying only raw scores or using large text-only
+  status blocks was rejected because both make the board harder to scan at a
+  glance.
+
+## Decision 52: Keep pipeline filtering provider-backed and server-authoritative
+
+- Decision: JP-028 should introduce a dedicated `pipelineProvider` that stores
+  the current keyword and classification filters plus the latest typed board
+  payload, and should refetch from the backend when filters change instead of
+  re-filtering a stale local board.
+- Rationale: Engagement snapshots are computed on demand in JP-027, so fresh
+  backend reads are part of the product behavior and should remain the source
+  of truth for filtered boards.
+- Alternatives considered: Filtering a previously loaded board entirely in
+  local component state was rejected because it can hide newly computed
+  engagement changes and make pipeline cards stale across facilitator actions.

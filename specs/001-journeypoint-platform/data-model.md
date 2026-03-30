@@ -627,20 +627,418 @@ JourneyPoint has three primary domain areas:
 
 ### EngagementSnapshot
 
-- Purpose: append-only history for scores and trend chart rendering
-- Core fields: hire id, journey id, completion rate, days since last activity,
-  overdue count, composite score, classification, computed at
+- Purpose: append-only engagement history for scoring, trend charts, and
+  facilitator intelligence views
+- Core fields:
+  - tenant id
+  - hire id
+  - journey id
+  - completion rate
+  - days since last activity
+  - overdue task count
+  - composite score
+  - classification
+  - computed at
+- Validation:
+  - every snapshot belongs to the same tenant as the referenced hire and
+    journey
+  - snapshots are append-only and are never updated in place to represent a
+    later computation
+  - `ComputedAt` reflects the time of the scoring run and is required
+  - `CompositeScore` must stay within the scoring range defined by the later
+    engagement service
+  - a snapshot may be recorded only for an existing hire and its linked journey
 - Relationships:
   - many-to-one with `Hire`
   - many-to-one with `Journey`
 
 ### AtRiskFlag
 
-- Purpose: facilitator intervention record for disengaged hires
-- Core fields: hire id, raised at, classification at raise, acknowledged by
-  user id, acknowledged at, intervention notes, resolved at, resolution type
+- Lifecycle: Active -> Acknowledged -> Resolved
+- Purpose: durable facilitator intervention record for disengaged hires
+- Core fields:
+  - tenant id
+  - hire id
+  - journey id
+  - raised at
+  - classification at raise
+  - current status
+  - acknowledged by user id
+  - acknowledged at
+  - acknowledgement notes
+  - resolved by user id
+  - resolved at
+  - resolution type
+  - resolution notes
+- Validation:
+  - every flag belongs to the same tenant as the referenced hire and journey
+  - only one unresolved flag may exist per hire at a time in the initial M5
+    slice
+  - acknowledgement fields remain null until a facilitator explicitly
+    acknowledges the active flag
+  - resolution fields remain null until the flag is resolved manually or
+    automatically
+  - resolving a flag preserves the record and must not delete or overwrite the
+    original raised-at context
 - Relationships:
   - many-to-one with `Hire`
+  - many-to-one with `Journey`
+
+### AtRiskFlagStatus
+
+- Lifecycle: Active -> Acknowledged -> Resolved
+- Purpose: distinguish an unresolved risk signal from one that has been seen by
+  a facilitator and one that has been fully resolved
+
+### AtRiskResolutionType
+
+- Purpose: classify how an at-risk episode ended, such as manual facilitator
+  resolution or automatic recovery after the hire returned to a healthy score
+
+## Engagement Scoring Service Contract
+
+### EngagementScoreInput
+
+- Purpose: provide one infrastructure-free scoring input model that future
+  pipeline and hire-detail application services can populate before calling the
+  Core scoring service
+- Core fields:
+  - total task count
+  - completed task count
+  - days since last activity
+  - overdue task count
+  - computed at
+- Validation:
+  - `TotalTaskCount` must be greater than zero for a valid scoring run
+  - `CompletedTaskCount` must be between `0` and `TotalTaskCount`
+  - `DaysSinceLastActivity` cannot be negative
+  - `OverdueTaskCount` cannot be negative
+  - `ComputedAt` is required so on-demand callers can stamp the resulting
+    snapshot consistently
+
+### EngagementScoreResult
+
+- Purpose: return the normalized sub-scores, composite score, and shared
+  classification from one scoring call
+- Core fields:
+  - completion rate
+  - completion score
+  - recency score
+  - overdue score
+  - composite score
+  - classification
+  - computed at
+- Validation:
+  - all returned numeric scores stay within the `0..100` range
+  - `Classification` is derived only from the composite score bands rather than
+    set independently by callers
+  - the result is deterministic for the same input values
+
+### JP-026 Planned Domain Files
+
+- `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementScoreService.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementScoreInput.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementScoreResult.cs`
+
+### JP-026 Derived Formula Rules
+
+- `CompletionRate = (CompletedTaskCount / TotalTaskCount) * 100`
+- `CompletionScore = CompletionRate`
+- `RecencyScore = max(0, 100 - ((DaysSinceLastActivity / 14) * 100))`
+- `OverdueScore = max(0, 100 - (OverdueTaskCount * 25))`
+- `CompositeScore = (CompletionScore * 0.50) + (RecencyScore * 0.30) + (OverdueScore * 0.20)`
+- `Healthy` applies when `CompositeScore >= 75`
+- `NeedsAttention` applies when `CompositeScore >= 50` and `< 75`
+- `AtRisk` applies when `CompositeScore < 50`
+
+## Engagement Application Payload Contracts
+
+### PipelineBoardDto
+
+- Purpose: return facilitator pipeline data with one current intelligence view
+  per hire after on-demand engagement computation
+- Core fields:
+  - generated at
+  - ordered pipeline columns
+  - active filter summary
+- Notes:
+  - the service computes each included hire at most once per request and reuses
+    that result while shaping the board response
+
+### PipelineColumnDto
+
+- Purpose: group pipeline cards into ordered onboarding-module columns plus the
+  final completion column
+- Core fields:
+  - column key
+  - column title
+  - order index
+  - hire cards
+- Validation:
+  - active hires appear under the current module title derived from their next
+    incomplete task
+  - fully completed journeys appear in the final completion column
+
+### PipelineHireCardDto
+
+- Purpose: provide one glanceable pipeline card payload for frontend rendering
+- Core fields:
+  - hire id
+  - full name
+  - email address
+  - role title
+  - department
+  - start date
+  - current journey status
+  - current stage title
+  - completion rate
+  - composite score
+  - classification
+  - has active at-risk flag
+  - active at-risk flag id
+  - snapshot computed at
+
+### HireIntelligenceDetailDto
+
+- Purpose: return one hire profile intelligence view after on-demand engagement
+  computation
+- Core fields:
+  - hire summary
+  - plan summary
+  - journey summary
+  - current snapshot
+  - recent snapshot history
+  - active flag
+  - resolved flag history
+- Validation:
+  - all returned intelligence records belong to the same tenant as the selected
+    hire
+  - snapshot history is returned newest-first and remains append-only
+
+### AtRiskFlagDto
+
+- Purpose: return one facilitator-readable intervention record for active or
+  historical display
+- Core fields:
+  - flag id
+  - status
+  - raised at
+  - classification at raise
+  - acknowledged by user id
+  - acknowledged at
+  - acknowledgement notes
+  - resolved by user id
+  - resolved at
+  - resolution type
+  - resolution notes
+
+### AcknowledgeAtRiskFlagRequest
+
+- Purpose: capture facilitator acknowledgement and notes for an active flag
+- Core fields:
+  - flag id
+  - acknowledgement notes
+- Validation:
+  - only `Active` flags may be acknowledged
+  - the signed-in facilitator must belong to the same tenant as the flag
+
+### ResolveAtRiskFlagRequest
+
+- Purpose: capture facilitator-driven resolution of an unresolved flag
+- Core fields:
+  - flag id
+  - resolution type
+  - resolution notes
+- Validation:
+  - only `Active` or `Acknowledged` flags may be manually resolved
+  - resolution preserves raised and acknowledgement history already on the flag
+
+### JP-027 Planned Application Files
+
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/IEngagementAppService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/EngagementAppService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/EngagementAppService.Support.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/GetPipelineBoardInput.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/PipelineBoardDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/PipelineColumnDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/PipelineHireCardDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/HireIntelligenceDetailDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/EngagementSnapshotDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/AtRiskFlagDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/AcknowledgeAtRiskFlagRequest.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/ResolveAtRiskFlagRequest.cs`
+
+### JP-027 Derived Application Rules
+
+- Pipeline and hire-detail endpoints must call the same `EngagementScoreService`
+  and append one new `EngagementSnapshot` row for each scored hire in that
+  request path.
+- If the computed classification is `AtRisk` and there is no unresolved flag,
+  the service raises a new `Active` `AtRiskFlag`.
+- If an unresolved flag exists and the classification returns to `Healthy`, the
+  service auto-resolves that flag with `AutomaticHealthyRecovery`.
+- If the classification is `NeedsAttention`, no new flag is raised and any
+  existing unresolved flag remains open.
+- Acknowledge transitions are `Active -> Acknowledged` only.
+- Manual resolve transitions are `Active -> Resolved` or
+  `Acknowledged -> Resolved` only.
+
+### JP-025 Planned Domain Files
+
+- `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementSnapshot.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/AtRiskFlag.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/AtRiskFlagStatus.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/AtRiskResolutionType.cs`
+
+### JP-025 Validation Steps
+
+1. Create two engagement snapshots for the same hire and journey and confirm
+   both rows persist in chronological history rather than overwriting the prior
+   computation.
+2. Confirm every snapshot and at-risk flag record carries the same tenant
+   ownership as the referenced hire and journey.
+3. Raise an at-risk flag for a hire and confirm a second unresolved flag cannot
+   be created until the first one has been resolved.
+4. Acknowledge an active flag and confirm acknowledgement metadata is recorded
+   without resolving the intervention.
+5. Resolve the flag and confirm the record keeps its original raised-at and
+   acknowledgement context while adding resolution metadata.
+
+### JP-026 Validation Steps
+
+1. Score a journey with non-zero totals and confirm the service returns
+   completion, recency, overdue, and composite values all within `0..100`.
+2. Confirm the same input produces the same `EngagementScoreResult` regardless
+   of whether the future caller is pipeline or hire-detail logic.
+3. Confirm recent activity with no overdue tasks produces a higher score than
+   identical completion with stale activity and overdue work.
+4. Confirm the classification bands map correctly at the thresholds `75` and
+   `50`.
+5. Confirm invalid inputs such as zero total tasks, negative recency, or
+   completed tasks above the total are rejected before a score is returned.
+
+### JP-027 Validation Steps
+
+1. Open the pipeline endpoint and confirm same-tenant hires are grouped into
+   ordered module columns plus the completion column, with one current score
+   per returned hire.
+2. Open a hire-intelligence endpoint and confirm it returns current snapshot
+   data, recent snapshot history, active flag state, and resolved flag history
+   for only the selected hire.
+3. Compute a hire into the `AtRisk` band and confirm a new unresolved
+   `AtRiskFlag` is created only when one does not already exist.
+4. Recompute the same hire while still below the threshold and confirm the
+   service appends a new snapshot without creating a duplicate unresolved flag.
+5. Recompute the hire back into `Healthy` and confirm the unresolved flag is
+   auto-resolved with preserved raised and acknowledgement context.
+6. Acknowledge an `Active` flag and confirm the service records facilitator,
+   time, and notes while leaving the intervention unresolved.
+7. Attempt to acknowledge or resolve a flag from another tenant and confirm the
+   request is rejected.
+8. Attempt to resolve an already resolved flag and confirm the request is
+   rejected.
+
+## Facilitator Pipeline Frontend Contracts
+
+### FacilitatorPipelineBoardState (Transient Frontend Contract)
+
+- Purpose: hold the current facilitator pipeline filters, loading state, and
+  latest board payload inside a strict four-file provider slice
+- Core fields:
+  - keyword
+  - classification filter
+  - is pending
+  - is error
+  - board
+- Validation:
+  - filter state is explicitly typed and uses the backend payload as the source
+    of truth
+  - changing filters should trigger a fresh backend read instead of
+    reclassifying or regrouping hires in the browser
+
+### FacilitatorPipelineColumnViewModel (Transient Frontend Contract)
+
+- Purpose: drive one rendered Kanban column on the facilitator pipeline page
+- Core fields:
+  - column key
+  - column title
+  - order index
+  - hire cards
+- Validation:
+  - rendered columns preserve backend order
+  - module-derived columns and the completion column are not hardcoded in the
+    UI
+
+### HirePipelineCardViewModel (Transient Frontend Contract)
+
+- Purpose: render one facilitator-visible pipeline card with quick health and
+  drill-in context
+- Core fields:
+  - hire id
+  - journey id
+  - full name
+  - role title
+  - department
+  - start date
+  - current stage title
+  - completion rate
+  - composite score
+  - classification
+  - has active at-risk flag
+  - active at-risk flag id
+  - snapshot computed at
+- Validation:
+  - cards link into the hire intelligence route using existing hire ids only
+  - classification and at-risk visibility are rendered from typed backend data
+    rather than inferred locally
+
+### EngagementBadgeProps (Transient Frontend Contract)
+
+- Purpose: define one reusable badge component contract for engagement and
+  at-risk visibility across the pipeline board and later hire intelligence UI
+- Core fields:
+  - classification
+  - has active at-risk flag
+  - compact mode
+- Validation:
+  - badge variants map directly to milestone-5 classification bands
+  - active at-risk visibility is additive to classification rather than a
+    replacement for it
+
+### JP-028 Planned Frontend Files
+
+- `journeypoint/app/(facilitator)/facilitator/pipeline/page.tsx`
+- `journeypoint/providers/pipelineProvider/actions.tsx`
+- `journeypoint/providers/pipelineProvider/context.tsx`
+- `journeypoint/providers/pipelineProvider/index.tsx`
+- `journeypoint/providers/pipelineProvider/reducer.tsx`
+- `journeypoint/components/pipeline/PipelineBoardView.tsx`
+- `journeypoint/components/pipeline/PipelineKanban.tsx`
+- `journeypoint/components/pipeline/PipelineColumn.tsx`
+- `journeypoint/components/pipeline/HirePipelineCard.tsx`
+- `journeypoint/components/engagement/EngagementBadge.tsx`
+- `journeypoint/components/pipeline/style/style.ts`
+- `journeypoint/types/pipeline/index.ts`
+- `journeypoint/types/pipeline/components.ts`
+- `journeypoint/constants/pipeline/filters.ts`
+- `journeypoint/utils/pipeline/board.ts`
+- `journeypoint/constants/auth/routes.ts`
+- `journeypoint/constants/global/navigation.ts`
+
+### JP-028 Validation Steps
+
+1. Open the facilitator pipeline page and confirm it loads the typed board
+   payload from the backend with module-derived columns plus the final
+   completion column in backend order.
+2. Confirm each hire card shows identity, current stage, completion summary,
+   engagement classification, and active at-risk visibility without inline
+   styles or local classification logic.
+3. Change the keyword or classification filter and confirm the provider issues
+   a fresh backend request instead of regrouping a stale board locally.
+4. Clear the filters and confirm the board returns to the unfiltered backend
+   view without lingering client-side state.
+5. Click a hire card drill-in action and confirm it routes into the existing
+   hire intelligence detail entry point using the selected hire id.
 
 ## Derived Rules
 

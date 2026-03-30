@@ -86,6 +86,44 @@ snapshot. The minimal file surface stays in
  `journeypoint/components/journey/`, `journeypoint/providers/journeyProvider/`,
  and dedicated `types/`, `constants/`, and `utils/` journey modules.
 
+The current planning increment for JP-025 focuses milestone 5 domain modeling
+for engagement analytics and intervention tracking. This slice will introduce
+append-only `EngagementSnapshot` history plus durable `AtRiskFlag` records
+under `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/`, define a simple
+flag lifecycle with acknowledgement and resolution metadata, preserve
+same-tenant ownership through `Hire` and `Journey`, and keep the initial file
+surface minimal so persistence and scoring work in JP-026 and JP-027 can build
+directly on the model.
+
+The current planning increment for JP-026 focuses milestone 5 engagement
+scoring in the Core layer. This slice will introduce a reusable
+`EngagementScoreService` under
+`aspnet-core/src/JourneyPoint.Core/Domains/Engagement/` that combines
+completion, recency, and overdue-task inputs into one composite `0..100` score
+ plus a shared `Healthy`, `NeedsAttention`, or `AtRisk` classification. The
+service will stay AppService-agnostic so both the future pipeline and
+hire-intelligence application slices can call the same computation path during
+their on-demand reads without duplicating formulas or drifting on threshold
+behavior.
+
+The current planning increment for JP-027 focuses milestone 5 application
+orchestration for facilitator analytics and intervention handling. This slice
+will introduce an `EngagementService` application surface under
+`aspnet-core/src/JourneyPoint.Application/Services/EngagementService/` that
+computes engagement on demand for pipeline and hire-detail reads, appends new
+`EngagementSnapshot` history rows, raises or auto-resolves `AtRiskFlag`
+records according to the current classification, and exposes typed payloads for
+pipeline cards, hire intelligence detail, acknowledgement, and manual
+resolution flows without leaking cross-tenant hire visibility.
+
+The current planning increment for JP-028 focuses milestone 5 facilitator
+analytics UX on top of the completed engagement backend. This slice will add a
+dedicated App Router pipeline page, render module-derived Kanban columns plus a
+completion column from the typed engagement payload, surface reusable
+engagement and at-risk badges on each hire card, and provide lightweight
+filters plus drill-in links into hire intelligence views without duplicating
+engagement-computation logic in the browser.
+
 ### JP-020 Primary Risks
 
 - Long journeys can produce oversized prompts or slow Groq responses, so the
@@ -122,6 +160,54 @@ snapshot. The minimal file surface stays in
 - Apply actions must submit only accepted diffs and then refresh the backend
   draft state; otherwise stale proposal state can linger on-screen after the
   journey snapshot has already changed.
+
+### JP-025 Primary Risks
+
+- Engagement history can become noisy if updates overwrite prior scores, so the
+  model must make append-only snapshot semantics explicit from the start.
+- At-risk flags can become ambiguous if acknowledgement and resolution fields
+  are not modeled separately, so the lifecycle must clearly distinguish an
+  active unresolved flag from one that has only been acknowledged.
+- Tenant safety depends on flag and snapshot ownership flowing through the
+  existing hire and journey aggregates; standalone records without scoped
+  foreign keys would weaken later service-layer filtering.
+
+### JP-026 Primary Risks
+
+- Scoring can become hard to trust if completion, recency, and overdue signals
+  are blended differently across features, so one Core service must own the
+  composite formula and classification thresholds.
+- Overdue penalties can dominate the score too aggressively for longer journeys
+  if they are not clamped, so the formula must use bounded sub-scores rather
+  than unbounded count subtraction.
+- Pipeline and hire-detail reads are on-demand in the current scope, so the
+  service contract must be lightweight, deterministic, and free of repository
+  or infrastructure dependencies.
+
+### JP-027 Primary Risks
+
+- Pipeline and hire-detail queries can drift if each one computes and shapes
+  engagement differently, so the application layer must centralize the
+  orchestration and reuse the same scoring path plus snapshot-writing logic.
+- Repeated profile or pipeline opens can create noisy history if the service
+  writes multiple snapshots for the same hire inside one request path, so each
+  request should compute at most once per hire and reuse that result while
+  assembling the response.
+- Intervention handling becomes confusing if acknowledge and resolve actions
+  allow invalid transitions, so the service must enforce strict flag lifecycle
+  rules before later UI work depends on them.
+
+### JP-028 Primary Risks
+
+- The backend returns module-derived columns dynamically, so the frontend board
+  must render ordered columns from payload data instead of hardcoding stage
+  names that could drift from the journey model.
+- Pipeline cards need to communicate score, classification, and at-risk state
+  quickly without turning the board into dense analytics text, so badge and
+  card composition must stay compact and scannable.
+- The facilitator may filter the board frequently, so provider state should
+  treat backend responses as authoritative and avoid client-side recomputation
+  of classification or column membership.
 
 ## Technical Context
 

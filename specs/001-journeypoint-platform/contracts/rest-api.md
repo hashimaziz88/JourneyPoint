@@ -92,6 +92,9 @@ should remain ABP application-service friendly, typically under
   actor.
 - Hire detail and pipeline calls are allowed to trigger on-demand engagement
   computation before returning the response.
+- On-demand engagement reads should call one shared Core scoring service so
+  pipeline and hire-detail responses cannot diverge on the same underlying task
+  state.
 - The hire-creation response should expose account-provisioning outcome,
   manager-link validation, and welcome-notification status separately from later
   draft-journey generation.
@@ -127,6 +130,31 @@ should remain ABP application-service friendly, typically under
   status on the backend.
 - Participant-visible personalisation indicators should reflect durable applied
   AI changes only and must not be sourced from transient proposal payloads.
+- Engagement snapshot writes should append new history rows instead of updating
+  a previous score record in place.
+- Engagement scoring should remain deterministic for the same task-state input,
+  with completion, recency, overdue, composite, and classification values all
+  derived from one reusable domain formula.
+- Pipeline and hire-intelligence endpoints should append exactly one new
+  snapshot per scored hire per request path, then reuse that result while
+  building the response payload.
+- The facilitator pipeline board should consume the ordered `PipelineBoardDto`
+  payload directly, including module-derived columns plus the final completion
+  column, rather than rebuilding stage grouping in the browser.
+- Pipeline filters should be expressed through the typed query contract
+  (`keyword` plus optional `classification`) and should trigger a fresh backend
+  request so on-demand engagement reads stay authoritative.
+- Pipeline cards should expose enough typed metadata for quick drill-in into
+  hire intelligence views without requiring a second lookup just to build card
+  identity or at-risk status.
+- At-risk flag operations should preserve acknowledgement and resolution
+  metadata as part of one durable intervention record rather than deleting old
+  flags.
+- Unresolved at-risk flags must remain tenant-scoped through the referenced
+  hire and journey, and the contract should prevent unrelated-hire visibility
+  when pipeline and profile intelligence are queried.
+- Acknowledge operations should be valid only for `Active` flags, while manual
+  resolve operations should be valid only for `Active` or `Acknowledged` flags.
 - Concrete API methods should continue to be exposed through
   interface-and-implementation AppService pairs with DTOs that live beside
   their service slice under `JourneyPoint.Application/Services/<Feature>/Dto/`.

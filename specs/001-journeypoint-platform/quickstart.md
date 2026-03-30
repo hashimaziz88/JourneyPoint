@@ -140,12 +140,37 @@ Expected result:
 
 ### Milestone 5 - Intelligence and Interventions
 
-1. Open the pipeline and confirm scores are computed.
-2. Open a hire detail view and confirm historical snapshots appear.
-3. Acknowledge and resolve an at-risk flag while preserving the intervention
-   record.
-4. Confirm touched backend and frontend surfaces still satisfy the package-wide
-   engineering standards listed above.
+1. Run the shared engagement scoring service with representative task-state
+   inputs and confirm completion, recency, overdue, and composite values are
+   all bounded in the `0..100` range.
+2. Confirm the same scoring input returns the same classification result for
+   both pipeline-style and hire-detail-style callers.
+3. Open the pipeline and confirm engagement computation appends a fresh
+   snapshot instead of overwriting prior history, with one current intelligence
+   card per scored hire.
+4. Open a hire detail view and confirm historical snapshots appear in
+   chronological order for the same hire and journey, along with current
+   intelligence and intervention payloads.
+5. Drive a hire below the at-risk threshold and confirm one unresolved flag is
+   raised with the original classification and raised-at context preserved.
+6. Acknowledge the active flag and confirm the record shows acknowledgement
+   metadata without being resolved yet.
+7. Resolve the flag and confirm the same record now includes resolution
+   metadata while preserving the original raised and acknowledged history.
+8. Re-open the same pipeline or hire view in a single request path and confirm
+   the response does not create duplicate snapshots for the same hire inside
+   that one response assembly.
+9. Open the facilitator pipeline page and confirm the board renders the
+   backend-provided module-derived columns plus the completion column in the
+   same order as the API payload.
+10. Apply a keyword or engagement-classification filter and confirm the page
+    refreshes from a fresh backend pipeline response rather than reclassifying
+    stale local cards.
+11. Confirm each pipeline card surfaces engagement and at-risk visibility
+    through reusable badges and allows drill-in into the selected hire detail
+    or intelligence view.
+12. Confirm touched backend and frontend surfaces still satisfy the package-wide
+    engineering standards listed above.
 
 ## Seed Data Expectations
 
