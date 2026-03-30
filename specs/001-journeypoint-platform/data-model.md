@@ -751,6 +751,138 @@ JourneyPoint has three primary domain areas:
 - `NeedsAttention` applies when `CompositeScore >= 50` and `< 75`
 - `AtRisk` applies when `CompositeScore < 50`
 
+## Engagement Application Payload Contracts
+
+### PipelineBoardDto
+
+- Purpose: return facilitator pipeline data with one current intelligence view
+  per hire after on-demand engagement computation
+- Core fields:
+  - generated at
+  - ordered pipeline columns
+  - active filter summary
+- Notes:
+  - the service computes each included hire at most once per request and reuses
+    that result while shaping the board response
+
+### PipelineColumnDto
+
+- Purpose: group pipeline cards into ordered onboarding-module columns plus the
+  final completion column
+- Core fields:
+  - column key
+  - column title
+  - order index
+  - hire cards
+- Validation:
+  - active hires appear under the current module title derived from their next
+    incomplete task
+  - fully completed journeys appear in the final completion column
+
+### PipelineHireCardDto
+
+- Purpose: provide one glanceable pipeline card payload for frontend rendering
+- Core fields:
+  - hire id
+  - full name
+  - email address
+  - role title
+  - department
+  - start date
+  - current journey status
+  - current stage title
+  - completion rate
+  - composite score
+  - classification
+  - has active at-risk flag
+  - active at-risk flag id
+  - snapshot computed at
+
+### HireIntelligenceDetailDto
+
+- Purpose: return one hire profile intelligence view after on-demand engagement
+  computation
+- Core fields:
+  - hire summary
+  - plan summary
+  - journey summary
+  - current snapshot
+  - recent snapshot history
+  - active flag
+  - resolved flag history
+- Validation:
+  - all returned intelligence records belong to the same tenant as the selected
+    hire
+  - snapshot history is returned newest-first and remains append-only
+
+### AtRiskFlagDto
+
+- Purpose: return one facilitator-readable intervention record for active or
+  historical display
+- Core fields:
+  - flag id
+  - status
+  - raised at
+  - classification at raise
+  - acknowledged by user id
+  - acknowledged at
+  - acknowledgement notes
+  - resolved by user id
+  - resolved at
+  - resolution type
+  - resolution notes
+
+### AcknowledgeAtRiskFlagRequest
+
+- Purpose: capture facilitator acknowledgement and notes for an active flag
+- Core fields:
+  - flag id
+  - acknowledgement notes
+- Validation:
+  - only `Active` flags may be acknowledged
+  - the signed-in facilitator must belong to the same tenant as the flag
+
+### ResolveAtRiskFlagRequest
+
+- Purpose: capture facilitator-driven resolution of an unresolved flag
+- Core fields:
+  - flag id
+  - resolution type
+  - resolution notes
+- Validation:
+  - only `Active` or `Acknowledged` flags may be manually resolved
+  - resolution preserves raised and acknowledgement history already on the flag
+
+### JP-027 Planned Application Files
+
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/IEngagementAppService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/EngagementAppService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/EngagementAppService.Support.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/GetPipelineBoardInput.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/PipelineBoardDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/PipelineColumnDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/PipelineHireCardDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/HireIntelligenceDetailDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/EngagementSnapshotDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/AtRiskFlagDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/AcknowledgeAtRiskFlagRequest.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/Dto/ResolveAtRiskFlagRequest.cs`
+
+### JP-027 Derived Application Rules
+
+- Pipeline and hire-detail endpoints must call the same `EngagementScoreService`
+  and append one new `EngagementSnapshot` row for each scored hire in that
+  request path.
+- If the computed classification is `AtRisk` and there is no unresolved flag,
+  the service raises a new `Active` `AtRiskFlag`.
+- If an unresolved flag exists and the classification returns to `Healthy`, the
+  service auto-resolves that flag with `AutomaticHealthyRecovery`.
+- If the classification is `NeedsAttention`, no new flag is raised and any
+  existing unresolved flag remains open.
+- Acknowledge transitions are `Active -> Acknowledged` only.
+- Manual resolve transitions are `Active -> Resolved` or
+  `Acknowledged -> Resolved` only.
+
 ### JP-025 Planned Domain Files
 
 - `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementSnapshot.cs`
@@ -784,6 +916,27 @@ JourneyPoint has three primary domain areas:
    `50`.
 5. Confirm invalid inputs such as zero total tasks, negative recency, or
    completed tasks above the total are rejected before a score is returned.
+
+### JP-027 Validation Steps
+
+1. Open the pipeline endpoint and confirm same-tenant hires are grouped into
+   ordered module columns plus the completion column, with one current score
+   per returned hire.
+2. Open a hire-intelligence endpoint and confirm it returns current snapshot
+   data, recent snapshot history, active flag state, and resolved flag history
+   for only the selected hire.
+3. Compute a hire into the `AtRisk` band and confirm a new unresolved
+   `AtRiskFlag` is created only when one does not already exist.
+4. Recompute the same hire while still below the threshold and confirm the
+   service appends a new snapshot without creating a duplicate unresolved flag.
+5. Recompute the hire back into `Healthy` and confirm the unresolved flag is
+   auto-resolved with preserved raised and acknowledgement context.
+6. Acknowledge an `Active` flag and confirm the service records facilitator,
+   time, and notes while leaving the intervention unresolved.
+7. Attempt to acknowledge or resolve a flag from another tenant and confirm the
+   request is rejected.
+8. Attempt to resolve an already resolved flag and confirm the request is
+   rejected.
 
 ## Derived Rules
 

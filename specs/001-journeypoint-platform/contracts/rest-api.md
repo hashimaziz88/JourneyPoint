@@ -135,12 +135,17 @@ should remain ABP application-service friendly, typically under
 - Engagement scoring should remain deterministic for the same task-state input,
   with completion, recency, overdue, composite, and classification values all
   derived from one reusable domain formula.
+- Pipeline and hire-intelligence endpoints should append exactly one new
+  snapshot per scored hire per request path, then reuse that result while
+  building the response payload.
 - At-risk flag operations should preserve acknowledgement and resolution
   metadata as part of one durable intervention record rather than deleting old
   flags.
 - Unresolved at-risk flags must remain tenant-scoped through the referenced
   hire and journey, and the contract should prevent unrelated-hire visibility
   when pipeline and profile intelligence are queried.
+- Acknowledge operations should be valid only for `Active` flags, while manual
+  resolve operations should be valid only for `Active` or `Acknowledged` flags.
 - Concrete API methods should continue to be exposed through
   interface-and-implementation AppService pairs with DTOs that live beside
   their service slice under `JourneyPoint.Application/Services/<Feature>/Dto/`.
