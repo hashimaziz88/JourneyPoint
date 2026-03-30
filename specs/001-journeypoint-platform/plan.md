@@ -48,6 +48,31 @@ provider-backed state for hire queries and journey review mutations; and
 `antd-style` presentation components that keep helpers, constants, and typed
 contracts extracted into their dedicated frontend folders.
 
+The current planning increment for JP-020 focuses milestone 4 backend-only
+Groq journey personalisation and facilitator-controlled selective acceptance.
+This slice will assemble request context from a tenant-scoped journey plus its
+eligible pending task snapshots, parse the Groq response into diff-ready
+per-task revisions keyed to existing `JourneyTask` ids, and let facilitators
+apply only the selected revisions after re-validating task status and baseline
+snapshot timestamps. The minimal file surface spans
+`aspnet-core/src/JourneyPoint.Application/Services/GroqService/` for prompt,
+contract, parsing, and audit-writing concerns, plus
+`aspnet-core/src/JourneyPoint.Application/Services/JourneyService/` and
+`aspnet-core/src/JourneyPoint.Core/Domains/Hires/` for selective-apply
+orchestration and draft-safe task mutation rules.
+
+### JP-020 Primary Risks
+
+- Long journeys can produce oversized prompts or slow Groq responses, so the
+  request assembly must stay concise and include only the journey, hire, and
+  pending-task context needed for personalisation.
+- Model output can hallucinate unknown task ids or unsupported mutations, so
+  response parsing must use a strict JSON contract and whitelist only mutable
+  snapshot fields on existing tasks.
+- A facilitator can edit the journey between requesting and applying a diff, so
+  selective apply must fail fast when a task's baseline timestamp no longer
+  matches the proposal that was reviewed.
+
 ## Technical Context
 
 **Language/Version**: C# 12 on .NET 8; TypeScript 5 with React 19 and Next.js 16  

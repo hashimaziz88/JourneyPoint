@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 namespace JourneyPoint.Application.Services.AuditService
@@ -10,6 +11,6 @@ namespace JourneyPoint.Application.Services.AuditService
         /// <summary>
         /// Persists one completed AI workflow audit record.
         /// </summary>
-        Task WriteAsync(AiAuditLogRequest request);
+        Task<Guid> WriteAsync(AiAuditLogRequest request);
     }
 }

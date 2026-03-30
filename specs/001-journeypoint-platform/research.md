@@ -265,3 +265,67 @@
 - Alternatives considered: Holding the editable journey draft entirely in client
   state until a later save was rejected because it would duplicate backend rules
   in the browser and increase mismatch risk for ordering and activation logic.
+
+## Decision 25: Assemble personalisation requests from current journey snapshots and only eligible pending tasks
+
+- Decision: JP-020 should build the Groq personalisation request from the
+  tenant-scoped hire, journey, onboarding-plan metadata, and only the current
+  pending `JourneyTask` snapshot fields that are eligible for revision.
+- Rationale: The model needs enough context to personalize wording and timing,
+  but sending only pending task snapshots keeps prompt size, latency, and token
+  cost bounded while avoiding accidental proposals against completed work.
+- Alternatives considered: Sending the full historical journey payload or
+  re-reading live template tasks was rejected because it would bloat the prompt
+  and weaken the snapshot-based journey model.
+
+## Decision 26: Return the personalisation diff preview inline instead of persisting a separate proposal aggregate
+
+- Decision: The request-personalisation endpoint should return a transient
+  diff-ready proposal payload immediately, and JP-020 should not introduce a new
+  persisted proposal entity before the facilitator applies selected changes.
+- Rationale: The system already has append-only `GenerationLog` audit records
+  for the AI run, while keeping the diff preview transient avoids another table,
+  another lifecycle, and another source of drift between review and apply.
+- Alternatives considered: Persisting a long-lived proposal aggregate was
+  rejected because it adds storage and cleanup complexity before there is a
+  proven workflow need for saved drafts of AI suggestions.
+
+## Decision 27: Parse Groq output into strict per-task field deltas only
+
+- Decision: The Groq response contract should be keyed to existing
+  `JourneyTaskId` values and limited to whitelisted editable snapshot fields
+  such as title, description, category, assignment target, acknowledgement
+  rule, and due-day offset.
+- Rationale: JP-020 is a selective-revision flow, not a second draft-generation
+  engine, so the parser must reject add/remove semantics, unknown task ids,
+  duplicate task proposals, and unsupported fields before anything reaches the
+  facilitator review step.
+- Alternatives considered: Allowing the model to add/remove tasks or return
+  free-form markdown diffs was rejected because it would be harder to validate,
+  harder to review safely, and contrary to the spec assumption that AI
+  personalisation revises existing tasks only.
+
+## Decision 28: Protect selective apply with baseline snapshot timestamps
+
+- Decision: Each task diff should include a baseline timestamp derived from the
+  current `JourneyTask` snapshot, and apply requests must fail when the current
+  task no longer matches that reviewed baseline.
+- Rationale: Facilitators can still edit draft or active journey tasks manually,
+  so this check prevents stale AI diffs from overwriting newer human-reviewed
+  content.
+- Alternatives considered: Blindly applying the selected changes or persisting
+  a heavyweight server-side proposal lock was rejected because one is unsafe and
+  the other adds unnecessary complexity for the first personalisation slice.
+
+## Decision 29: Reuse GenerationLog for personalisation runs and store proposal counts in audit metadata
+
+- Decision: Every JP-020 personalisation request should write one
+  `GenerationLog` row with `WorkflowType = Personalisation`, timing metadata,
+  model name, prompt/response summaries, and the count of revised tasks
+  proposed by the model.
+- Rationale: JP-019 already introduced the reusable audit trail, and JP-020
+  should consume that existing append-only model instead of inventing a second
+  audit store for personalisation.
+- Alternatives considered: Auditing only successful applies or adding a
+  personalisation-specific audit table was rejected because it would weaken
+  traceability and duplicate audit behavior across AI flows.

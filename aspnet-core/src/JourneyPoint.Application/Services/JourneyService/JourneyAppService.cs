@@ -2,8 +2,10 @@ using System;
 using System.Threading.Tasks;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using JourneyPoint.Application.Services.GroqService;
 using JourneyPoint.Application.Services.JourneyService.Dto;
 using JourneyPoint.Authorization;
+using JourneyPoint.Domains.Audit;
 using JourneyPoint.Domains.Hires;
 using JourneyPoint.Domains.OnboardingPlans;
 
@@ -19,7 +21,9 @@ namespace JourneyPoint.Application.Services.JourneyService
         private readonly IRepository<Journey, Guid> _journeyRepository;
         private readonly IRepository<JourneyTask, Guid> _journeyTaskRepository;
         private readonly IRepository<OnboardingPlan, Guid> _onboardingPlanRepository;
+        private readonly IRepository<GenerationLog, Guid> _generationLogRepository;
         private readonly HireJourneyManager _hireJourneyManager;
+        private readonly IGroqJourneyPersonalisationService _groqJourneyPersonalisationService;
 
         /// <summary>
         /// Initializes the journey generation application service dependencies.
@@ -29,13 +33,17 @@ namespace JourneyPoint.Application.Services.JourneyService
             IRepository<Journey, Guid> journeyRepository,
             IRepository<JourneyTask, Guid> journeyTaskRepository,
             IRepository<OnboardingPlan, Guid> onboardingPlanRepository,
-            HireJourneyManager hireJourneyManager)
+            IRepository<GenerationLog, Guid> generationLogRepository,
+            HireJourneyManager hireJourneyManager,
+            IGroqJourneyPersonalisationService groqJourneyPersonalisationService)
         {
             _hireRepository = hireRepository;
             _journeyRepository = journeyRepository;
             _journeyTaskRepository = journeyTaskRepository;
             _onboardingPlanRepository = onboardingPlanRepository;
+            _generationLogRepository = generationLogRepository;
             _hireJourneyManager = hireJourneyManager;
+            _groqJourneyPersonalisationService = groqJourneyPersonalisationService;
         }
 
         /// <summary>
