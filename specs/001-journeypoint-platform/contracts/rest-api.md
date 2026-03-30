@@ -127,6 +127,14 @@ should remain ABP application-service friendly, typically under
   status on the backend.
 - Participant-visible personalisation indicators should reflect durable applied
   AI changes only and must not be sourced from transient proposal payloads.
+- Engagement snapshot writes should append new history rows instead of updating
+  a previous score record in place.
+- At-risk flag operations should preserve acknowledgement and resolution
+  metadata as part of one durable intervention record rather than deleting old
+  flags.
+- Unresolved at-risk flags must remain tenant-scoped through the referenced
+  hire and journey, and the contract should prevent unrelated-hire visibility
+  when pipeline and profile intelligence are queried.
 - Concrete API methods should continue to be exposed through
   interface-and-implementation AppService pairs with DTOs that live beside
   their service slice under `JourneyPoint.Application/Services/<Feature>/Dto/`.

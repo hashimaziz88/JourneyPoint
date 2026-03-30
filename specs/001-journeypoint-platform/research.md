@@ -418,3 +418,40 @@
 - Alternatives considered: Auto-selecting all diffs or treating unopened diffs
   as implicitly accepted was rejected because both approaches weaken review
   clarity and make selective acceptance less trustworthy.
+
+## Decision 37: Keep engagement history append-only and tenant-scoped
+
+- Decision: JP-025 should model `EngagementSnapshot` as an append-only,
+  same-tenant historical record linked to both `Hire` and `Journey`, with one
+  row written per engagement computation instead of updating a current-score
+  record in place.
+- Rationale: Pipeline trends, score-history charts, and intervention auditing
+  depend on preserved point-in-time metrics rather than only the latest score.
+- Alternatives considered: Storing only a current score on `Hire` or updating
+  the latest snapshot row was rejected because it destroys historical context
+  and weakens the intervention story.
+
+## Decision 38: Treat at-risk flags as durable intervention records with a simple lifecycle
+
+- Decision: JP-025 should model `AtRiskFlag` as a durable intervention record
+  with lifecycle `Active -> Acknowledged -> Resolved`, preserving
+  acknowledgement and resolution metadata instead of deleting or overwriting old
+  flags.
+- Rationale: Facilitators need to see when a hire first became at risk, who
+  acknowledged the problem, and how it was later resolved.
+- Alternatives considered: Soft-deleting old flags or storing only a boolean
+  at-risk marker on `Hire` was rejected because both approaches lose the
+  operational history required for review and demo scenarios.
+
+## Decision 39: Allow one unresolved at-risk flag per hire in the initial M5 slice
+
+- Decision: JP-025 should enforce at most one unresolved `AtRiskFlag` for a
+  hire at a time, while still allowing future risk episodes to create new rows
+  once the prior flag has been resolved.
+- Rationale: This keeps intervention workflows simple for milestone 5 and
+  matches the active spec requirement that a new flag is raised only when one
+  does not already exist.
+- Alternatives considered: Allowing multiple concurrent active flags or a
+  single mutable flag reused forever was rejected because the former creates
+  noisy intervention state and the latter collapses distinct risk episodes into
+  one record.

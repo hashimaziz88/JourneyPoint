@@ -86,6 +86,15 @@ snapshot. The minimal file surface stays in
  `journeypoint/components/journey/`, `journeypoint/providers/journeyProvider/`,
  and dedicated `types/`, `constants/`, and `utils/` journey modules.
 
+The current planning increment for JP-025 focuses milestone 5 domain modeling
+for engagement analytics and intervention tracking. This slice will introduce
+append-only `EngagementSnapshot` history plus durable `AtRiskFlag` records
+under `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/`, define a simple
+flag lifecycle with acknowledgement and resolution metadata, preserve
+same-tenant ownership through `Hire` and `Journey`, and keep the initial file
+surface minimal so persistence and scoring work in JP-026 and JP-027 can build
+directly on the model.
+
 ### JP-020 Primary Risks
 
 - Long journeys can produce oversized prompts or slow Groq responses, so the
@@ -122,6 +131,17 @@ snapshot. The minimal file surface stays in
 - Apply actions must submit only accepted diffs and then refresh the backend
   draft state; otherwise stale proposal state can linger on-screen after the
   journey snapshot has already changed.
+
+### JP-025 Primary Risks
+
+- Engagement history can become noisy if updates overwrite prior scores, so the
+  model must make append-only snapshot semantics explicit from the start.
+- At-risk flags can become ambiguous if acknowledgement and resolution fields
+  are not modeled separately, so the lifecycle must clearly distinguish an
+  active unresolved flag from one that has only been acknowledged.
+- Tenant safety depends on flag and snapshot ownership flowing through the
+  existing hire and journey aggregates; standalone records without scoped
+  foreign keys would weaken later service-layer filtering.
 
 ## Technical Context
 

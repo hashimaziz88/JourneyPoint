@@ -189,7 +189,7 @@ history.
 **Independent Test**: Opening a pipeline or hire detail view computes fresh
 engagement data, surfaces at-risk hires, and supports facilitator intervention.
 
-- [ ] T045 [P] [US5] Create engagement entities in `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementSnapshot.cs` and `AtRiskFlag.cs`
+- [x] T045 [P] [US5] Create engagement entities in `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementSnapshot.cs` and `AtRiskFlag.cs`
 - [ ] T046 [US5] Register engagement persistence and migration updates in `aspnet-core/src/JourneyPoint.EntityFrameworkCore/EntityFrameworkCore/JourneyPointDbContext.cs` and `aspnet-core/src/JourneyPoint.EntityFrameworkCore/Migrations/`
 - [ ] T047 [US5] Implement engagement scoring domain service in `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementScoreService.cs`
 - [ ] T048 [US5] Implement pipeline, hire intelligence, and intervention services in `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/`
