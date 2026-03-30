@@ -938,6 +938,108 @@ JourneyPoint has three primary domain areas:
 8. Attempt to resolve an already resolved flag and confirm the request is
    rejected.
 
+## Facilitator Pipeline Frontend Contracts
+
+### FacilitatorPipelineBoardState (Transient Frontend Contract)
+
+- Purpose: hold the current facilitator pipeline filters, loading state, and
+  latest board payload inside a strict four-file provider slice
+- Core fields:
+  - keyword
+  - classification filter
+  - is pending
+  - is error
+  - board
+- Validation:
+  - filter state is explicitly typed and uses the backend payload as the source
+    of truth
+  - changing filters should trigger a fresh backend read instead of
+    reclassifying or regrouping hires in the browser
+
+### FacilitatorPipelineColumnViewModel (Transient Frontend Contract)
+
+- Purpose: drive one rendered Kanban column on the facilitator pipeline page
+- Core fields:
+  - column key
+  - column title
+  - order index
+  - hire cards
+- Validation:
+  - rendered columns preserve backend order
+  - module-derived columns and the completion column are not hardcoded in the
+    UI
+
+### HirePipelineCardViewModel (Transient Frontend Contract)
+
+- Purpose: render one facilitator-visible pipeline card with quick health and
+  drill-in context
+- Core fields:
+  - hire id
+  - journey id
+  - full name
+  - role title
+  - department
+  - start date
+  - current stage title
+  - completion rate
+  - composite score
+  - classification
+  - has active at-risk flag
+  - active at-risk flag id
+  - snapshot computed at
+- Validation:
+  - cards link into the hire intelligence route using existing hire ids only
+  - classification and at-risk visibility are rendered from typed backend data
+    rather than inferred locally
+
+### EngagementBadgeProps (Transient Frontend Contract)
+
+- Purpose: define one reusable badge component contract for engagement and
+  at-risk visibility across the pipeline board and later hire intelligence UI
+- Core fields:
+  - classification
+  - has active at-risk flag
+  - compact mode
+- Validation:
+  - badge variants map directly to milestone-5 classification bands
+  - active at-risk visibility is additive to classification rather than a
+    replacement for it
+
+### JP-028 Planned Frontend Files
+
+- `journeypoint/app/(facilitator)/facilitator/pipeline/page.tsx`
+- `journeypoint/providers/pipelineProvider/actions.tsx`
+- `journeypoint/providers/pipelineProvider/context.tsx`
+- `journeypoint/providers/pipelineProvider/index.tsx`
+- `journeypoint/providers/pipelineProvider/reducer.tsx`
+- `journeypoint/components/pipeline/PipelineBoardView.tsx`
+- `journeypoint/components/pipeline/PipelineKanban.tsx`
+- `journeypoint/components/pipeline/PipelineColumn.tsx`
+- `journeypoint/components/pipeline/HirePipelineCard.tsx`
+- `journeypoint/components/engagement/EngagementBadge.tsx`
+- `journeypoint/components/pipeline/style/style.ts`
+- `journeypoint/types/pipeline/index.ts`
+- `journeypoint/types/pipeline/components.ts`
+- `journeypoint/constants/pipeline/filters.ts`
+- `journeypoint/utils/pipeline/board.ts`
+- `journeypoint/constants/auth/routes.ts`
+- `journeypoint/constants/global/navigation.ts`
+
+### JP-028 Validation Steps
+
+1. Open the facilitator pipeline page and confirm it loads the typed board
+   payload from the backend with module-derived columns plus the final
+   completion column in backend order.
+2. Confirm each hire card shows identity, current stage, completion summary,
+   engagement classification, and active at-risk visibility without inline
+   styles or local classification logic.
+3. Change the keyword or classification filter and confirm the provider issues
+   a fresh backend request instead of regrouping a stale board locally.
+4. Clear the filters and confirm the board returns to the unfiltered backend
+   view without lingering client-side state.
+5. Click a hire card drill-in action and confirm it routes into the existing
+   hire intelligence detail entry point using the selected hire id.
+
 ## Derived Rules
 
 - A hire can have only one journey aggregate in the initial milestone-3 slice.

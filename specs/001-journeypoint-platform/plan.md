@@ -116,6 +116,14 @@ records according to the current classification, and exposes typed payloads for
 pipeline cards, hire intelligence detail, acknowledgement, and manual
 resolution flows without leaking cross-tenant hire visibility.
 
+The current planning increment for JP-028 focuses milestone 5 facilitator
+analytics UX on top of the completed engagement backend. This slice will add a
+dedicated App Router pipeline page, render module-derived Kanban columns plus a
+completion column from the typed engagement payload, surface reusable
+engagement and at-risk badges on each hire card, and provide lightweight
+filters plus drill-in links into hire intelligence views without duplicating
+engagement-computation logic in the browser.
+
 ### JP-020 Primary Risks
 
 - Long journeys can produce oversized prompts or slow Groq responses, so the
@@ -188,6 +196,18 @@ resolution flows without leaking cross-tenant hire visibility.
 - Intervention handling becomes confusing if acknowledge and resolve actions
   allow invalid transitions, so the service must enforce strict flag lifecycle
   rules before later UI work depends on them.
+
+### JP-028 Primary Risks
+
+- The backend returns module-derived columns dynamically, so the frontend board
+  must render ordered columns from payload data instead of hardcoding stage
+  names that could drift from the journey model.
+- Pipeline cards need to communicate score, classification, and at-risk state
+  quickly without turning the board into dense analytics text, so badge and
+  card composition must stay compact and scannable.
+- The facilitator may filter the board frequently, so provider state should
+  treat backend responses as authoritative and avoid client-side recomputation
+  of classification or column membership.
 
 ## Technical Context
 

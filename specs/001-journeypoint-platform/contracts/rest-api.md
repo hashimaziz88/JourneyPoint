@@ -138,6 +138,15 @@ should remain ABP application-service friendly, typically under
 - Pipeline and hire-intelligence endpoints should append exactly one new
   snapshot per scored hire per request path, then reuse that result while
   building the response payload.
+- The facilitator pipeline board should consume the ordered `PipelineBoardDto`
+  payload directly, including module-derived columns plus the final completion
+  column, rather than rebuilding stage grouping in the browser.
+- Pipeline filters should be expressed through the typed query contract
+  (`keyword` plus optional `classification`) and should trigger a fresh backend
+  request so on-demand engagement reads stay authoritative.
+- Pipeline cards should expose enough typed metadata for quick drill-in into
+  hire intelligence views without requiring a second lookup just to build card
+  identity or at-risk status.
 - At-risk flag operations should preserve acknowledgement and resolution
   metadata as part of one durable intervention record rather than deleting old
   flags.
