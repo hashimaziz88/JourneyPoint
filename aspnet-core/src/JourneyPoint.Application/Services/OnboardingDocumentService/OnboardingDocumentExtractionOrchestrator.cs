@@ -71,7 +71,8 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
                                 plan,
                                 document.FileName,
                                 document.ContentType,
-                                extractedContent.TextContent);
+                                extractedContent.TextContent,
+                                document.Id);
                         proposalCandidates.AddRange(groqCandidates);
                     }
                     catch
@@ -98,7 +99,8 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
                         plan,
                         document.FileName,
                         document.ContentType,
-                        extractedContent.Images);
+                        extractedContent.Images,
+                        document.Id);
                 proposalCandidates.AddRange(groqCandidates);
             }
 
