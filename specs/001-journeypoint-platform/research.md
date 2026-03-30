@@ -505,3 +505,73 @@
   or persisting precomputed score state on every task mutation was rejected
   because both approaches increase drift risk and conflict with the current
   milestone scope.
+
+## Decision 44: Expose milestone-5 analytics through one dedicated Engagement AppService
+
+- Decision: JP-027 should introduce `IEngagementAppService` and
+  `EngagementAppService` under
+  `aspnet-core/src/JourneyPoint.Application/Services/EngagementService/`,
+  rather than spreading facilitator analytics endpoints across `HireService`
+  and `JourneyService`.
+- Rationale: Pipeline, hire-intelligence, and intervention flows all depend on
+  the same repositories, scoring service, and at-risk flag rules, so one
+  service slice keeps DTOs and orchestration cohesive.
+- Alternatives considered: Extending `HireAppService` for profile analytics and
+  creating a separate pipeline service was rejected because it would duplicate
+  engagement-computation orchestration and split the intervention model across
+  multiple service boundaries.
+
+## Decision 45: Compute at most once per hire within a single request path
+
+- Decision: JP-027 should run on-demand engagement computation once per hire
+  per application-service request, reuse that in-memory result while shaping the
+  response, and append exactly one new `EngagementSnapshot` row for that request
+  path.
+- Rationale: This still satisfies the spec's on-demand behavior while avoiding
+  accidental duplicate snapshots from repeated scoring calls inside one pipeline
+  or hire-detail response assembly.
+- Alternatives considered: Debouncing across separate HTTP requests was
+  rejected because it weakens the explicit “compute on open” requirement, and
+  writing a snapshot every time any internal helper needs the score was
+  rejected because it creates noisy history with no product value.
+
+## Decision 46: Raise and resolve at-risk flags from classification transitions
+
+- Decision: JP-027 should raise a new `Active` flag only when the latest
+  computed classification is `AtRisk` and no unresolved flag exists for the
+  hire, leave unresolved flags open while the classification remains
+  `NeedsAttention` or `AtRisk`, and auto-resolve the unresolved flag only when
+  the classification returns to `Healthy`.
+- Rationale: This matches the approved milestone-5 lifecycle, keeps unresolved
+  interventions stable while a hire is still struggling, and avoids noisy flag
+  churn when a hire moves between `NeedsAttention` and `AtRisk`.
+- Alternatives considered: Raising separate flags for both `NeedsAttention` and
+  `AtRisk`, or auto-resolving as soon as the score rises above the at-risk
+  threshold, was rejected because both options would create confusing
+  facilitator history.
+
+## Decision 47: Keep acknowledgement and manual resolution as explicit facilitator actions
+
+- Decision: JP-027 should allow acknowledgement only for `Active` flags and
+  manual resolution for `Active` or `Acknowledged` flags, recording notes,
+  acting user id, and timestamps without overwriting prior raised or
+  acknowledgement context.
+- Rationale: These rules keep the intervention history auditable and simple for
+  later UI flows, while making repeated or invalid actions fail fast.
+- Alternatives considered: Idempotent no-op acknowledgements or allowing
+  resolution of already resolved flags was rejected because it hides operator
+  mistakes and weakens lifecycle clarity.
+
+## Decision 48: Shape pipeline and hire-detail payloads around current intelligence plus history
+
+- Decision: JP-027 should return a pipeline payload grouped into ordered module
+  columns plus a final completion column, with each card containing hire
+  identity, current module stage, latest score/classification, and active-flag
+  visibility; the hire-detail payload should include hire summary, current
+  intelligence, recent snapshot history, active flag, and resolved intervention
+  history.
+- Rationale: This gives JP-028 and JP-029 the typed backend contracts they need
+  without forcing frontend joins across unrelated analytics endpoints.
+- Alternatives considered: Returning only raw snapshots and flags or splitting
+  current versus historical data into many smaller endpoints was rejected
+  because it would complicate provider state and broaden frontend orchestration.

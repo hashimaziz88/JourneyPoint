@@ -106,6 +106,16 @@ hire-intelligence application slices can call the same computation path during
 their on-demand reads without duplicating formulas or drifting on threshold
 behavior.
 
+The current planning increment for JP-027 focuses milestone 5 application
+orchestration for facilitator analytics and intervention handling. This slice
+will introduce an `EngagementService` application surface under
+`aspnet-core/src/JourneyPoint.Application/Services/EngagementService/` that
+computes engagement on demand for pipeline and hire-detail reads, appends new
+`EngagementSnapshot` history rows, raises or auto-resolves `AtRiskFlag`
+records according to the current classification, and exposes typed payloads for
+pipeline cards, hire intelligence detail, acknowledgement, and manual
+resolution flows without leaking cross-tenant hire visibility.
+
 ### JP-020 Primary Risks
 
 - Long journeys can produce oversized prompts or slow Groq responses, so the
@@ -165,6 +175,19 @@ behavior.
 - Pipeline and hire-detail reads are on-demand in the current scope, so the
   service contract must be lightweight, deterministic, and free of repository
   or infrastructure dependencies.
+
+### JP-027 Primary Risks
+
+- Pipeline and hire-detail queries can drift if each one computes and shapes
+  engagement differently, so the application layer must centralize the
+  orchestration and reuse the same scoring path plus snapshot-writing logic.
+- Repeated profile or pipeline opens can create noisy history if the service
+  writes multiple snapshots for the same hire inside one request path, so each
+  request should compute at most once per hire and reuse that result while
+  assembling the response.
+- Intervention handling becomes confusing if acknowledge and resolve actions
+  allow invalid transitions, so the service must enforce strict flag lifecycle
+  rules before later UI work depends on them.
 
 ## Technical Context
 

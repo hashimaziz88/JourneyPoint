@@ -146,17 +146,22 @@ Expected result:
 2. Confirm the same scoring input returns the same classification result for
    both pipeline-style and hire-detail-style callers.
 3. Open the pipeline and confirm engagement computation appends a fresh
-   snapshot instead of overwriting prior history.
+   snapshot instead of overwriting prior history, with one current intelligence
+   card per scored hire.
 4. Open a hire detail view and confirm historical snapshots appear in
-   chronological order for the same hire and journey.
+   chronological order for the same hire and journey, along with current
+   intelligence and intervention payloads.
 5. Drive a hire below the at-risk threshold and confirm one unresolved flag is
    raised with the original classification and raised-at context preserved.
 6. Acknowledge the active flag and confirm the record shows acknowledgement
    metadata without being resolved yet.
 7. Resolve the flag and confirm the same record now includes resolution
    metadata while preserving the original raised and acknowledged history.
-8. Confirm touched backend and frontend surfaces still satisfy the package-wide
-   engineering standards listed above.
+8. Re-open the same pipeline or hire view in a single request path and confirm
+   the response does not create duplicate snapshots for the same hire inside
+   that one response assembly.
+9. Confirm touched backend and frontend surfaces still satisfy the package-wide
+  engineering standards listed above.
 
 ## Seed Data Expectations
 
