@@ -76,6 +76,12 @@ export const useStyles = createStyles(({ css, token }) => ({
         background: ${token.colorBgContainer};
     `,
 
+    taskCardHighlighted: css`
+        border-color: ${token.colorInfoBorder};
+        box-shadow: 0 0 0 1px ${token.colorInfoBorder};
+        background: ${token.colorInfoBg};
+    `,
+
     participantTaskCard: css`
         border: 1px solid ${token.colorBorderSecondary};
         border-radius: 12px;
@@ -189,5 +195,69 @@ export const useStyles = createStyles(({ css, token }) => ({
     fullWidth: css`
         width: 100%;
         grid-column: 1 / -1;
+    `,
+
+    personalisationPrompt: css`
+        width: 100%;
+    `,
+
+    personalisationHeader: css`
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+        width: 100%;
+
+        @media (max-width: 992px) {
+            flex-direction: column;
+        }
+    `,
+
+    personalisationDiffList: css`
+        display: grid;
+        gap: 16px;
+        width: 100%;
+    `,
+
+    personalisationDiffCard: css`
+        width: 100%;
+    `,
+
+    personalisationDecisionSummary: css`
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: flex-end;
+    `,
+
+    personalisationDecisionRow: css`
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    `,
+
+    beforeAfterGrid: css`
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        width: 100%;
+    `,
+
+    comparisonBlock: css`
+        border: 1px solid ${token.colorBorderSecondary};
+        border-radius: 12px;
+        padding: 16px;
+        background: ${token.colorBgLayout};
+    `,
+
+    comparisonValuePair: css`
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-top: 12px;
+
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+        }
     `,
 }));
