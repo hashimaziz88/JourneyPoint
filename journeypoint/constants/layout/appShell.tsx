@@ -4,6 +4,7 @@ import React from "react";
 import {
     ApartmentOutlined,
     DashboardOutlined,
+    DeploymentUnitOutlined,
     ProfileOutlined,
     SafetyCertificateOutlined,
     SolutionOutlined,
@@ -21,6 +22,7 @@ export const NAVIGATION_ICONS: Record<NavigationIconKey, React.ReactNode> = {
     users: <TeamOutlined />,
     roles: <SafetyCertificateOutlined />,
     plans: <ProfileOutlined />,
+    pipeline: <DeploymentUnitOutlined />,
     facilitator: <SolutionOutlined />,
     manager: <TeamOutlined />,
     enrolee: <UserOutlined />,
