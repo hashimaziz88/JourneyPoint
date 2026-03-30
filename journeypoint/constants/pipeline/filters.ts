@@ -1,5 +1,9 @@
 import type { SelectProps } from "antd";
-import { EngagementClassification, type IPipelineBoardQueryState } from "@/types/pipeline";
+import {
+    ENGAGEMENT_CLASSIFICATION_LABELS,
+} from "@/constants/engagement/badge";
+import { EngagementClassification } from "@/types/engagement";
+import type { IPipelineBoardQueryState } from "@/types/pipeline";
 
 export const DEFAULT_PIPELINE_QUERY_STATE: IPipelineBoardQueryState = {
     keyword: "",
@@ -7,18 +11,6 @@ export const DEFAULT_PIPELINE_QUERY_STATE: IPipelineBoardQueryState = {
 };
 
 export const DEFAULT_PIPELINE_MAX_RESULT_COUNT = 200;
-
-export const ENGAGEMENT_CLASSIFICATION_LABELS: Record<EngagementClassification, string> = {
-    [EngagementClassification.Healthy]: "Healthy",
-    [EngagementClassification.NeedsAttention]: "Needs Attention",
-    [EngagementClassification.AtRisk]: "At Risk",
-};
-
-export const ENGAGEMENT_CLASSIFICATION_COLORS: Record<EngagementClassification, string> = {
-    [EngagementClassification.Healthy]: "success",
-    [EngagementClassification.NeedsAttention]: "warning",
-    [EngagementClassification.AtRisk]: "error",
-};
 
 export const PIPELINE_CLASSIFICATION_OPTIONS: SelectProps["options"] = [
     {
