@@ -3,6 +3,7 @@
 import React from "react";
 import { ConfigProvider } from "antd";
 import AuthSessionBootstrap from "@/components/auth/AuthSessionBootstrap";
+import UserProviderScopeReset from "@/components/auth/UserProviderScopeReset";
 import { themeSetup } from "@/constants/global/themeSetup";
 import { AuthProvider } from "@/providers/authProvider";
 import { RoleProvider } from "@/providers/roleProvider";
@@ -19,6 +20,7 @@ export const AppProviders: React.FC<IAppProvidersProps> = ({ children }) => (
       <AuthSessionBootstrap />
       <TenantProvider>
         <UserProvider>
+          <UserProviderScopeReset />
           <RoleProvider>{children}</RoleProvider>
         </UserProvider>
       </TenantProvider>
