@@ -329,3 +329,55 @@
 - Alternatives considered: Auditing only successful applies or adding a
   personalisation-specific audit table was rejected because it would weaken
   traceability and duplicate audit behavior across AI flows.
+
+## Decision 30: Split enrolee participation into a dashboard route plus a dedicated task-detail route
+
+- Decision: JP-021 should replace the placeholder enrolee landing page with a
+  module-grouped dashboard at `journeypoint/app/(enrolee)/enrolee/my-journey/page.tsx`
+  and a nested task-detail route at
+  `journeypoint/app/(enrolee)/enrolee/my-journey/tasks/[taskId]/page.tsx`.
+- Rationale: The current repo already uses role-shell route groups such as
+  `(facilitator)/facilitator/...` and `(enrolee)/enrolee/...`, and splitting the
+  participant workspace into a dashboard and task detail keeps each page under
+  the repository's file-size and readability standards.
+- Alternatives considered: Keeping a single oversized dashboard-only page or
+  inventing a second enrolee route tree outside the existing role shell was
+  rejected because it would either bloat one page or fight the live App Router
+  structure.
+
+## Decision 31: Use participant-specific journey contracts instead of reusing facilitator draft-review DTOs
+
+- Decision: JP-021 should add a participant-safe read/action surface under
+  `JourneyService` that returns active-journey dashboard and task-detail DTOs
+  for enrolees, while keeping facilitator draft-review contracts separate.
+- Rationale: The current `JourneyDraftDto` and review endpoints expose
+  source-template ids, draft-only controls, and facilitator mutation semantics
+  that do not belong in an enrolee-facing workspace.
+- Alternatives considered: Reusing `GetDraftAsync` and filtering fields in the
+  browser was rejected because it would overexpose facilitator-oriented data and
+  blur the separation between draft review and active journey participation.
+
+## Decision 32: Model acknowledgement as an explicit participant action before completion when required
+
+- Decision: Enrolee task execution should use a separate acknowledge action and
+  a separate complete action, with backend validation enforcing acknowledgement
+  first whenever the task's rule requires it.
+- Rationale: A two-step flow keeps the task-detail UI clear, preserves the
+  meaning of `AcknowledgedAt` and `CompletedAt`, and avoids implicit completion
+  side effects that are harder to explain or audit.
+- Alternatives considered: Auto-acknowledging on completion or collapsing both
+  transitions into one opaque endpoint was rejected because it hides an
+  important onboarding control and weakens task-state clarity.
+
+## Decision 33: Persist a durable task-level personalisation marker for participant views
+
+- Decision: JP-021 should expose participant-visible personalisation indicators
+  from durable `JourneyTask` metadata, using a nullable timestamp marker that is
+  set only when facilitator-approved AI revisions are actually applied.
+- Rationale: Enrolee dashboards reload independently of the facilitator session,
+  so participant views need a persistent way to show that a task has been
+  tailored without relying on transient proposal payloads or in-memory state.
+- Alternatives considered: Inferring indicators from the current source
+  template, from transient frontend provider state, or from aggregate
+  `GenerationLog` summaries was rejected because those approaches cannot
+  reliably identify which active tasks were actually personalised after reload.

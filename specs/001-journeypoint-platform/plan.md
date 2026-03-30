@@ -61,6 +61,19 @@ contract, parsing, and audit-writing concerns, plus
 `aspnet-core/src/JourneyPoint.Core/Domains/Hires/` for selective-apply
 orchestration and draft-safe task mutation rules.
 
+The current planning increment for JP-021 focuses milestone 4 enrolee
+participation UX on top of the active journey and personalisation backend. This
+slice will replace the placeholder enrolee landing page with a module-grouped
+dashboard and nested task-detail route under the existing enrolee role shell,
+extend participant-safe journey reads and actions for acknowledgement and task
+completion, and surface durable personalisation indicators without exposing the
+facilitator draft-review contract to enrolee pages. The minimal file surface
+spans `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/` for
+participant DTOs and active-journey actions, plus
+`journeypoint/app/(enrolee)/enrolee/my-journey/`,
+`journeypoint/providers/journeyProvider/`, and dedicated journey component,
+type, constant, util, and style modules in the Next.js frontend.
+
 ### JP-020 Primary Risks
 
 - Long journeys can produce oversized prompts or slow Groq responses, so the
@@ -72,6 +85,18 @@ orchestration and draft-safe task mutation rules.
 - A facilitator can edit the journey between requesting and applying a diff, so
   selective apply must fail fast when a task's baseline timestamp no longer
   matches the proposal that was reviewed.
+
+### JP-021 Primary Risks
+
+- The current `JourneyAppService` surface is facilitator-oriented, so
+  participant endpoints must expose a narrower active-journey contract that
+  cannot leak draft-only metadata or mutation controls into enrolee pages.
+- Participant-facing personalisation indicators need durable task-level metadata
+  after JP-020 applies AI changes; otherwise a refreshed dashboard cannot
+  distinguish applied AI tailoring from ordinary facilitator edits.
+- Acknowledgement and completion must be enforced server-side against tenant,
+  assignee, journey-status, and task-status rules; disabling buttons in the UI
+  alone would not protect role-safe task execution.
 
 ## Technical Context
 

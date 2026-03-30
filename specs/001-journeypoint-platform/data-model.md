@@ -181,6 +181,7 @@ JourneyPoint has three primary domain areas:
   - acknowledged at
   - completed at
   - completed by user id
+  - personalised at
 - Validation:
   - task order must be unique within a journey module snapshot
   - due day offset cannot be negative
@@ -191,6 +192,8 @@ JourneyPoint has three primary domain areas:
   - facilitator-authored draft tasks must keep null source-template ids
   - pending draft tasks may be removed during review, but template tasks are
     never deleted or rewritten as part of review
+  - `PersonalisedAt` is null until facilitator-approved AI revisions are
+    applied to that task and is not set for ordinary manual draft edits
 - Relationships:
   - many-to-one with `Journey`
   - optional many-to-one with `OnboardingTask`
@@ -416,6 +419,136 @@ JourneyPoint has three primary domain areas:
 6. Confirm the personalisation request writes one `GenerationLog` row with
    workflow type `Personalisation`, timing metadata, status, and proposed
    revision counts.
+
+### EnroleeJourneyDashboard (Transient Application Contract)
+
+- Purpose: return the active journey workspace for the signed-in enrolee
+- Core fields:
+  - journey id
+  - hire id
+  - journey status
+  - activated at
+  - total task count
+  - completed task count
+  - overdue task count
+  - module groups
+- Validation:
+  - resolves only the signed-in enrolee's same-tenant active journey
+  - excludes facilitator draft-review metadata and source-template ids
+  - groups tasks by copied module snapshot title and order
+- Relationships:
+  - one-to-one with one `Journey`
+  - one-to-many with `EnroleeJourneyModuleGroup`
+
+### EnroleeJourneyModuleGroup (Transient Application Contract)
+
+- Purpose: present one dashboard module section with progress totals
+- Core fields:
+  - module key
+  - module title
+  - module order index
+  - total task count
+  - completed task count
+  - pending task count
+  - task list items
+- Validation:
+  - groups are ordered by copied `ModuleOrderIndex`
+  - task list items inside a group are ordered by copied `TaskOrderIndex`
+
+### EnroleeJourneyTaskListItem (Transient Application Contract)
+
+- Purpose: carry dashboard-ready task summary data for one participant-owned
+  task card or list row
+- Core fields:
+  - journey task id
+  - title
+  - short description preview
+  - due on
+  - status
+  - acknowledgement rule
+  - acknowledged at
+  - assignment target
+  - is overdue
+  - is personalised
+- Validation:
+  - list items are returned only for enrolee-assigned tasks in the current
+    enrolee's active journey
+  - `IsPersonalised` derives from persisted task metadata rather than transient
+    AI proposal state
+
+### EnroleeJourneyTaskDetail (Transient Application Contract)
+
+- Purpose: power the dedicated enrolee task-detail page and action controls
+- Core fields:
+  - journey task id
+  - journey id
+  - module title
+  - module order index
+  - task order index
+  - title
+  - description
+  - due on
+  - status
+  - acknowledgement rule
+  - acknowledged at
+  - completed at
+  - is personalised
+  - personalised at
+  - can acknowledge
+  - can complete
+- Validation:
+  - resolves only one same-tenant active enrolee task owned by the signed-in
+    participant
+  - completion is disabled until acknowledgement is recorded when the task rule
+    requires it
+  - completed tasks remain readable but cannot be completed again
+
+### JP-021 Planned Application and Frontend Files
+
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/IJourneyAppService.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/JourneyAppService.Participant.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/EnroleeJourneyDashboardDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/EnroleeJourneyModuleGroupDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/EnroleeJourneyTaskListItemDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/EnroleeJourneyTaskDetailDto.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/AcknowledgeJourneyTaskRequest.cs`
+- `aspnet-core/src/JourneyPoint.Application/Services/JourneyService/Dto/CompleteJourneyTaskRequest.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Hires/HireJourneyManager.Participant.cs`
+- `journeypoint/app/(enrolee)/enrolee/my-journey/page.tsx`
+- `journeypoint/app/(enrolee)/enrolee/my-journey/tasks/[taskId]/page.tsx`
+- `journeypoint/providers/journeyProvider/actions.tsx`
+- `journeypoint/providers/journeyProvider/context.tsx`
+- `journeypoint/providers/journeyProvider/index.tsx`
+- `journeypoint/providers/journeyProvider/reducer.tsx`
+- `journeypoint/components/journey/EnroleeJourneyDashboardView.tsx`
+- `journeypoint/components/journey/EnroleeJourneyModuleSection.tsx`
+- `journeypoint/components/journey/JourneyTaskDetailView.tsx`
+- `journeypoint/components/journey/JourneyTaskAcknowledgementPanel.tsx`
+- `journeypoint/components/journey/style/style.ts`
+- `journeypoint/types/journey/index.ts`
+- `journeypoint/types/journey/components.ts`
+- `journeypoint/constants/journey/dashboard.ts`
+- `journeypoint/constants/auth/routes.ts`
+- `journeypoint/utils/journey/dashboard.ts`
+
+### JP-021 Validation Steps
+
+1. Sign in as an enrolee with an active same-tenant journey and confirm the
+   dashboard route loads only that journey grouped by copied module snapshots.
+2. Confirm dashboard task rows show status, due date, acknowledgement state,
+   and participant-visible personalisation indicators without exposing
+   facilitator draft metadata.
+3. Open one enrolee-assigned task detail page and confirm the full description,
+   due date, acknowledgement requirement, and personalised indicator render from
+   provider-backed state.
+4. Attempt to complete a task that requires acknowledgement and confirm the UI
+   blocks completion until acknowledgement succeeds through the backend action.
+5. Acknowledge and then complete an eligible task, and confirm both the detail
+   view and dashboard progress counters refresh from backend responses.
+6. Attempt direct access to another enrolee's task or a manager-assigned task
+   and confirm the backend rejects the request rather than leaking task data.
+7. Apply AI personalisation to a pending task, reload the enrolee dashboard,
+   and confirm the personalised indicator persists from durable task metadata.
 
 ## Engagement Intelligence and Intervention
 
