@@ -19,6 +19,7 @@ import {
     ReloadOutlined,
 } from "@ant-design/icons";
 import { useStyles } from "@/components/journey/style/style";
+import PersonalisationDiff from "@/components/journey/PersonalisationDiff";
 import JourneyTaskEditorModal from "@/components/journey/JourneyTaskEditorModal";
 import JourneyTaskList from "@/components/journey/JourneyTaskList";
 import {
@@ -44,6 +45,7 @@ import {
     groupJourneyTasksByModule,
     isJourneyDraftEditable,
 } from "@/utils/journey/review";
+import { getHighlightedTaskIds } from "@/utils/journey/personalisation";
 
 const { Paragraph, Title } = Typography;
 
@@ -67,7 +69,12 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
         resetJourney,
         updateTask,
     } = useJourneyActions();
-    const { isDetailPending, isMutationPending, journey } = useJourneyState();
+    const {
+        isDetailPending,
+        isMutationPending,
+        journey,
+        personalisationProposal,
+    } = useJourneyState();
     const [editingTask, setEditingTask] = useState<IJourneyTaskReviewDto | null>(null);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
@@ -158,6 +165,7 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
 
     const isEditable = isJourneyDraftEditable(journey);
     const modules = groupJourneyTasksByModule(journey);
+    const highlightedTaskIds = getHighlightedTaskIds(personalisationProposal);
 
     return (
         <Space orientation="vertical" size={24} className={styles.pageRoot}>
@@ -268,6 +276,7 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
 
                     <Card className={styles.sectionCard}>
                         <JourneyTaskList
+                            highlightedTaskIds={highlightedTaskIds}
                             isEditable={isEditable}
                             isMutationPending={isMutationPending}
                             modules={modules}
@@ -278,6 +287,8 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
                             onRemoveTask={handleRemoveTask}
                         />
                     </Card>
+
+                    <PersonalisationDiff hireId={hireId} />
                 </>
             )}
 

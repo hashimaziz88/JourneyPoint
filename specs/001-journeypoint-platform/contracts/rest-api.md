@@ -109,8 +109,14 @@ should remain ABP application-service friendly, typically under
 - JP-020 personalisation preview is transient in the first slice and is
   returned inline from the request call rather than being stored as a separate
   proposal aggregate for later retrieval.
+- Facilitator personalisation review should be driven from the existing journey
+  review route, which consumes the inline proposal payload and presents
+  explicit per-task accept or reject controls before any apply request is sent.
 - Personalisation requests may revise only existing `JourneyTask` snapshot
   fields; task creation and task removal remain outside the AI contract.
+- Apply requests should include only the facilitator-accepted selections from
+  the reviewed proposal; rejected or untouched diffs must be omitted from the
+  payload.
 - Apply requests must include enough baseline task metadata to reject stale
   proposals when a facilitator or participant has already changed the task
   after the diff was generated.

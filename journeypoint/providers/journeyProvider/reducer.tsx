@@ -32,6 +32,12 @@ export const JourneyReducer = handleActions<IJourneyStateContext, Partial<IJourn
         [JourneyActionEnums.managerMutationSuccess]: (state, action) => ({ ...state, ...action.payload }),
         [JourneyActionEnums.managerMutationError]: (state, action) => ({ ...state, ...action.payload }),
 
+        [JourneyActionEnums.personalisationPending]: (state, action) => ({ ...state, ...action.payload }),
+        [JourneyActionEnums.personalisationRequestSuccess]: (state, action) => ({ ...state, ...action.payload }),
+        [JourneyActionEnums.personalisationError]: (state, action) => ({ ...state, ...action.payload }),
+        [JourneyActionEnums.setPersonalisationDecisions]: (state, action) => ({ ...state, ...action.payload }),
+        [JourneyActionEnums.clearPersonalisationReview]: (state, action) => ({ ...state, ...action.payload }),
+
         [JourneyActionEnums.resetJourney]: (state, action) => ({ ...state, ...action.payload }),
     },
     INITIAL_STATE,

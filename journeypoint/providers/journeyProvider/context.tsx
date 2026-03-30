@@ -1,15 +1,4 @@
 import { createContext } from "react";
-export type {
-    IAddJourneyTaskRequest,
-    IAcknowledgeJourneyTaskRequest,
-    ICompleteJourneyTaskRequest,
-    IEnroleeJourneyDashboardDto,
-    IEnroleeJourneyTaskDetailDto,
-    IGenerateDraftJourneyRequest,
-    IJourneyDraftDto,
-    IManagerTaskWorkspaceDto,
-    IUpdateJourneyTaskRequest,
-} from "@/types/journey";
 import type {
     IAddJourneyTaskRequest,
     IAcknowledgeJourneyTaskRequest,
@@ -17,9 +6,13 @@ import type {
     IEnroleeJourneyDashboardDto,
     IEnroleeJourneyTaskDetailDto,
     IGenerateDraftJourneyRequest,
+    IJourneyPersonalisationDecisionItem,
+    IJourneyPersonalisationProposalDto,
     IJourneyDraftDto,
     IManagerTaskWorkspaceDto,
+    IRequestJourneyPersonalisationRequest,
     IUpdateJourneyTaskRequest,
+    JourneyPersonalisationDecision,
 } from "@/types/journey";
 
 export interface IJourneyStateContext {
@@ -28,10 +21,13 @@ export interface IJourneyStateContext {
     isError: boolean;
     isDetailPending: boolean;
     isMutationPending: boolean;
+    isPersonalisationPending: boolean;
     journey?: IJourneyDraftDto | null;
     myJourney?: IEnroleeJourneyDashboardDto | null;
     managerWorkspace?: IManagerTaskWorkspaceDto | null;
     selectedTask?: IEnroleeJourneyTaskDetailDto | null;
+    personalisationProposal?: IJourneyPersonalisationProposalDto | null;
+    personalisationDecisions: IJourneyPersonalisationDecisionItem[];
 }
 
 export interface IJourneyActionContext {
@@ -58,6 +54,15 @@ export interface IJourneyActionContext {
         payload: IAddJourneyTaskRequest,
     ) => Promise<IJourneyDraftDto | null>;
     removePendingTask: (hireId: string, journeyTaskId: string) => Promise<IJourneyDraftDto | null>;
+    requestPersonalisation: (
+        payload: IRequestJourneyPersonalisationRequest,
+    ) => Promise<IJourneyPersonalisationProposalDto | null>;
+    applyPersonalisation: () => Promise<IJourneyDraftDto | null>;
+    setPersonalisationDecision: (
+        journeyTaskId: string,
+        decision: JourneyPersonalisationDecision,
+    ) => void;
+    clearPersonalisationReview: () => void;
     activate: (hireId: string) => Promise<IJourneyDraftDto | null>;
     resetJourney: () => void;
 }
@@ -68,10 +73,13 @@ export const INITIAL_STATE: IJourneyStateContext = {
     isError: false,
     isDetailPending: false,
     isMutationPending: false,
+    isPersonalisationPending: false,
     journey: null,
     myJourney: null,
     managerWorkspace: null,
     selectedTask: null,
+    personalisationProposal: null,
+    personalisationDecisions: [],
 };
 
 export const JourneyStateContext = createContext<IJourneyStateContext>(INITIAL_STATE);

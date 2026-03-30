@@ -381,3 +381,40 @@
   template, from transient frontend provider state, or from aggregate
   `GenerationLog` summaries was rejected because those approaches cannot
   reliably identify which active tasks were actually personalised after reload.
+
+## Decision 34: Embed facilitator personalisation review into the existing journey-review route
+
+- Decision: JP-023 should extend the existing facilitator journey review page at
+  `journeypoint/app/(facilitator)/facilitator/hires/[hireId]/journey/page.tsx`
+  rather than introducing a second facilitator route just for AI review.
+- Rationale: Facilitators already generate, edit, and activate journey drafts in
+  that workspace, so keeping personalisation review in the same screen reduces
+  route churn and keeps draft context, hire context, and apply actions together.
+- Alternatives considered: Creating a separate personalisation route was
+  rejected because it would duplicate journey-loading logic and fragment the
+  facilitator review workflow.
+
+## Decision 35: Keep AI proposal review state transient in the journey provider
+
+- Decision: JP-023 should store the returned `JourneyPersonalisationProposal`
+  plus explicit accept/reject selections in typed `journeyProvider` state until
+  the facilitator applies or clears the review.
+- Rationale: The backend already treats the proposal as transient and
+  append-only audit is handled by `GenerationLog`, so the frontend should keep
+  review state lightweight and session-scoped while still allowing deliberate
+  per-task review actions.
+- Alternatives considered: Persisting facilitator selection state separately or
+  encoding selections into component-local state only was rejected because the
+  first adds needless storage complexity and the second makes refresh and shared
+  page interactions brittle.
+
+## Decision 36: Default diff proposals to explicit facilitator acceptance instead of implicit apply-all
+
+- Decision: Each returned task diff should start unselected in the UI and
+  require an explicit accept action before it is included in the apply payload.
+- Rationale: Human-governed AI is a core product rule, and explicit accept or
+  reject controls make facilitator intent visible while preventing a large
+  proposal from being accidentally applied wholesale.
+- Alternatives considered: Auto-selecting all diffs or treating unopened diffs
+  as implicitly accepted was rejected because both approaches weaken review
+  clarity and make selective acceptance less trustworthy.

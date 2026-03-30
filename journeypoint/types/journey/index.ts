@@ -176,3 +176,74 @@ export interface IManagerTaskWorkspaceDto {
     overdueTaskCount: number;
     directReports: IManagerDirectReportTaskGroupDto[];
 }
+
+export type JourneyPersonalisationChangedField =
+    | "title"
+    | "description"
+    | "category"
+    | "assignmentTarget"
+    | "acknowledgementRule"
+    | "dueDayOffset";
+
+export type JourneyPersonalisationDecision = "unreviewed" | "accepted" | "rejected";
+
+export interface IJourneyTaskPersonalisationDiffDto {
+    journeyTaskId: string;
+    moduleTitle: string;
+    taskOrderIndex: number;
+    baselineSnapshotAt: string;
+    currentTitle: string;
+    currentDescription: string;
+    currentCategory: OnboardingTaskCategory;
+    currentAssignmentTarget: OnboardingTaskAssignmentTarget;
+    currentAcknowledgementRule: OnboardingTaskAcknowledgementRule;
+    currentDueDayOffset: number;
+    currentDueOn: string;
+    proposedTitle: string;
+    proposedDescription: string;
+    proposedCategory: OnboardingTaskCategory;
+    proposedAssignmentTarget: OnboardingTaskAssignmentTarget;
+    proposedAcknowledgementRule: OnboardingTaskAcknowledgementRule;
+    proposedDueDayOffset: number;
+    proposedDueOn: string;
+    rationale: string;
+    changedFields: JourneyPersonalisationChangedField[];
+}
+
+export interface IJourneyPersonalisationProposalDto {
+    generationLogId: string;
+    hireId: string;
+    journeyId: string;
+    modelName: string;
+    requestedAt: string;
+    summary: string;
+    revisedTaskCount: number;
+    diffs: IJourneyTaskPersonalisationDiffDto[];
+}
+
+export interface IJourneyPersonalisationDecisionItem {
+    journeyTaskId: string;
+    decision: JourneyPersonalisationDecision;
+}
+
+export interface IRequestJourneyPersonalisationRequest {
+    journeyId: string;
+    facilitatorInstructions?: string | null;
+}
+
+export interface IApplyJourneyPersonalisationSelectionDto {
+    journeyTaskId: string;
+    baselineSnapshotAt: string;
+    title: string;
+    description: string;
+    category: OnboardingTaskCategory;
+    assignmentTarget: OnboardingTaskAssignmentTarget;
+    acknowledgementRule: OnboardingTaskAcknowledgementRule;
+    dueDayOffset: number;
+}
+
+export interface IApplyJourneyPersonalisationRequest {
+    journeyId: string;
+    generationLogId: string;
+    selections: IApplyJourneyPersonalisationSelectionDto[];
+}
