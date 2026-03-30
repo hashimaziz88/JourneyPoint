@@ -92,6 +92,9 @@ should remain ABP application-service friendly, typically under
   actor.
 - Hire detail and pipeline calls are allowed to trigger on-demand engagement
   computation before returning the response.
+- On-demand engagement reads should call one shared Core scoring service so
+  pipeline and hire-detail responses cannot diverge on the same underlying task
+  state.
 - The hire-creation response should expose account-provisioning outcome,
   manager-link validation, and welcome-notification status separately from later
   draft-journey generation.
@@ -129,6 +132,9 @@ should remain ABP application-service friendly, typically under
   AI changes only and must not be sourced from transient proposal payloads.
 - Engagement snapshot writes should append new history rows instead of updating
   a previous score record in place.
+- Engagement scoring should remain deterministic for the same task-state input,
+  with completion, recency, overdue, composite, and classification values all
+  derived from one reusable domain formula.
 - At-risk flag operations should preserve acknowledgement and resolution
   metadata as part of one durable intervention record rather than deleting old
   flags.

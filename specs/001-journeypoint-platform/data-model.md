@@ -695,6 +695,62 @@ JourneyPoint has three primary domain areas:
 - Purpose: classify how an at-risk episode ended, such as manual facilitator
   resolution or automatic recovery after the hire returned to a healthy score
 
+## Engagement Scoring Service Contract
+
+### EngagementScoreInput
+
+- Purpose: provide one infrastructure-free scoring input model that future
+  pipeline and hire-detail application services can populate before calling the
+  Core scoring service
+- Core fields:
+  - total task count
+  - completed task count
+  - days since last activity
+  - overdue task count
+  - computed at
+- Validation:
+  - `TotalTaskCount` must be greater than zero for a valid scoring run
+  - `CompletedTaskCount` must be between `0` and `TotalTaskCount`
+  - `DaysSinceLastActivity` cannot be negative
+  - `OverdueTaskCount` cannot be negative
+  - `ComputedAt` is required so on-demand callers can stamp the resulting
+    snapshot consistently
+
+### EngagementScoreResult
+
+- Purpose: return the normalized sub-scores, composite score, and shared
+  classification from one scoring call
+- Core fields:
+  - completion rate
+  - completion score
+  - recency score
+  - overdue score
+  - composite score
+  - classification
+  - computed at
+- Validation:
+  - all returned numeric scores stay within the `0..100` range
+  - `Classification` is derived only from the composite score bands rather than
+    set independently by callers
+  - the result is deterministic for the same input values
+
+### JP-026 Planned Domain Files
+
+- `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementScoreService.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementScoreInput.cs`
+- `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementScoreResult.cs`
+
+### JP-026 Derived Formula Rules
+
+- `CompletionRate = (CompletedTaskCount / TotalTaskCount) * 100`
+- `CompletionScore = CompletionRate`
+- `RecencyScore = max(0, 100 - ((DaysSinceLastActivity / 14) * 100))`
+- `OverdueScore = max(0, 100 - (OverdueTaskCount * 25))`
+- `CompositeScore = (CompletionScore * 0.50) + (RecencyScore * 0.30) + (OverdueScore * 0.20)`
+- `Healthy` applies when `CompositeScore >= 75`
+- `NeedsAttention` applies when `CompositeScore >= 50` and `< 75`
+- `AtRisk` applies when `CompositeScore < 50`
+
 ### JP-025 Planned Domain Files
 
 - `aspnet-core/src/JourneyPoint.Core/Domains/Engagement/EngagementSnapshot.cs`
@@ -715,6 +771,19 @@ JourneyPoint has three primary domain areas:
    without resolving the intervention.
 5. Resolve the flag and confirm the record keeps its original raised-at and
    acknowledgement context while adding resolution metadata.
+
+### JP-026 Validation Steps
+
+1. Score a journey with non-zero totals and confirm the service returns
+   completion, recency, overdue, and composite values all within `0..100`.
+2. Confirm the same input produces the same `EngagementScoreResult` regardless
+   of whether the future caller is pipeline or hire-detail logic.
+3. Confirm recent activity with no overdue tasks produces a higher score than
+   identical completion with stale activity and overdue work.
+4. Confirm the classification bands map correctly at the thresholds `75` and
+   `50`.
+5. Confirm invalid inputs such as zero total tasks, negative recency, or
+   completed tasks above the total are rejected before a score is returned.
 
 ## Derived Rules
 
