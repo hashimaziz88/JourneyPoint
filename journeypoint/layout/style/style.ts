@@ -4,8 +4,16 @@ export const useStyles = createStyles(({ token, css }) => ({
   shellLayout: css`
     min-height: 100vh;
     background:
-      radial-gradient(circle at top left, ${token.colorPrimaryBg}, transparent 22%),
-      radial-gradient(circle at bottom right, ${token.colorPrimaryBg}, transparent 18%),
+      radial-gradient(
+        circle at top left,
+        ${token.colorPrimaryBg},
+        transparent 22%
+      ),
+      radial-gradient(
+        circle at bottom right,
+        ${token.colorPrimaryBg},
+        transparent 18%
+      ),
       ${token.colorBgLayout};
     overflow: visible !important;
 
@@ -134,6 +142,31 @@ export const useStyles = createStyles(({ token, css }) => ({
     width: 100%;
   `,
 
+  overviewHeroCard: css`
+    border: 1px solid ${token.colorBorderSecondary};
+    border-radius: ${token.borderRadiusLG}px;
+    background:
+      radial-gradient(
+        circle at 0% 0%,
+        rgba(234, 179, 8, 0.16),
+        transparent 28%
+      ),
+      radial-gradient(
+        circle at 100% 100%,
+        rgba(59, 130, 246, 0.12),
+        transparent 26%
+      ),
+      ${token.colorBgContainer};
+  `,
+
+  overviewKicker: css`
+    font-size: ${token.fontSizeSM}px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: ${token.colorPrimary};
+  `,
+
   overviewHeading: css`
     margin-bottom: ${token.marginXXS}px !important;
   `,
@@ -142,8 +175,22 @@ export const useStyles = createStyles(({ token, css }) => ({
     margin-bottom: 0 !important;
   `,
 
+  overviewInlineMeta: css`
+    display: inline-block;
+    margin-top: ${token.marginSM}px;
+  `,
+
   overviewCardTitle: css`
     margin-top: ${token.marginXS}px !important;
     margin-bottom: ${token.marginXXS}px !important;
+  `,
+
+  overviewDetailCard: css`
+    border: 1px solid ${token.colorBorderSecondary};
+  `,
+
+  overviewFocusCard: css`
+    border: 1px dashed ${token.colorPrimaryBorder};
+    background: ${token.colorPrimaryBg};
   `,
 }));

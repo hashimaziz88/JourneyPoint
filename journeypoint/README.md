@@ -32,7 +32,6 @@ app/
   style.ts                    # Placeholder — styles live in components/home/
   (auth)/
     login/page.tsx            # /login route
-    register/page.tsx         # /register route
 
 components/
   auth/

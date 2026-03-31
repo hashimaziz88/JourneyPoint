@@ -298,7 +298,7 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
                                 Journey Review
                             </Title>
                             <Paragraph type="secondary">
-                                Review and personalise this hire's journey draft in focused sections without losing context.
+                                Review and personalise this hires journey draft in focused sections without losing context.
                             </Paragraph>
                         </div>
                     </div>

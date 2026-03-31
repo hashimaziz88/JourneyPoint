@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, startTransition, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { FormProps } from "antd";
 import { Alert, Button, Checkbox, Form, Input, Space, Typography, message } from "antd";
@@ -184,11 +183,6 @@ const LoginForm: React.FC = () => {
         </Form.Item>
       </Form>
 
-      {tenantStatus === "resolved" && (
-        <Text type="secondary" className={styles.footerText}>
-          Need a tenant account? <Link href="/register">Register here</Link>
-        </Text>
-      )}
     </div>
   );
 };

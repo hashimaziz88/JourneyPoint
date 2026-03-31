@@ -21,18 +21,22 @@ const WorkspaceOverview: React.FC<IWorkspaceOverviewProps> = ({
 
   return (
     <Space orientation="vertical" size={24} className={styles.overviewRoot}>
-      <div>
+      <Card className={styles.overviewHeroCard}>
+        <Text className={styles.overviewKicker}>Workspace Overview</Text>
         <Title level={2} className={styles.overviewHeading}>
           {title}
         </Title>
         <Paragraph type="secondary" className={styles.overviewParagraph}>
           {description}
         </Paragraph>
-      </div>
+        <Text type="secondary" className={styles.overviewInlineMeta}>
+          {session.user?.fullName ?? session.user?.userName ?? "Unknown user"} • {session.tenant?.tenantName ?? "Host"}
+        </Text>
+      </Card>
 
       <Row gutter={[16, 16]}>
         <Col xs={24} md={12}>
-          <Card>
+          <Card className={styles.overviewDetailCard}>
             <Text type="secondary">Signed In As</Text>
             <Title level={4} className={styles.overviewCardTitle}>
               {session.user?.fullName ?? session.user?.userName ?? "Unknown user"}
@@ -44,13 +48,25 @@ const WorkspaceOverview: React.FC<IWorkspaceOverviewProps> = ({
         </Col>
 
         <Col xs={24} md={12}>
-          <Card>
+          <Card className={styles.overviewDetailCard}>
             <Text type="secondary">Current Scope</Text>
             <Title level={4} className={styles.overviewCardTitle}>
               {session.tenant?.tenantName ?? "Host"}
             </Title>
             <Paragraph type="secondary" className={styles.overviewParagraph}>
               {currentFocus}
+            </Paragraph>
+          </Card>
+        </Col>
+
+        <Col xs={24}>
+          <Card className={styles.overviewFocusCard}>
+            <Text type="secondary">Current Focus</Text>
+            <Title level={4} className={styles.overviewCardTitle}>
+              {currentFocus}
+            </Title>
+            <Paragraph type="secondary" className={styles.overviewParagraph}>
+              Keep navigating from the left menu to access role-specific actions and workflows.
             </Paragraph>
           </Card>
         </Col>
