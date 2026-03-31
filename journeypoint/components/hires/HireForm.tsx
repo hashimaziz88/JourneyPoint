@@ -32,7 +32,8 @@ const HireForm: React.FC<IHireFormProps> = ({
     const handleFinish = async (values: IHireFormValues): Promise<void> => {
         const payload: ICreateHireRequest = {
             onboardingPlanId: values.onboardingPlanId,
-            fullName: values.fullName.trim(),
+            firstName: values.firstName.trim(),
+            lastName: values.lastName.trim(),
             emailAddress: values.emailAddress.trim(),
             roleTitle: values.roleTitle?.trim() || null,
             department: values.department?.trim() || null,
@@ -57,7 +58,9 @@ const HireForm: React.FC<IHireFormProps> = ({
                     key="submit"
                     type="primary"
                     loading={isPending}
-                    onClick={() => void form.submit()}
+                    onClick={() => {
+                        form.submit();
+                    }}
                 >
                     Create Hire
                 </Button>,
@@ -88,11 +91,19 @@ const HireForm: React.FC<IHireFormProps> = ({
                     </Form.Item>
 
                     <Form.Item
-                        label="Full name"
-                        name="fullName"
-                        rules={[{ required: true, message: "Enter the hire's full name." }]}
+                        label="First name"
+                        name="firstName"
+                        rules={[{ required: true, message: "Enter the hire's first name." }]}
                     >
-                        <Input placeholder="Jordan Example" />
+                        <Input placeholder="Jordan" />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Last name"
+                        name="lastName"
+                        rules={[{ required: true, message: "Enter the hire's last name." }]}
+                    >
+                        <Input placeholder="Smith" />
                     </Form.Item>
 
                     <Form.Item

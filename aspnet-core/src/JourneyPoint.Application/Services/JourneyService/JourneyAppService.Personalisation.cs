@@ -105,10 +105,10 @@ namespace JourneyPoint.Application.Services.JourneyService
                 throw new EntityNotFoundException(typeof(Journey), journeyId);
             }
 
-            if (journey.Status != JourneyStatus.Draft && journey.Status != JourneyStatus.Active)
+                if (journey.Status != JourneyStatus.Draft)
             {
                 throw new InvalidOperationException(
-                    "Only draft or active journeys can be personalised.");
+                    "Only non-activated draft journeys can be personalised.");
             }
 
             return journey;

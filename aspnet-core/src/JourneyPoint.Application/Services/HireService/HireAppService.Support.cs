@@ -93,14 +93,17 @@ namespace JourneyPoint.Application.Services.HireService
             }
         }
 
-        private User BuildPlatformUser(Hire hire, string normalizedEmailAddress)
+        private User BuildPlatformUser(
+            Hire hire,
+            string normalizedEmailAddress,
+            string firstName,
+            string lastName)
         {
-            var (name, surname) = SplitName(hire.FullName);
             var user = new User
             {
                 TenantId = hire.TenantId,
-                Name = name,
-                Surname = surname,
+                Name = firstName,
+                Surname = lastName,
                 EmailAddress = normalizedEmailAddress,
                 UserName = normalizedEmailAddress,
                 IsActive = true,
@@ -196,19 +199,15 @@ namespace JourneyPoint.Application.Services.HireService
                 : value.Trim().ToLowerInvariant();
         }
 
-        private static (string Name, string Surname) SplitName(string fullName)
+        private static string NormalizeRequiredNamePart(string value, string parameterName)
         {
-            var trimmedFullName = fullName?.Trim() ?? string.Empty;
-            var nameParts = trimmedFullName
-                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-            if (nameParts.Length <= 1)
+            var normalizedValue = value?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(normalizedValue))
             {
-                var fallbackValue = string.IsNullOrWhiteSpace(trimmedFullName) ? "Hire" : trimmedFullName;
-                return (fallbackValue, fallbackValue);
+                throw new InvalidOperationException($"{parameterName} is required.");
             }
 
-            return (nameParts.First(), string.Join(" ", nameParts.Skip(1)));
+            return normalizedValue;
         }
 
         private static HireEnrolmentResultDto MapToResultDto(Hire hire)

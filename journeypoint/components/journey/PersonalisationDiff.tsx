@@ -22,6 +22,7 @@ import {
     useJourneyState,
 } from "@/providers/journeyProvider";
 import type { IPersonalisationDiffProps } from "@/types/journey/components";
+import { JourneyStatus } from "@/types/journey";
 import { formatDisplayDateTime } from "@/utils/date";
 import {
     getPersonalisationDecision,
@@ -59,8 +60,16 @@ const PersonalisationDiff: React.FC<IPersonalisationDiffProps> = ({ hireId }) =>
     const decisionCounts = getPersonalisationDecisionCounts(personalisationDecisions);
     const hasProposal = Boolean(personalisationProposal);
     const canApplyAcceptedDiffs = decisionCounts.acceptedCount > 0;
+    const isDraftJourney = journey.status === JourneyStatus.Draft;
 
     const handleRequest = async (): Promise<void> => {
+        if (!isDraftJourney) {
+            messageApi.warning(
+                "Journey personalisation is only available before journey activation.",
+            );
+            return;
+        }
+
         const proposal = await requestPersonalisation({
             journeyId: journey.journeyId,
             facilitatorInstructions: facilitatorInstructions.trim() || null,
@@ -75,6 +84,13 @@ const PersonalisationDiff: React.FC<IPersonalisationDiffProps> = ({ hireId }) =>
     };
 
     const handleApply = async (): Promise<void> => {
+        if (!isDraftJourney) {
+            messageApi.warning(
+                "Journey personalisation is only available before journey activation.",
+            );
+            return;
+        }
+
         const updatedJourney = await applyPersonalisation();
 
         if (!updatedJourney) {
@@ -105,18 +121,19 @@ const PersonalisationDiff: React.FC<IPersonalisationDiffProps> = ({ hireId }) =>
                         <Button
                             icon={<RobotOutlined />}
                             loading={isPersonalisationPending}
+                            disabled={!isDraftJourney}
                             onClick={() => void handleRequest()}
                         >
                             {hasProposal ? "Regenerate Proposal" : "Generate Proposal"}
                         </Button>
                         {hasProposal ? (
-                            <Button onClick={clearPersonalisationReview}>
+                            <Button disabled={!isDraftJourney} onClick={clearPersonalisationReview}>
                                 Clear Review
                             </Button>
                         ) : null}
                         <Button
                             type="primary"
-                            disabled={!canApplyAcceptedDiffs}
+                            disabled={!isDraftJourney || !canApplyAcceptedDiffs}
                             loading={isPersonalisationPending}
                             onClick={() => void handleApply()}
                         >
@@ -128,18 +145,22 @@ const PersonalisationDiff: React.FC<IPersonalisationDiffProps> = ({ hireId }) =>
                 <TextArea
                     autoSize={{ minRows: 3, maxRows: 6 }}
                     className={styles.personalisationPrompt}
-                    disabled={isPersonalisationPending}
+                    disabled={isPersonalisationPending || !isDraftJourney}
                     placeholder={PERSONALISATION_REQUEST_PLACEHOLDER}
                     value={facilitatorInstructions}
                     onChange={(event) => setFacilitatorInstructions(event.target.value)}
                 />
 
-                {!personalisationProposal ? (
-                    <Empty
-                        className={styles.emptyState}
-                        description="No AI proposal has been requested for this journey yet."
+                {isDraftJourney ? null : (
+                    <Alert
+                        type="warning"
+                        showIcon
+                        title="Personalisation unavailable after activation"
+                        description="This hire's journey is already activated. AI personalisation can only be requested and applied while the journey remains in draft."
                     />
-                ) : (
+                )}
+
+                {personalisationProposal ? (
                     <>
                         <Alert
                             type="info"
@@ -190,11 +211,26 @@ const PersonalisationDiff: React.FC<IPersonalisationDiffProps> = ({ hireId }) =>
                                         diff.journeyTaskId,
                                     )}
                                     diff={diff}
-                                    onDecisionChange={setPersonalisationDecision}
+                                    onDecisionChange={(journeyTaskId, decision) => {
+                                        if (!isDraftJourney) {
+                                            return;
+                                        }
+
+                                        setPersonalisationDecision(journeyTaskId, decision);
+                                    }}
                                 />
                             ))}
                         </div>
                     </>
+                ) : (
+                    <Empty
+                        className={styles.emptyState}
+                        description={
+                            isDraftJourney
+                                ? "No AI proposal has been requested for this journey yet."
+                                : "No personalisation review is available for activated journeys."
+                        }
+                    />
                 )}
             </Space>
         </Card>

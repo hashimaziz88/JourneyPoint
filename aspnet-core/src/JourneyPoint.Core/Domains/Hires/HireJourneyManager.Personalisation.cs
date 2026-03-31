@@ -50,9 +50,9 @@ namespace JourneyPoint.Domains.Hires
                 throw new InvalidOperationException("Journey does not belong to the specified hire.");
             }
 
-            if (journey.Status != JourneyStatus.Draft && journey.Status != JourneyStatus.Active)
+            if (journey.Status != JourneyStatus.Draft)
             {
-                throw new InvalidOperationException("Only draft or active journeys can accept personalisation changes.");
+                throw new InvalidOperationException("Only non-activated draft journeys can accept personalisation changes.");
             }
 
             EnsurePendingTask(journeyTask);

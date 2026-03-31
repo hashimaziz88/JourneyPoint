@@ -15,11 +15,18 @@ namespace JourneyPoint.Application.Services.HireService.Dto
         public Guid OnboardingPlanId { get; set; }
 
         /// <summary>
-        /// Gets or sets the hire full name.
+        /// Gets or sets the hire first name.
         /// </summary>
         [Required]
-        [MaxLength(200)]
-        public string FullName { get; set; }
+        [MaxLength(100)]
+        public string FirstName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hire last name.
+        /// </summary>
+        [Required]
+        [MaxLength(100)]
+        public string LastName { get; set; }
 
         /// <summary>
         /// Gets or sets the hire email address used for account creation.
