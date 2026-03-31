@@ -28,56 +28,52 @@ The backend exposes a secure JWT-authenticated REST API consumed by the Next.js 
 
 ##### 1. Authentication and Authorisation
 
-* API accepts JWT Bearer tokens issued by the TokenAuth endpoint
-* Role-based authorisation enforced via `[AbpAuthorize]` on all application services
-* Supports Facilitator, Manager, Enrolee, and Admin roles
+- API accepts JWT Bearer tokens issued by the TokenAuth endpoint
+- Role-based authorisation enforced via `[AbpAuthorize]` on all application services
+- Supports Facilitator, Manager, Enrolee, and Admin roles
 
 ##### 2. Plan Management
 
-* Create, read, update, and delete plan templates
-* Manage modules and tasks within a plan
-* Accept uploaded documents (PDF, image, markdown) and store them per tenant
-* Trigger AI enrichment via Groq to extract structured content from uploaded documents
-* Return a diff of proposed changes for facilitator review before applying
+- Create, read, update, and delete plan templates
+- Manage modules and tasks within a plan
+- Accept uploaded documents (PDF, image, markdown) and store them per tenant
+- Trigger AI enrichment via Groq to extract structured content from uploaded documents
+- Return a diff of proposed changes for facilitator review before applying
 
 ##### 3. Hire Management
 
-* Create hire records with full personal and role details
-* Automatically generate a platform user account and temporary password on hire creation
-* Send a welcome email with temporary credentials via the configured SMTP provider
-* Track and expose welcome notification delivery status and failure reasons
-* Support pipeline board queries filtered by hire status
+- Create hire records with full personal and role details
+- Automatically generate a platform user account and temporary password on hire creation
+- Send a welcome email with temporary credentials via the configured SMTP provider
+- Track and expose welcome notification delivery status and failure reasons
+- Support pipeline board queries filtered by hire status
 
 ##### 4. Journey Management
 
-* Generate a personalised journey from a selected plan template for a given hire
-* Expose draft journey tasks for facilitator review and editing
-* Support adding, editing, and removing draft tasks before activation
-* Activate a journey to make it accessible to the hire and manager
-* Track task completion and module progress per hire
+- Generate a personalised journey from a selected plan template for a given hire
+- Expose draft journey tasks for facilitator review and editing
+- Support adding, editing, and removing draft tasks before activation
+- Activate a journey to make it accessible to the hire and manager
+- Track task completion and module progress per hire
 
 ##### 5. Engagement and Intervention
 
-* Record engagement snapshots with composite scores and classification labels
-* Expose score trend history for chart rendering on the frontend
-* Create and resolve at-risk flags with structured intervention records
-* Return full intervention history per hire
+- Record engagement snapshots with composite scores and classification labels
+- Expose score trend history for chart rendering on the frontend
+- Create and resolve at-risk flags with structured intervention records
+- Return full intervention history per hire
 
 ##### 6. Notification Management
 
-* Send welcome notification emails on hire account creation
-* Record dispatch result including success status, timestamp, and failure reason
-* Expose notification status per hire for facilitator visibility
+- Send welcome notification emails on hire account creation
+- Record dispatch result including success status, timestamp, and failure reason
+- Expose notification status per hire for facilitator visibility
 
 ##### 7. Multi-Tenancy
 
-* All entities are tenant-scoped via ABP Zero tenant filters
-* Tenant resolution is automatic — never bypassed
-* Demo tenants Boxfusion and DeptDemo are seeded on first migration
-
-#### Architecture Diagram
-
-Placeholder — link to be added.
+- All entities are tenant-scoped via ABP Zero tenant filters
+- Tenant resolution is automatic — never bypassed
+- Demo tenants Boxfusion and DeptDemo are seeded on first migration
 
 ## Design
 
@@ -99,16 +95,17 @@ aspnet-core/
 
 ### Domain Model
 
-Placeholder — link to be added.
+[View Domain Model Online](https://drive.google.com/file/d/1kv56O3XnyTrqi7bkaZcj1aX3mcpPtyru/view?usp=sharing)
+![Domain Model](../docs/diagrams/JourneyPoint-domain-model.png)
 
 ## Running the Application
 
 ### Prerequisites
 
-* .NET 8 SDK
-* PostgreSQL 15+ running locally or remotely
-* Groq API key for AI enrichment features
-* Mailjet credentials, or Mailpit running locally for email interception
+- .NET 8 SDK
+- PostgreSQL 15+ running locally or remotely
+- Groq API key for AI enrichment features
+- Mailjet credentials, or Mailpit running locally for email interception
 
 ### Configuration
 

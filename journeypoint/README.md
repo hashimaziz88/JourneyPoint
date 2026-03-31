@@ -71,7 +71,7 @@ Placeholder — link to be added.
 
 ### Wireframes
 
-Placeholder — link to be added.
+[View Figma Designs](https://www.figma.com/make/5T4QDMFiOFLpOOPql1HhXN/JourneyPoint)
 
 ### Domain Model
 

@@ -23,6 +23,10 @@ Role-Aware Workflows: Facilitator, Manager, and Enrolee views each have purpose-
 
 ### Software Requirement Specification
 
+#### Speccification Document
+
+[View Spec Document](https://drive.google.com/file/d/16LNdBIP9ijmweslzHh5AwktbE43vlcyE/view?usp=sharing)
+
 #### Overview
 
 JourneyPoint is a multi-tenant onboarding platform designed to transform the way organisations onboard new hires. With a structured and data-driven approach, our application empowers facilitators to create reusable onboarding plans, enrol new hires into personalised journeys, and track engagement and completion throughout the onboarding lifecycle.
@@ -31,66 +35,63 @@ JourneyPoint is a multi-tenant onboarding platform designed to transform the way
 
 ##### 1. Authentication and Authorisation Management
 
-* User can log into the JourneyPoint web application
-* User can access their role-specific dashboard after login
-* Admin can create and manage user accounts across tenants
+- User can log into the JourneyPoint web application
+- User can access their role-specific dashboard after login
+- Admin can create and manage user accounts across tenants
 
 ##### 2. Plan Management
 
-* Facilitator can create and edit onboarding plan templates
-* Facilitator can add, edit, and remove modules within a plan
-* Facilitator can add, edit, and remove tasks within a module
-* Facilitator can import plan content from uploaded documents (PDF, image, markdown)
-* Facilitator can use AI-assisted enrichment to extract structured content from documents
+- Facilitator can create and edit onboarding plan templates
+- Facilitator can add, edit, and remove modules within a plan
+- Facilitator can add, edit, and remove tasks within a module
+- Facilitator can import plan content from uploaded documents (PDF, image, markdown)
+- Facilitator can use AI-assisted enrichment to extract structured content from documents
 
 ##### 3. Hire Management
 
-* Facilitator can create a new hire record
-* System automatically creates a platform user account and sends a welcome email with temporary credentials upon hire creation
-* Facilitator can view and manage all hires on a pipeline board
-* Facilitator can view detailed hire information including lifecycle status
+- Facilitator can create a new hire record
+- System automatically creates a platform user account and sends a welcome email with temporary credentials upon hire creation
+- Facilitator can view and manage all hires on a pipeline board
+- Facilitator can view detailed hire information including lifecycle status
 
 ##### 4. Journey Management
 
-* Facilitator can generate a personalised journey plan for a hire from a selected plan template
-* Facilitator can review and edit draft journey tasks before activation
-* Facilitator can add draft tasks to a generated journey
-* Facilitator can activate a journey to make it visible to the hire
-* Enrolee can view their active journey and complete assigned tasks
-* Manager can view direct report task workspaces
+- Facilitator can generate a personalised journey plan for a hire from a selected plan template
+- Facilitator can review and edit draft journey tasks before activation
+- Facilitator can add draft tasks to a generated journey
+- Facilitator can activate a journey to make it visible to the hire
+- Enrolee can view their active journey and complete assigned tasks
+- Manager can view direct report task workspaces
 
 ##### 5. Engagement and Intervention
 
-* System tracks hire engagement and calculates a composite engagement score
-* Facilitator can view score trend charts and engagement snapshots
-* Facilitator can raise an at-risk flag for a hire showing signs of disengagement
-* Facilitator can resolve an at-risk flag and record an intervention
-* Facilitator can view full intervention history per hire
+- System tracks hire engagement and calculates a composite engagement score
+- Facilitator can view score trend charts and engagement snapshots
+- Facilitator can raise an at-risk flag for a hire showing signs of disengagement
+- Facilitator can resolve an at-risk flag and record an intervention
+- Facilitator can view full intervention history per hire
 
 ##### 6. Notification Management
 
-* System sends a welcome email with temporary credentials when a hire account is created
-* Facilitator can see the status of welcome notification delivery per hire
+- System sends a welcome email with temporary credentials when a hire account is created
+- Facilitator can see the status of welcome notification delivery per hire
 
 ##### 7. Multi-Tenancy
 
-* Platform supports multiple isolated tenant organisations
-* Tenant admin can manage users within their own tenant
-* All data is fully isolated per tenant
-
-#### Use Case Diagrams
-
-#### Architecture Diagram
+- Platform supports multiple isolated tenant organisations
+- Tenant admin can manage users within their own tenant
+- All data is fully isolated per tenant
 
 ## Design
 
 ### Wireframes
 
-Placeholder — link to be added.
+[View Figma Designs](https://www.figma.com/make/5T4QDMFiOFLpOOPql1HhXN/JourneyPoint)
 
 ### Domain Model
 
-Placeholder — link to be added.
+[View Domain Model Online](https://drive.google.com/file/d/1kv56O3XnyTrqi7bkaZcj1aX3mcpPtyru/view?usp=sharing)
+![Domain Model](docs/diagrams/JourneyPoint-domain-model.png)
 
 ## Running the Application
 
