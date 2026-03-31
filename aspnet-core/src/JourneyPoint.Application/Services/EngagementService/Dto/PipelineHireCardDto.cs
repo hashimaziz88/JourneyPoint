@@ -40,5 +40,11 @@ namespace JourneyPoint.Application.Services.EngagementService.Dto
         public Guid? ActiveAtRiskFlagId { get; set; }
 
         public DateTime SnapshotComputedAt { get; set; }
+
+        /// <summary>The onboarding plan this hire is enrolled under.</summary>
+        public Guid OnboardingPlanId { get; set; }
+
+        /// <summary>Display name of the onboarding plan for pipeline grouping.</summary>
+        public string OnboardingPlanName { get; set; }
     }
 }

@@ -13,7 +13,7 @@ import {
     Typography,
 } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
-import PipelineKanban from "@/components/pipeline/PipelineKanban";
+import PipelineJourneyGroup from "@/components/pipeline/PipelineJourneyGroup";
 import { useStyles } from "@/components/pipeline/style/style";
 import {
     buildFacilitatorHireJourneyRoute,
@@ -27,13 +27,14 @@ import { usePipelineActions, usePipelineState } from "@/providers/pipelineProvid
 import type { EngagementClassification } from "@/types/engagement";
 import type { IPipelineBoardViewProps } from "@/types/pipeline/components";
 import { formatDisplayDateTime } from "@/utils/date";
-import { getPipelineSummaryMetrics } from "@/utils/pipeline/board";
+import { getPipelineJourneyGroups, getPipelineSummaryMetrics } from "@/utils/pipeline/board";
 import { useRouter } from "next/navigation";
 
 const { Paragraph, Title } = Typography;
 
 /**
- * Renders the facilitator pipeline page with backend-driven columns and filters.
+ * Renders the facilitator pipeline grouped by onboarding plan, so hires
+ * across different journeys stay in their own context with plan-specific columns.
  */
 const PipelineBoardView: React.FC<IPipelineBoardViewProps> = () => {
     const { styles } = useStyles();
@@ -44,7 +45,9 @@ const PipelineBoardView: React.FC<IPipelineBoardViewProps> = () => {
     const [classificationInput, setClassificationInput] = useState<
         EngagementClassification | undefined
     >(filters.classification);
+
     const summary = useMemo(() => getPipelineSummaryMetrics(board), [board]);
+    const journeyGroups = useMemo(() => getPipelineJourneyGroups(board), [board]);
 
     const loadBoard = useEffectEvent(async (): Promise<void> => {
         await getBoard(filters);
@@ -81,12 +84,17 @@ const PipelineBoardView: React.FC<IPipelineBoardViewProps> = () => {
 
     const boardContent = isPending && !board ? (
         <Spin size="large" className={styles.loadingWrap} />
-    ) : (board?.columns ?? []).length > 0 ? (
-        <PipelineKanban
-            columns={board?.columns ?? []}
-            onOpenHire={handleOpenHire}
-            onOpenJourney={handleOpenJourney}
-        />
+    ) : journeyGroups.length > 0 ? (
+        <div className={styles.journeyGroupList}>
+            {journeyGroups.map((group) => (
+                <PipelineJourneyGroup
+                    key={group.planId}
+                    group={group}
+                    onOpenHire={handleOpenHire}
+                    onOpenJourney={handleOpenJourney}
+                />
+            ))}
+        </div>
     ) : (
         <Empty
             className={styles.emptyState}
@@ -95,16 +103,15 @@ const PipelineBoardView: React.FC<IPipelineBoardViewProps> = () => {
     );
 
     return (
-        <Space orientation="vertical" size={24} className={styles.pageRoot}>
+        <Space direction="vertical" size={24} className={styles.pageRoot}>
             <div className={styles.pageHeader}>
                 <div>
                     <Title level={2} className={styles.pageHeading}>
-                        Pipeline Board
+                        Pipeline
                     </Title>
                     <Paragraph type="secondary">
-                        Track same-tenant hire progress through backend-derived module
-                        stages, spot at-risk hires quickly, and drill straight into hire
-                        or journey review detail.
+                        Hires are grouped by onboarding plan. Each plan has its own module
+                        stages so progress columns stay meaningful for that journey.
                     </Paragraph>
                 </div>
 
@@ -121,7 +128,7 @@ const PipelineBoardView: React.FC<IPipelineBoardViewProps> = () => {
 
             <div className={styles.summaryGrid}>
                 <Card>
-                    <Statistic title="Hires in board" value={summary.totalHires} />
+                    <Statistic title="Hires in pipeline" value={summary.totalHires} />
                 </Card>
                 <Card>
                     <Statistic title="Active at-risk flags" value={summary.activeAtRiskCount} />
@@ -168,12 +175,11 @@ const PipelineBoardView: React.FC<IPipelineBoardViewProps> = () => {
 
             <div className={styles.boardMeta}>
                 <Paragraph type="secondary">
-                    Backend generated this view at{" "}
-                    {formatDisplayDateTime(board?.generatedAt) || "not yet available"}.
+                    Generated {formatDisplayDateTime(board?.generatedAt) || "not yet available"}.
+                    {journeyGroups.length > 0 && ` ${journeyGroups.length} plan${journeyGroups.length === 1 ? "" : "s"} in view.`}
                 </Paragraph>
                 <Paragraph type="secondary">
-                    Columns remain in backend order so the board always reflects the
-                    underlying onboarding modules plus the completion lane.
+                    Columns within each plan reflect that plan&apos;s module order from the backend.
                 </Paragraph>
             </div>
 

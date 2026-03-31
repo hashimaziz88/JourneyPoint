@@ -2,9 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import { Button, Card, Empty, Space, Spin, Tag, Typography, message } from "antd";
+import { Breadcrumb, Button, Card, Empty, Space, Spin, Tabs, Tag, Typography, message } from "antd";
 import {
-    ArrowLeftOutlined,
     CheckCircleOutlined,
     ReloadOutlined,
 } from "@ant-design/icons";
@@ -72,14 +71,37 @@ const JourneyTaskDetailView: React.FC<IJourneyTaskDetailViewProps> = ({
         return <Empty className={styles.emptyState} description="Task not found." />;
     }
 
+    const detailsTab = (
+        <Space direction="vertical" size={16} className={styles.pageRoot}>
+            <Card>
+                <Title level={4}>Task details</Title>
+                <Paragraph className={styles.detailBody}>{task.description}</Paragraph>
+            </Card>
+        </Space>
+    );
+
+    const acknowledgementTab = (
+        <Card>
+            <JourneyTaskAcknowledgementPanel
+                task={task}
+                isPending={isMutationPending}
+                onAcknowledge={handleAcknowledge}
+            />
+        </Card>
+    );
+
     return (
         <Space orientation="vertical" size={24} className={styles.pageRoot}>
             {messageContextHolder}
+            <Breadcrumb
+                items={[
+                    { title: <Link href={APP_ROUTES.enroleeMyJourney}>My Journey</Link> },
+                    { title: task.title },
+                ]}
+            />
+
             <div className={styles.pageHeader}>
                 <div>
-                    <Link href={APP_ROUTES.enroleeMyJourney} className={styles.backLink}>
-                        <ArrowLeftOutlined /> Back to journey
-                    </Link>
                     <Title level={2} className={styles.pageHeading}>
                         {task.title}
                     </Title>
@@ -105,60 +127,51 @@ const JourneyTaskDetailView: React.FC<IJourneyTaskDetailViewProps> = ({
             </div>
 
             <div className={styles.summaryGrid}>
-                <Card className={styles.statCard}>
+                <div>
                     <Text type="secondary">Due on</Text>
                     <Paragraph className={styles.inlineParagraph}>
                         {formatDisplayDate(task.dueOn)}
                     </Paragraph>
-                </Card>
-                <Card className={styles.statCard}>
+                </div>
+                <div>
                     <Text type="secondary">Acknowledged</Text>
                     <Paragraph className={styles.inlineParagraph}>
                         {formatDisplayDateTime(task.acknowledgedAt)}
                     </Paragraph>
-                </Card>
-                <Card className={styles.statCard}>
+                </div>
+                <div>
                     <Text type="secondary">Completed</Text>
                     <Paragraph className={styles.inlineParagraph}>
                         {formatDisplayDateTime(task.completedAt)}
                     </Paragraph>
-                </Card>
-                <Card className={styles.statCard}>
+                </div>
+                <div>
                     <Text type="secondary">Personalised</Text>
                     <Paragraph className={styles.inlineParagraph}>
                         {formatDisplayDateTime(task.personalisedAt)}
                     </Paragraph>
-                </Card>
+                </div>
             </div>
 
-            <Card className={styles.sectionCard}>
-                <Title level={4}>Task details</Title>
-                <Paragraph className={styles.detailBody}>{task.description}</Paragraph>
-            </Card>
-
-            <Card className={styles.sectionCard}>
-                <Title level={4}>Acknowledgement</Title>
-                <JourneyTaskAcknowledgementPanel
-                    task={task}
-                    isPending={isMutationPending}
-                    onAcknowledge={handleAcknowledge}
-                />
-            </Card>
+            <Tabs
+                items={[
+                    { key: "details", label: "Details", children: detailsTab },
+                    { key: "acknowledgement", label: "Acknowledgement", children: acknowledgementTab },
+                ]}
+            />
 
             {canRenderTaskActions(task) ? (
-                <Card className={styles.sectionCard}>
-                    <Space wrap className={styles.pageActions}>
-                        <Button
-                            type="primary"
-                            icon={<CheckCircleOutlined />}
-                            loading={isMutationPending}
-                            disabled={!task.canComplete}
-                            onClick={() => void handleComplete()}
-                        >
-                            Mark complete
-                        </Button>
-                    </Space>
-                </Card>
+                <div className={styles.pageActions}>
+                    <Button
+                        type="primary"
+                        icon={<CheckCircleOutlined />}
+                        loading={isMutationPending}
+                        disabled={!task.canComplete}
+                        onClick={() => void handleComplete()}
+                    >
+                        Mark complete
+                    </Button>
+                </div>
             ) : null}
         </Space>
     );

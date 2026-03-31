@@ -69,3 +69,51 @@ export const getPipelineColumnSummary = (
 });
 
 export const formatPercentage = (value: number): string => `${Math.round(value)}%`;
+
+/**
+ * Groups a flat board into per-plan journey sections, each with its own
+ * ordered column set. Hires without a planName fall into an "Unknown Plan" bucket.
+ */
+export const getPipelineJourneyGroups = (
+    board: IPipelineBoardDto | null | undefined,
+): import("@/types/pipeline").IPipelineJourneyGroup[] => {
+    if (!board?.columns?.length) return [];
+
+    const groupMap = new Map<string, import("@/types/pipeline").IPipelineJourneyGroup>();
+
+    for (const column of board.columns) {
+        for (const hire of column.hires) {
+            const planId = hire.onboardingPlanId ?? "unknown";
+            const planName = hire.onboardingPlanName ?? "Unknown Plan";
+
+            if (!groupMap.has(planId)) {
+                groupMap.set(planId, { planId, planName, columns: [], totalHires: 0, atRiskCount: 0 });
+            }
+
+            const group = groupMap.get(planId)!;
+            let targetColumn = group.columns.find((col) => col.columnKey === column.columnKey);
+
+            if (!targetColumn) {
+                targetColumn = {
+                    columnKey: column.columnKey,
+                    columnTitle: column.columnTitle,
+                    orderIndex: column.orderIndex,
+                    hires: [],
+                };
+                group.columns.push(targetColumn);
+            }
+
+            targetColumn.hires.push(hire);
+            group.totalHires += 1;
+            if (hire.hasActiveAtRiskFlag) group.atRiskCount += 1;
+        }
+    }
+
+    // Sort columns within each group by orderIndex
+    for (const group of groupMap.values()) {
+        group.columns.sort((a, b) => a.orderIndex - b.orderIndex);
+    }
+
+    // Sort groups by planName for stable ordering
+    return [...groupMap.values()].sort((a, b) => a.planName.localeCompare(b.planName));
+};

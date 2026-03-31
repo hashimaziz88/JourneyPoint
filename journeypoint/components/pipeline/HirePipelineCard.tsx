@@ -8,7 +8,7 @@ import type { IHirePipelineCardProps } from "@/types/pipeline/components";
 import { formatDisplayDate } from "@/utils/date";
 import { formatPercentage } from "@/utils/pipeline/board";
 
-const { Paragraph, Text, Title } = Typography;
+const { Text, Title } = Typography;
 
 /**
  * Renders one facilitator pipeline card with drill-in actions and engagement status.
@@ -28,9 +28,9 @@ const HirePipelineCard: React.FC<IHirePipelineCardProps> = ({
             )}
         >
             <div className={styles.cardHeader}>
-                <div>
-                    <Title level={5}>{hire.fullName}</Title>
-                    <Paragraph type="secondary">{hire.emailAddress}</Paragraph>
+                <div className={styles.cardIdentity}>
+                    <Title level={5} className={styles.cardName}>{hire.fullName}</Title>
+                    <Text type="secondary" className={styles.cardEmail}>{hire.emailAddress}</Text>
                 </div>
                 <EngagementBadge
                     classification={hire.classification}
@@ -39,35 +39,29 @@ const HirePipelineCard: React.FC<IHirePipelineCardProps> = ({
                 />
             </div>
 
-            <div className={styles.cardMetaGrid}>
-                <div className={styles.statTile}>
-                    <Text type="secondary">Current stage</Text>
-                    <Title level={5}>{hire.currentStageTitle}</Title>
-                </div>
-                <div className={styles.statTile}>
-                    <Text type="secondary">Start date</Text>
-                    <Title level={5}>{formatDisplayDate(hire.startDate)}</Title>
-                </div>
-                <div className={styles.statTile}>
-                    <Text type="secondary">Role title</Text>
-                    <Title level={5}>{hire.roleTitle || "Not supplied"}</Title>
-                </div>
-                <div className={styles.statTile}>
-                    <Text type="secondary">Department</Text>
-                    <Title level={5}>{hire.department || "Not supplied"}</Title>
-                </div>
+            <div className={styles.cardInlineMeta}>
+                <Text type="secondary">{hire.currentStageTitle}</Text>
+                <Text type="secondary">·</Text>
+                <Text type="secondary">{formatDisplayDate(hire.startDate)}</Text>
+                {hire.roleTitle ? (
+                    <>
+                        <Text type="secondary">·</Text>
+                        <Text type="secondary">{hire.roleTitle}</Text>
+                    </>
+                ) : null}
             </div>
 
             <div className={styles.progressWrap}>
-                <Text type="secondary">
-                    Completion {formatPercentage(hire.completionRate)}
-                </Text>
-                <Progress percent={Math.round(hire.completionRate)} showInfo={false} />
+                <div className={styles.progressLabel}>
+                    <Text type="secondary">Completion</Text>
+                    <Text type="secondary">{formatPercentage(hire.completionRate)}</Text>
+                </div>
+                <Progress percent={Math.round(hire.completionRate)} showInfo={false} size="small" />
             </div>
 
             <div className={styles.actionRow}>
-                <Button onClick={() => onOpenHire(hire.hireId)}>Open Hire</Button>
-                <Button type="primary" onClick={() => onOpenJourney(hire.hireId)}>
+                <Button size="small" onClick={() => onOpenHire(hire.hireId)}>Open Hire</Button>
+                <Button size="small" type="primary" onClick={() => onOpenJourney(hire.hireId)}>
                     Open Journey
                 </Button>
             </div>

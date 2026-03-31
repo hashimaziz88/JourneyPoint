@@ -1,6 +1,12 @@
 import type { EngagementClassification } from "@/types/engagement";
 import type { IPipelineBoardDto, IPipelineColumnDto, IPipelineHireCardDto } from "@/types/pipeline";
 export type IPipelineBoardViewProps = Record<string, never>;
+
+export interface IPipelineJourneyGroupProps {
+    group: import("@/types/pipeline").IPipelineJourneyGroup;
+    onOpenHire: (hireId: string) => void;
+    onOpenJourney: (hireId: string) => void;
+}
 export interface IPipelineKanbanProps {
     columns: IPipelineColumnDto[];
     onOpenHire: (hireId: string) => void;

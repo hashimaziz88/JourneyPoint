@@ -3,12 +3,14 @@
 import React, { useEffect, useEffectEvent, useState } from "react";
 import {
     Alert,
+    Breadcrumb,
     Button,
     Card,
     Empty,
     Space,
     Spin,
     Statistic,
+    Tabs,
     Tag,
     Typography,
     message,
@@ -46,6 +48,9 @@ import {
     isJourneyDraftEditable,
 } from "@/utils/journey/review";
 import { getHighlightedTaskIds } from "@/utils/journey/personalisation";
+import { APP_ROUTES, buildFacilitatorHireRoute } from "@/constants/auth/routes";
+import { useRouter } from "next/navigation";
+import { startTransition } from "react";
 
 const { Paragraph, Title } = Typography;
 
@@ -54,6 +59,7 @@ const { Paragraph, Title } = Typography;
  */
 const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
     const { styles } = useStyles();
+    const router = useRouter();
     const [messageApi, messageContextHolder] = message.useMessage();
     const {
         getHireDetail,
@@ -167,9 +173,46 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
     const modules = groupJourneyTasksByModule(journey);
     const highlightedTaskIds = getHighlightedTaskIds(personalisationProposal);
 
+    const tasksTab = (
+        <Space direction="vertical" size={16} className={styles.pageRoot}>
+            {isEditable ? (
+                <Alert
+                    type="info"
+                    title="Draft review is open."
+                    description="Edits here change only this hire's journey snapshot. The source onboarding plan stays unchanged."
+                />
+            ) : (
+                <Alert
+                    type="success"
+                    title="Journey review is locked."
+                    description="This journey is no longer in draft, so task snapshots are read-only."
+                />
+            )}
+
+            <JourneyTaskList
+                highlightedTaskIds={highlightedTaskIds}
+                isEditable={isEditable}
+                isMutationPending={isMutationPending}
+                modules={modules}
+                onEditTask={(task) => {
+                    setEditingTask(task);
+                    setIsTaskModalOpen(true);
+                }}
+                onRemoveTask={handleRemoveTask}
+            />
+        </Space>
+    );
+
     return (
         <Space orientation="vertical" size={24} className={styles.pageRoot}>
             {messageContextHolder}
+            <Breadcrumb
+                items={[
+                    { title: <a onClick={() => startTransition(() => router.push(buildFacilitatorHireRoute(hireId)))}>Hire</a> },
+                    { title: "Journey Review" },
+                ]}
+            />
+
             <div className={styles.pageHeader}>
                 <div>
                     <Title level={2} className={styles.pageHeading}>
@@ -225,24 +268,6 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
                 </Space>
             </div>
 
-            <div className={styles.summaryGrid}>
-                <Card className={styles.statCard}>
-                    <Statistic title="Start date" value={formatDisplayDate(selectedHire.startDate)} />
-                </Card>
-                <Card className={styles.statCard}>
-                    <Statistic title="Plan" value={selectedHire.onboardingPlanName} />
-                </Card>
-                <Card className={styles.statCard}>
-                    <Statistic
-                        title="Journey activated"
-                        value={formatDisplayDateTime(journey?.activatedAt)}
-                    />
-                </Card>
-                <Card className={styles.statCard}>
-                    <Statistic title="Tasks" value={journey?.tasks.length ?? 0} />
-                </Card>
-            </div>
-
             {!journey ? (
                 <Card className={styles.sectionCard}>
                     <Empty
@@ -260,35 +285,20 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
                 </Card>
             ) : (
                 <>
-                    {isEditable ? (
-                        <Alert
-                            type="info"
-                            title="Draft review is open."
-                            description="Edits here change only this hire's journey snapshot. The source onboarding plan stays unchanged."
-                        />
-                    ) : (
-                        <Alert
-                            type="success"
-                            title="Journey review is locked."
-                            description="This journey is no longer in draft, so task snapshots are read-only."
-                        />
-                    )}
+                    <div className={styles.summaryGrid}>
+                        <Statistic title="Start date" value={formatDisplayDate(selectedHire.startDate)} />
+                        <Statistic title="Plan" value={selectedHire.onboardingPlanName} />
+                        <Statistic title="Journey activated" value={formatDisplayDateTime(journey?.activatedAt)} />
+                        <Statistic title="Tasks" value={journey?.tasks.length ?? 0} />
+                    </div>
 
-                    <Card className={styles.sectionCard}>
-                        <JourneyTaskList
-                            highlightedTaskIds={highlightedTaskIds}
-                            isEditable={isEditable}
-                            isMutationPending={isMutationPending}
-                            modules={modules}
-                            onEditTask={(task) => {
-                                setEditingTask(task);
-                                setIsTaskModalOpen(true);
-                            }}
-                            onRemoveTask={handleRemoveTask}
-                        />
-                    </Card>
-
-                    <PersonalisationDiff hireId={hireId} />
+                    <Tabs
+                        defaultActiveKey="tasks"
+                        items={[
+                            { key: "tasks", label: `Tasks (${journey.tasks.length})`, children: tasksTab },
+                            { key: "personalisation", label: "Personalisation", children: <PersonalisationDiff hireId={hireId} /> },
+                        ]}
+                    />
                 </>
             )}
 

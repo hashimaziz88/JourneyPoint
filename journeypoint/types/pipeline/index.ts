@@ -25,6 +25,8 @@ export interface IPipelineHireCardDto {
     hasActiveAtRiskFlag: boolean;
     activeAtRiskFlagId?: string | null;
     snapshotComputedAt: string;
+    onboardingPlanId: string;
+    onboardingPlanName: string;
 }
 
 export interface IPipelineColumnDto {
@@ -44,4 +46,13 @@ export interface IPipelineBoardDto {
 export interface IPipelineBoardQueryState {
     keyword: string;
     classification?: EngagementClassification;
+}
+
+/** One onboarding-plan group on the pipeline, containing plan-specific columns. */
+export interface IPipelineJourneyGroup {
+    planId: string;
+    planName: string;
+    columns: IPipelineColumnDto[];
+    totalHires: number;
+    atRiskCount: number;
 }
