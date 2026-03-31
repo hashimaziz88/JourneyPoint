@@ -12,10 +12,11 @@ export const useStyles = createStyles(({ token, css }) => ({
 
   card: css`
     width: 100%;
-    max-width: 920px;
-    border-radius: 24px;
+    max-width: 960px;
+    border-radius: ${token.borderRadiusLG * 2}px;
     overflow: hidden;
     box-shadow: ${token.boxShadowSecondary};
+    border: 1px solid ${token.colorBorderSecondary};
 
     .ant-card-body {
       padding: 0;
@@ -30,16 +31,28 @@ export const useStyles = createStyles(({ token, css }) => ({
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
     background: linear-gradient(
-      135deg,
-      ${token.colorPrimary},
-      ${token.colorPrimaryBgHover}
+      160deg,
+      ${token.colorBgElevated} 0%,
+      rgba(245, 158, 11, 0.12) 60%,
+      ${token.colorBgLayout} 100%
     );
+    border-inline-end: 1px solid ${token.colorBorderSecondary};
     padding: 48px;
+  `,
+
+  leftDecorator: css`
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 25% 75%, rgba(245, 158, 11, 0.1), transparent 55%);
+    pointer-events: none;
   `,
 
   rightCol: css`
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     background: ${token.colorBgContainer};
@@ -49,6 +62,8 @@ export const useStyles = createStyles(({ token, css }) => ({
   leftContent: css`
     max-width: 420px;
     color: ${token.colorTextBase};
+    position: relative;
+    z-index: 1;
 
     h1 {
       color: ${token.colorTextBase} !important;
@@ -56,8 +71,31 @@ export const useStyles = createStyles(({ token, css }) => ({
     }
 
     .ant-typography {
-      color: rgba(255, 255, 255, 0.85);
+      color: rgba(255, 255, 255, 0.7);
     }
+  `,
+
+  leftBrand: css`
+    display: flex;
+    align-items: center;
+    gap: ${token.paddingSM}px;
+    margin-bottom: ${token.marginLG}px;
+  `,
+
+  leftBrandText: css`
+    font-weight: 700;
+    font-size: 18px;
+    color: ${token.colorText} !important;
+    margin: 0 !important;
+  `,
+
+  leftTagline: css`
+    color: ${token.colorTextSecondary} !important;
+    font-size: ${token.fontSizeSM}px !important;
+    line-height: 1.6 !important;
+    margin-top: ${token.marginLG}px !important;
+    margin-bottom: 0 !important;
+    max-width: 320px;
   `,
 
   form: css`
@@ -80,7 +118,7 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   formHeader: css`
-    margin-bottom: ${token.marginLG}px;
+    margin-bottom: ${token.marginLG + 8}px;
   `,
 
   infoAlert: css`
@@ -96,6 +134,7 @@ export const useStyles = createStyles(({ token, css }) => ({
     height: 40px;
     border-radius: ${token.borderRadius}px;
     font-weight: 600;
+    letter-spacing: 0.02em;
   `,
 
   footerText: css`

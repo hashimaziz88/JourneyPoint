@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Typography } from "antd";
+import Image from "next/image";
+import { Space, Typography } from "antd";
 import { useStyles } from "@/layout/style/style";
 import type { IAppShellBrandProps } from "@/types/layout/navigation";
 
@@ -15,9 +16,18 @@ const AppShellBrand: React.FC<IAppShellBrandProps> = ({ subtitle }) => {
 
   return (
     <div className={styles.siderBrand}>
-      <Title level={3} className={styles.siderTitle}>
-        JourneyPoint
-      </Title>
+      <Space align="center" size={8} style={{ marginBottom: 4 }}>
+        <Image
+          src="/journeypoint.svg"
+          alt="JourneyPoint"
+          width={24}
+          height={24}
+          priority
+        />
+        <Title level={4} className={styles.siderTitle} style={{ margin: 0 }}>
+          JourneyPoint
+        </Title>
+      </Space>
       <Text className={styles.siderText}>{subtitle}</Text>
     </div>
   );

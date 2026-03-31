@@ -1,15 +1,6 @@
 import React from "react";
-import AuthCard from "@/components/auth/AuthCard";
-import LandingActions from "@/components/home/LandingActions";
+import LandingPage from "@/components/home/LandingPage";
 
-const Home: React.FC = () => (
-  <AuthCard
-    title="Welcome to your platform"
-    description="Build faster with a clean Ant Design foundation. Sign in to continue your work or create an account to get started."
-  >
-    <LandingActions />
-  </AuthCard>
-);
+const Home: React.FC = () => <LandingPage />;
 
 export default Home;
-

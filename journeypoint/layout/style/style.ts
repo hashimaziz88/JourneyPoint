@@ -4,7 +4,8 @@ export const useStyles = createStyles(({ token, css }) => ({
   shellLayout: css`
     min-height: 100vh;
     background:
-      radial-gradient(circle at top left, ${token.colorPrimaryBg}, transparent 28%),
+      radial-gradient(circle at top left, ${token.colorPrimaryBg}, transparent 22%),
+      radial-gradient(circle at bottom right, ${token.colorPrimaryBg}, transparent 18%),
       ${token.colorBgLayout};
   `,
 
@@ -15,21 +16,36 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   siderBrand: css`
-    padding: ${token.paddingLG}px;
+    padding: ${token.paddingLG}px ${token.paddingLG}px ${token.padding}px;
+    border-bottom: 1px solid ${token.colorBorderSecondary};
+    margin-bottom: ${token.marginXS}px;
   `,
 
   siderTitle: css`
     margin-bottom: ${token.marginXXS}px !important;
+    color: ${token.colorPrimary} !important;
+    font-weight: 700 !important;
   `,
 
   siderText: css`
-    color: ${token.colorTextDescription};
+    color: ${token.colorTextTertiary};
+    font-size: ${token.fontSizeSM}px;
   `,
 
   shellMenu: css`
     background: transparent;
     border-inline-end: none !important;
     padding-inline: ${token.paddingXS}px;
+
+    :global(.ant-menu-item-selected) {
+      border-left: 2px solid ${token.colorPrimary};
+      background: ${token.colorPrimaryBg} !important;
+    }
+
+    :global(.ant-menu-item) {
+      border-radius: ${token.borderRadius}px;
+      transition: background 150ms ease-out;
+    }
   `,
 
   mobileDrawerRoot: css`
@@ -66,8 +82,9 @@ export const useStyles = createStyles(({ token, css }) => ({
     align-items: center;
     justify-content: space-between;
     gap: ${token.margin}px;
-    background: transparent !important;
-    padding: ${token.paddingLG}px !important;
+    background: ${token.colorBgLayout} !important;
+    border-bottom: 1px solid ${token.colorBorderSecondary};
+    padding: ${token.paddingMD}px ${token.paddingLG}px !important;
     height: auto !important;
     line-height: 1.2 !important;
 
@@ -79,26 +96,26 @@ export const useStyles = createStyles(({ token, css }) => ({
 
   headerTitle: css`
     margin: 0 !important;
+    font-size: ${token.fontSizeLG}px !important;
+    font-weight: 600 !important;
+    color: ${token.colorText} !important;
   `,
 
   shellContent: css`
-    padding: 0 ${token.paddingLG}px ${token.paddingLG}px !important;
+    padding: ${token.paddingLG}px !important;
 
     @media (max-width: 991px) {
-      padding: 0 ${token.padding}px ${token.padding}px !important;
+      padding: ${token.padding}px !important;
     }
   `,
 
   shellContentCard: css`
-    min-height: calc(100vh - 120px);
-    border-radius: ${token.borderRadiusLG}px;
+    min-height: calc(100vh - 80px);
     padding: ${token.paddingLG}px;
-    background: ${token.colorBgContainer};
-    border: 1px solid ${token.colorBorderSecondary};
-    box-shadow: ${token.boxShadowTertiary};
+    background: transparent;
 
     @media (max-width: 991px) {
-      min-height: calc(100vh - 108px);
+      min-height: calc(100vh - 68px);
       padding: ${token.padding}px;
     }
   `,

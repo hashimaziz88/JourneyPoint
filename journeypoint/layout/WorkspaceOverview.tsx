@@ -9,19 +9,18 @@ import { useStyles } from "./style/style";
 const { Paragraph, Title, Text } = Typography;
 
 /**
- * Renders the interim role workspace overview used during the foundation phase.
+ * Generic workspace placeholder for role workspaces that are not yet configured.
  */
 const WorkspaceOverview: React.FC<IWorkspaceOverviewProps> = ({
   currentFocus,
   description,
-  nextMilestoneHint,
   title,
 }) => {
   const { styles } = useStyles();
   const session = useAppSession();
 
   return (
-    <Space orientation="vertical" size={24} className={styles.overviewRoot}>
+    <Space direction="vertical" size={24} className={styles.overviewRoot}>
       <div>
         <Title level={2} className={styles.overviewHeading}>
           {title}
@@ -39,7 +38,7 @@ const WorkspaceOverview: React.FC<IWorkspaceOverviewProps> = ({
               {session.user?.fullName ?? session.user?.userName ?? "Unknown user"}
             </Title>
             <Paragraph type="secondary" className={styles.overviewParagraph}>
-              {session.user?.emailAddress ?? "No email returned from session."}
+              {session.user?.emailAddress ?? "—"}
             </Paragraph>
           </Card>
         </Col>
@@ -56,16 +55,6 @@ const WorkspaceOverview: React.FC<IWorkspaceOverviewProps> = ({
           </Card>
         </Col>
       </Row>
-
-      <Card>
-        <Text type="secondary">Milestone One Focus</Text>
-        <Title level={4} className={styles.overviewCardTitle}>
-          {nextMilestoneHint}
-        </Title>
-        <Paragraph type="secondary" className={styles.overviewParagraph}>
-          This workspace is intentionally light while role-safe routing, landing behavior, and navigation are being established.
-        </Paragraph>
-      </Card>
     </Space>
   );
 };

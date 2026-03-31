@@ -6,10 +6,11 @@ import { APP_ROUTES } from "@/constants/auth/routes";
 import { useAppSession } from "@/helpers/useAppSession";
 import Spinner from "@/components/spinner/Spinner";
 import type { IRoleShellProps } from "@/types/layout/shell";
-import AppShell from "./AppShell";
+import WorkspaceShell from "./WorkspaceShell";
 
 /**
- * Applies role-aware access control and shared shell rendering to a workspace.
+ * Applies role-aware access control and top-navigation shell rendering to a
+ * workspace. Admin workspaces use AdminShell → AppShell (sidebar) instead.
  */
 const RoleShell: React.FC<IRoleShellProps> = ({
   children,
@@ -69,7 +70,7 @@ const RoleShell: React.FC<IRoleShellProps> = ({
   }
 
   return (
-    <AppShell
+    <WorkspaceShell
       navigationItems={visibleNavigationItems}
       scopeLabel={tenant?.tenantName ?? "Host"}
       title={title}
@@ -77,7 +78,7 @@ const RoleShell: React.FC<IRoleShellProps> = ({
       userDisplayName={user?.fullName ?? user?.userName ?? null}
     >
       {children}
-    </AppShell>
+    </WorkspaceShell>
   );
 };
 
