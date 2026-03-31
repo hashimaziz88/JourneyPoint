@@ -95,7 +95,7 @@ namespace JourneyPoint.Application.Services.HireService
                 input.StartDate,
                 managerUser?.Id);
 
-            var temporaryPassword = "123qwe";
+            var temporaryPassword = "Test123!";
             var platformUser = BuildPlatformUser(hire, normalizedEmailAddress, normalizedFirstName, normalizedLastName);
 
             await _userManager.InitializeOptionsAsync(tenantId);

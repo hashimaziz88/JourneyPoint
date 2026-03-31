@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r UserRegistrationManager '/c/Users/Hashim/Documents/Git Repos/JourneyPoint/aspnet-core/src' --include=*.cs)"
+    ]
+  }
+}
