@@ -10,6 +10,7 @@ import {
     Select,
     Space,
     Spin,
+    Statistic,
     Typography,
     message,
 } from "antd";
@@ -61,6 +62,9 @@ const HireListView: React.FC<IHireListViewProps> = () => {
     const [keywordInput, setKeywordInput] = useState("");
     const [statusInput, setStatusInput] = useState<IHireListQueryState["status"]>(undefined);
     const [query, setQuery] = useState<IHireListQueryState>(DEFAULT_HIRE_LIST_QUERY_STATE);
+    const hiresInView = hires ?? [];
+    const hiresWithoutJourney = hiresInView.filter((hire) => !hire.journeyId).length;
+    const failedWelcomeCount = hiresInView.filter((hire) => hire.welcomeNotificationStatus === 2).length;
 
     const loadHires = useEffectEvent(async (): Promise<void> => {
         await getHires(buildHireListRequest(query));
@@ -133,99 +137,128 @@ const HireListView: React.FC<IHireListViewProps> = () => {
         });
     };
 
-    const listContent = isListPending ? (
-        <Spin size="large" className={styles.loadingWrap} />
-    ) : (hires ?? []).length > 0 ? (
-        <>
-            <div className={styles.cardGrid}>
-                {(hires ?? []).map((hire) => (
-                    <HireCard
-                        key={hire.id}
-                        hire={hire}
-                        onOpenDetail={handleOpenDetail}
-                        onOpenJourney={handleOpenJourney}
-                    />
-                ))}
-            </div>
+    let listContent: React.ReactNode;
 
-            <div className={styles.paginationWrap}>
-                <Pagination
-                    current={query.current}
-                    pageSize={query.pageSize}
-                    total={totalCount ?? 0}
-                    showSizeChanger
-                    onChange={(page, pageSize) =>
-                        setQuery((currentQuery) => ({
-                            ...currentQuery,
-                            current: page,
-                            pageSize,
-                        }))
-                    }
-                />
-            </div>
-        </>
-    ) : (
-        <Empty
-            className={styles.emptyState}
-            description="No hires match the current filter set."
-        />
-    );
+    if (isListPending) {
+        listContent = <Spin size="large" className={styles.loadingWrap} />;
+    } else if (hiresInView.length > 0) {
+        listContent = (
+            <>
+                <div className={styles.cardGrid}>
+                    {hiresInView.map((hire) => (
+                        <HireCard
+                            key={hire.id}
+                            hire={hire}
+                            onOpenDetail={handleOpenDetail}
+                            onOpenJourney={handleOpenJourney}
+                        />
+                    ))}
+                </div>
+
+                <div className={styles.paginationWrap}>
+                    <Pagination
+                        current={query.current}
+                        pageSize={query.pageSize}
+                        total={totalCount ?? 0}
+                        showSizeChanger
+                        onChange={(page, pageSize) =>
+                            setQuery((currentQuery) => ({
+                                ...currentQuery,
+                                current: page,
+                                pageSize,
+                            }))
+                        }
+                    />
+                </div>
+            </>
+        );
+    } else {
+        listContent = (
+            <Empty
+                className={styles.emptyState}
+                description="No hires match the current filter set."
+            />
+        );
+    }
 
     return (
         <Space orientation="vertical" size={24} className={styles.pageRoot}>
             {messageContextHolder}
-            <div className={styles.pageHeader}>
-                <div>
-                    <Title level={2} className={styles.pageHeading}>
-                        Hire Management
-                    </Title>
-                    <Paragraph type="secondary">
-                        Enrol hires, track welcome state, and move into journey review
-                        when a plan is ready to become a per-hire onboarding experience.
-                    </Paragraph>
-                </div>
+            <div className={styles.hireWorkspace}>
+                <Card className={styles.hireSidebar}>
+                    <div className={styles.hireSidebarSticky}>
+                        <div>
+                            <Title level={3} className={styles.pageHeading}>
+                                Hire Management
+                            </Title>
+                            <Paragraph type="secondary" className={styles.inlineParagraph}>
+                                Keep key hire metrics and actions visible while filtering and reviewing results.
+                            </Paragraph>
+                        </div>
 
-                <Space wrap className={styles.pageActions}>
-                    <Button
-                        icon={<ReloadOutlined />}
-                        loading={isListPending}
-                        onClick={() => void refreshHires()}
-                    >
-                        Refresh
-                    </Button>
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => setIsCreateModalOpen(true)}
-                    >
-                        Enrol Hire
-                    </Button>
-                </Space>
+                        <div className={styles.sidebarStatGrid}>
+                            <Statistic title="Total hires" value={totalCount ?? 0} />
+                            <Statistic title="In current page" value={hiresInView.length} />
+                            <Statistic title="Without journey" value={hiresWithoutJourney} />
+                            <Statistic title="Welcome follow-up" value={failedWelcomeCount} />
+                        </div>
+
+                        <div className={styles.sidebarActions}>
+                            <Button
+                                icon={<ReloadOutlined />}
+                                loading={isListPending}
+                                onClick={() => void refreshHires()}
+                            >
+                                Refresh
+                            </Button>
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                onClick={() => setIsCreateModalOpen(true)}
+                            >
+                                Enrol Hire
+                            </Button>
+                        </div>
+                    </div>
+                </Card>
+
+                <div className={styles.hireMain}>
+                    <div className={styles.pageHeader}>
+                        <div>
+                            <Title level={2} className={styles.pageHeading}>
+                                Hire Queue
+                            </Title>
+                            <Paragraph type="secondary">
+                                Filter and triage hires in one focused workspace, then jump directly to hire detail or journey review.
+                            </Paragraph>
+                        </div>
+                    </div>
+
+                    <Card>
+                        <div className={styles.filterRow}>
+                            <Input.Search
+                                placeholder="Search by hire, email, department, or plan"
+                                value={keywordInput}
+                                onChange={(event) => setKeywordInput(event.target.value)}
+                                onSearch={handleApplyFilters}
+                            />
+
+                            <Select
+                                allowClear
+                                placeholder="Lifecycle state"
+                                options={HIRE_STATUS_OPTIONS}
+                                value={statusInput}
+                                onChange={(value) => setStatusInput(value)}
+                            />
+
+                            <Button onClick={handleApplyFilters}>Apply Filters</Button>
+                            <Button onClick={handleResetFilters}>Reset</Button>
+                        </div>
+                    </Card>
+
+                    {listContent}
+                </div>
             </div>
-
-            <Card>
-                <div className={styles.filterRow}>
-                    <Input.Search
-                        placeholder="Search by hire, email, department, or plan"
-                        value={keywordInput}
-                        onChange={(event) => setKeywordInput(event.target.value)}
-                        onSearch={handleApplyFilters}
-                    />
-
-                    <Select
-                        allowClear
-                        placeholder="Lifecycle state"
-                        options={HIRE_STATUS_OPTIONS}
-                        value={statusInput}
-                        onChange={(value) => setStatusInput(value)}
-                    />
-
-                    <Button onClick={handleApplyFilters}>Apply Filters</Button>
-                    <Button onClick={handleResetFilters}>Reset</Button>
-                </div>
-            </Card>
-
-            {listContent}
 
             <HireForm
                 isOpen={isCreateModalOpen}

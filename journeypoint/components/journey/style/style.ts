@@ -5,6 +5,101 @@ export const useStyles = createStyles(({ css, token }) => ({
     width: 100%;
   `,
 
+  reviewWorkspace: css`
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+    gap: 20px;
+    width: 100%;
+    align-items: start;
+
+    @media (max-width: 1100px) {
+      grid-template-columns: 1fr;
+    }
+  `,
+
+  reviewSidebar: css`
+    width: 100%;
+  `,
+
+  reviewSidebarSticky: css`
+    display: grid;
+    gap: 16px;
+    position: sticky;
+    top: 16px;
+
+    @media (max-width: 1100px) {
+      position: static;
+    }
+  `,
+
+  reviewMain: css`
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    min-width: 0;
+  `,
+
+  managerWorkspace: css`
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+    gap: 20px;
+    width: 100%;
+    align-items: start;
+
+    @media (max-width: 1100px) {
+      grid-template-columns: 1fr;
+    }
+  `,
+
+  managerSidebar: css`
+    width: 100%;
+  `,
+
+  managerSidebarSticky: css`
+    display: grid;
+    gap: 16px;
+    position: sticky;
+    top: 16px;
+
+    @media (max-width: 1100px) {
+      position: static;
+    }
+  `,
+
+  managerMain: css`
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    min-width: 0;
+  `,
+
+  managerReportCollapse: css`
+    width: 100%;
+  `,
+
+  managerReportLabel: css`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  `,
+
+  managerReportName: css`
+    font-weight: 600;
+  `,
+
+  managerReportMeta: css`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  `,
+
   pageHeader: css`
     display: flex;
     justify-content: space-between;
@@ -21,11 +116,32 @@ export const useStyles = createStyles(({ css, token }) => ({
     margin-bottom: 8px !important;
   `,
 
+  breadcrumbButton: css`
+    padding: 0;
+    height: auto;
+  `,
+
   pageActions: css`
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
     justify-content: flex-end;
+  `,
+
+  sidebarActions: css`
+    width: 100%;
+
+    & > button {
+      width: 100%;
+      justify-content: center;
+    }
+  `,
+
+  sidebarStatGrid: css`
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
   `,
 
   summaryGrid: css`

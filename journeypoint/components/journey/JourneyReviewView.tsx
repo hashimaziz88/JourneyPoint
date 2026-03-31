@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useEffectEvent, useState } from "react";
+import React, { startTransition, useEffect, useEffectEvent, useState } from "react";
 import {
     Alert,
     Breadcrumb,
@@ -50,7 +50,6 @@ import {
 import { getHighlightedTaskIds } from "@/utils/journey/personalisation";
 import { buildFacilitatorHireRoute } from "@/constants/auth/routes";
 import { useRouter } from "next/navigation";
-import { startTransition } from "react";
 
 const { Paragraph, Title } = Typography;
 
@@ -120,11 +119,13 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
     };
 
     const handleSubmitTask = async (payload: IAddJourneyTaskRequest): Promise<void> => {
-        const result = editingTask
-            ? await updateTask(hireId, editingTask.id, payload)
-            : journey
-                ? await addTask(hireId, journey.journeyId, payload)
-                : null;
+        let result = null;
+
+        if (editingTask) {
+            result = await updateTask(hireId, editingTask.id, payload);
+        } else if (journey) {
+            result = await addTask(hireId, journey.journeyId, payload);
+        }
 
         if (!result) {
             messageApi.error("The journey task change could not be saved.");
@@ -172,6 +173,8 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
     const isEditable = isJourneyDraftEditable(journey);
     const modules = groupJourneyTasksByModule(journey);
     const highlightedTaskIds = getHighlightedTaskIds(personalisationProposal);
+    const pendingTasks = journey?.tasks.filter((task) => !task.completedAt).length ?? 0;
+    const completedTasks = (journey?.tasks.length ?? 0) - pendingTasks;
 
     const tasksTab = (
         <Space orientation="vertical" size={16} className={styles.pageRoot}>
@@ -204,103 +207,130 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
     );
 
     return (
-        <Space orientation="vertical" size={24} className={styles.pageRoot}>
+        <Space orientation="vertical" size={20} className={styles.pageRoot}>
             {messageContextHolder}
             <Breadcrumb
                 items={[
-                    { title: <a onClick={() => startTransition(() => router.push(buildFacilitatorHireRoute(hireId)))}>Hire</a> },
+                    {
+                        title: (
+                            <Button
+                                type="link"
+                                className={styles.breadcrumbButton}
+                                onClick={() => startTransition(() => router.push(buildFacilitatorHireRoute(hireId)))}
+                            >
+                                Hire
+                            </Button>
+                        ),
+                    },
                     { title: "Journey Review" },
                 ]}
             />
 
-            <div className={styles.pageHeader}>
-                <div>
-                    <Title level={2} className={styles.pageHeading}>
-                        Journey Review
-                    </Title>
-                    <Paragraph type="secondary">
-                        Review the generated per-hire onboarding journey for{" "}
-                        <strong>{selectedHire.fullName}</strong> before activation.
-                    </Paragraph>
-                    <Space wrap>
-                        <Tag color={HIRE_STATUS_TAG_COLORS[selectedHire.status]}>
-                            {HIRE_STATUS_LABELS[selectedHire.status]}
-                        </Tag>
-                        {journey ? (
-                            <Tag color={JOURNEY_STATUS_TAG_COLORS[journey.status]}>
-                                {JOURNEY_STATUS_LABELS[journey.status]}
+            <div className={styles.reviewWorkspace}>
+                <Card className={styles.reviewSidebar}>
+                    <div className={styles.reviewSidebarSticky}>
+                        <Title level={4} className={styles.pageHeading}>
+                            {selectedHire.fullName}
+                        </Title>
+                        <Paragraph type="secondary" className={styles.inlineParagraph}>
+                            Keep this panel in view while reviewing tasks so you always have status and plan context.
+                        </Paragraph>
+
+                        <Space wrap>
+                            <Tag color={HIRE_STATUS_TAG_COLORS[selectedHire.status]}>
+                                {HIRE_STATUS_LABELS[selectedHire.status]}
                             </Tag>
-                        ) : (
-                            <Tag>No journey generated</Tag>
-                        )}
-                    </Space>
-                </div>
+                            {journey ? (
+                                <Tag color={JOURNEY_STATUS_TAG_COLORS[journey.status]}>
+                                    {JOURNEY_STATUS_LABELS[journey.status]}
+                                </Tag>
+                            ) : (
+                                <Tag>No journey generated</Tag>
+                            )}
+                        </Space>
 
-                <Space wrap className={styles.pageActions}>
-                    <Button
-                        icon={<ReloadOutlined />}
-                        loading={isDetailPending || isMutationPending}
-                        onClick={() => void refreshScreen()}
-                    >
-                        Refresh
-                    </Button>
-                    {journey && isEditable ? (
-                        <>
-                            <Button
-                                icon={<PlusOutlined />}
-                                onClick={() => {
-                                    setEditingTask(null);
-                                    setIsTaskModalOpen(true);
-                                }}
-                            >
-                                Add Draft Task
-                            </Button>
-                            <Button
-                                type="primary"
-                                icon={<CheckCircleOutlined />}
-                                loading={isMutationPending}
-                                onClick={() => void handleActivateJourney()}
-                            >
-                                Activate Journey
-                            </Button>
-                        </>
-                    ) : null}
-                </Space>
-            </div>
+                        <div className={styles.sidebarStatGrid}>
+                            <Statistic title="Start date" value={formatDisplayDate(selectedHire.startDate)} />
+                            <Statistic title="Plan" value={selectedHire.onboardingPlanName} />
+                            <Statistic title="Activated" value={formatDisplayDateTime(journey?.activatedAt)} />
+                            <Statistic title="Tasks" value={journey?.tasks.length ?? 0} />
+                            <Statistic title="Pending" value={pendingTasks} />
+                            <Statistic title="Completed" value={completedTasks} />
+                        </div>
 
-            {!journey ? (
-                <Card className={styles.sectionCard}>
-                    <Empty
-                        className={styles.emptyState}
-                        description="No journey has been generated for this hire yet."
-                    >
-                        <Button
-                            type="primary"
-                            loading={isMutationPending}
-                            onClick={() => void handleGenerateDraft()}
-                        >
-                            Generate Draft Journey
-                        </Button>
-                    </Empty>
+                        <div className={styles.sidebarActions}>
+                            <Button
+                                icon={<ReloadOutlined />}
+                                loading={isDetailPending || isMutationPending}
+                                onClick={() => void refreshScreen()}
+                            >
+                                Refresh
+                            </Button>
+                            {journey && isEditable ? (
+                                <>
+                                    <Button
+                                        icon={<PlusOutlined />}
+                                        onClick={() => {
+                                            setEditingTask(null);
+                                            setIsTaskModalOpen(true);
+                                        }}
+                                    >
+                                        Add Draft Task
+                                    </Button>
+                                    <Button
+                                        type="primary"
+                                        icon={<CheckCircleOutlined />}
+                                        loading={isMutationPending}
+                                        onClick={() => void handleActivateJourney()}
+                                    >
+                                        Activate Journey
+                                    </Button>
+                                </>
+                            ) : null}
+                        </div>
+                    </div>
                 </Card>
-            ) : (
-                <>
-                    <div className={styles.summaryGrid}>
-                        <Statistic title="Start date" value={formatDisplayDate(selectedHire.startDate)} />
-                        <Statistic title="Plan" value={selectedHire.onboardingPlanName} />
-                        <Statistic title="Journey activated" value={formatDisplayDateTime(journey?.activatedAt)} />
-                        <Statistic title="Tasks" value={journey?.tasks.length ?? 0} />
+
+                <div className={styles.reviewMain}>
+                    <div className={styles.pageHeader}>
+                        <div>
+                            <Title level={2} className={styles.pageHeading}>
+                                Journey Review
+                            </Title>
+                            <Paragraph type="secondary">
+                                Review and personalise this hire's journey draft in focused sections without losing context.
+                            </Paragraph>
+                        </div>
                     </div>
 
-                    <Tabs
-                        defaultActiveKey="tasks"
-                        items={[
-                            { key: "tasks", label: `Tasks (${journey.tasks.length})`, children: tasksTab },
-                            { key: "personalisation", label: "Personalisation", children: <PersonalisationDiff hireId={hireId} /> },
-                        ]}
-                    />
-                </>
-            )}
+                    {journey ? (
+                        <Card className={styles.sectionCard}>
+                            <Tabs
+                                defaultActiveKey="tasks"
+                                items={[
+                                    { key: "tasks", label: `Tasks (${journey.tasks.length})`, children: tasksTab },
+                                    { key: "personalisation", label: "Personalisation", children: <PersonalisationDiff hireId={hireId} /> },
+                                ]}
+                            />
+                        </Card>
+                    ) : (
+                        <Card className={styles.sectionCard}>
+                            <Empty
+                                className={styles.emptyState}
+                                description="No journey has been generated for this hire yet."
+                            >
+                                <Button
+                                    type="primary"
+                                    loading={isMutationPending}
+                                    onClick={() => void handleGenerateDraft()}
+                                >
+                                    Generate Draft Journey
+                                </Button>
+                            </Empty>
+                        </Card>
+                    )}
+                </div>
+            </div>
 
             <JourneyTaskEditorModal
                 isOpen={isTaskModalOpen}
