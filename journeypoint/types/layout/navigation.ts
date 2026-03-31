@@ -1,19 +1,29 @@
 import type { MenuProps } from "antd";
+import type { IWorkspaceNavigationItem } from "@/constants/global/navigation";
 
 /**
  * Defines the shared app-shell brand props.
  */
 export interface IAppShellBrandProps {
-    subtitle: string;
+  subtitle: string;
 }
 
 /**
  * Defines the mobile navigation drawer props for workspace shells.
  */
 export interface IMobileNavigationProps {
-    menuItems: NonNullable<MenuProps["items"]>;
-    onNavigate: (href: string) => void;
-    routeMap: Record<string, string>;
-    selectedMenuKey: string;
-    subtitle: string;
+  menuItems: NonNullable<MenuProps["items"]>;
+  onNavigate: (href: string) => void;
+  routeMap: Record<string, string>;
+  selectedMenuKey: string;
+  subtitle: string;
+}
+
+/**
+ * Defines the props for the top-navigation link row used in WorkspaceShell.
+ */
+export interface IWorkspaceNavLinksProps {
+  navigationItems: IWorkspaceNavigationItem[];
+  onNavigate: (href: string) => void;
+  selectedMenuKey: string;
 }

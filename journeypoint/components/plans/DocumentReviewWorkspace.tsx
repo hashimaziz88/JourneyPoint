@@ -102,6 +102,14 @@ const DocumentReviewWorkspace: React.FC<IDocumentReviewWorkspaceProps> = ({
         [selectedDocument?.proposals],
     );
 
+    const pendingProposalCount = useMemo(
+        () =>
+            selectedDocument?.proposals.filter(
+                (proposal) => proposal.reviewStatus === ExtractedTaskReviewStatus.Pending,
+            ).length ?? 0,
+        [selectedDocument?.proposals],
+    );
+
     const handleRefresh = async (): Promise<void> => {
         const detail = await getDocumentDetail(documentId);
 
@@ -135,6 +143,54 @@ const DocumentReviewWorkspace: React.FC<IDocumentReviewWorkspaceProps> = ({
         }
 
         messageApi.success("Accepted proposals were added to the onboarding plan.");
+    };
+
+    const handleAcceptAll = async (): Promise<void> => {
+        if (!selectedDocument) {
+            return;
+        }
+
+        const pendingProposals = selectedDocument.proposals.filter(
+            (proposal) => proposal.reviewStatus === ExtractedTaskReviewStatus.Pending,
+        );
+
+        if (pendingProposals.length === 0) {
+            messageApi.info("No pending proposals to accept.");
+            return;
+        }
+
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const proposal of pendingProposals) {
+            const payload = {
+                proposalId: proposal.id,
+                suggestedModuleId: proposal.suggestedModuleId,
+                title: proposal.title,
+                description: proposal.description,
+                category: proposal.category,
+                dueDayOffset: proposal.dueDayOffset,
+                assignmentTarget: proposal.assignmentTarget,
+                acknowledgementRule: proposal.acknowledgementRule,
+            };
+
+            const result = await acceptProposal(payload);
+            if (result) {
+                successCount++;
+            } else {
+                failCount++;
+            }
+        }
+
+        if (failCount === 0) {
+            messageApi.success(`All ${successCount} proposals accepted.`);
+        } else if (successCount === 0) {
+            messageApi.error(`Failed to accept all ${failCount} proposals.`);
+        } else {
+            messageApi.warning(
+                `Accepted ${successCount} proposals, but ${failCount} failed.`,
+            );
+        }
     };
 
     const handleReject = async (proposalId: string): Promise<void> => {
@@ -253,6 +309,15 @@ const DocumentReviewWorkspace: React.FC<IDocumentReviewWorkspaceProps> = ({
                                 : "Start Extraction"}
                         </Button>
                     ) : null}
+                    <Button
+                        onClick={() => {
+                            void handleAcceptAll();
+                        }}
+                        loading={isMutationPending}
+                        disabled={pendingProposalCount === 0}
+                    >
+                        Accept All ({pendingProposalCount})
+                    </Button>
                     <Button
                         type="primary"
                         icon={<SaveOutlined />}

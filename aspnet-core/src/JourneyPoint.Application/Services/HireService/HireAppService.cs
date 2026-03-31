@@ -78,6 +78,9 @@ namespace JourneyPoint.Application.Services.HireService
             var onboardingPlan = await GetPublishedPlanAsync(input.OnboardingPlanId, tenantId);
             var managerUser = await GetManagerUserOrNullAsync(input.ManagerUserId, tenantId);
             var normalizedEmailAddress = NormalizeEmailAddress(input.EmailAddress);
+            var normalizedFirstName = NormalizeRequiredNamePart(input.FirstName, nameof(input.FirstName));
+            var normalizedLastName = NormalizeRequiredNamePart(input.LastName, nameof(input.LastName));
+            var fullName = $"{normalizedFirstName} {normalizedLastName}";
 
             await EnsureHireEmailIsAvailableAsync(normalizedEmailAddress, tenantId);
             await EnsurePlatformEmailIsAvailableAsync(normalizedEmailAddress, tenantId);
@@ -85,15 +88,15 @@ namespace JourneyPoint.Application.Services.HireService
             var hire = _hireJourneyManager.CreateHire(
                 tenantId,
                 onboardingPlan,
-                input.FullName,
+                fullName,
                 normalizedEmailAddress,
                 input.RoleTitle,
                 input.Department,
                 input.StartDate,
                 managerUser?.Id);
 
-            var temporaryPassword = "123qwe";
-            var platformUser = BuildPlatformUser(hire, normalizedEmailAddress);
+            var temporaryPassword = "Test123!";
+            var platformUser = BuildPlatformUser(hire, normalizedEmailAddress, normalizedFirstName, normalizedLastName);
 
             await _userManager.InitializeOptionsAsync(tenantId);
             CheckErrors(await _userManager.CreateAsync(platformUser, temporaryPassword));

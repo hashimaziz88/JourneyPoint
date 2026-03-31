@@ -27,7 +27,7 @@ const InterventionHistoryPanel: React.FC<IInterventionHistoryPanelProps> = ({
                 <div className={styles.historyList}>
                     {resolvedFlags.map((flag) => (
                         <div key={flag.id} className={styles.historyItem}>
-                            <Space direction="vertical" size={12} className={styles.sectionStack}>
+                            <Space orientation="vertical" size={12} className={styles.sectionStack}>
                                 <div>
                                     <Title level={5}>
                                         {flag.resolutionType

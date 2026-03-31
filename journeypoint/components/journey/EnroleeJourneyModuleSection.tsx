@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Card, Progress, Space, Tag, Typography } from "antd";
+import { Collapse, Progress, Tag, Typography } from "antd";
 import { useStyles } from "@/components/journey/style/style";
 import { buildEnroleeJourneyTaskRoute } from "@/constants/auth/routes";
 import {
@@ -18,7 +18,8 @@ import { getCompletionPercent } from "@/utils/journey/dashboard";
 const { Paragraph, Text, Title } = Typography;
 
 /**
- * Renders one module section in the enrolee dashboard.
+ * Renders one module section in the enrolee dashboard as a collapsible panel.
+ * Completed modules start collapsed; active or pending modules start expanded.
  */
 const EnroleeJourneyModuleSection: React.FC<IEnroleeJourneyModuleSectionProps> = ({
     module,
@@ -28,26 +29,27 @@ const EnroleeJourneyModuleSection: React.FC<IEnroleeJourneyModuleSectionProps> =
         module.completedTaskCount,
         module.totalTaskCount,
     );
+    const isComplete = completionPercent >= 100;
 
-    return (
-        <Card
-            title={`${module.moduleOrderIndex}. ${module.moduleTitle}`}
-            className={styles.moduleCard}
-        >
-            <Space orientation="vertical" size={16} className={styles.participantModuleBody}>
-                <div className={styles.moduleProgressRow}>
-                    <div>
-                        <Text type="secondary">Progress</Text>
-                        <Paragraph className={styles.inlineParagraph}>
-                            {JOURNEY_TASK_PROGRESS_TEXT(
-                                module.completedTaskCount,
-                                module.totalTaskCount,
-                            )}
-                        </Paragraph>
-                    </div>
-                    <Progress percent={completionPercent} size="small" className={styles.progressBar} />
-                </div>
+    const moduleLabel = (
+        <span className={styles.collapseLabel}>
+            <span className={styles.collapseLabelTitle}>
+                {module.moduleOrderIndex}. {module.moduleTitle}
+            </span>
+            <span className={styles.collapseLabelProgress}>
+                <Progress percent={completionPercent} size="small" showInfo={false} />
+            </span>
+            <Text type="secondary" className={styles.collapseLabelMeta}>
+                {JOURNEY_TASK_PROGRESS_TEXT(module.completedTaskCount, module.totalTaskCount)}
+            </Text>
+        </span>
+    );
 
+    const panelItems = [
+        {
+            key: module.moduleKey,
+            label: moduleLabel,
+            children: (
                 <div className={styles.participantTaskList}>
                     {module.tasks.map((task) => (
                         <div key={task.journeyTaskId} className={styles.participantTaskCard}>
@@ -94,8 +96,16 @@ const EnroleeJourneyModuleSection: React.FC<IEnroleeJourneyModuleSectionProps> =
                         </div>
                     ))}
                 </div>
-            </Space>
-        </Card>
+            ),
+        },
+    ];
+
+    return (
+        <Collapse
+            defaultActiveKey={isComplete ? [] : [module.moduleKey]}
+            className={styles.moduleCard}
+            items={panelItems}
+        />
     );
 };
 

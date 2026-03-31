@@ -7,7 +7,7 @@ import React, {
     useMemo,
     useState,
 } from "react";
-import { Alert, Button, Space, Typography, Upload, message } from "antd";
+import { Alert, Button, Space, Tabs, Typography, Upload, message } from "antd";
 import type { UploadProps } from "antd";
 import {
     EyeOutlined,
@@ -63,6 +63,7 @@ const MarkdownImportWorkspace: React.FC = () => {
         sourceFileName,
     } = useMarkdownImportState();
     const [taskModalState, setTaskModalState] = useState<IMarkdownImportWorkspaceTaskModalState | null>(null);
+    const [activeTabKey, setActiveTabKey] = useState<string>("source");
 
     const resetWorkspace = useEffectEvent((): void => {
         resetImport();
@@ -106,10 +107,12 @@ const MarkdownImportWorkspace: React.FC = () => {
             messageApi.warning(
                 "Preview generated with warnings. Review the parsed content before saving.",
             );
+            setActiveTabKey("preview");
             return;
         }
 
         messageApi.success("Preview generated.");
+        setActiveTabKey("preview");
     };
 
     const handleSaveDraft = async (): Promise<void> => {
@@ -231,26 +234,42 @@ const MarkdownImportWorkspace: React.FC = () => {
                 title="Backend AI normalization is review-first. Imported content only affects future journeys once the saved draft is later used for enrolment."
             />
 
-            <div className={styles.importGrid}>
-                <MarkdownImportSourceCard
-                    sourceContent={sourceContent}
-                    sourceContentType={sourceContentType}
-                    sourceFileName={sourceFileName}
-                    uploadProps={uploadProps}
-                    onSourceContentChange={setSourceContent}
-                />
-
-                <MarkdownImportPreviewCard
-                    previewPlan={previewPlan}
-                    onEditTask={(moduleClientKey, taskClientKey) =>
-                        setTaskModalState({ moduleClientKey, taskClientKey })
-                    }
-                    onMetadataChange={setPreviewMetadata}
-                    onModuleChange={updatePreviewModule}
-                    onRemoveModule={removePreviewModule}
-                    onRemoveTask={removePreviewTask}
-                />
-            </div>
+            <Tabs
+                activeKey={activeTabKey}
+                onChange={setActiveTabKey}
+                defaultActiveKey="source"
+                items={[
+                    {
+                        key: "source",
+                        label: "Source",
+                        children: (
+                            <MarkdownImportSourceCard
+                                sourceContent={sourceContent}
+                                sourceContentType={sourceContentType}
+                                sourceFileName={sourceFileName}
+                                uploadProps={uploadProps}
+                                onSourceContentChange={setSourceContent}
+                            />
+                        ),
+                    },
+                    {
+                        key: "preview",
+                        label: previewPlan?.plan ? `Preview (${previewPlan.plan.modules?.length ?? 0} modules)` : "Preview",
+                        children: (
+                            <MarkdownImportPreviewCard
+                                previewPlan={previewPlan}
+                                onEditTask={(moduleClientKey, taskClientKey) =>
+                                    setTaskModalState({ moduleClientKey, taskClientKey })
+                                }
+                                onMetadataChange={setPreviewMetadata}
+                                onModuleChange={updatePreviewModule}
+                                onRemoveModule={removePreviewModule}
+                                onRemoveTask={removePreviewTask}
+                            />
+                        ),
+                    },
+                ]}
+            />
 
             <TaskFormModal
                 editingTask={editingTask}

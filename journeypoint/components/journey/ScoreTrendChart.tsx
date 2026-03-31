@@ -1,15 +1,23 @@
 "use client";
 
 import React from "react";
-import { Card, Empty, Space, Statistic, Typography } from "antd";
+import { Card, Empty, Space, Typography } from "antd";
 import { useStyles } from "@/components/engagement/style/style";
 import type { IScoreTrendChartProps } from "@/types/engagement/components";
 import {
     getTrendChartModel,
     getTrendDeltaLabel,
-    TREND_GRID_LINES,
 } from "@/utils/engagement/chart";
 import { formatDisplayDateTime } from "@/utils/date";
+import {
+    Area,
+    AreaChart,
+    CartesianGrid,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from "recharts";
 
 const { Paragraph, Text, Title } = Typography;
 
@@ -17,11 +25,16 @@ const { Paragraph, Text, Title } = Typography;
  * Renders the hire-level engagement score trend from persisted snapshot history.
  */
 const ScoreTrendChart: React.FC<IScoreTrendChartProps> = ({
+    activationDate,
     currentSnapshot,
     snapshotHistory,
 }) => {
     const { styles } = useStyles();
-    const chartModel = getTrendChartModel(currentSnapshot, snapshotHistory);
+    const chartModel = getTrendChartModel(
+        currentSnapshot,
+        snapshotHistory,
+        activationDate,
+    );
 
     if (!chartModel) {
         return (
@@ -34,95 +47,121 @@ const ScoreTrendChart: React.FC<IScoreTrendChartProps> = ({
         );
     }
 
+    const previousScore = chartModel.previousScore;
+    let scoreDelta: number | null = null;
+    let scoreDeltaText = "";
+    const chartSeries = chartModel.points.map((point) => ({
+        key: point.key,
+        label: point.label,
+        score: Math.round(point.value),
+        tooltip: point.tooltip,
+    }));
+
+    if (previousScore === undefined) {
+        scoreDeltaText = "No prior comparison";
+    } else {
+        scoreDelta = Math.round(chartModel.latestScore - previousScore);
+
+        if (scoreDelta === 0) {
+            scoreDeltaText = "No change";
+        } else if (scoreDelta > 0) {
+            scoreDeltaText = `+${scoreDelta} points`;
+        } else {
+            scoreDeltaText = `${scoreDelta} points`;
+        }
+    }
+
     return (
         <Card title="Score Trend" className={styles.trendCard}>
-            <Space direction="vertical" size={16} className={styles.sectionStack}>
+            <Space orientation="vertical" size={16} className={styles.sectionStack}>
                 <div className={styles.trendHeader}>
                     <div>
                         <Title level={5}>Engagement over time</Title>
                         <Paragraph type="secondary">
                             {getTrendDeltaLabel(chartModel)}
                         </Paragraph>
-                        {chartModel.hasRepeatedSameDaySnapshots ? (
-                            <Paragraph type="secondary">
-                                Multiple snapshots were recorded on the same day, so the chart
-                                is using date-and-time tick labels instead of repeating one date.
-                            </Paragraph>
-                        ) : null}
+                        <Paragraph type="secondary">
+                            Timeline labels are shown as days since activation.
+                        </Paragraph>
                     </div>
 
-                    <Space size={24}>
-                        <Statistic
-                            title="Latest score"
-                            value={chartModel.latestScore}
-                            precision={0}
-                            suffix="%"
-                        />
-                        <Statistic
-                            title="Range"
-                            value={`${Math.round(chartModel.lowestScore)}-${Math.round(
-                                chartModel.highestScore,
-                            )}%`}
-                        />
-                    </Space>
+                    <div className={styles.trendSummaryGrid}>
+                        <div className={styles.trendSummaryItem}>
+                            <Text type="secondary">Latest</Text>
+                            <Title level={4}>{Math.round(chartModel.latestScore)}%</Title>
+                        </div>
+                        <div className={styles.trendSummaryItem}>
+                            <Text type="secondary">Delta</Text>
+                            <Title level={4}>{scoreDeltaText}</Title>
+                        </div>
+                        <div className={styles.trendSummaryItem}>
+                            <Text type="secondary">Range</Text>
+                            <Title level={4}>
+                                {Math.round(chartModel.lowestScore)}-{Math.round(
+                                    chartModel.highestScore,
+                                )}
+                                %
+                            </Title>
+                        </div>
+                    </div>
                 </div>
 
-                <div className={styles.trendChartWrap}>
-                    <svg
-                        className={styles.trendSvg}
-                        viewBox={`0 0 ${chartModel.width} ${180}`}
-                        role="img"
-                        aria-label="Engagement score trend chart"
-                    >
-                        {TREND_GRID_LINES.map((gridLine) => (
-                            <g key={gridLine.key}>
-                                <line
-                                    x1={24}
-                                    y1={gridLine.y}
-                                    x2={chartModel.width - 24}
-                                    y2={gridLine.y}
-                                    stroke="#d9d9d9"
-                                    strokeDasharray="4 4"
+                <div className={styles.trendChartWrap} aria-label="Engagement score trend chart">
+                    <div className={styles.trendChartCanvas}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={chartSeries} margin={{ top: 12, right: 12, left: 0, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="engagementScoreFill" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="#1677ff" stopOpacity={0.35} />
+                                        <stop offset="100%" stopColor="#1677ff" stopOpacity={0.04} />
+                                    </linearGradient>
+                                </defs>
+
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <XAxis
+                                    dataKey="label"
+                                    interval="preserveStartEnd"
+                                    minTickGap={32}
+                                    tick={{ fontSize: 11 }}
                                 />
-                                <text
-                                    x={0}
-                                    y={gridLine.y + 4}
-                                    fontSize="12"
-                                    fill="#8c8c8c"
-                                >
-                                    {gridLine.label}
-                                </text>
-                            </g>
-                        ))}
+                                <YAxis
+                                    domain={[0, 100]}
+                                    tickCount={5}
+                                    width={36}
+                                    tick={{ fontSize: 11 }}
+                                />
+                                <Tooltip
+                                    formatter={(value: unknown) => {
+                                        const resolvedValue = Array.isArray(value)
+                                            ? value[0]
+                                            : value;
+                                        const displayValue =
+                                            resolvedValue === undefined || resolvedValue === null
+                                                ? "-"
+                                                : String(resolvedValue);
 
-                        <polyline
-                            fill="none"
-                            stroke="#1677ff"
-                            strokeWidth="3"
-                            points={chartModel.polylinePoints}
-                        />
+                                        return [`${displayValue}%`, "Score"];
+                                    }}
+                                    labelFormatter={(_, payload) => {
+                                        if (!payload || payload.length === 0) {
+                                            return "";
+                                        }
 
-                        {chartModel.points.map((point) => (
-                            <g key={point.key}>
-                                <circle cx={point.x} cy={point.y} r="5" fill="#1677ff" />
-                                <title>{point.tooltip}</title>
-                            </g>
-                        ))}
-
-                        {chartModel.ticks.map((tick) => (
-                            <g key={tick.key}>
-                                <text
-                                    x={tick.x}
-                                    y={174}
-                                    textAnchor="middle"
-                                    fontSize="11"
-                                    fill="#8c8c8c"
-                                >
-                                    {tick.label}
-                                </text>
-                            </g>
-                        ))}
-                    </svg>
+                                        const row = payload[0].payload as { tooltip?: string };
+                                        return row.tooltip ?? "";
+                                    }}
+                                />
+                                <Area
+                                    type="monotone"
+                                    dataKey="score"
+                                    stroke="#1677ff"
+                                    strokeWidth={3}
+                                    fill="url(#engagementScoreFill)"
+                                    activeDot={{ r: 5 }}
+                                />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
 
                 <div className={styles.trendLegend}>
@@ -136,10 +175,10 @@ const ScoreTrendChart: React.FC<IScoreTrendChartProps> = ({
 
                 <div className={styles.trendLegend}>
                     <Text type="secondary">
-                        Hover points to inspect exact snapshot timestamps and scores.
+                        Trend is ordered oldest to newest from left to right.
                     </Text>
                     <Text type="secondary">
-                        Flat runs indicate unchanged scores across repeated computations.
+                        Day markers are calculated from the hire activation date.
                     </Text>
                 </div>
             </Space>

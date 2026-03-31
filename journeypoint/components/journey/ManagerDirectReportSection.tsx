@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button, Card, Progress, Space, Tag, Typography } from "antd";
+import { Button, Progress, Space, Tag, Tabs, Typography } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { useStyles } from "@/components/journey/style/style";
 import {
@@ -24,17 +24,23 @@ const ManagerDirectReportSection: React.FC<IManagerDirectReportSectionProps> = (
     onComplete,
 }) => {
     const { styles } = useStyles();
+    const pendingTasks = directReport.tasks.filter((task) => task.canComplete);
+    const completedTasks = directReport.tasks.filter((task) => !task.canComplete);
+    const roleTitle = directReport.roleTitle || "Role not set";
+    const roleAndDepartment = directReport.department
+        ? `${roleTitle} • ${directReport.department}`
+        : roleTitle;
     const completionPercent = getCompletionPercent(
         directReport.completedTaskCount,
         directReport.pendingTaskCount + directReport.completedTaskCount,
     );
 
     return (
-        <Card
-            title={directReport.hireFullName}
-            extra={`${directReport.roleTitle || "Role not set"}${directReport.department ? ` • ${directReport.department}` : ""}`}
-            className={styles.moduleCard}
-        >
+        <Space orientation="vertical" size={16} className={styles.participantModuleBody}>
+            <Paragraph type="secondary" className={styles.inlineParagraph}>
+                {roleAndDepartment}
+            </Paragraph>
+
             <Space orientation="vertical" size={16} className={styles.participantModuleBody}>
                 <div className={styles.moduleProgressRow}>
                     <div>
@@ -49,62 +55,120 @@ const ManagerDirectReportSection: React.FC<IManagerDirectReportSectionProps> = (
                     <Progress percent={completionPercent} size="small" className={styles.progressBar} />
                 </div>
 
-                <div className={styles.participantTaskList}>
-                    {directReport.tasks.map((task) => (
-                        <div key={task.journeyTaskId} className={styles.participantTaskCard}>
-                            <div className={styles.participantTaskHeader}>
-                                <div>
-                                    <Text type="secondary">
-                                        Module {task.moduleOrderIndex}.{task.taskOrderIndex}
-                                    </Text>
-                                    <Paragraph className={styles.taskHeading}>
-                                        {task.title}
-                                    </Paragraph>
-                                    <Paragraph type="secondary" className={styles.taskPreview}>
-                                        {task.description || "No description provided."}
-                                    </Paragraph>
-                                </div>
+                <Tabs
+                    defaultActiveKey="pending"
+                    items={[
+                        {
+                            key: "pending",
+                            label: `Pending (${pendingTasks.length})`,
+                            children: (
+                                <div className={styles.participantTaskList}>
+                                    {pendingTasks.map((task) => (
+                                        <div key={task.journeyTaskId} className={styles.participantTaskCard}>
+                                            <div className={styles.participantTaskHeader}>
+                                                <div>
+                                                    <Text type="secondary">
+                                                        Module {task.moduleOrderIndex}.{task.taskOrderIndex}
+                                                    </Text>
+                                                    <Paragraph className={styles.taskHeading}>
+                                                        {task.title}
+                                                    </Paragraph>
+                                                    <Paragraph type="secondary" className={styles.taskPreview}>
+                                                        {task.description || "No description provided."}
+                                                    </Paragraph>
+                                                </div>
 
-                                <div className={styles.pageActions}>
-                                    <Button
-                                        type="primary"
-                                        icon={<CheckCircleOutlined />}
-                                        loading={isMutationPending}
-                                        disabled={!task.canComplete}
-                                        onClick={() => void onComplete(task)}
-                                    >
-                                        Mark complete
-                                    </Button>
-                                </div>
-                            </div>
+                                                <div className={styles.pageActions}>
+                                                    <Button
+                                                        type="primary"
+                                                        icon={<CheckCircleOutlined />}
+                                                        loading={isMutationPending}
+                                                        onClick={() => void onComplete(task)}
+                                                    >
+                                                        Mark complete
+                                                    </Button>
+                                                </div>
+                                            </div>
 
-                            <div className={styles.taskMetaTags}>
-                                <Tag color={JOURNEY_TASK_STATUS_COLORS[task.status]}>
-                                    {JOURNEY_TASK_STATUS_LABELS[task.status]}
-                                </Tag>
-                                {task.isOverdue ? <Tag color="red">Overdue</Tag> : null}
-                                {task.isPersonalised ? <Tag color="processing">Personalised</Tag> : null}
-                            </div>
+                                            <div className={styles.taskMetaTags}>
+                                                <Tag color={JOURNEY_TASK_STATUS_COLORS[task.status]}>
+                                                    {JOURNEY_TASK_STATUS_LABELS[task.status]}
+                                                </Tag>
+                                                {task.isOverdue ? <Tag color="red">Overdue</Tag> : null}
+                                                {task.isPersonalised ? <Tag color="processing">Personalised</Tag> : null}
+                                            </div>
 
-                            <div className={styles.summaryGrid}>
-                                <div>
-                                    <Text type="secondary">Due on</Text>
-                                    <Paragraph className={styles.inlineParagraph}>
-                                        {formatDisplayDate(task.dueOn)}
-                                    </Paragraph>
+                                            <div className={styles.summaryGrid}>
+                                                <div>
+                                                    <Text type="secondary">Due on</Text>
+                                                    <Paragraph className={styles.inlineParagraph}>
+                                                        {formatDisplayDate(task.dueOn)}
+                                                    </Paragraph>
+                                                </div>
+                                                <div>
+                                                    <Text type="secondary">Completed</Text>
+                                                    <Paragraph className={styles.inlineParagraph}>
+                                                        {formatDisplayDateTime(task.completedAt)}
+                                                    </Paragraph>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                                <div>
-                                    <Text type="secondary">Completed</Text>
-                                    <Paragraph className={styles.inlineParagraph}>
-                                        {formatDisplayDateTime(task.completedAt)}
-                                    </Paragraph>
+                            ),
+                        },
+                        {
+                            key: "completed",
+                            label: `Completed (${completedTasks.length})`,
+                            children: (
+                                <div className={styles.participantTaskList}>
+                                    {completedTasks.map((task) => (
+                                        <div key={task.journeyTaskId} className={styles.participantTaskCard}>
+                                            <div className={styles.participantTaskHeader}>
+                                                <div>
+                                                    <Text type="secondary">
+                                                        Module {task.moduleOrderIndex}.{task.taskOrderIndex}
+                                                    </Text>
+                                                    <Paragraph className={styles.taskHeading}>
+                                                        {task.title}
+                                                    </Paragraph>
+                                                    <Paragraph type="secondary" className={styles.taskPreview}>
+                                                        {task.description || "No description provided."}
+                                                    </Paragraph>
+                                                </div>
+                                            </div>
+
+                                            <div className={styles.taskMetaTags}>
+                                                <Tag color={JOURNEY_TASK_STATUS_COLORS[task.status]}>
+                                                    {JOURNEY_TASK_STATUS_LABELS[task.status]}
+                                                </Tag>
+                                                {task.isOverdue ? <Tag color="red">Overdue</Tag> : null}
+                                                {task.isPersonalised ? <Tag color="processing">Personalised</Tag> : null}
+                                            </div>
+
+                                            <div className={styles.summaryGrid}>
+                                                <div>
+                                                    <Text type="secondary">Due on</Text>
+                                                    <Paragraph className={styles.inlineParagraph}>
+                                                        {formatDisplayDate(task.dueOn)}
+                                                    </Paragraph>
+                                                </div>
+                                                <div>
+                                                    <Text type="secondary">Completed</Text>
+                                                    <Paragraph className={styles.inlineParagraph}>
+                                                        {formatDisplayDateTime(task.completedAt)}
+                                                    </Paragraph>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                            ),
+                        },
+                    ]}
+                />
             </Space>
-        </Card>
+        </Space>
     );
 };
 

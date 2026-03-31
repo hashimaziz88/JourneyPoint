@@ -1,263 +1,404 @@
 import { createStyles } from "antd-style";
 
 export const useStyles = createStyles(({ css, token }) => ({
-    pageRoot: css`
-        width: 100%;
-    `,
+  pageRoot: css`
+    width: 100%;
+  `,
 
-    pageHeader: css`
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 16px;
-        width: 100%;
+  reviewWorkspace: css`
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+    gap: 20px;
+    width: 100%;
+    align-items: start;
 
-        @media (max-width: 992px) {
-            flex-direction: column;
-        }
-    `,
+    @media (max-width: 1100px) {
+      grid-template-columns: 1fr;
+    }
+  `,
 
-    pageHeading: css`
-        margin-bottom: 8px !important;
-    `,
+  reviewSidebar: css`
+    width: 100%;
+  `,
 
-    pageActions: css`
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        justify-content: flex-end;
-    `,
+  reviewSidebarSticky: css`
+    display: grid;
+    gap: 16px;
+    position: sticky;
+    top: 16px;
 
-    summaryGrid: css`
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 16px;
-        width: 100%;
-    `,
+    @media (max-width: 1100px) {
+      position: static;
+    }
+  `,
 
-    statCard: css`
-        width: 100%;
-    `,
+  reviewMain: css`
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    min-width: 0;
+  `,
 
-    sectionCard: css`
-        width: 100%;
-    `,
+  managerWorkspace: css`
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+    gap: 20px;
+    width: 100%;
+    align-items: start;
 
-    moduleList: css`
-        display: grid;
-        gap: 16px;
-        width: 100%;
-    `,
+    @media (max-width: 1100px) {
+      grid-template-columns: 1fr;
+    }
+  `,
 
-    moduleCard: css`
-        width: 100%;
-    `,
+  managerSidebar: css`
+    width: 100%;
+  `,
 
-    participantModuleBody: css`
-        width: 100%;
-    `,
+  managerSidebarSticky: css`
+    display: grid;
+    gap: 16px;
+    position: sticky;
+    top: 16px;
 
-    taskList: css`
-        display: grid;
-        gap: 12px;
-        width: 100%;
-    `,
+    @media (max-width: 1100px) {
+      position: static;
+    }
+  `,
 
-    participantTaskList: css`
-        display: grid;
-        gap: 12px;
-        width: 100%;
-    `,
+  managerMain: css`
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    min-width: 0;
+  `,
 
-    taskCard: css`
-        border: 1px solid ${token.colorBorderSecondary};
-        border-radius: 12px;
-        padding: 16px;
-        background: ${token.colorBgContainer};
-    `,
+  managerReportCollapse: css`
+    width: 100%;
+  `,
 
-    taskCardHighlighted: css`
-        border-color: ${token.colorInfoBorder};
-        box-shadow: 0 0 0 1px ${token.colorInfoBorder};
-        background: ${token.colorInfoBg};
-    `,
+  managerReportLabel: css`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
 
-    participantTaskCard: css`
-        border: 1px solid ${token.colorBorderSecondary};
-        border-radius: 12px;
-        padding: 16px;
-        background: ${token.colorBgContainer};
-    `,
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  `,
 
-    taskHeader: css`
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 12px;
-        width: 100%;
-    `,
+  managerReportName: css`
+    font-weight: 600;
+  `,
 
-    participantTaskHeader: css`
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 12px;
-        width: 100%;
+  managerReportMeta: css`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  `,
 
-        @media (max-width: 768px) {
-            flex-direction: column;
-        }
-    `,
+  pageHeader: css`
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
 
-    taskHeading: css`
-        margin-bottom: 8px !important;
-    `,
+    @media (max-width: 992px) {
+      flex-direction: column;
+    }
+  `,
 
-    taskPreview: css`
-        margin-bottom: 12px !important;
-    `,
+  pageHeading: css`
+    margin-bottom: 8px !important;
+  `,
 
-    taskLink: css`
-        color: ${token.colorPrimary};
-        font-weight: 500;
-    `,
+  breadcrumbButton: css`
+    padding: 0;
+    height: auto;
+  `,
 
-    taskMetaTags: css`
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    `,
+  pageActions: css`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-end;
+  `,
 
-    moduleProgressRow: css`
-        display: grid;
-        grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
-        gap: 16px;
-        align-items: center;
+  sidebarActions: css`
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
 
-        @media (max-width: 768px) {
-            grid-template-columns: 1fr;
-        }
-    `,
+    & > button {
+      width: 100%;
+      justify-content: center;
+    }
+  `,
 
-    progressBar: css`
-        width: 100%;
-    `,
+  sidebarStatGrid: css`
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+  `,
 
-    taskActions: css`
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: flex-end;
-    `,
+  summaryGrid: css`
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    width: 100%;
+  `,
 
-    loadingWrap: css`
-        min-height: 320px;
-        width: 100%;
-    `,
+  statCard: css`
+    width: 100%;
+  `,
 
-    emptyState: css`
-        width: 100%;
-        padding: 48px 0;
-    `,
+  sectionCard: css`
+    width: 100%;
+  `,
 
-    inlineParagraph: css`
-        margin-bottom: 0 !important;
-    `,
+  moduleList: css`
+    display: grid;
+    gap: 16px;
+    width: 100%;
+  `,
 
-    detailBody: css`
-        white-space: pre-wrap;
-        margin-bottom: 0 !important;
-    `,
+  moduleCard: css`
+    width: 100%;
+  `,
 
-    backLink: css`
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 12px;
-        color: ${token.colorPrimary};
-        font-weight: 500;
-    `,
+  participantModuleBody: css`
+    width: 100%;
+  `,
 
-    fullWidthStack: css`
-        width: 100%;
-    `,
+  taskList: css`
+    display: grid;
+    gap: 12px;
+    width: 100%;
+  `,
 
-    formGrid: css`
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 16px;
+  participantTaskList: css`
+    display: grid;
+    gap: 12px;
+    width: 100%;
+  `,
 
-        @media (max-width: 768px) {
-            grid-template-columns: 1fr;
-        }
-    `,
+  taskCard: css`
+    border: 1px solid ${token.colorBorderSecondary};
+    border-radius: 12px;
+    padding: 16px;
+    background: ${token.colorBgContainer};
+  `,
 
-    fullWidth: css`
-        width: 100%;
-        grid-column: 1 / -1;
-    `,
+  taskCardHighlighted: css`
+    border-color: ${token.colorInfoBorder};
+    box-shadow: 0 0 0 1px ${token.colorInfoBorder};
+    background: ${token.colorInfoBg};
+  `,
 
-    personalisationPrompt: css`
-        width: 100%;
-    `,
+  participantTaskCard: css`
+    border: 1px solid ${token.colorBorderSecondary};
+    border-radius: 12px;
+    padding: 16px;
+    background: ${token.colorBgContainer};
+  `,
 
-    personalisationHeader: css`
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 16px;
-        width: 100%;
+  taskHeader: css`
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+  `,
 
-        @media (max-width: 992px) {
-            flex-direction: column;
-        }
-    `,
+  participantTaskHeader: css`
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
 
-    personalisationDiffList: css`
-        display: grid;
-        gap: 16px;
-        width: 100%;
-    `,
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  `,
 
-    personalisationDiffCard: css`
-        width: 100%;
-    `,
+  taskHeading: css`
+    margin-bottom: 8px !important;
+  `,
 
-    personalisationDecisionSummary: css`
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        justify-content: flex-end;
-    `,
+  taskPreview: css`
+    margin-bottom: 12px !important;
+  `,
 
-    personalisationDecisionRow: css`
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    `,
+  taskLink: css`
+    color: ${token.colorPrimary};
+    font-weight: 500;
+  `,
 
-    beforeAfterGrid: css`
-        display: grid;
-        gap: 12px;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        width: 100%;
-    `,
+  taskMetaTags: css`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  `,
 
-    comparisonBlock: css`
-        border: 1px solid ${token.colorBorderSecondary};
-        border-radius: 12px;
-        padding: 16px;
-        background: ${token.colorBgLayout};
-    `,
+  moduleProgressRow: css`
+    display: grid;
+    grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+    gap: 16px;
+    align-items: center;
 
-    comparisonValuePair: css`
-        display: grid;
-        gap: 12px;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        margin-top: 12px;
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  `,
 
-        @media (max-width: 768px) {
-            grid-template-columns: 1fr;
-        }
-    `,
+  progressBar: css`
+    width: 100%;
+  `,
+
+  taskActions: css`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+  `,
+
+  loadingWrap: css`
+    min-height: 320px;
+    width: 100%;
+  `,
+
+  emptyState: css`
+    width: 100%;
+    padding: 48px 0;
+  `,
+
+  inlineParagraph: css`
+    margin-bottom: 0 !important;
+  `,
+
+  detailBody: css`
+    white-space: pre-wrap;
+    margin-bottom: 0 !important;
+  `,
+
+  backLink: css`
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: ${token.colorPrimary};
+    font-weight: 500;
+  `,
+
+  fullWidthStack: css`
+    width: 100%;
+  `,
+
+  formGrid: css`
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  `,
+
+  fullWidth: css`
+    width: 100%;
+    grid-column: 1 / -1;
+  `,
+
+  personalisationPrompt: css`
+    width: 100%;
+  `,
+
+  personalisationHeader: css`
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+
+    @media (max-width: 992px) {
+      flex-direction: column;
+    }
+  `,
+
+  personalisationDiffList: css`
+    display: grid;
+    gap: 16px;
+    width: 100%;
+  `,
+
+  personalisationDiffCard: css`
+    width: 100%;
+  `,
+
+  personalisationDecisionSummary: css`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-end;
+  `,
+
+  personalisationDecisionRow: css`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  `,
+
+  beforeAfterGrid: css`
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    width: 100%;
+  `,
+
+  comparisonBlock: css`
+    border: 1px solid ${token.colorBorderSecondary};
+    border-radius: 12px;
+    padding: 16px;
+    background: ${token.colorBgLayout};
+  `,
+
+  comparisonValuePair: css`
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 12px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  `,
+
+  collapseLabel: css`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  `,
+
+  collapseLabelTitle: css`
+    font-weight: 600;
+  `,
+
+  collapseLabelProgress: css`
+    flex: 1;
+    max-width: 180px;
+  `,
+
+  collapseLabelMeta: css`
+    font-size: ${token.fontSizeSM}px;
+    font-weight: 400;
+    white-space: nowrap;
+  `,
 }));

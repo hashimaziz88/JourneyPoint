@@ -24,7 +24,7 @@ export interface IWorkspaceNavigationItem {
 export const ADMIN_NAVIGATION_ITEMS: IWorkspaceNavigationItem[] = [
   {
     key: "dashboard",
-    label: "Dashboard",
+    label: "Overview",
     href: APP_ROUTES.dashboard,
     description: "Overview and quick actions",
     iconKey: "dashboard",
@@ -58,7 +58,7 @@ export const ADMIN_NAVIGATION_ITEMS: IWorkspaceNavigationItem[] = [
 export const FACILITATOR_NAVIGATION_ITEMS: IWorkspaceNavigationItem[] = [
   {
     key: "facilitator-dashboard",
-    label: "Dashboard",
+    label: "Overview",
     href: APP_ROUTES.facilitatorDashboard,
     permission: APP_PERMISSIONS.facilitator,
     description: "Facilitator landing and milestone-one workspace access",
@@ -85,7 +85,8 @@ export const FACILITATOR_NAVIGATION_ITEMS: IWorkspaceNavigationItem[] = [
     label: "Pipeline",
     href: APP_ROUTES.facilitatorPipeline,
     permission: APP_PERMISSIONS.facilitator,
-    description: "Monitor module-stage progress, engagement health, and at-risk visibility",
+    description:
+      "Monitor module-stage progress, engagement health, and at-risk visibility",
     iconKey: "pipeline",
   },
 ];

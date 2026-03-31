@@ -87,10 +87,10 @@ const AtRiskFlagPanel: React.FC<IAtRiskFlagPanelProps> = ({
     return (
         <Card title="Active At-Risk Panel" className={styles.panelCard}>
             {messageContextHolder}
-            <Space direction="vertical" size={16} className={styles.sectionStack}>
+            <Space orientation="vertical" size={16} className={styles.sectionStack}>
                 <Alert
                     type="warning"
-                    message="This hire currently needs intervention."
+                    title="This hire currently needs intervention."
                     description={`Raised ${formatDisplayDateTime(activeFlag.raisedAt)}.`}
                 />
 

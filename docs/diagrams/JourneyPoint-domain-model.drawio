@@ -1,0 +1,324 @@
+<mxfile host="65bd71144e">
+    <diagram name="Page-1" id="journeypoint-domain-model">
+        <mxGraphModel dx="1355" dy="1360" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2600" pageHeight="1800" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="onboardingPlan" value="OnboardingPlan" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="73" width="360" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="onboardingPlan_attr" value="TenantId : int&lt;br&gt;Name : string&lt;br&gt;Description : text&lt;br&gt;TargetAudience : string&lt;br&gt;DurationDays : int&lt;br&gt;Status : RefList(OnboardingPlanStatus):&lt;br&gt;(Draft, Published, Archived)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;whiteSpace=wrap;html=1;" parent="onboardingPlan" vertex="1">
+                    <mxGeometry y="26" width="360" height="164" as="geometry"/>
+                </mxCell>
+                <mxCell id="onboardingModule" value="OnboardingModule" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="70" width="320" height="170" as="geometry"/>
+                </mxCell>
+                <mxCell id="onboardingModule_attr" value="PartOf : OnboardingPlan&lt;br&gt;TenantId : int&lt;br&gt;Name : string&lt;br&gt;Description : text&lt;br&gt;OrderIndex : int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;whiteSpace=wrap;html=1;" parent="onboardingModule" vertex="1">
+                    <mxGeometry y="26" width="320" height="144" as="geometry"/>
+                </mxCell>
+                <mxCell id="onboardingTask" value="OnboardingTask" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1180" y="50" width="460" height="300" as="geometry"/>
+                </mxCell>
+                <mxCell id="onboardingTask_attr" value="PartOf : OnboardingModule&lt;br&gt;TenantId : int&lt;br&gt;Title : string&lt;br&gt;Description : text&lt;br&gt;Category : RefList(OnboardingTaskCategory):&lt;br&gt;(Orientation, Learning, Practice,&lt;br&gt;Assessment, CheckIn)&lt;br&gt;OrderIndex : int&lt;br&gt;DueDayOffset : int&lt;br&gt;AssignmentTarget : RefList(OnboardingTaskAssignmentTarget):&lt;br&gt;(Enrolee, Manager, Facilitator)&lt;br&gt;AcknowledgementRule : RefList(OnboardingTaskAcknowledgementRule):&lt;br&gt;(NotRequired, Required)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;whiteSpace=wrap;html=1;" parent="onboardingTask" vertex="1">
+                    <mxGeometry y="26" width="460" height="274" as="geometry"/>
+                </mxCell>
+                <mxCell id="onboardingDocument" value="OnboardingDocument" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="150" y="446" width="430" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="onboardingDocument_attr" value="PartOf : OnboardingPlan&lt;br&gt;TenantId : int&lt;br&gt;FileName : string&lt;br&gt;StoragePath : string&lt;br&gt;ContentType : string&lt;br&gt;FileSizeBytes : long&lt;br&gt;Status : RefList(OnboardingDocumentStatus):&lt;br&gt;(Uploaded, Extracting, ReadyForReview,&lt;br&gt;Applied, Failed)&lt;br&gt;ExtractedTaskCount : int&lt;br&gt;AcceptedTaskCount : int&lt;br&gt;FailureReason : string?&lt;br&gt;ExtractionCompletedTime : DateTime?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;whiteSpace=wrap;html=1;" parent="onboardingDocument" vertex="1">
+                    <mxGeometry y="26" width="430" height="254" as="geometry"/>
+                </mxCell>
+                <mxCell id="extractedTask" value="ExtractedTask" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="640" y="416" width="470" height="340" as="geometry"/>
+                </mxCell>
+                <mxCell id="extractedTask_attr" value="PartOf : OnboardingDocument&lt;br&gt;SuggestedModule : OnboardingModule?&lt;br&gt;AppliedOnboardingTask : OnboardingTask?&lt;br&gt;TenantId : int&lt;br&gt;Title : string&lt;br&gt;Description : text&lt;br&gt;Category : RefList(OnboardingTaskCategory):&lt;br&gt;(Orientation, Learning, Practice,&lt;br&gt;Assessment, CheckIn)&lt;br&gt;DueDayOffset : int&lt;br&gt;AssignmentTarget : RefList(OnboardingTaskAssignmentTarget):&lt;br&gt;(Enrolee, Manager, Facilitator)&lt;br&gt;AcknowledgementRule : RefList(OnboardingTaskAcknowledgementRule):&lt;br&gt;(NotRequired, Required)&lt;br&gt;ReviewStatus : RefList(ExtractedTaskReviewStatus):&lt;br&gt;(Pending, Accepted, Rejected, Applied)&lt;br&gt;ReviewedByUserId : long?&lt;br&gt;ReviewedTime : DateTime?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;whiteSpace=wrap;html=1;" parent="extractedTask" vertex="1">
+                    <mxGeometry y="26" width="470" height="314" as="geometry"/>
+                </mxCell>
+                <mxCell id="hire" value="Hire" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="100" y="900" width="440" height="370" as="geometry"/>
+                </mxCell>
+                <mxCell id="hire_attr" value="OnboardingPlan : OnboardingPlan&lt;br&gt;TenantId : int&lt;br&gt;PlatformUserId : long?&lt;br&gt;ManagerUserId : long?&lt;br&gt;FullName : string&lt;br&gt;EmailAddress : string&lt;br&gt;RoleTitle : string?&lt;br&gt;Department : string?&lt;br&gt;StartDate : DateTime&lt;br&gt;Status : RefList(HireLifecycleState):&lt;br&gt;(PendingActivation, Active, Completed, Exited)&lt;br&gt;WelcomeNotificationStatus : RefList(WelcomeNotificationStatus):&lt;br&gt;(Pending, Sent, FailedRecoverable)&lt;br&gt;WelcomeNotificationLastAttemptedAt : DateTime?&lt;br&gt;WelcomeNotificationSentAt : DateTime?&lt;br&gt;WelcomeNotificationFailureReason : string?&lt;br&gt;ActivatedAt : DateTime?&lt;br&gt;CompletedAt : DateTime?&lt;br&gt;ExitedAt : DateTime?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;whiteSpace=wrap;html=1;" parent="hire" vertex="1">
+                    <mxGeometry y="26" width="440" height="344" as="geometry"/>
+                </mxCell>
+                <mxCell id="journey" value="Journey" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="620" y="930" width="360" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="journey_attr" value="PartOf : Hire&lt;br&gt;OnboardingPlan : OnboardingPlan&lt;br&gt;TenantId : int&lt;br&gt;Status : RefList(JourneyStatus):&lt;br&gt;(Draft, Active, Paused, Completed)&lt;br&gt;ActivatedAt : DateTime?&lt;br&gt;PausedAt : DateTime?&lt;br&gt;CompletedAt : DateTime?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;whiteSpace=wrap;html=1;" parent="journey" vertex="1">
+                    <mxGeometry y="26" width="360" height="174" as="geometry"/>
+                </mxCell>
+                <mxCell id="journeyTask" value="JourneyTask" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1170" y="830" width="500" height="440" as="geometry"/>
+                </mxCell>
+                <mxCell id="journeyTask_attr" value="PartOf : Journey&lt;br&gt;SourceOnboardingTask : OnboardingTask?&lt;br&gt;SourceOnboardingModule : OnboardingModule?&lt;br&gt;TenantId : int&lt;br&gt;ModuleTitle : string&lt;br&gt;ModuleOrderIndex : int&lt;br&gt;TaskOrderIndex : int&lt;br&gt;Title : string&lt;br&gt;Description : text&lt;br&gt;Category : RefList(OnboardingTaskCategory):&lt;br&gt;(Orientation, Learning, Practice,&lt;br&gt;Assessment, CheckIn)&lt;br&gt;AssignmentTarget : RefList(OnboardingTaskAssignmentTarget):&lt;br&gt;(Enrolee, Manager, Facilitator)&lt;br&gt;AcknowledgementRule : RefList(OnboardingTaskAcknowledgementRule):&lt;br&gt;(NotRequired, Required)&lt;br&gt;DueDayOffset : int&lt;br&gt;DueOn : DateTime&lt;br&gt;Status : RefList(JourneyTaskStatus):&lt;br&gt;(Pending, Completed)&lt;br&gt;AcknowledgedAt : DateTime?&lt;br&gt;CompletedAt : DateTime?&lt;br&gt;CompletedByUserId : long?&lt;br&gt;PersonalisedAt : DateTime?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;whiteSpace=wrap;html=1;" parent="journeyTask" vertex="1">
+                    <mxGeometry y="26" width="500" height="414" as="geometry"/>
+                </mxCell>
+                <mxCell id="generationLog" value="GenerationLog" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1840" y="70" width="470" height="340" as="geometry"/>
+                </mxCell>
+                <mxCell id="generationLog_attr" value="Hire : Hire?&lt;br&gt;Journey : Journey?&lt;br&gt;OnboardingPlan : OnboardingPlan?&lt;br&gt;OnboardingDocument : OnboardingDocument?&lt;br&gt;TenantId : int&lt;br&gt;WorkflowType : RefList(GenerationLogWorkflowType):&lt;br&gt;(Extraction, Personalisation)&lt;br&gt;Status : RefList(GenerationLogStatus):&lt;br&gt;(Succeeded, Failed)&lt;br&gt;ModelName : string&lt;br&gt;PromptSummary : text&lt;br&gt;ResponseSummary : text?&lt;br&gt;FailureReason : string?&lt;br&gt;TasksAdded : int&lt;br&gt;TasksRevised : int&lt;br&gt;StartedAt : DateTime&lt;br&gt;CompletedAt : DateTime&lt;br&gt;DurationMilliseconds : long" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;whiteSpace=wrap;html=1;" parent="generationLog" vertex="1">
+                    <mxGeometry y="26" width="470" height="314" as="geometry"/>
+                </mxCell>
+                <mxCell id="engagementSnapshot" value="EngagementSnapshot" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1840" y="500" width="410" height="230" as="geometry"/>
+                </mxCell>
+                <mxCell id="engagementSnapshot_attr" value="PartOfHire : Hire&lt;br&gt;PartOfJourney : Journey&lt;br&gt;TenantId : int&lt;br&gt;CompletionRate : decimal&lt;br&gt;DaysSinceLastActivity : int&lt;br&gt;OverdueTaskCount : int&lt;br&gt;CompositeScore : decimal&lt;br&gt;Classification : RefList(EngagementClassification):&lt;br&gt;(Healthy, NeedsAttention, AtRisk)&lt;br&gt;ComputedAt : DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;whiteSpace=wrap;html=1;" parent="engagementSnapshot" vertex="1">
+                    <mxGeometry y="26" width="410" height="204" as="geometry"/>
+                </mxCell>
+                <mxCell id="atRiskFlag" value="AtRiskFlag" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1840" y="860" width="450" height="340" as="geometry"/>
+                </mxCell>
+                <mxCell id="atRiskFlag_attr" value="PartOfHire : Hire&lt;br&gt;PartOfJourney : Journey&lt;br&gt;TenantId : int&lt;br&gt;RaisedAt : DateTime&lt;br&gt;ClassificationAtRaise : RefList(EngagementClassification):&lt;br&gt;(Healthy, NeedsAttention, AtRisk)&lt;br&gt;Status : RefList(AtRiskFlagStatus):&lt;br&gt;(Active, Acknowledged, Resolved)&lt;br&gt;AcknowledgedByUserId : long?&lt;br&gt;AcknowledgedAt : DateTime?&lt;br&gt;AcknowledgementNotes : text?&lt;br&gt;ResolvedByUserId : long?&lt;br&gt;ResolvedAt : DateTime?&lt;br&gt;ResolutionType : RefList(AtRiskResolutionType):&lt;br&gt;(ManualFacilitatorResolution,&lt;br&gt;AutomaticHealthyRecovery, HireExited)?&lt;br&gt;ResolutionNotes : text?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;whiteSpace=wrap;html=1;" parent="atRiskFlag" vertex="1">
+                    <mxGeometry y="26" width="450" height="314" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=1;" parent="1" source="onboardingModule_attr" target="onboardingPlan" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1l" value="PartOf" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e1" connectable="0" vertex="1">
+                    <mxGeometry x="-0.08" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=1;" parent="1" source="onboardingTask_attr" target="onboardingModule" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e2l" value="PartOf" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e2" connectable="0" vertex="1">
+                    <mxGeometry x="-0.08" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=1;" parent="1" source="onboardingDocument_attr" target="onboardingPlan" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e3l" value="PartOf" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e3" connectable="0" vertex="1">
+                    <mxGeometry x="-0.08" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=1;" parent="1" source="extractedTask_attr" target="onboardingDocument" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="640" y="560"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e4l" value="PartOf" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e4" connectable="0" vertex="1">
+                    <mxGeometry x="-0.08" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=0;" parent="1" source="extractedTask_attr" target="onboardingModule" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="820" y="300"/>
+                            <mxPoint x="740" y="300"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e5l" value="SuggestedModule" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e5" connectable="0" vertex="1">
+                    <mxGeometry x="-0.1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=0;" parent="1" source="extractedTask_attr" target="onboardingTask" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1120" y="390"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e6l" value="AppliedOnboardingTask" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e6" connectable="0" vertex="1">
+                    <mxGeometry x="-0.12" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=0;" parent="1" source="hire_attr" target="onboardingPlan" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="280" y="780"/>
+                            <mxPoint x="100" y="780"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e7l" value="OnboardingPlan" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e7" connectable="0" vertex="1">
+                    <mxGeometry x="-0.08" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=1;" parent="1" source="journey_attr" target="hire" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="580" y="1030"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e8l" value="PartOf" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e8" connectable="0" vertex="1">
+                    <mxGeometry x="-0.08" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=0;" parent="1" source="journey_attr" target="onboardingPlan" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="800" y="840"/>
+                            <mxPoint x="50" y="840"/>
+                            <mxPoint x="50" y="540"/>
+                            <mxPoint x="90" y="540"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e9l" value="OnboardingPlan" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e9" connectable="0" vertex="1">
+                    <mxGeometry x="-0.08" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=1;" parent="1" source="journeyTask_attr" target="journey" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1020" y="1030"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e10l" value="PartOf" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e10" connectable="0" vertex="1">
+                    <mxGeometry x="-0.08" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=0;" parent="1" source="journeyTask_attr" target="onboardingTask" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1570" y="600"/>
+                            <mxPoint x="1590" y="600"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e11l" value="SourceOnboardingTask" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e11" connectable="0" vertex="1">
+                    <mxGeometry x="-0.12" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=0;" parent="1" source="journeyTask_attr" target="onboardingModule" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1160" y="1063"/>
+                            <mxPoint x="1160" y="280"/>
+                            <mxPoint x="760" y="280"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e12l" value="SourceOnboardingModule" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e12" connectable="0" vertex="1">
+                    <mxGeometry x="-0.12" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=0;" parent="1" source="generationLog_attr" target="hire" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="2380" y="1320"/>
+                            <mxPoint x="320" y="1320"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e13l" value="Hire" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e13" connectable="0" vertex="1">
+                    <mxGeometry x="-0.08" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=0;" parent="1" source="generationLog_attr" target="journey" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="2380" y="253"/>
+                            <mxPoint x="2380" y="780"/>
+                            <mxPoint x="760" y="780"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e14l" value="Journey" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e14" connectable="0" vertex="1">
+                    <mxGeometry x="-0.08" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=0;" parent="1" source="generationLog_attr" target="onboardingPlan" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1760" y="30"/>
+                            <mxPoint x="280" y="30"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e15l" value="OnboardingPlan" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e15" connectable="0" vertex="1">
+                    <mxGeometry x="-0.08" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=0;" parent="1" source="generationLog_attr" target="onboardingDocument" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="550" y="350"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e16l" value="OnboardingDocument" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e16" connectable="0" vertex="1">
+                    <mxGeometry x="-0.12" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=1;" parent="1" source="engagementSnapshot_attr" target="hire" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1740" y="628"/>
+                            <mxPoint x="1740" y="1360"/>
+                            <mxPoint x="320" y="1360"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e17l" value="PartOfHire" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e17" connectable="0" vertex="1">
+                    <mxGeometry x="-0.1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=1;" parent="1" source="engagementSnapshot_attr" target="journey" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1780" y="628"/>
+                            <mxPoint x="1780" y="800"/>
+                            <mxPoint x="840" y="800"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e18l" value="PartOfJourney" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e18" connectable="0" vertex="1">
+                    <mxGeometry x="-0.11" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=1;" parent="1" source="atRiskFlag_attr" target="hire" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1810" y="1043"/>
+                            <mxPoint x="1810" y="1410"/>
+                            <mxPoint x="320" y="1410"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e19l" value="PartOfHire" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e19" connectable="0" vertex="1">
+                    <mxGeometry x="-0.1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=diamondThin;endFill=1;" parent="1" source="atRiskFlag_attr" target="journey" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1760" y="1043"/>
+                            <mxPoint x="1760" y="1300"/>
+                            <mxPoint x="800" y="1300"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e20l" value="PartOfJourney" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="e20" connectable="0" vertex="1">
+                    <mxGeometry x="-0.11" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

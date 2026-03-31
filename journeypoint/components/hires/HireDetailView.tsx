@@ -3,6 +3,7 @@
 import React, { startTransition, useEffect, useEffectEvent } from "react";
 import {
     Alert,
+    Breadcrumb,
     Button,
     Card,
     Descriptions,
@@ -10,6 +11,7 @@ import {
     Space,
     Spin,
     Statistic,
+    Tabs,
     Tag,
     Typography,
 } from "antd";
@@ -17,7 +19,7 @@ import AtRiskFlagPanel from "@/components/engagement/AtRiskFlagPanel";
 import EngagementBadge from "@/components/engagement/EngagementBadge";
 import InterventionHistoryPanel from "@/components/engagement/InterventionHistoryPanel";
 import ScoreTrendChart from "@/components/journey/ScoreTrendChart";
-import { ArrowRightOutlined, ReloadOutlined } from "@ant-design/icons";
+import { ArrowRightOutlined, ReloadOutlined, WarningOutlined } from "@ant-design/icons";
 import {
     HIRE_STATUS_LABELS,
     HIRE_STATUS_TAG_COLORS,
@@ -29,7 +31,7 @@ import {
     JOURNEY_STATUS_TAG_COLORS,
 } from "@/constants/journey/review";
 import { useStyles } from "@/components/hires/style/style";
-import { buildFacilitatorHireJourneyRoute } from "@/constants/auth/routes";
+import { APP_ROUTES, buildFacilitatorHireJourneyRoute } from "@/constants/auth/routes";
 import {
     useEngagementActions,
     useEngagementState,
@@ -106,8 +108,135 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
 
     const currentSnapshot = selectedHireIntelligence?.currentSnapshot;
 
+    const overviewTab = (
+        <Space orientation="vertical" size={16} className={styles.pageRoot}>
+            <div className={styles.detailGrid}>
+                <Card title="Hire Details">
+                    <Descriptions column={1} bordered>
+                        <Descriptions.Item label="Plan">
+                            {selectedHire.onboardingPlanName}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Role title">
+                            {selectedHire.roleTitle || "Not supplied"}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Department">
+                            {selectedHire.department || "Not supplied"}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Start date">
+                            {formatDisplayDate(selectedHire.startDate)}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Platform account">
+                            {selectedHire.platformUserDisplayName || "Not linked"}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Manager">
+                            {selectedHire.managerDisplayName || "No manager assigned"}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Welcome sent">
+                            {formatDisplayDateTime(selectedHire.welcomeNotificationSentAt)}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Last attempted">
+                            {formatDisplayDateTime(selectedHire.welcomeNotificationLastAttemptedAt)}
+                        </Descriptions.Item>
+                    </Descriptions>
+                </Card>
+
+                <Space orientation="vertical" size={16}>
+                    <Card title="Journey Summary">
+                        {selectedHire.journey ? (
+                            <div className={styles.summaryGrid}>
+                                <Statistic title="Tasks" value={selectedHire.journey.taskCount} />
+                                <Statistic title="Completed" value={selectedHire.journey.completedTaskCount} />
+                                <Statistic title="Pending" value={selectedHire.journey.pendingTaskCount} />
+                            </div>
+                        ) : (
+                            <Paragraph type="secondary">
+                                No per-hire journey has been generated yet. Open the
+                                review screen to create the first draft from the published plan.
+                            </Paragraph>
+                        )}
+                    </Card>
+
+                    <Card title="Lifecycle">
+                        <Descriptions column={1} bordered>
+                            <Descriptions.Item label="Activated">
+                                {formatDisplayDateTime(selectedHire.activatedAt)}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Completed">
+                                {formatDisplayDateTime(selectedHire.completedAt)}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Exited">
+                                {formatDisplayDateTime(selectedHire.exitedAt)}
+                            </Descriptions.Item>
+                        </Descriptions>
+                    </Card>
+                </Space>
+            </div>
+        </Space>
+    );
+
+    const engagementTab = (
+        <Space orientation="vertical" size={16} className={styles.pageRoot}>
+            {currentSnapshot ? (
+                <>
+                    <Card title="Current Engagement">
+                        <Space orientation="vertical" size={16} className={styles.pageRoot}>
+                            <EngagementBadge
+                                classification={currentSnapshot.classification}
+                                compositeScore={currentSnapshot.compositeScore}
+                                hasActiveAtRiskFlag={Boolean(selectedHireIntelligence?.activeFlag)}
+                            />
+                            <div className={styles.summaryGrid}>
+                                <Statistic title="Composite score" value={currentSnapshot.compositeScore} precision={0} suffix="%" />
+                                <Statistic title="Completion rate" value={currentSnapshot.completionRate} precision={0} suffix="%" />
+                                <Statistic title="Days since activity" value={currentSnapshot.daysSinceLastActivity} />
+                                <Statistic title="Overdue tasks" value={currentSnapshot.overdueTaskCount} />
+                                <Statistic title="Snapshots" value={selectedHireIntelligence?.snapshotHistory.length ?? 0} />
+                            </div>
+                            <Paragraph type="secondary">
+                                Current stage: {selectedHireIntelligence?.currentStageTitle || "Not available"}
+                            </Paragraph>
+                        </Space>
+                    </Card>
+                    <ScoreTrendChart
+                        activationDate={selectedHire.activatedAt}
+                        currentSnapshot={currentSnapshot}
+                        snapshotHistory={selectedHireIntelligence?.snapshotHistory ?? []}
+                    />
+                </>
+            ) : (
+                <Card>
+                    <Paragraph type="secondary">
+                        Engagement snapshots will appear here after the intelligence
+                        service computes the first score for this hire.
+                    </Paragraph>
+                </Card>
+            )}
+        </Space>
+    );
+
+    const interventionsTab = (
+        <div className={styles.detailGrid}>
+            <AtRiskFlagPanel
+                activeFlag={selectedHireIntelligence?.activeFlag}
+                isPending={isMutationPending}
+                onAcknowledge={handleAcknowledgeFlag}
+                onResolve={handleResolveFlag}
+            />
+            <InterventionHistoryPanel
+                resolvedFlags={selectedHireIntelligence?.resolvedFlags ?? []}
+            />
+        </div>
+    );
+
     return (
         <Space orientation="vertical" size={24} className={styles.pageRoot}>
+            <Breadcrumb
+                items={[
+                    { title: <a onClick={() => startTransition(() => router.push(APP_ROUTES.facilitatorHires))}>Hires</a> },
+                    { title: selectedHire.fullName },
+                ]}
+            />
+
             <div className={styles.pageHeader}>
                 <div>
                     <Title level={2} className={styles.pageHeading}>
@@ -165,140 +294,20 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
                 />
             ) : null}
 
-            <div className={styles.detailGrid}>
-                <Card title="Hire Details">
-                    <Descriptions column={1} bordered>
-                        <Descriptions.Item label="Plan">
-                            {selectedHire.onboardingPlanName}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Role title">
-                            {selectedHire.roleTitle || "Not supplied"}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Department">
-                            {selectedHire.department || "Not supplied"}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Start date">
-                            {formatDisplayDate(selectedHire.startDate)}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Platform account">
-                            {selectedHire.platformUserDisplayName || "Not linked"}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Manager">
-                            {selectedHire.managerDisplayName || "No manager assigned"}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Welcome sent">
-                            {formatDisplayDateTime(selectedHire.welcomeNotificationSentAt)}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Last attempted">
-                            {formatDisplayDateTime(selectedHire.welcomeNotificationLastAttemptedAt)}
-                        </Descriptions.Item>
-                    </Descriptions>
-                </Card>
-
-                <Space orientation="vertical" size={16}>
-                    <Card title="Journey Summary">
-                        {selectedHire.journey ? (
-                            <div className={styles.summaryGrid}>
-                                <Statistic title="Tasks" value={selectedHire.journey.taskCount} />
-                                <Statistic
-                                    title="Completed"
-                                    value={selectedHire.journey.completedTaskCount}
-                                />
-                                <Statistic
-                                    title="Pending"
-                                    value={selectedHire.journey.pendingTaskCount}
-                                />
-                            </div>
-                        ) : (
-                            <Paragraph type="secondary">
-                                No per-hire journey has been generated yet. Open the
-                                review screen to create the first draft from the
-                                published plan.
-                            </Paragraph>
-                        )}
-                    </Card>
-
-                    <Card title="Lifecycle">
-                        <Descriptions column={1} bordered>
-                            <Descriptions.Item label="Activated">
-                                {formatDisplayDateTime(selectedHire.activatedAt)}
-                            </Descriptions.Item>
-                            <Descriptions.Item label="Completed">
-                                {formatDisplayDateTime(selectedHire.completedAt)}
-                            </Descriptions.Item>
-                            <Descriptions.Item label="Exited">
-                                {formatDisplayDateTime(selectedHire.exitedAt)}
-                            </Descriptions.Item>
-                        </Descriptions>
-                    </Card>
-
-                    <Card title="Current Engagement">
-                        {currentSnapshot ? (
-                            <Space orientation="vertical" size={16} className={styles.pageRoot}>
-                                <EngagementBadge
-                                    classification={currentSnapshot.classification}
-                                    compositeScore={currentSnapshot.compositeScore}
-                                    hasActiveAtRiskFlag={Boolean(selectedHireIntelligence?.activeFlag)}
-                                />
-                                <div className={styles.summaryGrid}>
-                                    <Statistic
-                                        title="Composite score"
-                                        value={currentSnapshot.compositeScore}
-                                        precision={0}
-                                        suffix="%"
-                                    />
-                                    <Statistic
-                                        title="Completion rate"
-                                        value={currentSnapshot.completionRate}
-                                        precision={0}
-                                        suffix="%"
-                                    />
-                                    <Statistic
-                                        title="Days since activity"
-                                        value={currentSnapshot.daysSinceLastActivity}
-                                    />
-                                    <Statistic
-                                        title="Overdue tasks"
-                                        value={currentSnapshot.overdueTaskCount}
-                                    />
-                                    <Statistic
-                                        title="Snapshots"
-                                        value={selectedHireIntelligence?.snapshotHistory.length ?? 0}
-                                    />
-                                </div>
-                                <Paragraph type="secondary">
-                                    Current stage: {selectedHireIntelligence?.currentStageTitle || "Not available"}
-                                </Paragraph>
-                                <Paragraph type="secondary">
-                                    Resolved interventions: {selectedHireIntelligence?.resolvedFlags.length ?? 0}
-                                </Paragraph>
-                            </Space>
-                        ) : (
-                            <Paragraph type="secondary">
-                                Engagement snapshots will appear here after the intelligence
-                                service computes the first score for this hire.
-                            </Paragraph>
-                        )}
-                    </Card>
-                </Space>
-            </div>
-
-            <ScoreTrendChart
-                currentSnapshot={currentSnapshot}
-                snapshotHistory={selectedHireIntelligence?.snapshotHistory ?? []}
+            <Tabs
+                defaultActiveKey="overview"
+                items={[
+                    { key: "overview", label: "Overview", children: overviewTab },
+                    {
+                        key: "engagement",
+                        label: selectedHireIntelligence?.activeFlag
+                            ? <span><WarningOutlined className={styles.tabWarningIcon} />Engagement</span>
+                            : "Engagement",
+                        children: engagementTab,
+                    },
+                    { key: "interventions", label: `Interventions (${(selectedHireIntelligence?.resolvedFlags.length ?? 0) + (selectedHireIntelligence?.activeFlag ? 1 : 0)})`, children: interventionsTab },
+                ]}
             />
-
-            <div className={styles.detailGrid}>
-                <AtRiskFlagPanel
-                    activeFlag={selectedHireIntelligence?.activeFlag}
-                    isPending={isMutationPending}
-                    onAcknowledge={handleAcknowledgeFlag}
-                    onResolve={handleResolveFlag}
-                />
-                <InterventionHistoryPanel
-                    resolvedFlags={selectedHireIntelligence?.resolvedFlags ?? []}
-                />
-            </div>
         </Space>
     );
 };

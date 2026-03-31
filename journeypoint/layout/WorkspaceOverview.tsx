@@ -9,12 +9,11 @@ import { useStyles } from "./style/style";
 const { Paragraph, Title, Text } = Typography;
 
 /**
- * Renders the interim role workspace overview used during the foundation phase.
+ * Generic workspace placeholder for role workspaces that are not yet configured.
  */
 const WorkspaceOverview: React.FC<IWorkspaceOverviewProps> = ({
   currentFocus,
   description,
-  nextMilestoneHint,
   title,
 }) => {
   const { styles } = useStyles();
@@ -22,30 +21,34 @@ const WorkspaceOverview: React.FC<IWorkspaceOverviewProps> = ({
 
   return (
     <Space orientation="vertical" size={24} className={styles.overviewRoot}>
-      <div>
+      <Card className={styles.overviewHeroCard}>
+        <Text className={styles.overviewKicker}>Workspace Overview</Text>
         <Title level={2} className={styles.overviewHeading}>
           {title}
         </Title>
         <Paragraph type="secondary" className={styles.overviewParagraph}>
           {description}
         </Paragraph>
-      </div>
+        <Text type="secondary" className={styles.overviewInlineMeta}>
+          {session.user?.fullName ?? session.user?.userName ?? "Unknown user"} • {session.tenant?.tenantName ?? "Host"}
+        </Text>
+      </Card>
 
       <Row gutter={[16, 16]}>
         <Col xs={24} md={12}>
-          <Card>
+          <Card className={styles.overviewDetailCard}>
             <Text type="secondary">Signed In As</Text>
             <Title level={4} className={styles.overviewCardTitle}>
               {session.user?.fullName ?? session.user?.userName ?? "Unknown user"}
             </Title>
             <Paragraph type="secondary" className={styles.overviewParagraph}>
-              {session.user?.emailAddress ?? "No email returned from session."}
+              {session.user?.emailAddress ?? "—"}
             </Paragraph>
           </Card>
         </Col>
 
         <Col xs={24} md={12}>
-          <Card>
+          <Card className={styles.overviewDetailCard}>
             <Text type="secondary">Current Scope</Text>
             <Title level={4} className={styles.overviewCardTitle}>
               {session.tenant?.tenantName ?? "Host"}
@@ -55,17 +58,19 @@ const WorkspaceOverview: React.FC<IWorkspaceOverviewProps> = ({
             </Paragraph>
           </Card>
         </Col>
-      </Row>
 
-      <Card>
-        <Text type="secondary">Milestone One Focus</Text>
-        <Title level={4} className={styles.overviewCardTitle}>
-          {nextMilestoneHint}
-        </Title>
-        <Paragraph type="secondary" className={styles.overviewParagraph}>
-          This workspace is intentionally light while role-safe routing, landing behavior, and navigation are being established.
-        </Paragraph>
-      </Card>
+        <Col xs={24}>
+          <Card className={styles.overviewFocusCard}>
+            <Text type="secondary">Current Focus</Text>
+            <Title level={4} className={styles.overviewCardTitle}>
+              {currentFocus}
+            </Title>
+            <Paragraph type="secondary" className={styles.overviewParagraph}>
+              Keep navigating from the left menu to access role-specific actions and workflows.
+            </Paragraph>
+          </Card>
+        </Col>
+      </Row>
     </Space>
   );
 };

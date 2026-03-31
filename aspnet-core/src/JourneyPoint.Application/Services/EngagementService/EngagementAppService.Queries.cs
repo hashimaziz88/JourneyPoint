@@ -58,7 +58,9 @@ namespace JourneyPoint.Application.Services.EngagementService
                     Classification = intelligence.Snapshot.Classification,
                     HasActiveAtRiskFlag = intelligence.ActiveFlag != null,
                     ActiveAtRiskFlagId = intelligence.ActiveFlag?.Id,
-                    SnapshotComputedAt = intelligence.Snapshot.ComputedAt
+                    SnapshotComputedAt = intelligence.Snapshot.ComputedAt,
+                    OnboardingPlanId = hire.OnboardingPlanId,
+                    OnboardingPlanName = hire.OnboardingPlan.Name
                 }, stage.Key, stage.Title, stage.OrderIndex));
             }
 
