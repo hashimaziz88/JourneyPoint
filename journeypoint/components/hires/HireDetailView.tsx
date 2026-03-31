@@ -19,7 +19,7 @@ import AtRiskFlagPanel from "@/components/engagement/AtRiskFlagPanel";
 import EngagementBadge from "@/components/engagement/EngagementBadge";
 import InterventionHistoryPanel from "@/components/engagement/InterventionHistoryPanel";
 import ScoreTrendChart from "@/components/journey/ScoreTrendChart";
-import { ArrowRightOutlined, ReloadOutlined } from "@ant-design/icons";
+import { ArrowRightOutlined, ReloadOutlined, WarningOutlined } from "@ant-design/icons";
 import {
     HIRE_STATUS_LABELS,
     HIRE_STATUS_TAG_COLORS,
@@ -298,7 +298,13 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
                 defaultActiveKey="overview"
                 items={[
                     { key: "overview", label: "Overview", children: overviewTab },
-                    { key: "engagement", label: `Engagement${selectedHireIntelligence?.activeFlag ? " !" : ""}`, children: engagementTab },
+                    {
+                        key: "engagement",
+                        label: selectedHireIntelligence?.activeFlag
+                            ? <span><WarningOutlined className={styles.tabWarningIcon} />Engagement</span>
+                            : "Engagement",
+                        children: engagementTab,
+                    },
                     { key: "interventions", label: `Interventions (${(selectedHireIntelligence?.resolvedFlags.length ?? 0) + (selectedHireIntelligence?.activeFlag ? 1 : 0)})`, children: interventionsTab },
                 ]}
             />

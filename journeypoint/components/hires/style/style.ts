@@ -111,6 +111,11 @@ export const useStyles = createStyles(({ css, token }) => ({
     gap: 12px;
   `,
 
+  tabWarningIcon: css`
+    color: ${token.colorWarning};
+    margin-right: 6px;
+  `,
+
   statusTags: css`
     display: flex;
     flex-wrap: wrap;
