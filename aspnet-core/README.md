@@ -1,422 +1,188 @@
-# JourneyPoint — ASP.NET Core Backend
+# JourneyPoint — Backend
 
-REST API built on **ABP Framework** with a **Domain-Driven Design** layered architecture targeting **.NET 8**, using **SQL Server** as the database.
+[![Backend CI](https://github.com/hashimaziz88/JourneyPoint/actions/workflows/backend-ci.yml/badge.svg?branch=main)](https://github.com/hashimaziz88/JourneyPoint/actions/workflows/backend-ci.yml)
 
----
+## What is the JourneyPoint Backend?
 
-## Tech Stack
+The JourneyPoint backend is a REST API built on ABP Framework 9.4.1 and .NET 8. It handles all business logic, data persistence, AI-assisted content enrichment, email delivery, and multi-tenant isolation for the JourneyPoint onboarding platform.
 
-| Component | Technology |
-|---|---|
-| Framework | ABP Framework 9.4.1 (ABP Zero) on .NET 8 |
-| Database | SQL Server via Entity Framework Core 8 |
-| IoC Container | Castle Windsor |
-| Object Mapping | AutoMapper |
-| Authentication | JWT Bearer (HS256) |
-| API Docs | Swagger / OpenAPI |
-| Real-Time | SignalR |
-| Logging | Log4Net |
-| Testing | xUnit (via ABP test helpers) |
+## Why This Stack?
 
----
+ABP Framework: Provides multi-tenancy, audit logging, role-based authorisation, and dependency injection out of the box, reducing boilerplate and enforcing consistent architecture across all features.
 
-## Solution Structure
+PostgreSQL with EF Core: A battle-tested combination that provides reliable relational storage, strong migration tooling, and full support for ABP's tenant-aware repository pattern.
 
-```
+Groq AI — Backend Only: All AI calls are made from the backend exclusively. The frontend never calls an AI provider directly, ensuring enrichment results are auditable and facilitator-approved before any data is changed.
+
+Mailjet SMTP: Transactional email for hire welcome notifications is routed through Mailjet's SMTP relay, with Mailpit available for local development interception.
+
+## Documentation
+
+### Software Requirement Specification
+
+#### Overview
+
+The backend exposes a secure JWT-authenticated REST API consumed by the Next.js frontend. It enforces multi-tenant data isolation, orchestrates AI enrichment workflows, manages file storage for plan documents, and delivers transactional email notifications.
+
+#### Components and Functional Requirements
+
+##### 1. Authentication and Authorisation
+
+* API accepts JWT Bearer tokens issued by the TokenAuth endpoint
+* Role-based authorisation enforced via `[AbpAuthorize]` on all application services
+* Supports Facilitator, Manager, Enrolee, and Admin roles
+
+##### 2. Plan Management
+
+* Create, read, update, and delete plan templates
+* Manage modules and tasks within a plan
+* Accept uploaded documents (PDF, image, markdown) and store them per tenant
+* Trigger AI enrichment via Groq to extract structured content from uploaded documents
+* Return a diff of proposed changes for facilitator review before applying
+
+##### 3. Hire Management
+
+* Create hire records with full personal and role details
+* Automatically generate a platform user account and temporary password on hire creation
+* Send a welcome email with temporary credentials via the configured SMTP provider
+* Track and expose welcome notification delivery status and failure reasons
+* Support pipeline board queries filtered by hire status
+
+##### 4. Journey Management
+
+* Generate a personalised journey from a selected plan template for a given hire
+* Expose draft journey tasks for facilitator review and editing
+* Support adding, editing, and removing draft tasks before activation
+* Activate a journey to make it accessible to the hire and manager
+* Track task completion and module progress per hire
+
+##### 5. Engagement and Intervention
+
+* Record engagement snapshots with composite scores and classification labels
+* Expose score trend history for chart rendering on the frontend
+* Create and resolve at-risk flags with structured intervention records
+* Return full intervention history per hire
+
+##### 6. Notification Management
+
+* Send welcome notification emails on hire account creation
+* Record dispatch result including success status, timestamp, and failure reason
+* Expose notification status per hire for facilitator visibility
+
+##### 7. Multi-Tenancy
+
+* All entities are tenant-scoped via ABP Zero tenant filters
+* Tenant resolution is automatic — never bypassed
+* Demo tenants Boxfusion and DeptDemo are seeded on first migration
+
+#### Architecture Diagram
+
+Placeholder — link to be added.
+
+## Design
+
+### Solution Structure
+
+```text
 aspnet-core/
 ├── src/
-│   ├── JourneyPoint.Core                 # Domain Layer
-│   ├── JourneyPoint.Application          # Application Service Layer
-│   ├── JourneyPoint.EntityFrameworkCore  # Data Access / Infrastructure Layer
-│   ├── JourneyPoint.Web.Core             # Web Infrastructure Layer
-│   ├── JourneyPoint.Web.Host             # Presentation / API Host (startup project)
-│   └── JourneyPoint.Migrator             # Database migration runner (console app)
-├── test/
-│   ├── JourneyPoint.Tests                # Unit & integration tests
-│   └── JourneyPoint.Web.Tests            # Web / API tests
-└── JourneyPoint.sln
+│   ├── JourneyPoint.Core                 # Domain entities, services, enums, permissions
+│   ├── JourneyPoint.Application          # Application services, DTOs, AutoMapper profiles
+│   ├── JourneyPoint.EntityFrameworkCore  # DbContext, EF configuration, migrations
+│   ├── JourneyPoint.Web.Core             # API controller base classes and JWT wiring
+│   ├── JourneyPoint.Web.Host             # Startup, appsettings, hosting (no business logic)
+│   └── JourneyPoint.Migrator             # Database migration console app
+└── test/
+    ├── JourneyPoint.Tests
+    └── JourneyPoint.Web.Tests
 ```
 
-### Dependency Direction
+### Domain Model
 
-No layer may reference a layer above it.
+Placeholder — link to be added.
 
-```
-Web.Host
-  └── Web.Core
-        └── Application
-              ├── Core  (Domain)
-              └── EntityFrameworkCore
-                    └── Core  (Domain)
-```
+## Running the Application
 
----
+### Prerequisites
 
-## Layer Breakdown
+* .NET 8 SDK
+* PostgreSQL 15+ running locally or remotely
+* Groq API key for AI enrichment features
+* Mailjet credentials, or Mailpit running locally for email interception
 
-### 1. `JourneyPoint.Core` — Domain Layer
-
-Contains all business entities, domain logic, and domain-specific services. **No dependency on any other project layer.**
-
-```
-JourneyPoint.Core/
-├── Authorization/
-│   ├── Roles/                        # Role definitions & seeds
-│   └── Users/                        # User manager & login service
-├── Configuration/                    # App configuration helpers
-├── Debugging/
-├── Domains/                          # Your business domain entities (add modules here)
-├── Editions/
-├── Features/
-├── Identity/
-├── Localization/
-│   └── SourceFiles/                  # XML localization resource files
-├── MultiTenancy/
-├── Timing/
-├── Validation/
-└── Web/
-```
-
-#### Rules
-
-- All entities **must** extend `FullAuditedEntity<Guid>` to get `CreationTime`, `CreatorUserId`, `LastModificationTime`, `IsDeleted`, etc. automatically.
-- Use **data annotations** for property validation (`[Required]`, `[MaxLength]`, etc.).
-- Domain services encapsulate logic that spans multiple entities.
-- **No** EF Core, HTTP, or application-layer references allowed here.
-
-#### Example — Entity
-
-```csharp
-public class Product : FullAuditedEntity<Guid>
-{
-    [Required, MaxLength(100)]
-    public string Name { get; set; }
-
-    [Required, MaxLength(500)]
-    public string Description { get; set; }
-
-    public decimal Price { get; set; }
-}
-```
-
----
-
-### 2. `JourneyPoint.Application` — Application Service Layer
-
-Orchestrates domain entities to fulfil use cases. Exposes **application services** consumed by the Web layer. Contains **DTOs** and **AutoMapper** profiles.
-
-```
-JourneyPoint.Application/
-├── Authorization/Accounts/Dto/
-├── Configuration/
-├── MultiTenancy/Dto/
-├── Roles/Dto/
-├── Sessions/Dto/
-├── Users/Dto/
-└── Services/                         # One folder per domain service
-    └── {EntityName}Service/
-        ├── I{EntityName}AppService.cs
-        ├── {EntityName}AppService.cs
-        └── DTO/
-```
-
-#### Naming Conventions
-
-| Artifact | Convention | Example |
-|---|---|---|
-| Service interface | `I{Entity}AppService` | `IProductAppService` |
-| Service class | `{Entity}AppService` | `ProductAppService` |
-| DTO folder | `DTO/` inside service folder | `ProductService/DTO/` |
-| DTO class | `{Entity}Dto` | `ProductDto` |
-
-#### Rules
-
-- Every service class **must** have a corresponding interface.
-- Services extend `AsyncCrudAppService<TEntity, TDto, TPrimaryKey>` for standard CRUD, or `ApplicationService` for custom logic.
-- Apply `[AbpAuthorize]` on the class or individual methods to enforce authentication/authorisation.
-- DTOs must be decorated with `[AutoMap(typeof(TEntity))]`.
-- DTOs must **not** expose EF navigation properties directly — flatten or nest explicitly.
-
-#### Example — Service
-
-```csharp
-[AbpAuthorize]
-public class ProductAppService
-    : AsyncCrudAppService<Product, ProductDto, Guid>,
-      IProductAppService
-{
-    public ProductAppService(IRepository<Product, Guid> repository)
-        : base(repository) { }
-}
-```
-
-#### Example — DTO
-
-```csharp
-[AutoMap(typeof(Product))]
-public class ProductDto : EntityDto<Guid>
-{
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public decimal Price { get; set; }
-}
-```
-
----
-
-### 3. `JourneyPoint.EntityFrameworkCore` — Data Access Layer
-
-Implements repository interfaces using EF Core and SQL Server.
-
-```
-JourneyPoint.EntityFrameworkCore/
-└── EntityFrameworkCore/
-    ├── JourneyPointDbContext.cs       # Main DbContext — all DbSet<T> declarations
-    ├── JourneyPointDbContextConfigurer.cs
-    ├── JourneyPointDbContextFactory.cs
-    ├── AbpZeroDbMigrator.cs
-    ├── Repositories/
-    │   └── JourneyPointRepositoryBase.cs
-    ├── Seed/
-    │   ├── Host/                      # Default editions, languages, settings, roles
-    │   └── Tenants/
-    └── Migrations/
-```
-
-#### Rules
-
-- Every domain entity in `Domains/` **must** have a corresponding `DbSet<T>` in `JourneyPointDbContext`.
-- Override `OnModelCreating` only for config that cannot use data annotations (e.g. UTC datetime conversion, composite keys).
-- Inject `IRepository<TEntity, TPrimaryKey>` in services — never `DbContext` directly from the Application layer.
-- Generate migrations with: `dotnet ef migrations add <Name> --project src/JourneyPoint.EntityFrameworkCore`
-
-#### Example — DbContext
-
-```csharp
-public class JourneyPointDbContext : AbpZeroDbContext<Tenant, Role, User, JourneyPointDbContext>
-{
-    public DbSet<Product> Products { get; set; }
-    // ... one DbSet per domain entity
-}
-```
-
----
-
-### 4. `JourneyPoint.Web.Core` — Web Infrastructure Layer
-
-Shared web infrastructure for the host and test projects. JWT config, external auth providers, base controllers.
-
-```
-JourneyPoint.Web.Core/
-├── Authentication/
-│   ├── External/                     # OAuth / social login providers
-│   └── JwtBearer/
-│       ├── TokenAuthConfiguration.cs # JWT signing key, issuer, audience, expiry
-│       └── JwtTokenMiddleware.cs
-├── Configuration/
-├── Controllers/
-│   └── TokenAuthController.cs        # POST /api/TokenAuth/Authenticate
-├── Identity/
-└── Models/TokenAuth/
-```
-
-#### Rules
-
-- All controllers inherit from `JourneyPointControllerBase`, not `Controller` directly.
-- JWT config is read from `appsettings.json` and injected via `TokenAuthConfiguration`.
-- External providers implement `IExternalAuthProviderApi`.
-- **No business logic here** — only plumbing.
-
----
-
-### 5. `JourneyPoint.Web.Host` — API Host (Startup Project)
-
-The runnable ASP.NET Core host. Configures middleware, DI, Swagger, CORS, and logging.
-
-```
-JourneyPoint.Web.Host/
-├── Startup/
-│   ├── Program.cs                    # Castle Windsor IoC bootstrapper
-│   └── Startup.cs                    # ConfigureServices + Configure
-├── Controllers/
-│   ├── HomeController.cs             # Redirects "/" to "/swagger"
-│   └── AntiForgeryController.cs
-├── appsettings.json
-├── appsettings.Staging.json
-├── log4net.config
-├── log4net.Production.config
-├── Dockerfile
-└── wwwroot/swagger/
-```
-
-#### Middleware Pipeline Order
-
-1. CORS
-2. ABP exception handling
-3. Static files
-4. Authentication (JWT)
-5. Authorization
-6. Routing → MVC Controllers
-7. Swagger (`/swagger`)
-8. SignalR (`/signalr`)
-
-#### Rules
-
-- **No business logic** here — forward to application services.
-- Environment-specific secrets go in `appsettings.{Environment}.json`, never committed.
-- CORS origins are loaded from `App:CorsOrigins` in config.
-
----
-
-### 6. `JourneyPoint.Migrator` — Migration Runner
-
-Standalone console app that applies pending EF migrations without starting the full web host.
-
-```bash
-dotnet run --project src/JourneyPoint.Migrator
-```
-
----
-
-## Setup
-
-**1. Configure the database**
+### Configuration
 
 Edit `src/JourneyPoint.Web.Host/appsettings.json`:
 
 ```json
 {
   "ConnectionStrings": {
-    "Default": "Server=localhost; Database=JourneyPointDb; Trusted_Connection=True;"
-  },
-  "Authentication": {
-    "JwtBearer": {
-      "SecurityKey": "<your-secret-key>",
-      "Issuer": "JourneyPoint",
-      "Audience": "JourneyPoint"
-    }
+    "Default": "Host=localhost; Port=5432; Database=journeypointdb; Username=postgres; Password=yourpassword;"
   },
   "App": {
     "ServerRootAddress": "https://localhost:44311/",
     "ClientRootAddress": "http://localhost:3000/",
-    "CorsOrigins": "http://localhost:3000,http://localhost:4200"
+    "CorsOrigins": "http://localhost:3000"
+  },
+  "Authentication": {
+    "JwtBearer": {
+      "IsEnabled": "true",
+      "SecurityKey": "YOUR_JWT_SECRET_KEY_MIN_32_CHARS",
+      "Issuer": "JourneyPoint",
+      "Audience": "JourneyPoint"
+    }
+  },
+  "Groq": {
+    "Enabled": true,
+    "ApiKey": "YOUR_GROQ_API_KEY",
+    "Model": "llama-3.3-70b-versatile",
+    "VisionModel": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "TimeoutSeconds": 300
+  },
+  "Mail": {
+    "Enabled": true,
+    "Provider": "Smtp",
+    "FromAddress": "no-reply@yourdomain.com",
+    "FromDisplayName": "JourneyPoint",
+    "SmtpHost": "in-v3.mailjet.com",
+    "SmtpPort": 587,
+    "UseSsl": false,
+    "UserName": "YOUR_MAILJET_API_KEY",
+    "Password": "YOUR_MAILJET_SECRET_KEY"
   }
 }
 ```
 
-**2. Run migrations**
+For local development use Mailpit (`SmtpHost: localhost`, `SmtpPort: 1025`).
+
+### Apply Migrations
 
 ```bash
 dotnet run --project src/JourneyPoint.Migrator
 ```
 
-**3. Start the API**
+### Start the API
 
 ```bash
 dotnet run --project src/JourneyPoint.Web.Host
 ```
 
-Swagger UI: `https://localhost:44311/swagger`
+Swagger UI is available at `https://localhost:44311/swagger` after startup.
 
----
-
-## Adding a New Feature — Step-by-Step
-
-### Step 1 — Domain entity (`JourneyPoint.Core`)
-
-Create `src/JourneyPoint.Core/Domains/{ModuleName}/{EntityName}.cs`:
-
-```csharp
-public class Product : FullAuditedEntity<Guid>
-{
-    [Required, MaxLength(100)]
-    public string Name { get; set; }
-
-    [Required, MaxLength(500)]
-    public string Description { get; set; }
-
-    public decimal Price { get; set; }
-}
-```
-
-### Step 2 — Register in DbContext (`JourneyPoint.EntityFrameworkCore`)
-
-```csharp
-public DbSet<Product> Products { get; set; }
-```
-
-### Step 3 — Create a migration
+### Run Tests
 
 ```bash
-dotnet ef migrations add AddProduct --project src/JourneyPoint.EntityFrameworkCore
+dotnet test test/JourneyPoint.Tests/JourneyPoint.Tests.csproj
+dotnet test test/JourneyPoint.Web.Tests/JourneyPoint.Web.Tests.csproj
 ```
 
-### Step 4 — DTO (`JourneyPoint.Application`)
-
-Create `Services/ProductService/DTO/ProductDto.cs`:
-
-```csharp
-[AutoMap(typeof(Product))]
-public class ProductDto : EntityDto<Guid>
-{
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public decimal Price { get; set; }
-}
-```
-
-### Step 5 — Service interface
-
-```csharp
-public interface IProductAppService : IAsyncCrudAppService<ProductDto, Guid> { }
-```
-
-### Step 6 — Service implementation
-
-```csharp
-[AbpAuthorize]
-public class ProductAppService
-    : AsyncCrudAppService<Product, ProductDto, Guid>, IProductAppService
-{
-    public ProductAppService(IRepository<Product, Guid> repository)
-        : base(repository) { }
-}
-```
-
-ABP auto-exposes this as a REST API — no controller needed.
-
----
-
-## Cross-Cutting Concerns
-
-| Concern | How It Is Handled |
-|---|---|
-| Authentication | JWT Bearer via `TokenAuthController` |
-| Authorisation | `[AbpAuthorize]`; role-based permissions |
-| Audit Logging | `FullAuditedEntity<Guid>` on every entity |
-| Soft Delete | Built into `FullAuditedEntity` via `IsDeleted` |
-| Validation | Data annotations; ABP validates DTOs automatically |
-| Logging | Log4Net (`log4net.config`) |
-| Localisation | XML resource files in `Core/Localization/SourceFiles/` |
-| Multi-Tenancy | ABP Zero; `TenantId` on every entity |
-| Exception Handling | ABP global handler; consistent error envelopes |
-| Dependency Injection | Castle Windsor; registered per ABP module |
-| Object Mapping | AutoMapper; configured via `[AutoMap]` attribute |
-
----
-
-## Scripts
+### Add a Migration
 
 ```bash
-dotnet build                                              # Build solution
-dotnet test                                               # Run all tests
-dotnet run --project src/JourneyPoint.Migrator            # Migrate + seed
-dotnet run --project src/JourneyPoint.Web.Host            # Start API
-dotnet ef migrations add <Name> \
-  --project src/JourneyPoint.EntityFrameworkCore          # New migration
+dotnet ef migrations add <MigrationName> --project src/JourneyPoint.EntityFrameworkCore
 ```
 
-## Docker
+### Docker
 
 ```bash
 docker build -f src/JourneyPoint.Web.Host/Dockerfile -t journeypoint-api .
