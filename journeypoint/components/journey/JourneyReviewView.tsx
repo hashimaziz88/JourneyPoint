@@ -48,7 +48,7 @@ import {
     isJourneyDraftEditable,
 } from "@/utils/journey/review";
 import { getHighlightedTaskIds } from "@/utils/journey/personalisation";
-import { APP_ROUTES, buildFacilitatorHireRoute } from "@/constants/auth/routes";
+import { buildFacilitatorHireRoute } from "@/constants/auth/routes";
 import { useRouter } from "next/navigation";
 import { startTransition } from "react";
 
