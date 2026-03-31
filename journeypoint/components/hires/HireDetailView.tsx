@@ -198,6 +198,7 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
                         </Space>
                     </Card>
                     <ScoreTrendChart
+                        activationDate={selectedHire.activatedAt}
                         currentSnapshot={currentSnapshot}
                         snapshotHistory={selectedHireIntelligence?.snapshotHistory ?? []}
                     />

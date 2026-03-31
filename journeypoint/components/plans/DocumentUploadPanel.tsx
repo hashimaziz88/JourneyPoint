@@ -111,7 +111,7 @@ const DocumentUploadPanel: React.FC<IDocumentUploadPanelProps> = ({
                 if (extractedDocument.status === OnboardingDocumentStatus.Failed) {
                     messageApi.error(
                         extractedDocument.failureReason ??
-                            "Extraction failed. Open the document review page for details.",
+                        "Extraction failed. Open the document review page for details.",
                     );
                 } else {
                     messageApi.success("Document uploaded and extraction started.");
