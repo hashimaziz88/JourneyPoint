@@ -85,7 +85,7 @@ const FacilitatorDashboard: React.FC = () => {
                     type="link"
                     className={styles.featureCardAction}
                     icon={<ArrowRightOutlined />}
-                    iconPosition="end"
+                    iconPlacement="end"
                   >
                     {card.label}
                   </Button>

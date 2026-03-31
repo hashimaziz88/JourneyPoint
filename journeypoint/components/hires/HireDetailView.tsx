@@ -109,7 +109,7 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
     const currentSnapshot = selectedHireIntelligence?.currentSnapshot;
 
     const overviewTab = (
-        <Space direction="vertical" size={16} className={styles.pageRoot}>
+        <Space orientation="vertical" size={16} className={styles.pageRoot}>
             <div className={styles.detailGrid}>
                 <Card title="Hire Details">
                     <Descriptions column={1} bordered>
@@ -140,7 +140,7 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
                     </Descriptions>
                 </Card>
 
-                <Space direction="vertical" size={16}>
+                <Space orientation="vertical" size={16}>
                     <Card title="Journey Summary">
                         {selectedHire.journey ? (
                             <div className={styles.summaryGrid}>
@@ -175,11 +175,11 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
     );
 
     const engagementTab = (
-        <Space direction="vertical" size={16} className={styles.pageRoot}>
+        <Space orientation="vertical" size={16} className={styles.pageRoot}>
             {currentSnapshot ? (
                 <>
                     <Card title="Current Engagement">
-                        <Space direction="vertical" size={16} className={styles.pageRoot}>
+                        <Space orientation="vertical" size={16} className={styles.pageRoot}>
                             <EngagementBadge
                                 classification={currentSnapshot.classification}
                                 compositeScore={currentSnapshot.compositeScore}
@@ -228,7 +228,7 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
     );
 
     return (
-        <Space direction="vertical" size={24} className={styles.pageRoot}>
+        <Space orientation="vertical" size={24} className={styles.pageRoot}>
             <Breadcrumb
                 items={[
                     { title: <a onClick={() => startTransition(() => router.push(APP_ROUTES.facilitatorHires))}>Hires</a> },

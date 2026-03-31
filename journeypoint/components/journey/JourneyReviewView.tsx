@@ -174,7 +174,7 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
     const highlightedTaskIds = getHighlightedTaskIds(personalisationProposal);
 
     const tasksTab = (
-        <Space direction="vertical" size={16} className={styles.pageRoot}>
+        <Space orientation="vertical" size={16} className={styles.pageRoot}>
             {isEditable ? (
                 <Alert
                     type="info"

@@ -18,14 +18,14 @@ const DashboardOverview: React.FC = () => {
   const scopeLabel = session.tenant?.tenantName ?? "Host";
 
   return (
-    <Space direction="vertical" size={24} className={styles.overviewRoot}>
+    <Space orientation="vertical" size={24} className={styles.overviewRoot}>
       {/* Host scope safety notice */}
       {!isTenant && (
         <Alert
           className={styles.hostAlert}
           type="info"
           showIcon
-          message="You are operating in host scope. Changes here affect the platform globally, not a specific tenant."
+          title="You are operating in host scope. Changes here affect the platform globally, not a specific tenant."
         />
       )}
 

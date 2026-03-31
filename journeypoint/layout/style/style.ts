@@ -7,6 +7,11 @@ export const useStyles = createStyles(({ token, css }) => ({
       radial-gradient(circle at top left, ${token.colorPrimaryBg}, transparent 22%),
       radial-gradient(circle at bottom right, ${token.colorPrimaryBg}, transparent 18%),
       ${token.colorBgLayout};
+    overflow: visible !important;
+
+    :global(.ant-layout) {
+      overflow: visible !important;
+    }
   `,
 
   shellSider: css`
@@ -78,31 +83,36 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   shellHeader: css`
+    position: sticky;
+    top: 0;
+    z-index: 100;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: ${token.margin}px;
     background: ${token.colorBgLayout} !important;
     border-bottom: 1px solid ${token.colorBorderSecondary};
-    padding: ${token.paddingMD}px ${token.paddingLG}px !important;
+    padding: ${token.paddingLG * 1.5}px ${token.paddingXL}px !important;
     height: auto !important;
     line-height: 1.2 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
     @media (max-width: 991px) {
       align-items: flex-start;
-      padding: ${token.padding}px !important;
+      padding: ${token.paddingLG}px ${token.padding}px !important;
     }
   `,
 
   headerTitle: css`
     margin: 0 !important;
-    font-size: ${token.fontSizeLG}px !important;
+    font-size: ${token.fontSizeHeading4}px !important;
     font-weight: 600 !important;
     color: ${token.colorText} !important;
   `,
 
   shellContent: css`
     padding: ${token.paddingLG}px !important;
+    overflow: visible !important;
 
     @media (max-width: 991px) {
       padding: ${token.padding}px !important;

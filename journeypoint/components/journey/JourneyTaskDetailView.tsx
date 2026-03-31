@@ -72,7 +72,7 @@ const JourneyTaskDetailView: React.FC<IJourneyTaskDetailViewProps> = ({
     }
 
     const detailsTab = (
-        <Space direction="vertical" size={16} className={styles.pageRoot}>
+        <Space orientation="vertical" size={16} className={styles.pageRoot}>
             <Card>
                 <Title level={4}>Task details</Title>
                 <Paragraph className={styles.detailBody}>{task.description}</Paragraph>

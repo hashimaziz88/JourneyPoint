@@ -36,7 +36,7 @@ const ScoreTrendChart: React.FC<IScoreTrendChartProps> = ({
 
     return (
         <Card title="Score Trend" className={styles.trendCard}>
-            <Space direction="vertical" size={16} className={styles.sectionStack}>
+            <Space orientation="vertical" size={16} className={styles.sectionStack}>
                 <div className={styles.trendHeader}>
                     <div>
                         <Title level={5}>Engagement over time</Title>

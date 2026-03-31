@@ -20,7 +20,7 @@ const WorkspaceOverview: React.FC<IWorkspaceOverviewProps> = ({
   const session = useAppSession();
 
   return (
-    <Space direction="vertical" size={24} className={styles.overviewRoot}>
+    <Space orientation="vertical" size={24} className={styles.overviewRoot}>
       <div>
         <Title level={2} className={styles.overviewHeading}>
           {title}

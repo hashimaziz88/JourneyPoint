@@ -14,7 +14,7 @@ export const useWorkspaceShellStyles = createStyles(({ token, css }) => ({
     align-items: center;
     justify-content: space-between;
     gap: ${token.margin}px;
-    height: 60px;
+    height: 72px;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -27,6 +27,7 @@ export const useWorkspaceShellStyles = createStyles(({ token, css }) => ({
 
     @media (max-width: 991px) {
       padding-inline: ${token.padding}px;
+      height: 64px;
     }
   `,
 
@@ -47,7 +48,7 @@ export const useWorkspaceShellStyles = createStyles(({ token, css }) => ({
 
   headerLogoText: css`
     font-weight: 700;
-    font-size: ${token.fontSize}px;
+    font-size: ${token.fontSizeLG}px;
     color: ${token.colorPrimary} !important;
     margin: 0 !important;
     white-space: nowrap;
@@ -61,7 +62,7 @@ export const useWorkspaceShellStyles = createStyles(({ token, css }) => ({
   `,
 
   headerWorkspaceName: css`
-    font-size: ${token.fontSizeSM}px;
+    font-size: ${token.fontSize}px;
     color: ${token.colorTextTertiary};
     white-space: nowrap;
     font-weight: 500;
@@ -87,7 +88,7 @@ export const useWorkspaceShellStyles = createStyles(({ token, css }) => ({
   `,
 
   headerUserName: css`
-    font-size: ${token.fontSizeSM}px;
+    font-size: ${token.fontSize}px;
     color: ${token.colorTextSecondary};
     white-space: nowrap;
 
@@ -103,9 +104,9 @@ export const useWorkspaceShellStyles = createStyles(({ token, css }) => ({
     background: transparent;
     border: none;
     cursor: pointer;
-    padding: 6px ${token.paddingSM}px;
+    padding: 8px ${token.paddingMD}px;
     border-radius: ${token.borderRadius}px;
-    font-size: ${token.fontSizeSM}px;
+    font-size: ${token.fontSize}px;
     font-weight: 500;
     color: ${token.colorTextSecondary};
     transition: color 150ms ease-out, background 150ms ease-out;

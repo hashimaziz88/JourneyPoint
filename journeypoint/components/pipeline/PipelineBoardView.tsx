@@ -103,7 +103,7 @@ const PipelineBoardView: React.FC<IPipelineBoardViewProps> = () => {
     );
 
     return (
-        <Space direction="vertical" size={24} className={styles.pageRoot}>
+        <Space orientation="vertical" size={24} className={styles.pageRoot}>
             <div className={styles.pageHeader}>
                 <div>
                     <Title level={2} className={styles.pageHeading}>
