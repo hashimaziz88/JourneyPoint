@@ -85,7 +85,8 @@ export const FACILITATOR_NAVIGATION_ITEMS: IWorkspaceNavigationItem[] = [
     label: "Pipeline",
     href: APP_ROUTES.facilitatorPipeline,
     permission: APP_PERMISSIONS.facilitator,
-    description: "Monitor module-stage progress, engagement health, and at-risk visibility",
+    description:
+      "Monitor module-stage progress, engagement health, and at-risk visibility",
     iconKey: "pipeline",
   },
 ];

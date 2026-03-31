@@ -44,7 +44,7 @@ const DocumentUploadPanel: React.FC<IDocumentUploadPanelProps> = ({
     } = useOnboardingDocumentActions();
     const { documents, isListPending, isMutationPending } = useOnboardingDocumentState();
     const hasSavedPlan = Boolean(planId);
-    const canUpload = hasSavedPlan && planStatus !== OnboardingPlanStatus.Archived;
+    const canUpload = hasSavedPlan && planStatus === OnboardingPlanStatus.Draft;
 
     const loadDocuments = useEffectEvent(async (): Promise<void> => {
         if (!planId) {
@@ -132,7 +132,7 @@ const DocumentUploadPanel: React.FC<IDocumentUploadPanelProps> = ({
         <Space orientation="vertical" size={16} className={styles.documentPanel}>
             {messageContextHolder}
             <div>
-                <Title level={3}>Plan Documents</Title>
+                <Title level={3}>Plan Enrichment Documents</Title>
                 <Paragraph type="secondary">
                     Upload a saved plan document for backend extraction and facilitator review.
                     Accepted proposals affect future journeys only.
@@ -155,6 +155,16 @@ const DocumentUploadPanel: React.FC<IDocumentUploadPanelProps> = ({
                     showIcon
                     title="Archived plans cannot receive new enrichment documents."
                     description="Clone the plan or reopen the content in a draft workflow before uploading supporting documents for review."
+                />
+            ) : null}
+
+            {hasSavedPlan && planStatus === OnboardingPlanStatus.Published ? (
+                <Alert
+                    className={styles.alert}
+                    type="info"
+                    showIcon
+                    title="Published plans cannot receive new enrichment documents."
+                    description="Clone the plan to create a draft version before uploading supporting documents for review."
                 />
             ) : null}
 

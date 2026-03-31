@@ -7,7 +7,7 @@ import React, {
     useMemo,
     useState,
 } from "react";
-import { Empty, Space, Spin, message } from "antd";
+import { Card, Empty, Space, Spin, Tabs, Typography, message } from "antd";
 import { buildFacilitatorPlanRoute } from "@/constants/auth/routes";
 import DocumentUploadPanel from "@/components/plans/DocumentUploadPanel";
 import PlanEditorHeader from "@/components/plans/PlanEditorHeader";
@@ -21,6 +21,7 @@ import {
 } from "@/providers/onboardingPlanProvider";
 import {
     type IOnboardingTaskEditorValues,
+    ONBOARDING_PLAN_STATUS_LABELS,
     OnboardingPlanStatus,
 } from "@/types/onboarding-plan";
 import {
@@ -68,6 +69,9 @@ const PlanEditor: React.FC<IPlanEditorProps> = ({ planId }) => {
     const isNewPlan = planId === "new";
     const isDraftEditable = draftPlan?.status === OnboardingPlanStatus.Draft;
     const showCreationChoice = isNewPlan && isBlankNewDraft(draftPlan);
+    const moduleCount = draftPlan?.modules.length ?? 0;
+    const taskCount =
+        draftPlan?.modules.reduce((total, module) => total + module.tasks.length, 0) ?? 0;
 
     const loadEditor = useEffectEvent(async (): Promise<void> => {
         if (isNewPlan) {
@@ -242,28 +246,89 @@ const PlanEditor: React.FC<IPlanEditorProps> = ({ planId }) => {
                 onSave={handleSave}
             />
 
-            <PlanEditorMetadataCard
-                draftPlan={draftPlan}
-                isDraftEditable={isDraftEditable}
-                onMetadataChange={setDraftMetadata}
-            />
+            <div className={styles.editorWorkspace}>
+                <Card className={styles.editorSidebar}>
+                    <Space orientation="vertical" size={16} className={styles.pageRoot}>
+                        <div>
+                            <Typography.Title level={5} className={styles.sidebarTitle}>
+                                Plan Snapshot
+                            </Typography.Title>
+                            <Typography.Paragraph type="secondary" className={styles.sidebarHint}>
+                                Use sections to focus on one editing job at a time.
+                            </Typography.Paragraph>
+                        </div>
 
-            <DocumentUploadPanel planId={draftPlan.id} planStatus={draftPlan.status} />
+                        <div className={styles.sidebarStats}>
+                            <div className={styles.statBlock}>
+                                <Typography.Text type="secondary">Modules</Typography.Text>
+                                <Typography.Title level={4}>{moduleCount}</Typography.Title>
+                            </div>
+                            <div className={styles.statBlock}>
+                                <Typography.Text type="secondary">Tasks</Typography.Text>
+                                <Typography.Title level={4}>{taskCount}</Typography.Title>
+                            </div>
+                            <div className={styles.statBlock}>
+                                <Typography.Text type="secondary">Status</Typography.Text>
+                                <Typography.Title level={5}>
+                                    {ONBOARDING_PLAN_STATUS_LABELS[draftPlan.status]}
+                                </Typography.Title>
+                            </div>
+                        </div>
+                    </Space>
+                </Card>
 
-            <PlanEditorModulesSection
-                isDraftEditable={isDraftEditable}
-                modules={draftPlan.modules}
-                onAddModule={addModule}
-                onAddTask={(moduleClientKey) => setTaskModalState({ moduleClientKey })}
-                onDeleteTask={removeTask}
-                onEditTask={(moduleClientKey, taskClientKey) =>
-                    setTaskModalState({ moduleClientKey, taskClientKey })
-                }
-                onModuleChange={updateModule}
-                onMoveModule={moveModule}
-                onMoveTask={moveTask}
-                onRemoveModule={removeModule}
-            />
+                <Card className={styles.editorMainPanel}>
+                    <Tabs
+                        defaultActiveKey="overview"
+                        className={styles.editorTabs}
+                        items={[
+                            {
+                                key: "overview",
+                                label: "Overview",
+                                children: (
+                                    <PlanEditorMetadataCard
+                                        draftPlan={draftPlan}
+                                        isDraftEditable={isDraftEditable}
+                                        onMetadataChange={setDraftMetadata}
+                                    />
+                                ),
+                            },
+                            {
+                                key: "documents",
+                                label: "Documents",
+                                children: (
+                                    <DocumentUploadPanel
+                                        planId={draftPlan.id}
+                                        planStatus={draftPlan.status}
+                                    />
+                                ),
+                            },
+                            {
+                                key: "modules",
+                                label: "Modules",
+                                children: (
+                                    <PlanEditorModulesSection
+                                        isDraftEditable={isDraftEditable}
+                                        modules={draftPlan.modules}
+                                        onAddModule={addModule}
+                                        onAddTask={(moduleClientKey) =>
+                                            setTaskModalState({ moduleClientKey })
+                                        }
+                                        onDeleteTask={removeTask}
+                                        onEditTask={(moduleClientKey, taskClientKey) =>
+                                            setTaskModalState({ moduleClientKey, taskClientKey })
+                                        }
+                                        onModuleChange={updateModule}
+                                        onMoveModule={moveModule}
+                                        onMoveTask={moveTask}
+                                        onRemoveModule={removeModule}
+                                    />
+                                ),
+                            },
+                        ]}
+                    />
+                </Card>
+            </div>
 
             <TaskFormModal
                 editingTask={editingTask}

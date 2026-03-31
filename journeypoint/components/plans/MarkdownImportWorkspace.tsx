@@ -63,6 +63,7 @@ const MarkdownImportWorkspace: React.FC = () => {
         sourceFileName,
     } = useMarkdownImportState();
     const [taskModalState, setTaskModalState] = useState<IMarkdownImportWorkspaceTaskModalState | null>(null);
+    const [activeTabKey, setActiveTabKey] = useState<string>("source");
 
     const resetWorkspace = useEffectEvent((): void => {
         resetImport();
@@ -106,10 +107,12 @@ const MarkdownImportWorkspace: React.FC = () => {
             messageApi.warning(
                 "Preview generated with warnings. Review the parsed content before saving.",
             );
+            setActiveTabKey("preview");
             return;
         }
 
         messageApi.success("Preview generated.");
+        setActiveTabKey("preview");
     };
 
     const handleSaveDraft = async (): Promise<void> => {
@@ -232,6 +235,8 @@ const MarkdownImportWorkspace: React.FC = () => {
             />
 
             <Tabs
+                activeKey={activeTabKey}
+                onChange={setActiveTabKey}
                 defaultActiveKey="source"
                 items={[
                     {
