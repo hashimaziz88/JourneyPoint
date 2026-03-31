@@ -2,6 +2,7 @@
 
 import React, { startTransition, useMemo } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { MenuProps } from "antd";
 import { Button, Grid, Layout, Tag, Typography } from "antd";
@@ -86,7 +87,7 @@ const WorkspaceShell: React.FC<IAppShellProps> = ({
               subtitle={subtitle}
             />
           )}
-          <div className={styles.headerLogo}>
+          <Link href={APP_ROUTES.home} className={styles.headerLogo}>
             <Image
               src="/journeypoint.svg"
               alt="JourneyPoint"
@@ -95,7 +96,7 @@ const WorkspaceShell: React.FC<IAppShellProps> = ({
               priority
             />
             <Text className={styles.headerLogoText}>JourneyPoint</Text>
-          </div>
+          </Link>
           {!isMobile && (
             <>
               <div className={styles.headerDivider} />
@@ -125,7 +126,7 @@ const WorkspaceShell: React.FC<IAppShellProps> = ({
             onClick={handleLogout}
             size="small"
           >
-            {!isMobile ? "Logout" : null}
+            {isMobile ? null : "Logout"}
           </Button>
         </div>
       </header>

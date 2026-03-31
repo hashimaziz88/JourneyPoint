@@ -2,7 +2,9 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Card, Col, Row, Typography } from "antd";
+import { APP_ROUTES } from "@/constants/auth/routes";
 import { useStyles } from "./style/style";
 import { AuthCardProps } from "@/constants/auth/cardTypes";
 
@@ -18,7 +20,7 @@ const AuthCard: React.FC<AuthCardProps> = ({ title, description, children }) => 
           <Col xs={24} md={12} className={styles.leftCol}>
             <div className={styles.leftDecorator} />
             <div className={styles.leftContent}>
-              <div className={styles.leftBrand}>
+              <Link href={APP_ROUTES.home} className={styles.leftBrand}>
                 <Image
                   src="/journeypoint.svg"
                   alt="JourneyPoint"
@@ -29,7 +31,7 @@ const AuthCard: React.FC<AuthCardProps> = ({ title, description, children }) => 
                 <Title level={4} className={styles.leftBrandText}>
                   JourneyPoint
                 </Title>
-              </div>
+              </Link>
               {title && <Title level={2}>{title}</Title>}
               {description && <Paragraph>{description}</Paragraph>}
               <Paragraph className={styles.leftTagline}>

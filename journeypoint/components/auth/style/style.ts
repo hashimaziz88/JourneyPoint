@@ -46,7 +46,11 @@ export const useStyles = createStyles(({ token, css }) => ({
   leftDecorator: css`
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 25% 75%, rgba(245, 158, 11, 0.1), transparent 55%);
+    background: radial-gradient(
+      circle at 25% 75%,
+      rgba(245, 158, 11, 0.1),
+      transparent 55%
+    );
     pointer-events: none;
   `,
 
@@ -80,6 +84,7 @@ export const useStyles = createStyles(({ token, css }) => ({
     align-items: center;
     gap: ${token.paddingSM}px;
     margin-bottom: ${token.marginLG}px;
+    text-decoration: none;
   `,
 
   leftBrandText: css`
