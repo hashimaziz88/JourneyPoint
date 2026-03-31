@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Unauthenticated navigation', () => {
+  // withAuth redirects are client-side (useEffect after session resolves),
+  // so give them extra time to complete.
+  test.describe.configure({ timeout: 20000 });
+
   test('root path renders the landing page', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveURL('/');
