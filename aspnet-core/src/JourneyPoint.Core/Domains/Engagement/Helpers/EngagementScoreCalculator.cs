@@ -1,21 +1,38 @@
 using System;
 using Abp.Domain.Services;
 
-namespace JourneyPoint.Domains.Engagement
+namespace JourneyPoint.Domains.Engagement.Helpers
 {
     /// <summary>
     /// Calculates reusable engagement scores from task completion and activity signals.
     /// </summary>
-    public class EngagementScoreService : DomainService
+    public class EngagementScoreCalculator : DomainService
     {
+        /// <summary>The minimum composite score value.</summary>
         public const decimal MinScore = 0m;
+
+        /// <summary>The maximum composite score value.</summary>
         public const decimal MaxScore = 100m;
+
+        /// <summary>Weighting applied to the completion rate component.</summary>
         public const decimal CompletionWeight = 0.50m;
+
+        /// <summary>Weighting applied to the recency component.</summary>
         public const decimal RecencyWeight = 0.30m;
+
+        /// <summary>Weighting applied to the overdue-task penalty component.</summary>
         public const decimal OverdueWeight = 0.20m;
+
+        /// <summary>Days of inactivity at which the recency score reaches zero.</summary>
         public const int RecencyZeroScoreDay = 14;
+
+        /// <summary>Score penalty subtracted per overdue task.</summary>
         public const int OverduePenaltyPerTask = 25;
+
+        /// <summary>Composite score threshold above which a hire is classified as Healthy.</summary>
         public const decimal HealthyThreshold = 75m;
+
+        /// <summary>Composite score threshold above which a hire is classified as NeedsAttention.</summary>
         public const decimal NeedsAttentionThreshold = 50m;
 
         /// <summary>

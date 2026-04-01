@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using JourneyPoint.Application.Services.EngagementService.Dto;
 using JourneyPoint.Authorization.Users;
 using JourneyPoint.Domains.Engagement;
+using JourneyPoint.Domains.Engagement.Helpers;
 using JourneyPoint.Domains.Hires;
 using Microsoft.EntityFrameworkCore;
 

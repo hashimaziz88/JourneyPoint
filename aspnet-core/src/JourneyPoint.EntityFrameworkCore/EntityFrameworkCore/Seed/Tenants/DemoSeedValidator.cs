@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JourneyPoint.Domains.Engagement;
+using JourneyPoint.Domains.Engagement.Helpers;
 using JourneyPoint.Domains.Hires;
 using JourneyPoint.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ namespace JourneyPoint.EntityFrameworkCore.Seed.Tenants
     public class DemoSeedValidator
     {
         private readonly JourneyPointDbContext _context;
-        private readonly EngagementScoreService _engagementScoreService;
+        private readonly EngagementScoreCalculator _engagementScoreService;
 
         /// <summary>
         /// Initializes the demo-seed validator.
@@ -22,7 +23,7 @@ namespace JourneyPoint.EntityFrameworkCore.Seed.Tenants
         public DemoSeedValidator(JourneyPointDbContext context)
         {
             _context = context;
-            _engagementScoreService = new EngagementScoreService();
+            _engagementScoreService = new EngagementScoreCalculator();
         }
 
         /// <summary>

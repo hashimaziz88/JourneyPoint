@@ -1,6 +1,6 @@
 using System;
 
-namespace JourneyPoint.Domains.Engagement
+namespace JourneyPoint.Domains.Engagement.Helpers
 {
     /// <summary>
     /// Represents the deterministic result of one engagement scoring run.

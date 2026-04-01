@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace JourneyPoint.Domains.Engagement
+namespace JourneyPoint.Domains.Engagement.Helpers
 {
     /// <summary>
     /// Represents the normalized task-state inputs required for one engagement scoring run.
