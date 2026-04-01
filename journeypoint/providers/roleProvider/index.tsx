@@ -26,9 +26,9 @@ import {
   INITIAL_STATE,
   RoleActionContext,
   RoleStateContext,
-  type ICreateRoleDto,
-  type IGetAllRolesRequest,
-  type IRoleDto,
+  type CreateRoleDto,
+  type GetAllRolesRequest,
+  type RoleDto,
 } from "./context";
 import { RoleReducer } from "./reducer";
 
@@ -40,7 +40,7 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [state, dispatch] = useReducer(RoleReducer, INITIAL_STATE);
 
-  const getAll = async (request: IGetAllRolesRequest): Promise<void> => {
+  const getAll = async (request: GetAllRolesRequest): Promise<void> => {
     dispatch(getAllRolesPending());
 
     try {
@@ -79,7 +79,7 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const createRole = async (payload: ICreateRoleDto): Promise<void> => {
+  const createRole = async (payload: CreateRoleDto): Promise<void> => {
     dispatch(createRolePending());
 
     try {
@@ -91,7 +91,7 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const updateRole = async (payload: IRoleDto): Promise<void> => {
+  const updateRole = async (payload: RoleDto): Promise<void> => {
     dispatch(updateRolePending());
 
     try {

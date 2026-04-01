@@ -10,7 +10,7 @@ import {
   RocketOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
-import { APP_ROUTES } from "@/constants/auth/routes";
+import { APP_ROUTES } from "@/routes/auth.routes";
 import { useStyles } from "./style/landingPage";
 
 const { Title, Paragraph, Text } = Typography;

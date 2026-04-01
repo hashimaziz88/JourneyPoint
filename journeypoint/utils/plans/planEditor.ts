@@ -1,13 +1,13 @@
 import type {
-    ICreateOnboardingPlanRequest,
-    IOnboardingPlanDraft,
-    IOnboardingTaskDraft,
-    IUpdateOnboardingPlanRequest,
-} from "@/types/onboarding-plan";
+    CreateOnboardingPlanRequest,
+    OnboardingPlanDraft,
+    OnboardingTaskDraft,
+    UpdateOnboardingPlanRequest,
+} from "@/types/onboarding-plan/onboarding-plan";
 
 export const buildCreateOnboardingPlanRequest = (
-    draftPlan: IOnboardingPlanDraft,
-): ICreateOnboardingPlanRequest => ({
+    draftPlan: OnboardingPlanDraft,
+): CreateOnboardingPlanRequest => ({
     name: draftPlan.name.trim(),
     description: draftPlan.description.trim(),
     targetAudience: draftPlan.targetAudience.trim(),
@@ -31,13 +31,13 @@ export const buildCreateOnboardingPlanRequest = (
 });
 
 export const buildUpdateOnboardingPlanRequest = (
-    draftPlan: IOnboardingPlanDraft,
-): IUpdateOnboardingPlanRequest => ({
+    draftPlan: OnboardingPlanDraft,
+): UpdateOnboardingPlanRequest => ({
     id: draftPlan.id ?? "",
     ...buildCreateOnboardingPlanRequest(draftPlan),
 });
 
-export const validateDraftForSave = (draftPlan: IOnboardingPlanDraft): string | null => {
+export const validateDraftForSave = (draftPlan: OnboardingPlanDraft): string | null => {
     if (!draftPlan.name.trim()) {
         return "Plan name is required.";
     }
@@ -78,7 +78,7 @@ export const validateDraftForSave = (draftPlan: IOnboardingPlanDraft): string | 
 };
 
 export const validateDraftForPublish = (
-    draftPlan: IOnboardingPlanDraft,
+    draftPlan: OnboardingPlanDraft,
 ): string | null => {
     const saveValidationError = validateDraftForSave(draftPlan);
 
@@ -99,10 +99,10 @@ export const validateDraftForPublish = (
 };
 
 export const findDraftTask = (
-    draftPlan: IOnboardingPlanDraft | null | undefined,
+    draftPlan: OnboardingPlanDraft | null | undefined,
     moduleClientKey: string | null,
     taskClientKey: string | null,
-): IOnboardingTaskDraft | null => {
+): OnboardingTaskDraft | null => {
     if (!draftPlan || !moduleClientKey || !taskClientKey) {
         return null;
     }
@@ -114,7 +114,7 @@ export const findDraftTask = (
     return parentModule?.tasks.find((task) => task.clientKey === taskClientKey) ?? null;
 };
 
-export const isBlankNewDraft = (draftPlan: IOnboardingPlanDraft | null | undefined): boolean =>
+export const isBlankNewDraft = (draftPlan: OnboardingPlanDraft | null | undefined): boolean =>
     !!draftPlan &&
     !draftPlan.id &&
     !draftPlan.name.trim() &&

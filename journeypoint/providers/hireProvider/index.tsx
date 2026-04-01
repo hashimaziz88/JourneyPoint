@@ -3,8 +3,8 @@
 import React, { useContext, useReducer } from "react";
 import { DEFAULT_HIRE_LIST_SORTING } from "@/constants/hire/list";
 import { DEFAULT_PLAN_LIST_SORTING } from "@/constants/plans/list";
-import { OnboardingPlanStatus } from "@/types/onboarding-plan";
-import type { IOnboardingPlanListItemDto } from "@/types/onboarding-plan";
+import { OnboardingPlanStatus } from "@/types/onboarding-plan/onboarding-plan";
+import type { OnboardingPlanListItemDto } from "@/types/onboarding-plan/onboarding-plan";
 import { getAxiosInstance } from "@/utils/axiosInstance";
 import {
     getHireDetailError,
@@ -25,16 +25,16 @@ import {
     HireActionContext,
     HireStateContext,
     INITIAL_STATE,
-    type ICreateHireRequest,
+    type CreateHireRequest,
     type IHireActionContext,
-    type IHireDetailDto,
-    type IHireEnrolmentResultDto,
-    type IGetHiresInput,
-    type IHireManagerOption,
+    type HireDetailDto,
+    type HireEnrolmentResultDto,
+    type GetHiresInput,
+    type HireManagerOption,
     type IHireStateContext,
 } from "./context";
 import { HireReducer } from "./reducer";
-import { mapHirePlanOptions } from "@/types/hire";
+import { mapHirePlanOptions } from "@/types/hire/hire";
 
 const HIRE_API_BASE = "/api/services/app/Hire";
 const ONBOARDING_PLAN_API_BASE = "/api/services/app/OnboardingPlan";
@@ -48,7 +48,7 @@ const getApiResult = <T,>(response: { data?: { result?: T } & T }): T =>
 export const HireProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [state, dispatch] = useReducer(HireReducer, INITIAL_STATE);
 
-    const getHires = async (request: IGetHiresInput): Promise<void> => {
+    const getHires = async (request: GetHiresInput): Promise<void> => {
         dispatch(getHiresPending());
 
         try {
@@ -74,14 +74,14 @@ export const HireProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
-    const getHireDetail = async (id: string): Promise<IHireDetailDto | null> => {
+    const getHireDetail = async (id: string): Promise<HireDetailDto | null> => {
         dispatch(getHireDetailPending());
 
         try {
             const response = await getAxiosInstance().get(`${HIRE_API_BASE}/GetDetail`, {
                 params: { id },
             });
-            const detail = getApiResult<IHireDetailDto>(response);
+            const detail = getApiResult<HireDetailDto>(response);
 
             dispatch(getHireDetailSuccess(detail));
             return detail;
@@ -93,13 +93,13 @@ export const HireProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const createHire = async (
-        payload: ICreateHireRequest,
-    ): Promise<IHireEnrolmentResultDto | null> => {
+        payload: CreateHireRequest,
+    ): Promise<HireEnrolmentResultDto | null> => {
         dispatch(mutationPending());
 
         try {
             const response = await getAxiosInstance().post(`${HIRE_API_BASE}/Create`, payload);
-            const result = getApiResult<IHireEnrolmentResultDto>(response);
+            const result = getApiResult<HireEnrolmentResultDto>(response);
 
             dispatch(mutationSuccess({}));
             return result;
@@ -122,7 +122,7 @@ export const HireProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     sorting: DEFAULT_PLAN_LIST_SORTING,
                 },
             });
-            const data = getApiResult<{ items?: IOnboardingPlanListItemDto[] }>(response);
+            const data = getApiResult<{ items?: OnboardingPlanListItemDto[] }>(response);
 
             dispatch(referenceSuccess({ planOptions: mapHirePlanOptions(data.items) }));
         } catch (error) {
@@ -136,7 +136,7 @@ export const HireProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         try {
             const response = await getAxiosInstance().get(`${HIRE_API_BASE}/GetManagerOptions`);
-            const data = getApiResult<{ items?: IHireManagerOption[] }>(response);
+            const data = getApiResult<{ items?: HireManagerOption[] }>(response);
 
             dispatch(
                 referenceSuccess({

@@ -2,7 +2,7 @@ import { createStyles } from "antd-style";
 
 export const useStyles = createStyles(({ token, css }) => ({
   page: css`
-    min-height: 100vh;
+    height: 100dvh;
     background:
       radial-gradient(
         circle at 15% 20%,
@@ -16,18 +16,22 @@ export const useStyles = createStyles(({ token, css }) => ({
       ),
       ${token.colorBgLayout};
     display: flex;
-    align-items: center;
     justify-content: center;
-    padding: 28px;
+    padding: 16px;
+    overflow: hidden;
 
     @media (max-width: 768px) {
-      padding: 14px;
+      height: auto;
+      min-height: 100dvh;
+      padding: 0;
+      overflow: visible;
     }
   `,
 
   card: css`
     width: 100%;
     max-width: 1040px;
+    margin: auto;
     border-radius: ${token.borderRadiusLG * 2}px;
     overflow: hidden;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
@@ -36,13 +40,21 @@ export const useStyles = createStyles(({ token, css }) => ({
     .ant-card-body {
       padding: 0;
     }
+
+    @media (max-width: 768px) {
+      max-width: 100%;
+      margin: 0;
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
+    }
   `,
 
   heroRow: css`
-    min-height: 620px;
+    height: 100%;
 
     @media (max-width: 768px) {
-      min-height: auto;
+      height: auto;
     }
   `,
 
@@ -59,11 +71,10 @@ export const useStyles = createStyles(({ token, css }) => ({
       ${token.colorBgLayout} 100%
     );
     border-inline-end: 1px solid ${token.colorBorderSecondary};
-    padding: 56px;
+    padding: 32px;
 
     @media (max-width: 768px) {
-      padding: 36px 24px;
-      min-height: 320px;
+      padding: 24px 20px;
     }
   `,
 
@@ -95,10 +106,11 @@ export const useStyles = createStyles(({ token, css }) => ({
       ${token.colorBgContainer},
       ${token.colorBgElevated}
     );
-    padding: 56px;
+    padding: 24px 36px;
+    overflow-y: auto;
 
     @media (max-width: 768px) {
-      padding: 30px 20px;
+      padding: 20px 16px;
     }
   `,
 
@@ -110,7 +122,7 @@ export const useStyles = createStyles(({ token, css }) => ({
 
     h1 {
       color: ${token.colorTextBase} !important;
-      margin-bottom: ${token.margin}px;
+      margin-bottom: ${token.marginXS}px;
       font-weight: 700 !important;
     }
 
@@ -123,7 +135,7 @@ export const useStyles = createStyles(({ token, css }) => ({
     display: flex;
     align-items: center;
     gap: ${token.paddingSM}px;
-    margin-bottom: ${token.marginLG}px;
+    margin-bottom: ${token.margin}px;
     text-decoration: none;
   `,
 
@@ -138,7 +150,7 @@ export const useStyles = createStyles(({ token, css }) => ({
     color: ${token.colorTextSecondary} !important;
     font-size: ${token.fontSizeSM}px !important;
     line-height: 1.6 !important;
-    margin-top: ${token.marginLG}px !important;
+    margin-top: ${token.margin}px !important;
     margin-bottom: 0 !important;
     max-width: 320px;
   `,
@@ -146,7 +158,10 @@ export const useStyles = createStyles(({ token, css }) => ({
   form: css`
     width: 100%;
     max-width: 380px;
-    padding: 8px;
+
+    .ant-form-item {
+      margin-bottom: 12px;
+    }
 
     input:-webkit-autofill,
     input:-webkit-autofill:hover,
@@ -164,11 +179,11 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   formHeader: css`
-    margin-bottom: ${token.marginLG + 8}px;
+    margin-bottom: ${token.margin}px;
   `,
 
   infoAlert: css`
-    margin-bottom: ${token.marginLG}px;
+    margin-bottom: ${token.margin}px;
   `,
 
   tenantResolvedIcon: css`
@@ -185,7 +200,7 @@ export const useStyles = createStyles(({ token, css }) => ({
 
   footerText: css`
     display: block;
-    margin-top: ${token.margin}px;
+    margin-top: ${token.marginXS}px;
     text-align: center;
   `,
 }));

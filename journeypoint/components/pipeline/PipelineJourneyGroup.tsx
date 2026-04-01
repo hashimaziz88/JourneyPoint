@@ -4,7 +4,7 @@ import React from "react";
 import { Collapse, Tag, Typography } from "antd";
 import PipelineColumn from "@/components/pipeline/PipelineColumn";
 import { useStyles } from "@/components/pipeline/style/style";
-import type { IPipelineJourneyGroupProps } from "@/types/pipeline/components";
+import type { PipelineJourneyGroupProps } from "@/types/pipeline/components";
 
 const { Text } = Typography;
 
@@ -12,7 +12,7 @@ const { Text } = Typography;
  * Renders one onboarding-plan group in the pipeline as a collapsible panel.
  * Groups are expanded by default so facilitators see all data on first load.
  */
-const PipelineJourneyGroup: React.FC<IPipelineJourneyGroupProps> = ({
+const PipelineJourneyGroup: React.FC<PipelineJourneyGroupProps> = ({
     group,
     onOpenHire,
     onOpenJourney,
@@ -22,9 +22,9 @@ const PipelineJourneyGroup: React.FC<IPipelineJourneyGroupProps> = ({
     const groupLabel = (
         <span className={styles.collapseLabel}>
             <span className={styles.collapseLabelTitle}>{group.planName}</span>
-            <Tag style={{ marginInlineEnd: 0 }}>{group.totalHires} enrolled</Tag>
+            <Tag className={styles.collapseLabelTag}>{group.totalHires} enrolled</Tag>
             {group.atRiskCount > 0 && (
-                <Tag color="error" style={{ marginInlineEnd: 0 }}>{group.atRiskCount} at risk</Tag>
+                <Tag color="error" className={styles.collapseLabelTag}>{group.atRiskCount} at risk</Tag>
             )}
             <Text type="secondary" className={styles.collapseLabelMeta}>
                 {group.columns.length} stage{group.columns.length === 1 ? "" : "s"}

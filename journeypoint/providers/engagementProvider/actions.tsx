@@ -1,5 +1,5 @@
 import { createAction } from "redux-actions";
-import type { IEngagementStateContext, IHireIntelligenceDetailDto } from "./context";
+import type { IEngagementStateContext, HireIntelligenceDetailDto } from "./context";
 
 type EngagementStatePayload = Partial<IEngagementStateContext>;
 
@@ -24,7 +24,7 @@ export const getHireIntelligencePending = createAction<EngagementStatePayload>(
 
 export const getHireIntelligenceSuccess = createAction<
     EngagementStatePayload,
-    IHireIntelligenceDetailDto
+    HireIntelligenceDetailDto
 >(EngagementActionEnums.getHireIntelligenceSuccess, (selectedHireIntelligence) => ({
     isPending: false,
     isError: false,
@@ -53,7 +53,7 @@ export const mutationPending = createAction<EngagementStatePayload>(
 
 export const mutationSuccess = createAction<
     EngagementStatePayload,
-    IHireIntelligenceDetailDto
+    HireIntelligenceDetailDto
 >(EngagementActionEnums.mutationSuccess, (selectedHireIntelligence) => ({
     isPending: false,
     isMutationPending: false,

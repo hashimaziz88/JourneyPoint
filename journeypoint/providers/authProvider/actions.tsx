@@ -1,5 +1,5 @@
 import { createAction } from "redux-actions";
-import { IAuthStateContext, ITenantInfo } from "./context";
+import { IAuthStateContext, TenantInfo } from "./context";
 
 type AuthStatePatch = Partial<IAuthStateContext>;
 
@@ -124,9 +124,9 @@ export const resolveTenantPending = createAction<AuthStatePatch>(
     () => ({ isTenantPending: true })
 );
 
-export const resolveTenantSuccess = createAction<AuthStatePatch, ITenantInfo>(
+export const resolveTenantSuccess = createAction<AuthStatePatch, TenantInfo>(
     AuthActionEnums.resolveTenantSuccess,
-    (tenant: ITenantInfo) => ({ isTenantPending: false, tenant })
+    (tenant: TenantInfo) => ({ isTenantPending: false, tenant })
 );
 
 export const resolveTenantError = createAction<AuthStatePatch>(

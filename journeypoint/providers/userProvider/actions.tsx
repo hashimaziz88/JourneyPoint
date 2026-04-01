@@ -1,5 +1,5 @@
 import { createAction } from "redux-actions";
-import { IUserStateContext, IUserDto, IRoleListItem } from "./context";
+import { IUserStateContext, UserDto, RoleListItem } from "./context";
 
 export enum UserActionEnums {
     getAllUsersPending = "GET_ALL_USERS_PENDING",
@@ -38,7 +38,7 @@ export const getAllUsersPending = createAction<IUserStateContext>(
     () => ({ isPending: true, isError: false, isSuccess: false })
 );
 
-export const getAllUsersSuccess = createAction<IUserStateContext, { items: IUserDto[]; totalCount: number }>(
+export const getAllUsersSuccess = createAction<IUserStateContext, { items: UserDto[]; totalCount: number }>(
     UserActionEnums.getAllUsersSuccess,
     ({ items, totalCount }) => ({ isPending: false, isError: false, isSuccess: true, users: items, totalCount })
 );
@@ -54,9 +54,9 @@ export const getUserPending = createAction<IUserStateContext>(
     () => ({ isPending: true, isError: false, isSuccess: false })
 );
 
-export const getUserSuccess = createAction<IUserStateContext, IUserDto>(
+export const getUserSuccess = createAction<IUserStateContext, UserDto>(
     UserActionEnums.getUserSuccess,
-    (currentUser: IUserDto) => ({ isPending: false, isError: false, isSuccess: true, currentUser })
+    (currentUser: UserDto) => ({ isPending: false, isError: false, isSuccess: true, currentUser })
 );
 
 export const getUserError = createAction<IUserStateContext>(
@@ -118,9 +118,9 @@ export const getRolesPending = createAction<IUserStateContext>(
     () => ({ isPending: true, isError: false, isSuccess: false })
 );
 
-export const getRolesSuccess = createAction<IUserStateContext, IRoleListItem[]>(
+export const getRolesSuccess = createAction<IUserStateContext, RoleListItem[]>(
     UserActionEnums.getRolesSuccess,
-    (availableRoles: IRoleListItem[]) => ({ isPending: false, isError: false, isSuccess: false, availableRoles })
+    (availableRoles: RoleListItem[]) => ({ isPending: false, isError: false, isSuccess: false, availableRoles })
 );
 
 export const getRolesError = createAction<IUserStateContext>(

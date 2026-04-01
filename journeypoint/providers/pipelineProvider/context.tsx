@@ -1,20 +1,20 @@
 import { createContext } from "react";
 import type {
-    IPipelineBoardDto,
-    IPipelineBoardQueryState,
-} from "@/types/pipeline";
+    PipelineBoardDto,
+    PipelineBoardQueryState,
+} from "@/types/pipeline/pipeline";
 
 export interface IPipelineStateContext {
     isSuccess: boolean;
     isPending: boolean;
     isError: boolean;
-    board?: IPipelineBoardDto | null;
-    filters: IPipelineBoardQueryState;
+    board?: PipelineBoardDto | null;
+    filters: PipelineBoardQueryState;
 }
 
 export interface IPipelineActionContext {
-    getBoard: (request?: IPipelineBoardQueryState) => Promise<IPipelineBoardDto | null>;
-    setFilters: (filters: IPipelineBoardQueryState) => void;
+    getBoard: (request?: PipelineBoardQueryState) => Promise<PipelineBoardDto | null>;
+    setFilters: (filters: PipelineBoardQueryState) => void;
     resetFilters: () => void;
 }
 
@@ -30,9 +30,9 @@ export const INITIAL_STATE: IPipelineStateContext = {
 };
 
 export type {
-    IPipelineBoardDto,
-    IPipelineBoardQueryState,
-} from "@/types/pipeline";
+    PipelineBoardDto,
+    PipelineBoardQueryState,
+} from "@/types/pipeline/pipeline";
 
 export const PipelineStateContext = createContext<IPipelineStateContext>(INITIAL_STATE);
 export const PipelineActionContext = createContext<IPipelineActionContext | undefined>(undefined);

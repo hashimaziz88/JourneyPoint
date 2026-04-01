@@ -4,14 +4,14 @@ import React from "react";
 import Link from "next/link";
 import { Collapse, Progress, Tag, Typography } from "antd";
 import { useStyles } from "@/components/journey/style/style";
-import { buildEnroleeJourneyTaskRoute } from "@/constants/auth/routes";
+import { buildEnroleeJourneyTaskRoute } from "@/routes/auth.routes";
 import {
     JOURNEY_TASK_PROGRESS_TEXT,
     JOURNEY_TASK_STATUS_COLORS,
     JOURNEY_TASK_STATUS_LABELS,
     needsAcknowledgementTag,
 } from "@/constants/journey/dashboard";
-import type { IEnroleeJourneyModuleSectionProps } from "@/types/journey/components";
+import type { EnroleeJourneyModuleSectionProps } from "@/types/journey/components";
 import { formatDisplayDate } from "@/utils/date";
 import { getCompletionPercent } from "@/utils/journey/dashboard";
 
@@ -21,7 +21,7 @@ const { Paragraph, Text, Title } = Typography;
  * Renders one module section in the enrolee dashboard as a collapsible panel.
  * Completed modules start collapsed; active or pending modules start expanded.
  */
-const EnroleeJourneyModuleSection: React.FC<IEnroleeJourneyModuleSectionProps> = ({
+const EnroleeJourneyModuleSection: React.FC<EnroleeJourneyModuleSectionProps> = ({
     module,
 }) => {
     const { styles } = useStyles();

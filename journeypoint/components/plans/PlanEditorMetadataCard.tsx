@@ -5,13 +5,13 @@ import { Card, Input, InputNumber, Space } from "antd";
 import { useStyles } from "@/components/plans/style/style";
 import {
     ONBOARDING_PLAN_STATUS_LABELS,
-} from "@/types/onboarding-plan";
-import type { IPlanEditorMetadataCardProps } from "@/types/plans/components";
+} from "@/constants/plans/onboarding-plan";
+import type { PlanEditorMetadataCardProps } from "@/types/plans/components";
 
 /**
  * Renders the editable onboarding-plan metadata form.
  */
-const PlanEditorMetadataCard: React.FC<IPlanEditorMetadataCardProps> = ({
+const PlanEditorMetadataCard: React.FC<PlanEditorMetadataCardProps> = ({
     draftPlan,
     isDraftEditable,
     onMetadataChange,

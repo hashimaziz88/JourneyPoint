@@ -1,19 +1,19 @@
 import { createContext } from "react";
 export type {
-    ICreateOnboardingDocumentUploadRequest,
-    IExtractedTaskProposalDto,
-    IOnboardingDocumentDetailDto,
-    IOnboardingDocumentListItemDto,
-    IUpdateExtractedTaskProposalRequest,
+    CreateOnboardingDocumentUploadRequest,
+    ExtractedTaskProposalDto,
+    OnboardingDocumentDetailDto,
+    OnboardingDocumentListItemDto,
+    UpdateExtractedTaskProposalRequest,
     OnboardingDocumentStatus,
     ExtractedTaskReviewStatus,
-} from "@/types/onboarding-document";
+} from "@/types/onboarding-document/onboarding-document";
 import type {
-    ICreateOnboardingDocumentUploadRequest,
-    IOnboardingDocumentDetailDto,
-    IOnboardingDocumentListItemDto,
-    IUpdateExtractedTaskProposalRequest,
-} from "@/types/onboarding-document";
+    CreateOnboardingDocumentUploadRequest,
+    OnboardingDocumentDetailDto,
+    OnboardingDocumentListItemDto,
+    UpdateExtractedTaskProposalRequest,
+} from "@/types/onboarding-document/onboarding-document";
 
 export interface IOnboardingDocumentStateContext {
     isSuccess: boolean;
@@ -22,25 +22,25 @@ export interface IOnboardingDocumentStateContext {
     isListPending: boolean;
     isDetailPending: boolean;
     isMutationPending: boolean;
-    documents?: IOnboardingDocumentListItemDto[] | null;
-    selectedDocument?: IOnboardingDocumentDetailDto | null;
+    documents?: OnboardingDocumentListItemDto[] | null;
+    selectedDocument?: OnboardingDocumentDetailDto | null;
 }
 
 export interface IOnboardingDocumentActionContext {
     getPlanDocuments: (planId: string) => Promise<void>;
-    getDocumentDetail: (documentId: string) => Promise<IOnboardingDocumentDetailDto | null>;
+    getDocumentDetail: (documentId: string) => Promise<OnboardingDocumentDetailDto | null>;
     uploadDocument: (
-        payload: ICreateOnboardingDocumentUploadRequest,
-    ) => Promise<IOnboardingDocumentDetailDto | null>;
-    startExtraction: (documentId: string) => Promise<IOnboardingDocumentDetailDto | null>;
+        payload: CreateOnboardingDocumentUploadRequest,
+    ) => Promise<OnboardingDocumentDetailDto | null>;
+    startExtraction: (documentId: string) => Promise<OnboardingDocumentDetailDto | null>;
     updateProposal: (
-        payload: IUpdateExtractedTaskProposalRequest,
-    ) => Promise<IOnboardingDocumentDetailDto | null>;
+        payload: UpdateExtractedTaskProposalRequest,
+    ) => Promise<OnboardingDocumentDetailDto | null>;
     acceptProposal: (
-        payload: IUpdateExtractedTaskProposalRequest,
-    ) => Promise<IOnboardingDocumentDetailDto | null>;
-    rejectProposal: (proposalId: string) => Promise<IOnboardingDocumentDetailDto | null>;
-    applyAcceptedProposals: (documentId: string) => Promise<IOnboardingDocumentDetailDto | null>;
+        payload: UpdateExtractedTaskProposalRequest,
+    ) => Promise<OnboardingDocumentDetailDto | null>;
+    rejectProposal: (proposalId: string) => Promise<OnboardingDocumentDetailDto | null>;
+    applyAcceptedProposals: (documentId: string) => Promise<OnboardingDocumentDetailDto | null>;
     resetDocumentState: () => void;
 }
 

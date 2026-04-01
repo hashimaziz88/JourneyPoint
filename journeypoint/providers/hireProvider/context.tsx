@@ -1,22 +1,22 @@
 import { createContext } from "react";
 export type {
-    ICreateHireRequest,
-    IHireDetailDto,
-    IHireEnrolmentResultDto,
-    IHireListItemDto,
-    IHireManagerOption,
-    IHirePlanOption,
-    IGetHiresInput,
-} from "@/types/hire";
+    CreateHireRequest,
+    HireDetailDto,
+    HireEnrolmentResultDto,
+    HireListItemDto,
+    HireManagerOption,
+    HirePlanOption,
+    GetHiresInput,
+} from "@/types/hire/hire";
 import type {
-    ICreateHireRequest,
-    IHireDetailDto,
-    IHireEnrolmentResultDto,
-    IHireListItemDto,
-    IHireManagerOption,
-    IHirePlanOption,
-    IGetHiresInput,
-} from "@/types/hire";
+    CreateHireRequest,
+    HireDetailDto,
+    HireEnrolmentResultDto,
+    HireListItemDto,
+    HireManagerOption,
+    HirePlanOption,
+    GetHiresInput,
+} from "@/types/hire/hire";
 
 export interface IHireStateContext {
     isSuccess: boolean;
@@ -26,17 +26,17 @@ export interface IHireStateContext {
     isDetailPending: boolean;
     isMutationPending: boolean;
     isReferencePending: boolean;
-    hires?: IHireListItemDto[] | null;
+    hires?: HireListItemDto[] | null;
     totalCount?: number;
-    selectedHire?: IHireDetailDto | null;
-    planOptions?: IHirePlanOption[] | null;
-    managerOptions?: IHireManagerOption[] | null;
+    selectedHire?: HireDetailDto | null;
+    planOptions?: HirePlanOption[] | null;
+    managerOptions?: HireManagerOption[] | null;
 }
 
 export interface IHireActionContext {
-    getHires: (request: IGetHiresInput) => Promise<void>;
-    getHireDetail: (id: string) => Promise<IHireDetailDto | null>;
-    createHire: (payload: ICreateHireRequest) => Promise<IHireEnrolmentResultDto | null>;
+    getHires: (request: GetHiresInput) => Promise<void>;
+    getHireDetail: (id: string) => Promise<HireDetailDto | null>;
+    createHire: (payload: CreateHireRequest) => Promise<HireEnrolmentResultDto | null>;
     getPublishedPlanOptions: () => Promise<void>;
     getManagerOptions: () => Promise<void>;
     resetSelectedHire: () => void;

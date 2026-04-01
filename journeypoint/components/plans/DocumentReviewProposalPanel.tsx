@@ -4,11 +4,11 @@ import React from "react";
 import { Card, Space, Typography } from "antd";
 import ExtractedProposalList from "@/components/plans/ExtractedProposalList";
 import { useStyles } from "@/components/plans/style/style";
-import type { IDocumentReviewProposalPanelProps } from "@/types/plans/components";
+import type { DocumentReviewProposalPanelProps } from "@/types/plans/components";
 
 const { Paragraph, Title } = Typography;
 
-const DocumentReviewProposalPanel: React.FC<IDocumentReviewProposalPanelProps> = ({
+const DocumentReviewProposalPanel: React.FC<DocumentReviewProposalPanelProps> = ({
     availableModules,
     isPending,
     onAccept,

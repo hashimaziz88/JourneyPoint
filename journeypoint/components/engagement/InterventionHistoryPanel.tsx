@@ -8,7 +8,7 @@ import {
     AT_RISK_RESOLUTION_LABELS,
 } from "@/constants/engagement/interventions";
 import { useStyles } from "@/components/engagement/style/style";
-import type { IInterventionHistoryPanelProps } from "@/types/engagement/components";
+import type { InterventionHistoryPanelProps } from "@/types/engagement/components";
 import { formatDisplayDateTime } from "@/utils/date";
 
 const { Paragraph, Text, Title } = Typography;
@@ -16,7 +16,7 @@ const { Paragraph, Text, Title } = Typography;
 /**
  * Renders resolved intervention history for one hire.
  */
-const InterventionHistoryPanel: React.FC<IInterventionHistoryPanelProps> = ({
+const InterventionHistoryPanel: React.FC<InterventionHistoryPanelProps> = ({
     resolvedFlags,
 }) => {
     const { styles } = useStyles();

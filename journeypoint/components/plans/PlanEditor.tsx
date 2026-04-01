@@ -8,7 +8,7 @@ import React, {
     useState,
 } from "react";
 import { Card, Empty, Space, Spin, Tabs, Typography, message } from "antd";
-import { buildFacilitatorPlanRoute } from "@/constants/auth/routes";
+import { buildFacilitatorPlanRoute } from "@/routes/auth.routes";
 import DocumentUploadPanel from "@/components/plans/DocumentUploadPanel";
 import PlanEditorHeader from "@/components/plans/PlanEditorHeader";
 import PlanEditorMetadataCard from "@/components/plans/PlanEditorMetadataCard";
@@ -20,10 +20,12 @@ import {
     useOnboardingPlanState,
 } from "@/providers/onboardingPlanProvider";
 import {
-    type IOnboardingTaskEditorValues,
-    ONBOARDING_PLAN_STATUS_LABELS,
+    type OnboardingTaskEditorValues,
     OnboardingPlanStatus,
-} from "@/types/onboarding-plan";
+} from "@/types/onboarding-plan/onboarding-plan"
+import {
+    ONBOARDING_PLAN_STATUS_LABELS,
+} from "@/constants/plans/onboarding-plan";
 import {
     buildCreateOnboardingPlanRequest,
     buildUpdateOnboardingPlanRequest,
@@ -34,14 +36,14 @@ import {
 } from "@/utils/plans/planEditor";
 import { useRouter } from "next/navigation";
 import type {
-    IPlanEditorProps,
-    IPlanEditorTaskModalState,
+    PlanEditorProps,
+    PlanEditorTaskModalState,
 } from "@/types/plans/components";
 
 /**
  * Renders the facilitator onboarding-plan editor and lifecycle actions.
  */
-const PlanEditor: React.FC<IPlanEditorProps> = ({ planId }) => {
+const PlanEditor: React.FC<PlanEditorProps> = ({ planId }) => {
     const { styles } = useStyles();
     const router = useRouter();
     const [messageApi, messageContextHolder] = message.useMessage();
@@ -65,7 +67,7 @@ const PlanEditor: React.FC<IPlanEditorProps> = ({ planId }) => {
         updateTask,
     } = useOnboardingPlanActions();
     const { draftPlan, isDetailPending, isMutationPending } = useOnboardingPlanState();
-    const [taskModalState, setTaskModalState] = useState<IPlanEditorTaskModalState | null>(null);
+    const [taskModalState, setTaskModalState] = useState<PlanEditorTaskModalState | null>(null);
     const isNewPlan = planId === "new";
     const isDraftEditable = draftPlan?.status === OnboardingPlanStatus.Draft;
     const showCreationChoice = isNewPlan && isBlankNewDraft(draftPlan);
@@ -197,7 +199,7 @@ const PlanEditor: React.FC<IPlanEditorProps> = ({ planId }) => {
     };
 
     const handleTaskSubmit = async (
-        values: IOnboardingTaskEditorValues,
+        values: OnboardingTaskEditorValues,
     ): Promise<void> => {
         if (!taskModalState) {
             return;

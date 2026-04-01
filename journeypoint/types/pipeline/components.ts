@@ -1,55 +1,56 @@
-import type { EngagementClassification } from "@/types/engagement";
-import type { IPipelineBoardDto, IPipelineColumnDto, IPipelineHireCardDto } from "@/types/pipeline";
-export type IPipelineBoardViewProps = Record<string, never>;
+import type { EngagementClassification } from "@/types/engagement/engagement";
+import type {
+    PipelineBoardDto,
+    PipelineColumnDto,
+    PipelineHireCardDto,
+    PipelineJourneyGroup,
+} from "@/types/pipeline/pipeline";
 
-export interface IPipelineJourneyGroupProps {
-    group: import("@/types/pipeline").IPipelineJourneyGroup;
+export type PipelineBoardViewProps = Record<string, never>;
+
+export type PipelineJourneyGroupProps = {
+    group: PipelineJourneyGroup;
     onOpenHire: (hireId: string) => void;
     onOpenJourney: (hireId: string) => void;
-}
-export interface IPipelineKanbanProps {
-    columns: IPipelineColumnDto[];
+};
+
+export type PipelineKanbanProps = {
+    columns: PipelineColumnDto[];
     onOpenHire: (hireId: string) => void;
     onOpenJourney: (hireId: string) => void;
-}
+};
 
-export interface IPipelineColumnProps {
-    column: IPipelineColumnDto;
+export type PipelineColumnProps = {
+    column: PipelineColumnDto;
     onOpenHire: (hireId: string) => void;
     onOpenJourney: (hireId: string) => void;
-}
+};
 
-export interface IHirePipelineCardProps {
-    hire: IPipelineHireCardDto;
+export type HirePipelineCardProps = {
+    hire: PipelineHireCardDto;
     onOpenHire: (hireId: string) => void;
     onOpenJourney: (hireId: string) => void;
-}
+};
 
-export interface IEngagementBadgeProps {
-    classification: EngagementClassification;
-    compositeScore: number;
-    hasActiveAtRiskFlag: boolean;
-}
-
-export interface IPipelineSummaryMetrics {
+export type PipelineSummaryMetrics = {
     totalHires: number;
     activeAtRiskCount: number;
     averageCompletionRate: number;
     averageCompositeScore: number;
-}
+};
 
-export interface IPipelineColumnSummary {
+export type PipelineColumnSummary = {
     totalHires: number;
     atRiskHireCount: number;
-}
+};
 
-export interface IPipelineProviderStateContext {
+export type PipelineProviderStateContext = {
     isSuccess: boolean;
     isPending: boolean;
     isError: boolean;
-    board?: IPipelineBoardDto | null;
+    board?: PipelineBoardDto | null;
     filters: {
         keyword: string;
         classification?: EngagementClassification;
     };
-}
+};

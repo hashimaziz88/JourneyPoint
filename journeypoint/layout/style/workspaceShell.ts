@@ -4,8 +4,16 @@ export const useWorkspaceShellStyles = createStyles(({ token, css }) => ({
   workspaceLayout: css`
     min-height: 100vh;
     background:
-      radial-gradient(circle at top left, ${token.colorPrimaryBg}, transparent 22%),
-      radial-gradient(circle at bottom right, ${token.colorPrimaryBg}, transparent 18%),
+      radial-gradient(
+        circle at top left,
+        ${token.colorPrimaryBg},
+        transparent 22%
+      ),
+      radial-gradient(
+        circle at bottom right,
+        ${token.colorPrimaryBg},
+        transparent 18%
+      ),
       ${token.colorBgLayout};
   `,
 
@@ -109,7 +117,9 @@ export const useWorkspaceShellStyles = createStyles(({ token, css }) => ({
     font-size: ${token.fontSize}px;
     font-weight: 500;
     color: ${token.colorTextSecondary};
-    transition: color 150ms ease-out, background 150ms ease-out;
+    transition:
+      color 150ms ease-out,
+      background 150ms ease-out;
     white-space: nowrap;
     outline: none;
 

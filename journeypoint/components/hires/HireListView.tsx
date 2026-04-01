@@ -2,6 +2,7 @@
 
 import React, { startTransition, useEffect, useEffectEvent, useState } from "react";
 import {
+    Alert,
     Button,
     Card,
     Empty,
@@ -21,7 +22,7 @@ import { useStyles } from "@/components/hires/style/style";
 import {
     buildFacilitatorHireJourneyRoute,
     buildFacilitatorHireRoute,
-} from "@/constants/auth/routes";
+} from "@/routes/auth.routes";
 import {
     DEFAULT_HIRE_LIST_QUERY_STATE,
     HIRE_STATUS_OPTIONS,
@@ -30,8 +31,8 @@ import {
     useHireActions,
     useHireState,
 } from "@/providers/hireProvider";
-import type { ICreateHireRequest, IHireListQueryState } from "@/types/hire";
-import type { IHireListViewProps } from "@/types/hire/components";
+import type { CreateHireRequest, HireListQueryState } from "@/types/hire/hire";
+import type { HireListViewProps } from "@/types/hire/components";
 import { buildHireListRequest } from "@/utils/hire/list";
 import { useRouter } from "next/navigation";
 
@@ -40,7 +41,7 @@ const { Paragraph, Title } = Typography;
 /**
  * Renders the facilitator-facing hire list, filters, and enrolment entry point.
  */
-const HireListView: React.FC<IHireListViewProps> = () => {
+const HireListView: React.FC<HireListViewProps> = () => {
     const { styles } = useStyles();
     const router = useRouter();
     const [messageApi, messageContextHolder] = message.useMessage();
@@ -52,6 +53,7 @@ const HireListView: React.FC<IHireListViewProps> = () => {
     } = useHireActions();
     const {
         hires,
+        isError,
         isListPending,
         isMutationPending,
         managerOptions,
@@ -60,8 +62,8 @@ const HireListView: React.FC<IHireListViewProps> = () => {
     } = useHireState();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [keywordInput, setKeywordInput] = useState("");
-    const [statusInput, setStatusInput] = useState<IHireListQueryState["status"]>(undefined);
-    const [query, setQuery] = useState<IHireListQueryState>(DEFAULT_HIRE_LIST_QUERY_STATE);
+    const [statusInput, setStatusInput] = useState<HireListQueryState["status"]>(undefined);
+    const [query, setQuery] = useState<HireListQueryState>(DEFAULT_HIRE_LIST_QUERY_STATE);
     const hiresInView = hires ?? [];
     const hiresWithoutJourney = hiresInView.filter((hire) => !hire.journeyId).length;
     const failedWelcomeCount = hiresInView.filter((hire) => hire.welcomeNotificationStatus === 2).length;
@@ -83,7 +85,7 @@ const HireListView: React.FC<IHireListViewProps> = () => {
     }, []);
 
     const refreshHires = async (
-        nextQuery: IHireListQueryState = query,
+        nextQuery: HireListQueryState = query,
     ): Promise<void> => {
         await getHires(buildHireListRequest(nextQuery));
     };
@@ -115,7 +117,7 @@ const HireListView: React.FC<IHireListViewProps> = () => {
         });
     };
 
-    const handleCreateHire = async (payload: ICreateHireRequest): Promise<void> => {
+    const handleCreateHire = async (payload: CreateHireRequest): Promise<void> => {
         const result = await createHire(payload);
 
         if (!result) {
@@ -141,6 +143,15 @@ const HireListView: React.FC<IHireListViewProps> = () => {
 
     if (isListPending) {
         listContent = <Spin size="large" className={styles.loadingWrap} />;
+    } else if (isError && hiresInView.length === 0) {
+        listContent = (
+            <Alert
+                type="error"
+                showIcon
+                title="Hire list could not be loaded."
+                description="Check the backend connection or try refreshing."
+            />
+        );
     } else if (hiresInView.length > 0) {
         listContent = (
             <>
@@ -251,8 +262,8 @@ const HireListView: React.FC<IHireListViewProps> = () => {
                                 onChange={(value) => setStatusInput(value)}
                             />
 
-                            <Button onClick={handleApplyFilters}>Apply Filters</Button>
-                            <Button onClick={handleResetFilters}>Reset</Button>
+                            <Button disabled={isListPending} onClick={handleApplyFilters}>Apply Filters</Button>
+                            <Button disabled={isListPending} onClick={handleResetFilters}>Reset</Button>
                         </div>
                     </Card>
 

@@ -1,19 +1,19 @@
 import { createContext } from "react";
 import type {
-    IAddJourneyTaskRequest,
-    IAcknowledgeJourneyTaskRequest,
-    ICompleteJourneyTaskRequest,
-    IEnroleeJourneyDashboardDto,
-    IEnroleeJourneyTaskDetailDto,
-    IGenerateDraftJourneyRequest,
-    IJourneyPersonalisationDecisionItem,
-    IJourneyPersonalisationProposalDto,
-    IJourneyDraftDto,
-    IManagerTaskWorkspaceDto,
-    IRequestJourneyPersonalisationRequest,
-    IUpdateJourneyTaskRequest,
+    AddJourneyTaskRequest,
+    AcknowledgeJourneyTaskRequest,
+    CompleteJourneyTaskRequest,
+    EnroleeJourneyDashboardDto,
+    EnroleeJourneyTaskDetailDto,
+    GenerateDraftJourneyRequest,
+    JourneyPersonalisationDecisionItem,
+    JourneyPersonalisationProposalDto,
+    JourneyDraftDto,
+    ManagerTaskWorkspaceDto,
+    RequestJourneyPersonalisationRequest,
+    UpdateJourneyTaskRequest,
     JourneyPersonalisationDecision,
-} from "@/types/journey";
+} from "@/types/journey/journey";
 
 export interface IJourneyStateContext {
     isSuccess: boolean;
@@ -22,48 +22,48 @@ export interface IJourneyStateContext {
     isDetailPending: boolean;
     isMutationPending: boolean;
     isPersonalisationPending: boolean;
-    journey?: IJourneyDraftDto | null;
-    myJourney?: IEnroleeJourneyDashboardDto | null;
-    managerWorkspace?: IManagerTaskWorkspaceDto | null;
-    selectedTask?: IEnroleeJourneyTaskDetailDto | null;
-    personalisationProposal?: IJourneyPersonalisationProposalDto | null;
-    personalisationDecisions: IJourneyPersonalisationDecisionItem[];
+    journey?: JourneyDraftDto | null;
+    myJourney?: EnroleeJourneyDashboardDto | null;
+    managerWorkspace?: ManagerTaskWorkspaceDto | null;
+    selectedTask?: EnroleeJourneyTaskDetailDto | null;
+    personalisationProposal?: JourneyPersonalisationProposalDto | null;
+    personalisationDecisions: JourneyPersonalisationDecisionItem[];
 }
 
 export interface IJourneyActionContext {
-    getDraft: (hireId: string) => Promise<IJourneyDraftDto | null>;
-    getMyJourney: () => Promise<IEnroleeJourneyDashboardDto | null>;
-    getManagerTasks: () => Promise<IManagerTaskWorkspaceDto | null>;
-    getMyTask: (journeyTaskId: string) => Promise<IEnroleeJourneyTaskDetailDto | null>;
+    getDraft: (hireId: string) => Promise<JourneyDraftDto | null>;
+    getMyJourney: () => Promise<EnroleeJourneyDashboardDto | null>;
+    getManagerTasks: () => Promise<ManagerTaskWorkspaceDto | null>;
+    getMyTask: (journeyTaskId: string) => Promise<EnroleeJourneyTaskDetailDto | null>;
     acknowledgeMyTask: (
-        payload: IAcknowledgeJourneyTaskRequest,
-    ) => Promise<IEnroleeJourneyTaskDetailDto | null>;
+        payload: AcknowledgeJourneyTaskRequest,
+    ) => Promise<EnroleeJourneyTaskDetailDto | null>;
     completeMyTask: (
-        payload: ICompleteJourneyTaskRequest,
-    ) => Promise<IEnroleeJourneyTaskDetailDto | null>;
-    completeManagerTask: (payload: ICompleteJourneyTaskRequest) => Promise<IManagerTaskWorkspaceDto | null>;
-    generateDraft: (payload: IGenerateDraftJourneyRequest) => Promise<IJourneyDraftDto | null>;
+        payload: CompleteJourneyTaskRequest,
+    ) => Promise<EnroleeJourneyTaskDetailDto | null>;
+    completeManagerTask: (payload: CompleteJourneyTaskRequest) => Promise<ManagerTaskWorkspaceDto | null>;
+    generateDraft: (payload: GenerateDraftJourneyRequest) => Promise<JourneyDraftDto | null>;
     updateTask: (
         hireId: string,
         journeyTaskId: string,
-        payload: IUpdateJourneyTaskRequest,
-    ) => Promise<IJourneyDraftDto | null>;
+        payload: UpdateJourneyTaskRequest,
+    ) => Promise<JourneyDraftDto | null>;
     addTask: (
         hireId: string,
         journeyId: string,
-        payload: IAddJourneyTaskRequest,
-    ) => Promise<IJourneyDraftDto | null>;
-    removePendingTask: (hireId: string, journeyTaskId: string) => Promise<IJourneyDraftDto | null>;
+        payload: AddJourneyTaskRequest,
+    ) => Promise<JourneyDraftDto | null>;
+    removePendingTask: (hireId: string, journeyTaskId: string) => Promise<JourneyDraftDto | null>;
     requestPersonalisation: (
-        payload: IRequestJourneyPersonalisationRequest,
-    ) => Promise<IJourneyPersonalisationProposalDto | null>;
-    applyPersonalisation: () => Promise<IJourneyDraftDto | null>;
+        payload: RequestJourneyPersonalisationRequest,
+    ) => Promise<JourneyPersonalisationProposalDto | null>;
+    applyPersonalisation: () => Promise<JourneyDraftDto | null>;
     setPersonalisationDecision: (
         journeyTaskId: string,
         decision: JourneyPersonalisationDecision,
     ) => void;
     clearPersonalisationReview: () => void;
-    activate: (hireId: string) => Promise<IJourneyDraftDto | null>;
+    activate: (hireId: string) => Promise<JourneyDraftDto | null>;
     resetJourney: () => void;
 }
 

@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Spin } from "antd";
+import Spinner from "@/components/spinner/Spinner";
 import {
     APP_PERMISSIONS,
     APP_ROLE_NAMES,
 } from "@/constants/auth/permissions";
-import { APP_ROUTES } from "@/constants/auth/routes";
+import { APP_ROUTES } from "@/routes/auth.routes";
 import withAuth from "@/hoc/withAuth";
 import { useRouter } from "next/navigation";
 
@@ -17,7 +17,7 @@ const FacilitatorMarkdownImportPage: React.FC = () => {
         router.replace(APP_ROUTES.facilitatorPlanImport);
     }, [router]);
 
-    return <Spin size="large" />;
+    return <Spinner />;
 };
 
 export default withAuth(FacilitatorMarkdownImportPage, {

@@ -14,8 +14,8 @@ import {
     PipelineActionContext,
     PipelineStateContext,
     type IPipelineActionContext,
-    type IPipelineBoardDto,
-    type IPipelineBoardQueryState,
+    type PipelineBoardDto,
+    type PipelineBoardQueryState,
     type IPipelineStateContext,
 } from "./context";
 import { PipelineReducer } from "./reducer";
@@ -27,8 +27,8 @@ export const PipelineProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const [state, dispatch] = useReducer(PipelineReducer, INITIAL_STATE);
 
     const getBoard = async (
-        request: IPipelineBoardQueryState = state.filters,
-    ): Promise<IPipelineBoardDto | null> => {
+        request: PipelineBoardQueryState = state.filters,
+    ): Promise<PipelineBoardDto | null> => {
         dispatch(getBoardPending());
 
         try {
@@ -42,7 +42,7 @@ export const PipelineProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
     };
 
-    const setFilters = (filters: IPipelineBoardQueryState): void => {
+    const setFilters = (filters: PipelineBoardQueryState): void => {
         dispatch(setFiltersAction(filters));
     };
 

@@ -1,5 +1,5 @@
 import type { TablePaginationConfig } from "antd/es/table";
-import type { IGetAllRolesRequest } from "@/types/role";
+import type { GetAllRolesRequest } from "@/types/role/role";
 
 /**
  * Builds the role-list query from the current search and pagination state.
@@ -7,7 +7,7 @@ import type { IGetAllRolesRequest } from "@/types/role";
 export const buildRoleQuery = (
     searchTerm: string,
     pagination: TablePaginationConfig,
-): IGetAllRolesRequest => ({
+): GetAllRolesRequest => ({
     keyword: searchTerm || null,
     skipCount: ((pagination.current ?? 1) - 1) * (pagination.pageSize ?? 10),
     maxResultCount: pagination.pageSize ?? 10,

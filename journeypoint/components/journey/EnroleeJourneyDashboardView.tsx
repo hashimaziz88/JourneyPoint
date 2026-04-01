@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button, Card, Empty, Space, Spin, Statistic, Tag, Typography } from "antd";
+import { Alert, Button, Card, Empty, Space, Spin, Statistic, Tag, Typography } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
 import EnroleeJourneyModuleSection from "@/components/journey/EnroleeJourneyModuleSection";
 import { useStyles } from "@/components/journey/style/style";
@@ -9,7 +9,7 @@ import {
     ENROLEE_JOURNEY_STATUS_COLORS,
     ENROLEE_JOURNEY_STATUS_LABELS,
 } from "@/constants/journey/dashboard";
-import type { IEnroleeJourneyDashboardViewProps } from "@/types/journey/components";
+import type { EnroleeJourneyDashboardViewProps } from "@/types/journey/components";
 import { formatDisplayDateTime } from "@/utils/date";
 
 const { Paragraph, Title } = Typography;
@@ -17,8 +17,9 @@ const { Paragraph, Title } = Typography;
 /**
  * Renders the active journey dashboard for the signed-in enrolee.
  */
-const EnroleeJourneyDashboardView: React.FC<IEnroleeJourneyDashboardViewProps> = ({
+const EnroleeJourneyDashboardView: React.FC<EnroleeJourneyDashboardViewProps> = ({
     dashboard,
+    isError,
     isPending,
     onRefresh,
 }) => {
@@ -26,6 +27,17 @@ const EnroleeJourneyDashboardView: React.FC<IEnroleeJourneyDashboardViewProps> =
 
     if (!dashboard && isPending) {
         return <Spin size="large" className={styles.loadingWrap} />;
+    }
+
+    if (isError && !dashboard) {
+        return (
+            <Alert
+                type="error"
+                showIcon
+                title="Your journey dashboard could not be loaded."
+                description="Please try refreshing. If this persists, contact your facilitator."
+            />
+        );
     }
 
     if (!dashboard) {

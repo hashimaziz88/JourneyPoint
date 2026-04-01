@@ -1,12 +1,12 @@
 import { createAction } from "redux-actions";
 import type {
-    IEnroleeJourneyDashboardDto,
-    IEnroleeJourneyTaskDetailDto,
-    IJourneyDraftDto,
-    IJourneyPersonalisationDecisionItem,
-    IJourneyPersonalisationProposalDto,
-    IManagerTaskWorkspaceDto,
-} from "@/types/journey";
+    EnroleeJourneyDashboardDto,
+    EnroleeJourneyTaskDetailDto,
+    JourneyDraftDto,
+    JourneyPersonalisationDecisionItem,
+    JourneyPersonalisationProposalDto,
+    ManagerTaskWorkspaceDto,
+} from "@/types/journey/journey";
 import {
     buildClearedPersonalisationState,
     buildFacilitatorMutationPendingState,
@@ -76,7 +76,7 @@ export const getJourneyPending = createAction<JourneyStatePayload>(
     buildJourneyPendingState,
 );
 
-export const getJourneySuccess = createAction<JourneyStatePayload, IJourneyDraftDto>(
+export const getJourneySuccess = createAction<JourneyStatePayload, JourneyDraftDto>(
     JourneyActionEnums.getJourneySuccess,
     buildJourneySuccessState,
 );
@@ -93,7 +93,7 @@ export const getMyJourneyPending = createAction<JourneyStatePayload>(
 
 export const getMyJourneySuccess = createAction<
     JourneyStatePayload,
-    IEnroleeJourneyDashboardDto | null
+    EnroleeJourneyDashboardDto | null
 >(
     JourneyActionEnums.getMyJourneySuccess,
     buildParticipantDashboardSuccessState,
@@ -111,7 +111,7 @@ export const getManagerTasksPending = createAction<JourneyStatePayload>(
 
 export const getManagerTasksSuccess = createAction<
     JourneyStatePayload,
-    IManagerTaskWorkspaceDto | null
+    ManagerTaskWorkspaceDto | null
 >(
     JourneyActionEnums.getManagerTasksSuccess,
     buildManagerSuccessState,
@@ -129,7 +129,7 @@ export const getMyTaskPending = createAction<JourneyStatePayload>(
 
 export const getMyTaskSuccess = createAction<
     JourneyStatePayload,
-    IEnroleeJourneyTaskDetailDto | null
+    EnroleeJourneyTaskDetailDto | null
 >(
     JourneyActionEnums.getMyTaskSuccess,
     buildParticipantTaskSuccessState,
@@ -145,7 +145,7 @@ export const mutationPending = createAction<JourneyStatePayload>(
     buildFacilitatorMutationPendingState,
 );
 
-export const mutationSuccess = createAction<JourneyStatePayload, IJourneyDraftDto>(
+export const mutationSuccess = createAction<JourneyStatePayload, JourneyDraftDto>(
     JourneyActionEnums.mutationSuccess,
     buildFacilitatorMutationSuccessState,
 );
@@ -168,8 +168,8 @@ export const participantMutationPending = createAction<JourneyStatePayload>(
 export const participantMutationSuccess = createAction<
     JourneyStatePayload,
     {
-        myJourney?: IEnroleeJourneyDashboardDto | null;
-        selectedTask?: IEnroleeJourneyTaskDetailDto | null;
+        myJourney?: EnroleeJourneyDashboardDto | null;
+        selectedTask?: EnroleeJourneyTaskDetailDto | null;
     }
 >(
     JourneyActionEnums.participantMutationSuccess,
@@ -193,7 +193,7 @@ export const managerMutationPending = createAction<JourneyStatePayload>(
 
 export const managerMutationSuccess = createAction<
     JourneyStatePayload,
-    IManagerTaskWorkspaceDto | null
+    ManagerTaskWorkspaceDto | null
 >(
     JourneyActionEnums.managerMutationSuccess,
     buildManagerMutationSuccessState,
@@ -220,7 +220,7 @@ export const personalisationPending = createAction<JourneyStatePayload>(
 
 export const personalisationRequestSuccess = createAction<
     JourneyStatePayload,
-    IJourneyPersonalisationProposalDto
+    JourneyPersonalisationProposalDto
 >(
     JourneyActionEnums.personalisationRequestSuccess,
     buildPersonalisationSuccessState,
@@ -237,7 +237,7 @@ export const personalisationError = createAction<JourneyStatePayload>(
 
 export const setPersonalisationDecisions = createAction<
     JourneyStatePayload,
-    IJourneyPersonalisationDecisionItem[]
+    JourneyPersonalisationDecisionItem[]
 >(
     JourneyActionEnums.setPersonalisationDecisions,
     (personalisationDecisions) => ({

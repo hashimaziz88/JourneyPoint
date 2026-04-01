@@ -31,17 +31,17 @@ import {
     JOURNEY_STATUS_TAG_COLORS,
 } from "@/constants/journey/review";
 import { useStyles } from "@/components/hires/style/style";
-import { APP_ROUTES, buildFacilitatorHireJourneyRoute } from "@/constants/auth/routes";
+import { APP_ROUTES, buildFacilitatorHireJourneyRoute } from "@/routes/auth.routes";
 import {
     useEngagementActions,
     useEngagementState,
 } from "@/providers/engagementProvider";
 import { useHireActions, useHireState } from "@/providers/hireProvider";
 import type {
-    IAcknowledgeAtRiskFlagRequest,
-    IResolveAtRiskFlagRequest,
-} from "@/types/engagement";
-import type { IHireDetailViewProps } from "@/types/hire/components";
+    AcknowledgeAtRiskFlagRequest,
+    ResolveAtRiskFlagRequest,
+} from "@/types/engagement/engagement";
+import type { HireDetailViewProps } from "@/types/hire/components";
 import { formatDisplayDate, formatDisplayDateTime } from "@/utils/date";
 import { useRouter } from "next/navigation";
 
@@ -50,7 +50,7 @@ const { Paragraph, Title } = Typography;
 /**
  * Shows one hire record with journey and welcome-delivery summary state.
  */
-const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
+const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
     const { styles } = useStyles();
     const router = useRouter();
     const { getHireDetail, resetSelectedHire } = useHireActions();
@@ -60,7 +60,7 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
         resetHireIntelligence,
         resolveAtRiskFlag,
     } = useEngagementActions();
-    const { isDetailPending, selectedHire } = useHireState();
+    const { isDetailPending, isError, selectedHire } = useHireState();
     const { isMutationPending, isPending, selectedHireIntelligence } = useEngagementState();
 
     const loadHireEffect = useEffectEvent(async (): Promise<void> => {
@@ -91,15 +91,26 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
     };
 
     const handleAcknowledgeFlag = async (
-        payload: IAcknowledgeAtRiskFlagRequest,
+        payload: AcknowledgeAtRiskFlagRequest,
     ): Promise<boolean> => Boolean(await acknowledgeAtRiskFlag(hireId, payload));
 
     const handleResolveFlag = async (
-        payload: IResolveAtRiskFlagRequest,
+        payload: ResolveAtRiskFlagRequest,
     ): Promise<boolean> => Boolean(await resolveAtRiskFlag(hireId, payload));
 
     if ((isDetailPending || isPending) && !selectedHire) {
         return <Spin size="large" className={styles.loadingWrap} />;
+    }
+
+    if (isError && !selectedHire) {
+        return (
+            <Alert
+                type="error"
+                showIcon
+                title="Hire details could not be loaded."
+                description="The API may be unavailable. Try refreshing the page."
+            />
+        );
     }
 
     if (!selectedHire) {
@@ -232,7 +243,7 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
         <Space orientation="vertical" size={24} className={styles.pageRoot}>
             <Breadcrumb
                 items={[
-                    { title: <a onClick={() => startTransition(() => router.push(APP_ROUTES.facilitatorHires))}>Hires</a> },
+                    { title: <button type="button" onClick={() => startTransition(() => router.push(APP_ROUTES.facilitatorHires))}>Hires</button> },
                     { title: selectedHire.fullName },
                 ]}
             />

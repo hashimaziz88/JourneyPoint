@@ -2,13 +2,13 @@
 
 import React from "react";
 import { Form, Input, Modal } from "antd";
-import type { IResetPasswordDto } from "@/types/user";
-import type { IResetPasswordModalProps } from "@/types/admin/userManager";
+import type { ResetPasswordDto } from "@/types/user/user";
+import type { ResetPasswordModalProps } from "@/types/admin/userManager";
 
 /**
  * Renders the password-reset modal for the selected user.
  */
-const ResetPasswordModal: React.FC<IResetPasswordModalProps> = ({
+const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
   form,
   isPending,
   isVisible,
@@ -17,7 +17,7 @@ const ResetPasswordModal: React.FC<IResetPasswordModalProps> = ({
   resettingUser,
 }) => (
   <Modal
-    title={`Reset Password${resettingUser ? ` for ${resettingUser.fullName ?? resettingUser.userName}` : ""}`}
+    title={resettingUser ? `Reset Password for ${resettingUser.fullName ?? resettingUser.userName}` : "Reset Password"}
     open={isVisible}
     onCancel={onCancel}
     onOk={() => form.submit()}
@@ -31,11 +31,11 @@ const ResetPasswordModal: React.FC<IResetPasswordModalProps> = ({
         void onSubmit(values);
       }}
     >
-      <Form.Item<IResetPasswordDto> name="userId" hidden>
+      <Form.Item<ResetPasswordDto> name="userId" hidden>
         <Input type="hidden" />
       </Form.Item>
 
-      <Form.Item<IResetPasswordDto>
+      <Form.Item<ResetPasswordDto>
         label="New Password"
         name="newPassword"
         rules={[{ required: true, message: "Please enter the new password." }]}

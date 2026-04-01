@@ -12,7 +12,7 @@ import {
 
 const EnroleeMyJourneyContent: React.FC = () => {
     const { getMyJourney, resetJourney } = useJourneyActions();
-    const { isDetailPending, myJourney } = useJourneyState();
+    const { isDetailPending, isError, myJourney } = useJourneyState();
 
     const loadDashboard = useEffectEvent(async (): Promise<void> => {
         await getMyJourney();
@@ -33,6 +33,7 @@ const EnroleeMyJourneyContent: React.FC = () => {
     return (
         <EnroleeJourneyDashboardView
             dashboard={myJourney}
+            isError={isError}
             isPending={isDetailPending}
             onRefresh={async () => {
                 await getMyJourney();

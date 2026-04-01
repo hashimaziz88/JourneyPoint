@@ -1,10 +1,10 @@
 import { createAction } from "redux-actions";
 import type {
-    IHireDetailDto,
-    IHireEnrolmentResultDto,
-    IHireListItemDto,
-    IHireManagerOption,
-    IHirePlanOption,
+    HireDetailDto,
+    HireEnrolmentResultDto,
+    HireListItemDto,
+    HireManagerOption,
+    HirePlanOption,
     IHireStateContext,
 } from "./context";
 
@@ -42,7 +42,7 @@ export const getHiresPending = createAction<HireStatePayload>(
 
 export const getHiresSuccess = createAction<
     HireStatePayload,
-    { hires: IHireListItemDto[]; totalCount: number }
+    { hires: HireListItemDto[]; totalCount: number }
 >(HireActionEnums.getHiresSuccess, ({ hires, totalCount }) => ({
     isPending: false,
     isListPending: false,
@@ -72,7 +72,7 @@ export const getHireDetailPending = createAction<HireStatePayload>(
     }),
 );
 
-export const getHireDetailSuccess = createAction<HireStatePayload, IHireDetailDto>(
+export const getHireDetailSuccess = createAction<HireStatePayload, HireDetailDto>(
     HireActionEnums.getHireDetailSuccess,
     (selectedHire) => ({
         isPending: false,
@@ -105,7 +105,7 @@ export const mutationPending = createAction<HireStatePayload>(
 
 export const mutationSuccess = createAction<
     HireStatePayload,
-    { selectedHire?: IHireDetailDto | null; lastCreatedHire?: IHireEnrolmentResultDto | null }
+    { selectedHire?: HireDetailDto | null; lastCreatedHire?: HireEnrolmentResultDto | null }
 >(HireActionEnums.mutationSuccess, ({ selectedHire }) => ({
     isPending: false,
     isMutationPending: false,
@@ -136,7 +136,7 @@ export const referencePending = createAction<HireStatePayload>(
 
 export const referenceSuccess = createAction<
     HireStatePayload,
-    { planOptions?: IHirePlanOption[]; managerOptions?: IHireManagerOption[] }
+    { planOptions?: HirePlanOption[]; managerOptions?: HireManagerOption[] }
 >(HireActionEnums.referenceSuccess, (payload) => ({
     isPending: false,
     isReferencePending: false,

@@ -3,16 +3,16 @@
 import React, { useEffect } from "react";
 import { Button, Form, Input, InputNumber, Modal, Select } from "antd";
 import { useStyles } from "@/components/journey/style/style";
-import type { IJourneyTaskEditorModalProps } from "@/types/journey/components";
+import type { JourneyTaskEditorModalProps } from "@/types/journey/components";
 import type {
-    IAddJourneyTaskRequest,
-    IUpdateJourneyTaskRequest,
-} from "@/types/journey";
+    AddJourneyTaskRequest,
+    UpdateJourneyTaskRequest,
+} from "@/types/journey/journey";
 import {
     ONBOARDING_TASK_ACKNOWLEDGEMENT_RULE_OPTIONS,
     ONBOARDING_TASK_ASSIGNMENT_TARGET_OPTIONS,
     ONBOARDING_TASK_CATEGORY_OPTIONS,
-} from "@/types/onboarding-plan";
+} from "@/constants/plans/onboarding-plan";
 import { mapJourneyTaskToEditorValues } from "@/utils/journey/taskEditor";
 
 const { TextArea } = Input;
@@ -20,7 +20,7 @@ const { TextArea } = Input;
 /**
  * Captures facilitator draft-task additions and edits before activation.
  */
-const JourneyTaskEditorModal: React.FC<IJourneyTaskEditorModalProps> = ({
+const JourneyTaskEditorModal: React.FC<JourneyTaskEditorModalProps> = ({
     isOpen,
     isPending,
     journey,
@@ -29,7 +29,7 @@ const JourneyTaskEditorModal: React.FC<IJourneyTaskEditorModalProps> = ({
     task,
 }) => {
     const { styles } = useStyles();
-    const [form] = Form.useForm<IAddJourneyTaskRequest | IUpdateJourneyTaskRequest>();
+    const [form] = Form.useForm<AddJourneyTaskRequest | UpdateJourneyTaskRequest>();
 
     useEffect(() => {
         if (!isOpen) {
@@ -53,7 +53,7 @@ const JourneyTaskEditorModal: React.FC<IJourneyTaskEditorModalProps> = ({
                     key="submit"
                     type="primary"
                     loading={isPending}
-                    onClick={() => void form.submit()}
+                    onClick={() => form.submit()}
                 >
                     {task ? "Save Changes" : "Add Task"}
                 </Button>,

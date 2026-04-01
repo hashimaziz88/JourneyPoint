@@ -1,18 +1,18 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Button, Empty, Space, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import ModulePanel from "@/components/plans/ModulePanel";
 import { useStyles } from "@/components/plans/style/style";
-import type { IPlanEditorModulesSectionProps } from "@/types/plans/components";
+import type { PlanEditorModulesSectionProps } from "@/types/plans/components";
 
 const { Paragraph, Title } = Typography;
 
 /**
  * Renders the ordered module and task builder section for one plan draft.
  */
-const PlanEditorModulesSection: React.FC<IPlanEditorModulesSectionProps> = ({
+const PlanEditorModulesSection: React.FC<PlanEditorModulesSectionProps> = ({
     isDraftEditable,
     modules,
     onAddModule,
@@ -25,6 +25,15 @@ const PlanEditorModulesSection: React.FC<IPlanEditorModulesSectionProps> = ({
     onRemoveModule,
 }) => {
     const { styles } = useStyles();
+    const lastModuleRef = useRef<HTMLDivElement>(null);
+    const prevCountRef = useRef(modules.length);
+
+    useEffect(() => {
+        if (modules.length > prevCountRef.current) {
+            lastModuleRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        prevCountRef.current = modules.length;
+    }, [modules.length]);
 
     return (
         <Space orientation="vertical" size={16} className={styles.modulesWrap}>
@@ -52,30 +61,34 @@ const PlanEditorModulesSection: React.FC<IPlanEditorModulesSectionProps> = ({
                     description="Start by adding the first onboarding module."
                 />
             ) : (
-                modules.map((module) => (
-                    <ModulePanel
+                modules.map((module, index) => (
+                    <div
                         key={module.clientKey}
-                        isReadOnly={!isDraftEditable}
-                        module={module}
-                        moduleCount={modules.length}
-                        onAddTask={() => onAddTask(module.clientKey)}
-                        onDeleteTask={(taskClientKey) =>
-                            onDeleteTask(module.clientKey, taskClientKey)
-                        }
-                        onEditTask={(taskClientKey) =>
-                            onEditTask(module.clientKey, taskClientKey)
-                        }
-                        onModuleChange={(name, description) =>
-                            onModuleChange(module.clientKey, name, description)
-                        }
-                        onMoveModule={(direction) =>
-                            onMoveModule(module.clientKey, direction)
-                        }
-                        onMoveTask={(taskClientKey, direction) =>
-                            onMoveTask(module.clientKey, taskClientKey, direction)
-                        }
-                        onRemoveModule={() => onRemoveModule(module.clientKey)}
-                    />
+                        ref={index === modules.length - 1 ? lastModuleRef : undefined}
+                    >
+                        <ModulePanel
+                            isReadOnly={!isDraftEditable}
+                            module={module}
+                            moduleCount={modules.length}
+                            onAddTask={() => onAddTask(module.clientKey)}
+                            onDeleteTask={(taskClientKey) =>
+                                onDeleteTask(module.clientKey, taskClientKey)
+                            }
+                            onEditTask={(taskClientKey) =>
+                                onEditTask(module.clientKey, taskClientKey)
+                            }
+                            onModuleChange={(name, description) =>
+                                onModuleChange(module.clientKey, name, description)
+                            }
+                            onMoveModule={(direction) =>
+                                onMoveModule(module.clientKey, direction)
+                            }
+                            onMoveTask={(taskClientKey, direction) =>
+                                onMoveTask(module.clientKey, taskClientKey, direction)
+                            }
+                            onRemoveModule={() => onRemoveModule(module.clientKey)}
+                        />
+                    </div>
                 ))
             )}
         </Space>

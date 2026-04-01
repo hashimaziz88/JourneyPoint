@@ -3,21 +3,23 @@
 import React, { useEffect } from "react";
 import { Form, Input, InputNumber, Modal, Select } from "antd";
 import type {
-    IExtractedTaskProposalEditorValues,
-} from "@/types/onboarding-document";
-import { DEFAULT_EXTRACTED_TASK_PROPOSAL_EDITOR_VALUES } from "@/types/onboarding-document";
+    ExtractedTaskProposalEditorValues,
+} from "@/types/onboarding-document/onboarding-document";
+import {
+    DEFAULT_EXTRACTED_TASK_PROPOSAL_EDITOR_VALUES,
+} from "@/constants/plans/onboarding-document";
 import {
     ONBOARDING_TASK_ACKNOWLEDGEMENT_RULE_OPTIONS,
     ONBOARDING_TASK_ASSIGNMENT_TARGET_OPTIONS,
     ONBOARDING_TASK_CATEGORY_OPTIONS,
-} from "@/types/onboarding-plan";
-import type { IExtractedProposalEditorModalProps } from "@/types/plans/components";
+} from "@/constants/plans/onboarding-plan";
+import type { ExtractedProposalEditorModalProps } from "@/types/plans/components";
 import { mapProposalToEditorValues } from "@/utils/plans/proposalEditor";
 
 /**
  * Captures facilitator edits before a proposal is updated or accepted.
  */
-const ExtractedProposalEditorModal: React.FC<IExtractedProposalEditorModalProps> = ({
+const ExtractedProposalEditorModal: React.FC<ExtractedProposalEditorModalProps> = ({
     availableModules,
     isPending,
     isVisible,
@@ -26,7 +28,7 @@ const ExtractedProposalEditorModal: React.FC<IExtractedProposalEditorModalProps>
     onSubmit,
     proposal,
 }) => {
-    const [form] = Form.useForm<IExtractedTaskProposalEditorValues>();
+    const [form] = Form.useForm<ExtractedTaskProposalEditorValues>();
 
     useEffect(() => {
         if (!isVisible) {

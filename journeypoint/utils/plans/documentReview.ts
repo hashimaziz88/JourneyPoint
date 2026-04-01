@@ -1,10 +1,10 @@
 import type {
-    IExtractedTaskProposalDto,
-    IOnboardingDocumentDetailDto,
+    ExtractedTaskProposalDto,
+    OnboardingDocumentDetailDto,
     OnboardingDocumentStatus,
-} from "@/types/onboarding-document";
-import { OnboardingDocumentStatus as DocumentStatus } from "@/types/onboarding-document";
-import type { IDocumentStatusAlertContent } from "@/types/plans/components";
+} from "@/types/onboarding-document/onboarding-document";
+import { OnboardingDocumentStatus as DocumentStatus } from "@/types/onboarding-document/onboarding-document";
+import type { DocumentStatusAlertContent } from "@/types/plans/components";
 
 export const formatDocumentDateTime = (value?: string | null): string => {
     if (!value) {
@@ -48,8 +48,8 @@ export const getDocumentStatusColor = (
 };
 
 export const getDocumentStatusAlertContent = (
-    document: IOnboardingDocumentDetailDto,
-): IDocumentStatusAlertContent => {
+    document: OnboardingDocumentDetailDto,
+): DocumentStatusAlertContent => {
     if (document.status === DocumentStatus.Failed) {
         return {
             type: "error",
@@ -77,9 +77,9 @@ export const getDocumentStatusAlertContent = (
 };
 
 export const findDocumentProposal = (
-    proposals: IExtractedTaskProposalDto[] | undefined,
+    proposals: ExtractedTaskProposalDto[] | undefined,
     proposalId: string | null,
-): IExtractedTaskProposalDto | null => {
+): ExtractedTaskProposalDto | null => {
     if (!proposalId) {
         return null;
     }

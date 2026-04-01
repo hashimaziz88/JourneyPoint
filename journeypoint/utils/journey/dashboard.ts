@@ -1,5 +1,5 @@
-import { OnboardingTaskAcknowledgementRule } from "@/types/onboarding-plan";
-import type { IEnroleeJourneyTaskDetailDto } from "@/types/journey";
+import { OnboardingTaskAcknowledgementRule } from "@/types/onboarding-plan/onboarding-plan";
+import type { EnroleeJourneyTaskDetailDto } from "@/types/journey/journey";
 
 export const getCompletionPercent = (
     completedTaskCount: number,
@@ -20,5 +20,5 @@ export const getAcknowledgementLabel = (
         : "Acknowledgement optional";
 
 export const canRenderTaskActions = (
-    task: IEnroleeJourneyTaskDetailDto | null | undefined,
+    task: EnroleeJourneyTaskDetailDto | null | undefined,
 ): boolean => Boolean(task?.canAcknowledge || task?.canComplete);

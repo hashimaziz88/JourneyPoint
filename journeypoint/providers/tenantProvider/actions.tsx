@@ -1,5 +1,5 @@
 import { createAction } from "redux-actions";
-import { ITenantStateContext, ITenantDto } from "./context";
+import { ITenantStateContext, TenantDto } from "./context";
 
 export enum TenantActionEnums {
     getAllTenantsPending = "GET_ALL_TENANTS_PENDING",
@@ -24,7 +24,7 @@ export const getAllTenantsPending = createAction<ITenantStateContext>(
     () => ({ isPending: true, isError: false, isSuccess: false })
 );
 
-export const getAllTenantsSuccess = createAction<ITenantStateContext, { items: ITenantDto[]; totalCount: number }>(
+export const getAllTenantsSuccess = createAction<ITenantStateContext, { items: TenantDto[]; totalCount: number }>(
     TenantActionEnums.getAllTenantsSuccess,
     ({ items, totalCount }) => ({ isPending: false, isError: false, isSuccess: true, tenants: items, totalCount })
 );

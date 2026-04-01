@@ -176,6 +176,9 @@ export const useStyles = createStyles(({ css, token }) => ({
   `,
 
   loadingWrap: css`
+    display: flex;
+    align-items: center;
+    justify-content: center;
     min-height: 320px;
     width: 100%;
   `,
@@ -222,5 +225,9 @@ export const useStyles = createStyles(({ css, token }) => ({
   collapseLabelMeta: css`
     font-size: ${token.fontSizeSM}px;
     font-weight: 400;
+  `,
+
+  collapseLabelTag: css`
+    margin-inline-end: 0;
   `,
 }));

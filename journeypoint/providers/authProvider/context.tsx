@@ -1,6 +1,6 @@
 import { createContext } from "react";
-export type { IUserLoginRequest, IUserLoginResponse, IUserRegisterRequest, ITenantInfo } from "@/types/auth";
-import type { IUserLoginRequest, IUserLoginResponse, IUserRegisterRequest, ITenantInfo } from "@/types/auth";
+export type { UserLoginRequest, UserLoginResponse, UserRegisterRequest, TenantInfo } from "@/types/auth/auth";
+import type { UserLoginRequest, UserLoginResponse, UserRegisterRequest, TenantInfo } from "@/types/auth/auth";
 
 export interface IAuthStateContext {
     isSuccess: boolean;
@@ -13,17 +13,17 @@ export interface IAuthStateContext {
     grantedPermissions: string[];
     isMultiTenancyEnabled: boolean;
     configurationError: string | null;
-    user?: IUserLoginResponse | null;
-    tenant?: ITenantInfo | null;
+    user?: UserLoginResponse | null;
+    tenant?: TenantInfo | null;
 }
 
 export interface IAuthActionContext {
-    login: (payload: IUserLoginRequest) => Promise<void>;
-    register: (payload: IUserRegisterRequest) => Promise<"logged-in" | "registered" | "failed">;
+    login: (payload: UserLoginRequest) => Promise<void>;
+    register: (payload: UserRegisterRequest) => Promise<"logged-in" | "registered" | "failed">;
     logout: () => Promise<void>;
-    getMe: () => Promise<IUserLoginResponse | null>;
+    getMe: () => Promise<UserLoginResponse | null>;
     refreshSession: () => Promise<void>;
-    resolveTenant: (tenancyName: string) => Promise<ITenantInfo | null>;
+    resolveTenant: (tenancyName: string) => Promise<TenantInfo | null>;
     clearTenant: () => void;
 }
 

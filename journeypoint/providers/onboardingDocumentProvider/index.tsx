@@ -3,11 +3,11 @@
 import React, { useContext, useReducer } from "react";
 import { getAxiosInstance } from "@/utils/axiosInstance";
 import type {
-    ICreateOnboardingDocumentUploadRequest,
-    IOnboardingDocumentDetailDto,
-    IOnboardingDocumentListItemDto,
-    IUpdateExtractedTaskProposalRequest,
-} from "@/types/onboarding-document";
+    CreateOnboardingDocumentUploadRequest,
+    OnboardingDocumentDetailDto,
+    OnboardingDocumentListItemDto,
+    UpdateExtractedTaskProposalRequest,
+} from "@/types/onboarding-document/onboarding-document";
 import {
     getDocumentDetailError,
     getDocumentDetailPending,
@@ -35,8 +35,8 @@ const getApiResult = <T,>(response: { data?: { result?: T } & T }): T =>
     response.data?.result ?? (response.data as T);
 
 const mapDetailToListItem = (
-    document: IOnboardingDocumentDetailDto,
-): IOnboardingDocumentListItemDto => ({
+    document: OnboardingDocumentDetailDto,
+): OnboardingDocumentListItemDto => ({
     id: document.id,
     planId: document.planId,
     fileName: document.fileName,
@@ -52,9 +52,9 @@ const mapDetailToListItem = (
 });
 
 const mergeDocumentIntoList = (
-    documents: IOnboardingDocumentListItemDto[] | null | undefined,
-    detail: IOnboardingDocumentDetailDto,
-): IOnboardingDocumentListItemDto[] => {
+    documents: OnboardingDocumentListItemDto[] | null | undefined,
+    detail: OnboardingDocumentDetailDto,
+): OnboardingDocumentListItemDto[] => {
     const nextItem = mapDetailToListItem(detail);
     const existingDocuments = documents ?? [];
     const existingIndex = existingDocuments.findIndex(
@@ -88,7 +88,7 @@ export const OnboardingDocumentProvider: React.FC<{ children: React.ReactNode }>
                     params: { id: planId },
                 },
             );
-            const data = getApiResult<{ items?: IOnboardingDocumentListItemDto[] }>(response);
+            const data = getApiResult<{ items?: OnboardingDocumentListItemDto[] }>(response);
             dispatch(
                 getDocumentsSuccess({
                     documents: data.items ?? [],
@@ -102,7 +102,7 @@ export const OnboardingDocumentProvider: React.FC<{ children: React.ReactNode }>
 
     const getDocumentDetail = async (
         documentId: string,
-    ): Promise<IOnboardingDocumentDetailDto | null> => {
+    ): Promise<OnboardingDocumentDetailDto | null> => {
         dispatch(getDocumentDetailPending());
 
         try {
@@ -112,7 +112,7 @@ export const OnboardingDocumentProvider: React.FC<{ children: React.ReactNode }>
                     params: { id: documentId },
                 },
             );
-            const detail = getApiResult<IOnboardingDocumentDetailDto>(response);
+            const detail = getApiResult<OnboardingDocumentDetailDto>(response);
             dispatch(getDocumentDetailSuccess({ selectedDocument: detail }));
             return detail;
         } catch (error) {
@@ -123,13 +123,13 @@ export const OnboardingDocumentProvider: React.FC<{ children: React.ReactNode }>
     };
 
     const runMutation = async (
-        request: Promise<{ data?: { result?: IOnboardingDocumentDetailDto } & IOnboardingDocumentDetailDto }>,
-    ): Promise<IOnboardingDocumentDetailDto | null> => {
+        request: Promise<{ data?: { result?: OnboardingDocumentDetailDto } & OnboardingDocumentDetailDto }>,
+    ): Promise<OnboardingDocumentDetailDto | null> => {
         dispatch(mutationPending());
 
         try {
             const response = await request;
-            const detail = getApiResult<IOnboardingDocumentDetailDto>(response);
+            const detail = getApiResult<OnboardingDocumentDetailDto>(response);
             dispatch(
                 mutationSuccess({
                     selectedDocument: detail,
@@ -145,13 +145,13 @@ export const OnboardingDocumentProvider: React.FC<{ children: React.ReactNode }>
     };
 
     const uploadDocument = async (
-        payload: ICreateOnboardingDocumentUploadRequest,
-    ): Promise<IOnboardingDocumentDetailDto | null> =>
+        payload: CreateOnboardingDocumentUploadRequest,
+    ): Promise<OnboardingDocumentDetailDto | null> =>
         runMutation(getAxiosInstance().post(`${ONBOARDING_DOCUMENT_API_BASE}/Upload`, payload));
 
     const startExtraction = async (
         documentId: string,
-    ): Promise<IOnboardingDocumentDetailDto | null> =>
+    ): Promise<OnboardingDocumentDetailDto | null> =>
         runMutation(
             getAxiosInstance().post(`${ONBOARDING_DOCUMENT_API_BASE}/StartExtraction`, {
                 id: documentId,
@@ -159,22 +159,22 @@ export const OnboardingDocumentProvider: React.FC<{ children: React.ReactNode }>
         );
 
     const updateProposal = async (
-        payload: IUpdateExtractedTaskProposalRequest,
-    ): Promise<IOnboardingDocumentDetailDto | null> =>
+        payload: UpdateExtractedTaskProposalRequest,
+    ): Promise<OnboardingDocumentDetailDto | null> =>
         runMutation(
             getAxiosInstance().put(`${ONBOARDING_DOCUMENT_API_BASE}/UpdateProposal`, payload),
         );
 
     const acceptProposal = async (
-        payload: IUpdateExtractedTaskProposalRequest,
-    ): Promise<IOnboardingDocumentDetailDto | null> =>
+        payload: UpdateExtractedTaskProposalRequest,
+    ): Promise<OnboardingDocumentDetailDto | null> =>
         runMutation(
             getAxiosInstance().post(`${ONBOARDING_DOCUMENT_API_BASE}/AcceptProposal`, payload),
         );
 
     const rejectProposal = async (
         proposalId: string,
-    ): Promise<IOnboardingDocumentDetailDto | null> =>
+    ): Promise<OnboardingDocumentDetailDto | null> =>
         runMutation(
             getAxiosInstance().post(`${ONBOARDING_DOCUMENT_API_BASE}/RejectProposal`, {
                 id: proposalId,
@@ -183,7 +183,7 @@ export const OnboardingDocumentProvider: React.FC<{ children: React.ReactNode }>
 
     const applyAcceptedProposals = async (
         documentId: string,
-    ): Promise<IOnboardingDocumentDetailDto | null> =>
+    ): Promise<OnboardingDocumentDetailDto | null> =>
         runMutation(
             getAxiosInstance().post(
                 `${ONBOARDING_DOCUMENT_API_BASE}/ApplyAcceptedProposals`,

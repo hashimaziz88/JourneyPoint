@@ -1,29 +1,29 @@
 import { createContext } from "react";
 export type {
-    ICloneOnboardingPlanRequest,
-    ICreateOnboardingPlanRequest,
-    IGetOnboardingPlansInput,
-    IOnboardingModuleDraft,
-    IOnboardingPlanDetailDto,
-    IOnboardingPlanDraft,
-    IOnboardingPlanListItemDto,
-    IOnboardingPlanMetadataInput,
-    IOnboardingTaskDraft,
-    IOnboardingTaskEditorValues,
-    IUpdateOnboardingPlanRequest,
+    CloneOnboardingPlanRequest,
+    CreateOnboardingPlanRequest,
+    GetOnboardingPlansInput,
+    OnboardingModuleDraft,
+    OnboardingPlanDetailDto,
+    OnboardingPlanDraft,
+    OnboardingPlanListItemDto,
+    OnboardingPlanMetadataInput,
+    OnboardingTaskDraft,
+    OnboardingTaskEditorValues,
+    UpdateOnboardingPlanRequest,
     OnboardingPlanStatus,
-} from "@/types/onboarding-plan";
+} from "@/types/onboarding-plan/onboarding-plan";
 import type {
-    ICloneOnboardingPlanRequest,
-    ICreateOnboardingPlanRequest,
-    IGetOnboardingPlansInput,
-    IOnboardingPlanDetailDto,
-    IOnboardingPlanDraft,
-    IOnboardingPlanListItemDto,
-    IOnboardingPlanMetadataInput,
-    IOnboardingTaskEditorValues,
-    IUpdateOnboardingPlanRequest,
-} from "@/types/onboarding-plan";
+    CloneOnboardingPlanRequest,
+    CreateOnboardingPlanRequest,
+    GetOnboardingPlansInput,
+    OnboardingPlanDetailDto,
+    OnboardingPlanDraft,
+    OnboardingPlanListItemDto,
+    OnboardingPlanMetadataInput,
+    OnboardingTaskEditorValues,
+    UpdateOnboardingPlanRequest,
+} from "@/types/onboarding-plan/onboarding-plan";
 
 export interface IOnboardingPlanStateContext {
     isSuccess: boolean;
@@ -32,29 +32,29 @@ export interface IOnboardingPlanStateContext {
     isListPending: boolean;
     isDetailPending: boolean;
     isMutationPending: boolean;
-    plans?: IOnboardingPlanListItemDto[] | null;
+    plans?: OnboardingPlanListItemDto[] | null;
     totalCount?: number;
-    selectedPlan?: IOnboardingPlanDetailDto | null;
-    draftPlan?: IOnboardingPlanDraft | null;
+    selectedPlan?: OnboardingPlanDetailDto | null;
+    draftPlan?: OnboardingPlanDraft | null;
 }
 
 export interface IOnboardingPlanActionContext {
-    getPlans: (request: IGetOnboardingPlansInput) => Promise<void>;
-    getPlanDetail: (id: string) => Promise<IOnboardingPlanDetailDto | null>;
-    createPlan: (payload: ICreateOnboardingPlanRequest) => Promise<IOnboardingPlanDetailDto | null>;
-    updatePlan: (payload: IUpdateOnboardingPlanRequest) => Promise<IOnboardingPlanDetailDto | null>;
-    publishPlan: (id: string) => Promise<IOnboardingPlanDetailDto | null>;
-    archivePlan: (id: string) => Promise<IOnboardingPlanDetailDto | null>;
-    clonePlan: (payload: ICloneOnboardingPlanRequest) => Promise<IOnboardingPlanDetailDto | null>;
+    getPlans: (request: GetOnboardingPlansInput) => Promise<void>;
+    getPlanDetail: (id: string) => Promise<OnboardingPlanDetailDto | null>;
+    createPlan: (payload: CreateOnboardingPlanRequest) => Promise<OnboardingPlanDetailDto | null>;
+    updatePlan: (payload: UpdateOnboardingPlanRequest) => Promise<OnboardingPlanDetailDto | null>;
+    publishPlan: (id: string) => Promise<OnboardingPlanDetailDto | null>;
+    archivePlan: (id: string) => Promise<OnboardingPlanDetailDto | null>;
+    clonePlan: (payload: CloneOnboardingPlanRequest) => Promise<OnboardingPlanDetailDto | null>;
     initialiseDraft: () => void;
     resetDraft: () => void;
-    setDraftMetadata: (payload: Partial<IOnboardingPlanMetadataInput>) => void;
+    setDraftMetadata: (payload: Partial<OnboardingPlanMetadataInput>) => void;
     addModule: () => void;
     updateModule: (moduleClientKey: string, name: string, description: string) => void;
     removeModule: (moduleClientKey: string) => void;
     moveModule: (moduleClientKey: string, direction: "up" | "down") => void;
-    addTask: (moduleClientKey: string, payload: IOnboardingTaskEditorValues) => void;
-    updateTask: (moduleClientKey: string, taskClientKey: string, payload: IOnboardingTaskEditorValues) => void;
+    addTask: (moduleClientKey: string, payload: OnboardingTaskEditorValues) => void;
+    updateTask: (moduleClientKey: string, taskClientKey: string, payload: OnboardingTaskEditorValues) => void;
     removeTask: (moduleClientKey: string, taskClientKey: string) => void;
     moveTask: (moduleClientKey: string, taskClientKey: string, direction: "up" | "down") => void;
 }

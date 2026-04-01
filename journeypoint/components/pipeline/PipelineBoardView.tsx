@@ -2,6 +2,7 @@
 
 import React, { startTransition, useEffect, useEffectEvent, useMemo, useState } from "react";
 import {
+    Alert,
     Button,
     Card,
     Empty,
@@ -18,14 +19,14 @@ import { useStyles } from "@/components/pipeline/style/style";
 import {
     buildFacilitatorHireJourneyRoute,
     buildFacilitatorHireRoute,
-} from "@/constants/auth/routes";
+} from "@/routes/auth.routes";
 import {
     DEFAULT_PIPELINE_QUERY_STATE,
     PIPELINE_CLASSIFICATION_OPTIONS,
 } from "@/constants/pipeline/filters";
 import { usePipelineActions, usePipelineState } from "@/providers/pipelineProvider";
-import type { EngagementClassification } from "@/types/engagement";
-import type { IPipelineBoardViewProps } from "@/types/pipeline/components";
+import type { EngagementClassification } from "@/types/engagement/engagement";
+import type { PipelineBoardViewProps } from "@/types/pipeline/components";
 import { formatDisplayDateTime } from "@/utils/date";
 import { getPipelineJourneyGroups, getPipelineSummaryMetrics } from "@/utils/pipeline/board";
 import { useRouter } from "next/navigation";
@@ -36,10 +37,10 @@ const { Paragraph, Title } = Typography;
  * Renders the facilitator pipeline grouped by onboarding plan, so hires
  * across different journeys stay in their own context with plan-specific columns.
  */
-const PipelineBoardView: React.FC<IPipelineBoardViewProps> = () => {
+const PipelineBoardView: React.FC<PipelineBoardViewProps> = () => {
     const { styles } = useStyles();
     const router = useRouter();
-    const { board, filters, isPending } = usePipelineState();
+    const { board, filters, isError, isPending } = usePipelineState();
     const { getBoard, resetFilters, setFilters } = usePipelineActions();
     const [keywordInput, setKeywordInput] = useState(filters.keyword);
     const [classificationInput, setClassificationInput] = useState<
@@ -82,25 +83,39 @@ const PipelineBoardView: React.FC<IPipelineBoardViewProps> = () => {
         });
     };
 
-    const boardContent = isPending && !board ? (
-        <Spin size="large" className={styles.loadingWrap} />
-    ) : journeyGroups.length > 0 ? (
-        <div className={styles.journeyGroupList}>
-            {journeyGroups.map((group) => (
-                <PipelineJourneyGroup
-                    key={group.planId}
-                    group={group}
-                    onOpenHire={handleOpenHire}
-                    onOpenJourney={handleOpenJourney}
-                />
-            ))}
-        </div>
-    ) : (
-        <Empty
-            className={styles.emptyState}
-            description="No hires matched the current pipeline filters."
-        />
-    );
+    let boardContent: React.ReactNode;
+    if (isPending && !board) {
+        boardContent = <Spin size="large" className={styles.loadingWrap} />;
+    } else if (isError && !board) {
+        boardContent = (
+            <Alert
+                type="error"
+                showIcon
+                title="Pipeline data could not be loaded."
+                description="Check the backend connection or try refreshing."
+            />
+        );
+    } else if (journeyGroups.length > 0) {
+        boardContent = (
+            <div className={styles.journeyGroupList}>
+                {journeyGroups.map((group) => (
+                    <PipelineJourneyGroup
+                        key={group.planId}
+                        group={group}
+                        onOpenHire={handleOpenHire}
+                        onOpenJourney={handleOpenJourney}
+                    />
+                ))}
+            </div>
+        );
+    } else {
+        boardContent = (
+            <Empty
+                className={styles.emptyState}
+                description="No hires matched the current pipeline filters."
+            />
+        );
+    }
 
     return (
         <Space orientation="vertical" size={24} className={styles.pageRoot}>
@@ -168,8 +183,8 @@ const PipelineBoardView: React.FC<IPipelineBoardViewProps> = () => {
                             setClassificationInput(value as EngagementClassification | undefined)
                         }
                     />
-                    <Button onClick={handleApplyFilters}>Apply Filters</Button>
-                    <Button onClick={handleResetFilters}>Reset</Button>
+                    <Button disabled={isPending} onClick={handleApplyFilters}>Apply Filters</Button>
+                    <Button disabled={isPending} onClick={handleResetFilters}>Reset</Button>
                 </div>
             </Card>
 

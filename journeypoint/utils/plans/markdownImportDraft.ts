@@ -1,15 +1,15 @@
 import type {
-    IMarkdownImportDraftState,
-    IMarkdownImportPreviewDto,
-    IMarkdownImportPreviewModuleDto,
-    ISaveMarkdownImportRequest,
-} from "@/types/markdown-import";
+    MarkdownImportDraftState,
+    MarkdownImportPreviewDto,
+    MarkdownImportPreviewModuleDto,
+    SaveMarkdownImportRequest,
+} from "@/types/markdown-import/markdown-import";
 import type {
-    IOnboardingModuleDraft,
-    IOnboardingPlanDraft,
-    IOnboardingTaskEditorValues,
-} from "@/types/onboarding-plan";
-import { OnboardingPlanStatus } from "@/types/onboarding-plan";
+    OnboardingModuleDraft,
+    OnboardingPlanDraft,
+    OnboardingTaskEditorValues,
+} from "@/types/onboarding-plan/onboarding-plan";
+import { OnboardingPlanStatus } from "@/types/onboarding-plan/onboarding-plan";
 
 const createClientKey = (): string =>
     typeof globalThis.crypto?.randomUUID === "function"
@@ -17,8 +17,8 @@ const createClientKey = (): string =>
         : `markdown-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
 const mapMarkdownPreviewModuleToDraft = (
-    module: IMarkdownImportPreviewModuleDto,
-): IOnboardingModuleDraft => ({
+    module: MarkdownImportPreviewModuleDto,
+): OnboardingModuleDraft => ({
     clientKey: createClientKey(),
     name: module.name,
     description: module.description,
@@ -35,7 +35,7 @@ const mapMarkdownPreviewModuleToDraft = (
     })),
 });
 
-const canSavePreviewDraft = (draftPlan: IOnboardingPlanDraft): boolean =>
+const canSavePreviewDraft = (draftPlan: OnboardingPlanDraft): boolean =>
     !!draftPlan.name.trim() &&
     !!draftPlan.description.trim() &&
     !!draftPlan.targetAudience.trim() &&
@@ -50,8 +50,8 @@ const canSavePreviewDraft = (draftPlan: IOnboardingPlanDraft): boolean =>
     );
 
 export const mapMarkdownPreviewToDraftState = (
-    preview: IMarkdownImportPreviewDto,
-): IMarkdownImportDraftState => ({
+    preview: MarkdownImportPreviewDto,
+): MarkdownImportDraftState => ({
     plan: {
         name: preview.name,
         description: preview.description,
@@ -65,8 +65,8 @@ export const mapMarkdownPreviewToDraftState = (
 });
 
 export const mapMarkdownDraftToSaveRequest = (
-    draftPlan: IOnboardingPlanDraft,
-): ISaveMarkdownImportRequest => ({
+    draftPlan: OnboardingPlanDraft,
+): SaveMarkdownImportRequest => ({
     name: draftPlan.name.trim(),
     description: draftPlan.description.trim(),
     targetAudience: draftPlan.targetAudience.trim(),
@@ -88,9 +88,9 @@ export const mapMarkdownDraftToSaveRequest = (
 });
 
 export const updateMarkdownPreviewDraft = (
-    previewState: IMarkdownImportDraftState | null | undefined,
-    updater: (draftPlan: IOnboardingPlanDraft) => IOnboardingPlanDraft,
-): IMarkdownImportDraftState | null => {
+    previewState: MarkdownImportDraftState | null | undefined,
+    updater: (draftPlan: OnboardingPlanDraft) => OnboardingPlanDraft,
+): MarkdownImportDraftState | null => {
     if (!previewState?.plan) {
         return null;
     }
@@ -105,24 +105,24 @@ export const updateMarkdownPreviewDraft = (
 };
 
 export const applyMarkdownPreviewMetadata = (
-    draftPlan: IOnboardingPlanDraft,
+    draftPlan: OnboardingPlanDraft,
     payload: {
         name?: string;
         description?: string;
         targetAudience?: string;
         durationDays?: number;
     },
-): IOnboardingPlanDraft => ({
+): OnboardingPlanDraft => ({
     ...draftPlan,
     ...payload,
 });
 
 export const updateMarkdownPreviewModule = (
-    draftPlan: IOnboardingPlanDraft,
+    draftPlan: OnboardingPlanDraft,
     moduleClientKey: string,
     name: string,
     description: string,
-): IOnboardingPlanDraft => ({
+): OnboardingPlanDraft => ({
     ...draftPlan,
     modules: draftPlan.modules.map((module) =>
         module.clientKey === moduleClientKey
@@ -132,9 +132,9 @@ export const updateMarkdownPreviewModule = (
 });
 
 export const removeMarkdownPreviewModule = (
-    draftPlan: IOnboardingPlanDraft,
+    draftPlan: OnboardingPlanDraft,
     moduleClientKey: string,
-): IOnboardingPlanDraft => ({
+): OnboardingPlanDraft => ({
     ...draftPlan,
     modules: draftPlan.modules
         .filter((module) => module.clientKey !== moduleClientKey)
@@ -149,11 +149,11 @@ export const removeMarkdownPreviewModule = (
 });
 
 export const updateMarkdownPreviewTask = (
-    draftPlan: IOnboardingPlanDraft,
+    draftPlan: OnboardingPlanDraft,
     moduleClientKey: string,
     taskClientKey: string,
-    payload: IOnboardingTaskEditorValues,
-): IOnboardingPlanDraft => ({
+    payload: OnboardingTaskEditorValues,
+): OnboardingPlanDraft => ({
     ...draftPlan,
     modules: draftPlan.modules.map((module) =>
         module.clientKey === moduleClientKey
@@ -170,10 +170,10 @@ export const updateMarkdownPreviewTask = (
 });
 
 export const removeMarkdownPreviewTask = (
-    draftPlan: IOnboardingPlanDraft,
+    draftPlan: OnboardingPlanDraft,
     moduleClientKey: string,
     taskClientKey: string,
-): IOnboardingPlanDraft => ({
+): OnboardingPlanDraft => ({
     ...draftPlan,
     modules: draftPlan.modules.map((module) =>
         module.clientKey === moduleClientKey

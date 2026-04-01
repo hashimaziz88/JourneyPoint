@@ -1,5 +1,5 @@
-import type { OnboardingPlanStatus } from "@/types/onboarding-plan";
-import { OnboardingPlanStatus as PlanStatus } from "@/types/onboarding-plan";
+import type { OnboardingPlanStatus } from "@/types/onboarding-plan/onboarding-plan";
+import { OnboardingPlanStatus as PlanStatus } from "@/types/onboarding-plan/onboarding-plan";
 
 export const formatPlanUpdatedTime = (value: string): string =>
     new Intl.DateTimeFormat("en-ZA", {

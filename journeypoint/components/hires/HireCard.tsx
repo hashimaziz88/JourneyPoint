@@ -12,7 +12,7 @@ import {
     JOURNEY_STATUS_LABELS,
     JOURNEY_STATUS_TAG_COLORS,
 } from "@/constants/journey/review";
-import type { IHireCardProps } from "@/types/hire/components";
+import type { HireCardProps } from "@/types/hire/components";
 import { formatDisplayDate } from "@/utils/date";
 import { useStyles } from "@/components/hires/style/style";
 
@@ -21,7 +21,7 @@ const { Paragraph, Text, Title } = Typography;
 /**
  * Presents one hire summary card for the facilitator list view.
  */
-const HireCard: React.FC<IHireCardProps> = ({ hire, onOpenDetail, onOpenJourney }) => {
+const HireCard: React.FC<HireCardProps> = ({ hire, onOpenDetail, onOpenJourney }) => {
     const { styles } = useStyles();
 
     return (

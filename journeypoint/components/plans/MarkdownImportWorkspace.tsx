@@ -14,7 +14,7 @@ import {
     RollbackOutlined,
     SaveOutlined,
 } from "@ant-design/icons";
-import { APP_ROUTES, buildFacilitatorPlanRoute } from "@/constants/auth/routes";
+import { APP_ROUTES, buildFacilitatorPlanRoute } from "@/routes/auth.routes";
 import MarkdownImportPreviewCard from "@/components/plans/MarkdownImportPreviewCard";
 import MarkdownImportSourceCard from "@/components/plans/MarkdownImportSourceCard";
 import TaskFormModal from "@/components/plans/TaskFormModal";
@@ -23,14 +23,14 @@ import {
     useMarkdownImportActions,
     useMarkdownImportState,
 } from "@/providers/markdownImportProvider";
-import type { IOnboardingTaskEditorValues } from "@/types/onboarding-plan";
+import type { OnboardingTaskEditorValues } from "@/types/onboarding-plan/onboarding-plan";
 import {
     findImportDraftTask,
 } from "@/utils/plans/markdownImport";
 import { SAMPLE_IMPORT_MARKDOWN } from "@/constants/plans/import";
 import { readFileAsBase64 } from "@/utils/plans/fileUpload";
 import { useRouter } from "next/navigation";
-import type { IMarkdownImportWorkspaceTaskModalState } from "@/types/plans/components";
+import type { MarkdownImportWorkspaceTaskModalState } from "@/types/plans/components";
 
 const { Paragraph, Title } = Typography;
 
@@ -62,7 +62,7 @@ const MarkdownImportWorkspace: React.FC = () => {
         sourceContentType,
         sourceFileName,
     } = useMarkdownImportState();
-    const [taskModalState, setTaskModalState] = useState<IMarkdownImportWorkspaceTaskModalState | null>(null);
+    const [taskModalState, setTaskModalState] = useState<MarkdownImportWorkspaceTaskModalState | null>(null);
     const [activeTabKey, setActiveTabKey] = useState<string>("source");
 
     const resetWorkspace = useEffectEvent((): void => {
@@ -140,7 +140,7 @@ const MarkdownImportWorkspace: React.FC = () => {
     };
 
     const handleTaskSubmit = async (
-        values: IOnboardingTaskEditorValues,
+        values: OnboardingTaskEditorValues,
     ): Promise<void> => {
         if (!taskModalState) {
             return;
@@ -206,8 +206,8 @@ const MarkdownImportWorkspace: React.FC = () => {
                     >
                         Back to Plan Creation
                     </Button>
-                    <Button onClick={handleLoadExample}>Load Example</Button>
-                    <Button onClick={resetImport}>Reset</Button>
+                    <Button disabled={isPreviewPending || isSavePending} onClick={handleLoadExample}>Load Example</Button>
+                    <Button disabled={isPreviewPending || isSavePending} onClick={resetImport}>Reset</Button>
                     <Button
                         icon={<EyeOutlined />}
                         onClick={() => void handlePreview()}

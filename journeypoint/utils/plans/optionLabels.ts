@@ -1,4 +1,4 @@
-import type { IDocumentModuleOptionDto } from "@/types/onboarding-document";
+import type { DocumentModuleOptionDto } from "@/types/onboarding-document/onboarding-document";
 
 export const findOptionLabel = (
     options: ReadonlyArray<{ label: string; value: number }>,
@@ -6,7 +6,7 @@ export const findOptionLabel = (
 ): string => options.find((option) => option.value === value)?.label ?? "Unknown";
 
 export const getModuleName = (
-    modules: IDocumentModuleOptionDto[],
+    modules: DocumentModuleOptionDto[],
     moduleId?: string | null,
 ): string => {
     if (!moduleId) {

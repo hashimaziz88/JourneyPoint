@@ -59,16 +59,16 @@ import {
 } from "./context";
 import { JourneyReducer } from "./reducer";
 import type {
-    IAcknowledgeJourneyTaskRequest,
-    IAddJourneyTaskRequest,
-    ICompleteJourneyTaskRequest,
-    IGenerateDraftJourneyRequest,
-    IJourneyDraftDto,
-    IJourneyPersonalisationProposalDto,
-    IRequestJourneyPersonalisationRequest,
-    IUpdateJourneyTaskRequest,
+    AcknowledgeJourneyTaskRequest,
+    AddJourneyTaskRequest,
+    CompleteJourneyTaskRequest,
+    GenerateDraftJourneyRequest,
+    JourneyDraftDto,
+    JourneyPersonalisationProposalDto,
+    RequestJourneyPersonalisationRequest,
+    UpdateJourneyTaskRequest,
     JourneyPersonalisationDecision,
-} from "@/types/journey";
+} from "@/types/journey/journey";
 
 /**
  * Provides typed journey state and actions for facilitator, manager, and enrolee flows.
@@ -76,7 +76,7 @@ import type {
 export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [state, dispatch] = useReducer(JourneyReducer, INITIAL_STATE);
 
-    const getDraft = async (hireId: string): Promise<IJourneyDraftDto | null> => {
+    const getDraft = async (hireId: string): Promise<JourneyDraftDto | null> => {
         dispatch(getJourneyPending());
 
         try {
@@ -133,8 +133,8 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     const generateDraft = async (
-        payload: IGenerateDraftJourneyRequest,
-    ): Promise<IJourneyDraftDto | null> => {
+        payload: GenerateDraftJourneyRequest,
+    ): Promise<JourneyDraftDto | null> => {
         dispatch(mutationPending());
 
         try {
@@ -150,7 +150,7 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     const refreshAfterDraftMutation = async (
         hireId: string,
-    ): Promise<IJourneyDraftDto | null> => {
+    ): Promise<JourneyDraftDto | null> => {
         try {
             const journey = await fetchJourneyDraft(hireId);
             dispatch(mutationSuccess(journey));
@@ -165,8 +165,8 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const updateTask = async (
         hireId: string,
         journeyTaskId: string,
-        payload: IUpdateJourneyTaskRequest,
-    ): Promise<IJourneyDraftDto | null> => {
+        payload: UpdateJourneyTaskRequest,
+    ): Promise<JourneyDraftDto | null> => {
         dispatch(mutationPending());
 
         try {
@@ -182,8 +182,8 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const addTask = async (
         hireId: string,
         journeyId: string,
-        payload: IAddJourneyTaskRequest,
-    ): Promise<IJourneyDraftDto | null> => {
+        payload: AddJourneyTaskRequest,
+    ): Promise<JourneyDraftDto | null> => {
         dispatch(mutationPending());
 
         try {
@@ -199,7 +199,7 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const removePendingTask = async (
         hireId: string,
         journeyTaskId: string,
-    ): Promise<IJourneyDraftDto | null> => {
+    ): Promise<JourneyDraftDto | null> => {
         dispatch(mutationPending());
 
         try {
@@ -213,8 +213,8 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     const requestPersonalisationAction = async (
-        payload: IRequestJourneyPersonalisationRequest,
-    ): Promise<IJourneyPersonalisationProposalDto | null> => {
+        payload: RequestJourneyPersonalisationRequest,
+    ): Promise<JourneyPersonalisationProposalDto | null> => {
         dispatch(personalisationPending());
 
         try {
@@ -228,7 +228,7 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
     };
 
-    const applyPersonalisationAction = async (): Promise<IJourneyDraftDto | null> => {
+    const applyPersonalisationAction = async (): Promise<JourneyDraftDto | null> => {
         const payload = buildApplyPersonalisationRequest(
             state.personalisationProposal,
             state.personalisationDecisions,
@@ -268,7 +268,7 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         dispatch(clearPersonalisationReviewAction());
     };
 
-    const activate = async (hireId: string): Promise<IJourneyDraftDto | null> => {
+    const activate = async (hireId: string): Promise<JourneyDraftDto | null> => {
         dispatch(mutationPending());
 
         try {
@@ -299,7 +299,7 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     const acknowledgeMyTask = async (
-        payload: IAcknowledgeJourneyTaskRequest,
+        payload: AcknowledgeJourneyTaskRequest,
     ) => {
         dispatch(participantMutationPending());
 
@@ -313,7 +313,7 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
     };
 
-    const completeMyTask = async (payload: ICompleteJourneyTaskRequest) => {
+    const completeMyTask = async (payload: CompleteJourneyTaskRequest) => {
         dispatch(participantMutationPending());
 
         try {
@@ -326,7 +326,7 @@ export const JourneyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
     };
 
-    const completeManagerTask = async (payload: ICompleteJourneyTaskRequest) => {
+    const completeManagerTask = async (payload: CompleteJourneyTaskRequest) => {
         dispatch(managerMutationPending());
 
         try {

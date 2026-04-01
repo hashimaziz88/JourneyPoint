@@ -1,7 +1,7 @@
 import { createAction } from "redux-actions";
 import type {
-    IOnboardingDocumentDetailDto,
-    IOnboardingDocumentListItemDto,
+    OnboardingDocumentDetailDto,
+    OnboardingDocumentListItemDto,
     IOnboardingDocumentStateContext,
 } from "./context";
 
@@ -37,7 +37,7 @@ export const getDocumentsPending = createAction<OnboardingDocumentStatePayload>(
 
 export const getDocumentsSuccess = createAction<
     OnboardingDocumentStatePayload,
-    { documents: IOnboardingDocumentListItemDto[] }
+    { documents: OnboardingDocumentListItemDto[] }
 >(
     OnboardingDocumentActionEnums.getDocumentsSuccess,
     ({ documents }) => ({
@@ -73,7 +73,7 @@ export const getDocumentDetailPending = createAction<OnboardingDocumentStatePayl
 
 export const getDocumentDetailSuccess = createAction<
     OnboardingDocumentStatePayload,
-    { selectedDocument: IOnboardingDocumentDetailDto }
+    { selectedDocument: OnboardingDocumentDetailDto }
 >(
     OnboardingDocumentActionEnums.getDocumentDetailSuccess,
     ({ selectedDocument }) => ({
@@ -107,7 +107,7 @@ export const mutationPending = createAction<OnboardingDocumentStatePayload>(
 
 export const mutationSuccess = createAction<
     OnboardingDocumentStatePayload,
-    { selectedDocument: IOnboardingDocumentDetailDto; documents?: IOnboardingDocumentListItemDto[] }
+    { selectedDocument: OnboardingDocumentDetailDto; documents?: OnboardingDocumentListItemDto[] }
 >(
     OnboardingDocumentActionEnums.mutationSuccess,
     ({ selectedDocument, documents }) => ({

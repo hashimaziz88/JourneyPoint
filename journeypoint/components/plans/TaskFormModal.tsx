@@ -3,25 +3,27 @@
 import React, { useEffect } from "react";
 import { Form, Input, InputNumber, Modal, Select } from "antd";
 import {
+    OnboardingTaskEditorValues,
+} from "@/types/onboarding-plan/onboarding-plan"
+import {
     DEFAULT_ONBOARDING_TASK_EDITOR_VALUES,
-    IOnboardingTaskEditorValues,
     ONBOARDING_TASK_ACKNOWLEDGEMENT_RULE_OPTIONS,
     ONBOARDING_TASK_ASSIGNMENT_TARGET_OPTIONS,
     ONBOARDING_TASK_CATEGORY_OPTIONS,
-} from "@/types/onboarding-plan";
-import type { ITaskFormModalProps } from "@/types/plans/components";
+} from "@/constants/plans/onboarding-plan";
+import type { TaskFormModalProps } from "@/types/plans/components";
 
 /**
  * Captures onboarding task fields for create and edit flows.
  */
-const TaskFormModal: React.FC<ITaskFormModalProps> = ({
+const TaskFormModal: React.FC<TaskFormModalProps> = ({
     editingTask,
     isPending,
     isVisible,
     onCancel,
     onSubmit,
 }) => {
-    const [form] = Form.useForm<IOnboardingTaskEditorValues>();
+    const [form] = Form.useForm<OnboardingTaskEditorValues>();
 
     useEffect(() => {
         if (!isVisible) {

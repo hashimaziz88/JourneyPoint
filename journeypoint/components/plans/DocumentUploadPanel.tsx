@@ -4,18 +4,20 @@ import React, { startTransition, useEffect, useEffectEvent } from "react";
 import { Alert, Button, Card, Empty, Space, Tag, Typography, Upload, message } from "antd";
 import type { UploadProps } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
-import { buildFacilitatorPlanDocumentRoute } from "@/constants/auth/routes";
+import { buildFacilitatorPlanDocumentRoute } from "@/routes/auth.routes";
 import { useStyles } from "@/components/plans/style/style";
 import {
     useOnboardingDocumentActions,
     useOnboardingDocumentState,
 } from "@/providers/onboardingDocumentProvider";
 import {
-    ONBOARDING_DOCUMENT_STATUS_LABELS,
     OnboardingDocumentStatus,
-} from "@/types/onboarding-document";
-import { OnboardingPlanStatus } from "@/types/onboarding-plan";
-import type { IDocumentUploadPanelProps } from "@/types/plans/components";
+} from "@/types/onboarding-document/onboarding-document"
+import {
+    ONBOARDING_DOCUMENT_STATUS_LABELS,
+} from "@/constants/plans/onboarding-document";
+import { OnboardingPlanStatus } from "@/types/onboarding-plan/onboarding-plan";
+import type { DocumentUploadPanelProps } from "@/types/plans/components";
 import {
     formatDocumentDateTime,
     formatFileSize,
@@ -29,7 +31,7 @@ const { Paragraph, Text, Title } = Typography;
 /**
  * Handles document upload and document-list access for one onboarding plan.
  */
-const DocumentUploadPanel: React.FC<IDocumentUploadPanelProps> = ({
+const DocumentUploadPanel: React.FC<DocumentUploadPanelProps> = ({
     planId,
     planStatus,
 }) => {

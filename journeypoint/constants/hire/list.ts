@@ -1,10 +1,10 @@
 import {
     HireLifecycleState,
     WelcomeNotificationStatus,
-    type IHireListQueryState,
-} from "@/types/hire";
+    type HireListQueryState,
+} from "@/types/hire/hire";
 
-export const DEFAULT_HIRE_LIST_QUERY_STATE: IHireListQueryState = {
+export const DEFAULT_HIRE_LIST_QUERY_STATE: HireListQueryState = {
     keyword: "",
     status: undefined,
     current: 1,

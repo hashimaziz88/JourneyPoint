@@ -4,14 +4,14 @@ import React from "react";
 import { Button, Space, Table, Tag } from "antd";
 import { LockOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
-import type { IUserDto } from "@/types/user";
+import type { UserDto } from "@/types/user/user";
 import { useStyles } from "@/components/admin/style/style";
-import type { IUserManagementTableProps } from "@/types/admin/userManager";
+import type { UserManagementTableProps } from "@/types/admin/userManager";
 
 /**
  * Renders the paged user table and row-level actions for the admin workspace.
  */
-const UserManagementTable: React.FC<IUserManagementTableProps> = ({
+const UserManagementTable: React.FC<UserManagementTableProps> = ({
   isLoading,
   pagination,
   totalCount,
@@ -23,7 +23,7 @@ const UserManagementTable: React.FC<IUserManagementTableProps> = ({
 }) => {
   const { styles } = useStyles();
 
-  const columns: ColumnsType<IUserDto> = [
+  const columns: ColumnsType<UserDto> = [
     {
       title: "Name",
       key: "fullName",
@@ -65,17 +65,18 @@ const UserManagementTable: React.FC<IUserManagementTableProps> = ({
       key: "actions",
       render: (_, user) => (
         <Space wrap>
-          <Button type="link" onClick={() => onEdit(user)}>
+          <Button type="link" disabled={isLoading} onClick={() => onEdit(user)}>
             Edit
           </Button>
           <Button
             type="link"
             icon={<LockOutlined />}
+            disabled={isLoading}
             onClick={() => onResetPassword(user)}
           >
             Reset Password
           </Button>
-          <Button type="link" danger onClick={() => onDelete(user)}>
+          <Button type="link" danger disabled={isLoading} onClick={() => onDelete(user)}>
             Delete
           </Button>
         </Space>

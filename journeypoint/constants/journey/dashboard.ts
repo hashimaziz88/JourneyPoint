@@ -1,9 +1,9 @@
 import {
     JourneyStatus,
     JourneyTaskStatus,
-    type IEnroleeJourneyTaskListItemDto,
-} from "@/types/journey";
-import { OnboardingTaskAcknowledgementRule } from "@/types/onboarding-plan";
+    type EnroleeJourneyTaskListItemDto,
+} from "@/types/journey/journey";
+import { OnboardingTaskAcknowledgementRule } from "@/types/onboarding-plan/onboarding-plan";
 
 export const ENROLEE_JOURNEY_STATUS_LABELS: Record<JourneyStatus, string> = {
     [JourneyStatus.Draft]: "Draft",
@@ -35,7 +35,7 @@ export const JOURNEY_TASK_PROGRESS_TEXT = (
 ): string => `${completedTaskCount}/${totalTaskCount} complete`;
 
 export const needsAcknowledgementTag = (
-    task: IEnroleeJourneyTaskListItemDto,
+    task: EnroleeJourneyTaskListItemDto,
 ): boolean =>
     task.acknowledgementRule === OnboardingTaskAcknowledgementRule.Required &&
     !task.acknowledgedAt;

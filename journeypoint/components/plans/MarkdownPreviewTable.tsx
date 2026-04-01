@@ -7,11 +7,11 @@ import {
     ONBOARDING_TASK_ACKNOWLEDGEMENT_RULE_OPTIONS,
     ONBOARDING_TASK_ASSIGNMENT_TARGET_OPTIONS,
     ONBOARDING_TASK_CATEGORY_OPTIONS,
-} from "@/types/onboarding-plan";
+} from "@/constants/plans/onboarding-plan";
 import { useStyles } from "@/components/plans/style/style";
 import type {
-    IMarkdownPreviewTableProps,
-    IMarkdownPreviewTaskRow,
+    MarkdownPreviewTableProps,
+    MarkdownPreviewTaskRow,
 } from "@/types/plans/components";
 import { findOptionLabel } from "@/utils/plans/optionLabels";
 
@@ -20,7 +20,7 @@ const { Paragraph, Title } = Typography;
 /**
  * Renders editable markdown-import preview modules and parsed task rows.
  */
-const MarkdownPreviewTable: React.FC<IMarkdownPreviewTableProps> = ({
+const MarkdownPreviewTable: React.FC<MarkdownPreviewTableProps> = ({
     modules,
     onEditTask,
     onModuleChange,
@@ -29,7 +29,7 @@ const MarkdownPreviewTable: React.FC<IMarkdownPreviewTableProps> = ({
 }) => {
     const { styles } = useStyles();
 
-    const columns: ColumnsType<IMarkdownPreviewTaskRow> = [
+    const columns: ColumnsType<MarkdownPreviewTaskRow> = [
         {
             title: "Title",
             dataIndex: "title",
@@ -87,7 +87,7 @@ const MarkdownPreviewTable: React.FC<IMarkdownPreviewTableProps> = ({
     return (
         <Space orientation="vertical" size={16} className={styles.modulesWrap}>
             {modules.map((module) => {
-                const tableData: IMarkdownPreviewTaskRow[] = module.tasks.map((task) => ({
+                const tableData: MarkdownPreviewTaskRow[] = module.tasks.map((task) => ({
                     ...task,
                     key: task.clientKey,
                     moduleClientKey: module.clientKey,
@@ -140,7 +140,7 @@ const MarkdownPreviewTable: React.FC<IMarkdownPreviewTableProps> = ({
                             />
 
                             <div className={styles.previewTableWrap}>
-                                <Table<IMarkdownPreviewTaskRow>
+                                <Table<MarkdownPreviewTaskRow>
                                     columns={columns}
                                     dataSource={tableData}
                                     pagination={false}

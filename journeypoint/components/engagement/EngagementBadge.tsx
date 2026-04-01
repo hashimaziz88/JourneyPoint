@@ -7,13 +7,13 @@ import {
     ENGAGEMENT_CLASSIFICATION_COLORS,
     ENGAGEMENT_CLASSIFICATION_LABELS,
 } from "@/constants/engagement/badge";
-import type { IEngagementBadgeProps } from "@/types/engagement/components";
+import type { EngagementBadgeProps } from "@/types/engagement/components";
 import { formatPercentage } from "@/utils/pipeline/board";
 
 /**
  * Renders engagement and at-risk status badges for facilitator intelligence views.
  */
-const EngagementBadge: React.FC<IEngagementBadgeProps> = ({
+const EngagementBadge: React.FC<EngagementBadgeProps> = ({
     classification,
     compositeScore,
     hasActiveAtRiskFlag,

@@ -1,14 +1,15 @@
 import { DEFAULT_PIPELINE_MAX_RESULT_COUNT } from "@/constants/pipeline/filters";
 import { getAxiosInstance } from "@/utils/axiosInstance";
 import type {
-    IGetPipelineBoardInput,
-    IPipelineBoardDto,
-    IPipelineBoardQueryState,
-    IPipelineHireCardDto,
-} from "@/types/pipeline";
+    GetPipelineBoardInput,
+    PipelineBoardDto,
+    PipelineBoardQueryState,
+    PipelineHireCardDto,
+    PipelineJourneyGroup,
+} from "@/types/pipeline/pipeline";
 import type {
-    IPipelineColumnSummary,
-    IPipelineSummaryMetrics,
+    PipelineColumnSummary,
+    PipelineSummaryMetrics,
 } from "@/types/pipeline/components";
 
 const ENGAGEMENT_API_BASE = "/api/services/app/Engagement";
@@ -17,8 +18,8 @@ const getPipelineApiResult = <T,>(response: { data?: { result?: T } & T }): T =>
     response.data?.result ?? (response.data as T);
 
 export const buildPipelineBoardRequest = (
-    query: IPipelineBoardQueryState,
-): IGetPipelineBoardInput => ({
+    query: PipelineBoardQueryState,
+): GetPipelineBoardInput => ({
     keyword: query.keyword.trim() || null,
     classification: query.classification ?? null,
     skipCount: 0,
@@ -27,18 +28,18 @@ export const buildPipelineBoardRequest = (
 });
 
 export const fetchPipelineBoard = async (
-    request: IGetPipelineBoardInput,
-): Promise<IPipelineBoardDto> => {
+    request: GetPipelineBoardInput,
+): Promise<PipelineBoardDto> => {
     const response = await getAxiosInstance().get(`${ENGAGEMENT_API_BASE}/GetPipelineBoard`, {
         params: request,
     });
 
-    return getPipelineApiResult<IPipelineBoardDto>(response);
+    return getPipelineApiResult<PipelineBoardDto>(response);
 };
 
 export const getPipelineSummaryMetrics = (
-    board: IPipelineBoardDto | null | undefined,
-): IPipelineSummaryMetrics => {
+    board: PipelineBoardDto | null | undefined,
+): PipelineSummaryMetrics => {
     const hires = (board?.columns ?? []).flatMap((column) => column.hires);
 
     if (hires.length === 0) {
@@ -62,8 +63,8 @@ export const getPipelineSummaryMetrics = (
 };
 
 export const getPipelineColumnSummary = (
-    hires: IPipelineHireCardDto[],
-): IPipelineColumnSummary => ({
+    hires: PipelineHireCardDto[],
+): PipelineColumnSummary => ({
     totalHires: hires.length,
     atRiskHireCount: hires.filter((hire) => hire.hasActiveAtRiskFlag).length,
 });
@@ -75,11 +76,11 @@ export const formatPercentage = (value: number): string => `${Math.round(value)}
  * ordered column set. Hires without a planName fall into an "Unknown Plan" bucket.
  */
 export const getPipelineJourneyGroups = (
-    board: IPipelineBoardDto | null | undefined,
-): import("@/types/pipeline").IPipelineJourneyGroup[] => {
+    board: PipelineBoardDto | null | undefined,
+): PipelineJourneyGroup[] => {
     if (!board?.columns?.length) return [];
 
-    const groupMap = new Map<string, import("@/types/pipeline").IPipelineJourneyGroup>();
+    const groupMap = new Map<string, PipelineJourneyGroup>();
 
     for (const column of board.columns) {
         for (const hire of column.hires) {

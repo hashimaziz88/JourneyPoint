@@ -1,13 +1,13 @@
 "use client";
 
 import React from "react";
-import { useWorkspaceShellStyles } from "@/layout/style/workspaceShell";
-import type { IWorkspaceNavLinksProps } from "@/types/layout/navigation";
+import { useWorkspaceShellStyles } from "@/layouts/style/workspaceShell";
+import type { WorkspaceNavLinksProps } from "@/types/layout/navigation";
 
 /**
  * Renders the horizontal navigation link row for the workspace top-nav shell.
  */
-const WorkspaceNavLinks: React.FC<IWorkspaceNavLinksProps> = ({
+const WorkspaceNavLinks: React.FC<WorkspaceNavLinksProps> = ({
   navigationItems,
   onNavigate,
   selectedMenuKey,
@@ -23,7 +23,7 @@ const WorkspaceNavLinks: React.FC<IWorkspaceNavLinksProps> = ({
             key={item.key}
             type="button"
             onClick={() => onNavigate(item.href)}
-            className={`${styles.navLink}${isActive ? ` ${styles.navLinkActive}` : ""}`}
+            className={isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink}
             aria-current={isActive ? "page" : undefined}
           >
             {item.label}

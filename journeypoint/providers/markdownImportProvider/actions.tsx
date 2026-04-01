@@ -1,5 +1,5 @@
 import { createAction } from "redux-actions";
-import type { IMarkdownImportDraftState } from "@/types/markdown-import";
+import type { MarkdownImportDraftState } from "@/types/markdown-import/markdown-import";
 import type { IMarkdownImportStateContext } from "./context";
 
 type MarkdownImportStatePayload = Partial<IMarkdownImportStateContext>;
@@ -70,7 +70,7 @@ export const previewPending = createAction<MarkdownImportStatePayload>(
 
 export const previewSuccess = createAction<
     MarkdownImportStatePayload,
-    IMarkdownImportDraftState
+    MarkdownImportDraftState
 >(
     MarkdownImportActionEnums.previewSuccess,
     (previewPlan) => ({
@@ -124,7 +124,7 @@ export const saveError = createAction<MarkdownImportStatePayload>(
 
 export const setPreview = createAction<
     MarkdownImportStatePayload,
-    IMarkdownImportDraftState | null
+    MarkdownImportDraftState | null
 >(
     MarkdownImportActionEnums.setPreview,
     (previewPlan) => ({ previewPlan }),

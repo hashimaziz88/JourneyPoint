@@ -270,6 +270,9 @@ export const useStyles = createStyles(({ css, token }) => ({
   `,
 
   loadingWrap: css`
+    display: flex;
+    align-items: center;
+    justify-content: center;
     min-height: 320px;
     width: 100%;
   `,

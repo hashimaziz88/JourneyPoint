@@ -14,7 +14,7 @@ import {
     SaveOutlined,
     SyncOutlined,
 } from "@ant-design/icons";
-import { buildFacilitatorPlanRoute } from "@/constants/auth/routes";
+import { buildFacilitatorPlanRoute } from "@/routes/auth.routes";
 import ExtractedProposalEditorModal from "@/components/plans/ExtractedProposalEditorModal";
 import DocumentReviewProposalPanel from "@/components/plans/DocumentReviewProposalPanel";
 import DocumentReviewSummaryCard from "@/components/plans/DocumentReviewSummaryCard";
@@ -23,14 +23,14 @@ import {
     useOnboardingDocumentActions,
     useOnboardingDocumentState,
 } from "@/providers/onboardingDocumentProvider";
-import type { IExtractedTaskProposalEditorValues } from "@/types/onboarding-document";
+import type { ExtractedTaskProposalEditorValues } from "@/types/onboarding-document/onboarding-document";
 import {
     OnboardingDocumentStatus,
     ExtractedTaskReviewStatus,
-} from "@/types/onboarding-document";
+} from "@/types/onboarding-document/onboarding-document";
 import type {
-    IDocumentReviewWorkspaceProps,
-    IProposalModalState,
+    DocumentReviewWorkspaceProps,
+    ProposalModalState,
 } from "@/types/plans/components";
 import { useRouter } from "next/navigation";
 import {
@@ -43,7 +43,7 @@ const { Paragraph, Title } = Typography;
 /**
  * Provides facilitator review over one uploaded enrichment document and its proposals.
  */
-const DocumentReviewWorkspace: React.FC<IDocumentReviewWorkspaceProps> = ({
+const DocumentReviewWorkspace: React.FC<DocumentReviewWorkspaceProps> = ({
     documentId,
     planId,
 }) => {
@@ -61,7 +61,7 @@ const DocumentReviewWorkspace: React.FC<IDocumentReviewWorkspaceProps> = ({
     } = useOnboardingDocumentActions();
     const { isDetailPending, isMutationPending, selectedDocument } =
         useOnboardingDocumentState();
-    const [proposalModalState, setProposalModalState] = useState<IProposalModalState | null>(
+    const [proposalModalState, setProposalModalState] = useState<ProposalModalState | null>(
         null,
     );
 
@@ -205,7 +205,7 @@ const DocumentReviewWorkspace: React.FC<IDocumentReviewWorkspaceProps> = ({
     };
 
     const handleProposalSubmit = async (
-        values: IExtractedTaskProposalEditorValues,
+        values: ExtractedTaskProposalEditorValues,
     ): Promise<void> => {
         if (!editingProposal || !proposalModalState) {
             return;

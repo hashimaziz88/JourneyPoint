@@ -1,7 +1,7 @@
 import React from "react";
 import { APP_ROLE_NAMES } from "@/constants/auth/permissions";
 import { ENROLEE_NAVIGATION_ITEMS } from "@/constants/global/navigation";
-import RoleShell from "@/layout/RoleShell";
+import RoleShell from "@/layouts/RoleShell";
 
 const EnroleeLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <RoleShell

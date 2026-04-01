@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type { FormProps } from "antd";
 import { Alert, Button, Checkbox, Form, Input, Space, Typography, message } from "antd";
 import { ApartmentOutlined, CheckCircleOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
-import { useAppSession } from "@/helpers/useAppSession";
+import { useAppSession } from "@/hooks/useAppSession";
 import { useAuthActions, useAuthState } from "@/providers/authProvider";
 import { LoginFieldType } from "@/types/auth/formTypes";
 import type { TenantResolveStatus } from "@/types/auth/login";
@@ -19,7 +19,7 @@ const LoginForm: React.FC = () => {
   const { styles } = useStyles();
   const { login, resolveTenant, clearTenant } = useAuthActions();
   const authState = useAuthState();
-  const { defaultRoute, isAuthenticated, isMultiTenancyEnabled, isReady, tenant } = useAppSession();
+  const { defaultRoute, isAuthenticated, isMultiTenancyEnabled, isReady, tenant, configurationError } = useAppSession();
   const [messageApi, messageContextHolder] = message.useMessage();
   const [tenantStatus, setTenantStatus] = useState<TenantResolveStatus>("idle");
   const [form] = Form.useForm<LoginFieldType>();
@@ -95,6 +95,16 @@ const LoginForm: React.FC = () => {
         <Title level={2}>Welcome back</Title>
         <Text type="secondary">Sign in with your host or tenant account.</Text>
       </Space>
+
+      {configurationError ? (
+        <Alert
+          type="error"
+          showIcon
+          className={styles.infoAlert}
+          title="Configuration error"
+          description={configurationError}
+        />
+      ) : null}
 
       {isMultiTenancyEnabled && (
         <Alert

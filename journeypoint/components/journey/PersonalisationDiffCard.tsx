@@ -8,7 +8,7 @@ import {
     PERSONALISATION_DECISION_COLORS,
     PERSONALISATION_DECISION_LABELS,
 } from "@/constants/journey/personalisation";
-import type { IPersonalisationDiffCardProps } from "@/types/journey/components";
+import type { PersonalisationDiffCardProps } from "@/types/journey/components";
 import { getChangedFieldComparisons } from "@/utils/journey/personalisation";
 
 const { Paragraph, Text, Title } = Typography;
@@ -16,7 +16,7 @@ const { Paragraph, Text, Title } = Typography;
 /**
  * Renders one AI-proposed journey-task revision with explicit accept or reject controls.
  */
-const PersonalisationDiffCard: React.FC<IPersonalisationDiffCardProps> = ({
+const PersonalisationDiffCard: React.FC<PersonalisationDiffCardProps> = ({
     decision,
     diff,
     onDecisionChange,

@@ -4,7 +4,7 @@ import React from "react";
 import { Button, Progress, Typography } from "antd";
 import EngagementBadge from "@/components/engagement/EngagementBadge";
 import { useStyles } from "@/components/pipeline/style/style";
-import type { IHirePipelineCardProps } from "@/types/pipeline/components";
+import type { HirePipelineCardProps } from "@/types/pipeline/components";
 import { formatDisplayDate } from "@/utils/date";
 import { formatPercentage } from "@/utils/pipeline/board";
 
@@ -13,7 +13,7 @@ const { Text, Title } = Typography;
 /**
  * Renders one facilitator pipeline card with drill-in actions and engagement status.
  */
-const HirePipelineCard: React.FC<IHirePipelineCardProps> = ({
+const HirePipelineCard: React.FC<HirePipelineCardProps> = ({
     hire,
     onOpenHire,
     onOpenJourney,

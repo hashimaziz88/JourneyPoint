@@ -3,7 +3,7 @@
 import React from "react";
 import { Card, Empty, Space, Typography } from "antd";
 import { useStyles } from "@/components/engagement/style/style";
-import type { IScoreTrendChartProps } from "@/types/engagement/components";
+import type { ScoreTrendChartProps } from "@/types/engagement/components";
 import {
     getTrendChartModel,
     getTrendDeltaLabel,
@@ -24,7 +24,7 @@ const { Paragraph, Text, Title } = Typography;
 /**
  * Renders the hire-level engagement score trend from persisted snapshot history.
  */
-const ScoreTrendChart: React.FC<IScoreTrendChartProps> = ({
+const ScoreTrendChart: React.FC<ScoreTrendChartProps> = ({
     activationDate,
     currentSnapshot,
     snapshotHistory,

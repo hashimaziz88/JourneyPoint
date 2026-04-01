@@ -1,4 +1,4 @@
-import type { IPipelineBoardDto } from "@/types/pipeline";
+import type { PipelineBoardDto } from "@/types/pipeline/pipeline";
 import type { IPipelineStateContext } from "@/providers/pipelineProvider/context";
 
 type PipelineStatePatch = Partial<IPipelineStateContext>;
@@ -10,7 +10,7 @@ export const buildPipelinePendingState = (): PipelineStatePatch => ({
 });
 
 export const buildPipelineSuccessState = (
-    board: IPipelineBoardDto | null,
+    board: PipelineBoardDto | null,
 ): PipelineStatePatch => ({
     isPending: false,
     isError: false,

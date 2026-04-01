@@ -2,6 +2,7 @@
 
 import React, { startTransition, useEffect, useEffectEvent, useState } from "react";
 import {
+    Alert,
     Button,
     Card,
     Empty,
@@ -17,21 +18,23 @@ import { ImportOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons"
 import {
     APP_ROUTES,
     buildFacilitatorPlanRoute,
-} from "@/constants/auth/routes";
+} from "@/routes/auth.routes";
 import { DEFAULT_PLAN_LIST_QUERY_STATE } from "@/constants/plans/list";
 import PlanCard from "@/components/plans/PlanCard";
 import { useStyles } from "@/components/plans/style/style";
 import {
-    IOnboardingPlanListItemDto,
-    ONBOARDING_PLAN_STATUS_LABELS,
+    OnboardingPlanListItemDto,
     OnboardingPlanStatus,
-} from "@/types/onboarding-plan";
+} from "@/types/onboarding-plan/onboarding-plan"
+import {
+    ONBOARDING_PLAN_STATUS_LABELS,
+} from "@/constants/plans/onboarding-plan";
 import {
     useOnboardingPlanActions,
     useOnboardingPlanState,
 } from "@/providers/onboardingPlanProvider";
 import { useRouter } from "next/navigation";
-import type { IPlanListQueryState } from "@/types/plans/components";
+import type { PlanListQueryState } from "@/types/plans/components";
 import { buildPlanListRequest } from "@/utils/plans/planList";
 
 const { Paragraph, Title } = Typography;
@@ -45,20 +48,20 @@ const PlanListView: React.FC = () => {
     const [messageApi, messageContextHolder] = message.useMessage();
     const { archivePlan, clonePlan, getPlans, publishPlan } =
         useOnboardingPlanActions();
-    const { isListPending, isMutationPending, plans, totalCount } =
+    const { isError, isListPending, isMutationPending, plans, totalCount } =
         useOnboardingPlanState();
     const [keywordInput, setKeywordInput] = useState("");
     const [statusInput, setStatusInput] = useState<
         OnboardingPlanStatus | undefined
     >(undefined);
-    const [query, setQuery] = useState<IPlanListQueryState>(DEFAULT_PLAN_LIST_QUERY_STATE);
+    const [query, setQuery] = useState<PlanListQueryState>(DEFAULT_PLAN_LIST_QUERY_STATE);
 
     const loadPlans = useEffectEvent(async (): Promise<void> => {
         await getPlans(buildPlanListRequest(query));
     });
 
     const refreshPlans = async (
-        nextQuery: IPlanListQueryState = query,
+        nextQuery: PlanListQueryState = query,
     ): Promise<void> => {
         await getPlans(buildPlanListRequest(nextQuery));
     };
@@ -89,7 +92,7 @@ const PlanListView: React.FC = () => {
     };
 
     const handleClone = async (
-        plan: IOnboardingPlanListItemDto,
+        plan: OnboardingPlanListItemDto,
     ): Promise<void> => {
         const clonedPlan = await clonePlan({ sourcePlanId: plan.id });
 
@@ -105,7 +108,7 @@ const PlanListView: React.FC = () => {
     };
 
     const handlePublish = async (
-        plan: IOnboardingPlanListItemDto,
+        plan: OnboardingPlanListItemDto,
     ): Promise<void> => {
         const publishedPlan = await publishPlan(plan.id);
 
@@ -119,7 +122,7 @@ const PlanListView: React.FC = () => {
     };
 
     const handleArchive = async (
-        plan: IOnboardingPlanListItemDto,
+        plan: OnboardingPlanListItemDto,
     ): Promise<void> => {
         const archivedPlan = await archivePlan(plan.id);
 
@@ -133,46 +136,60 @@ const PlanListView: React.FC = () => {
     };
 
     const hasPlans = (plans ?? []).length > 0;
-    const listContent = isListPending ? (
-        <Spin size="large" className={styles.loadingWrap} />
-    ) : hasPlans ? (
-        <>
-            <div className={styles.planGrid}>
-                {(plans ?? []).map((plan) => (
-                    <PlanCard
-                        key={plan.id}
-                        isActionPending={isMutationPending}
-                        onArchive={handleArchive}
-                        onClone={handleClone}
-                        onOpen={handleOpen}
-                        onPublish={handlePublish}
-                        plan={plan}
-                    />
-                ))}
-            </div>
+    let listContent: React.ReactNode;
+    if (isListPending) {
+        listContent = <Spin size="large" className={styles.loadingWrap} />;
+    } else if (isError && !hasPlans) {
+        listContent = (
+            <Alert
+                type="error"
+                showIcon
+                title="Onboarding plans could not be loaded."
+                description="Check the backend connection or try refreshing."
+            />
+        );
+    } else if (hasPlans) {
+        listContent = (
+            <>
+                <div className={styles.planGrid}>
+                    {(plans ?? []).map((plan) => (
+                        <PlanCard
+                            key={plan.id}
+                            isActionPending={isMutationPending}
+                            onArchive={handleArchive}
+                            onClone={handleClone}
+                            onOpen={handleOpen}
+                            onPublish={handlePublish}
+                            plan={plan}
+                        />
+                    ))}
+                </div>
 
-            <div className={styles.paginationWrap}>
-                <Pagination
-                    current={query.current}
-                    pageSize={query.maxResultCount}
-                    total={totalCount ?? 0}
-                    showSizeChanger
-                    onChange={(page, pageSize) =>
-                        setQuery((currentQuery) => ({
-                            ...currentQuery,
-                            current: page,
-                            maxResultCount: pageSize,
-                        }))
-                    }
-                />
-            </div>
-        </>
-    ) : (
-        <Empty
-            className={styles.emptyState}
-            description="No onboarding plans match the current filter set."
-        />
-    );
+                <div className={styles.paginationWrap}>
+                    <Pagination
+                        current={query.current}
+                        pageSize={query.maxResultCount}
+                        total={totalCount ?? 0}
+                        showSizeChanger
+                        onChange={(page, pageSize) =>
+                            setQuery((currentQuery) => ({
+                                ...currentQuery,
+                                current: page,
+                                maxResultCount: pageSize,
+                            }))
+                        }
+                    />
+                </div>
+            </>
+        );
+    } else {
+        listContent = (
+            <Empty
+                className={styles.emptyState}
+                description="No onboarding plans match the current filter set."
+            />
+        );
+    }
 
     return (
         <Space orientation="vertical" size={24} className={styles.pageRoot}>
@@ -292,8 +309,8 @@ const PlanListView: React.FC = () => {
                             }))}
                     />
 
-                    <Button onClick={handleApplyFilters}>Apply Filters</Button>
-                    <Button onClick={handleResetFilters}>Reset</Button>
+                    <Button disabled={isListPending} onClick={handleApplyFilters}>Apply Filters</Button>
+                    <Button disabled={isListPending} onClick={handleResetFilters}>Reset</Button>
                 </div>
             </Card>
 

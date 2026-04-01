@@ -1,4 +1,4 @@
-import { EngagementClassification } from "@/types/engagement";
+import { EngagementClassification } from "@/types/engagement/engagement";
 
 export const ENGAGEMENT_CLASSIFICATION_LABELS: Record<EngagementClassification, string> = {
     [EngagementClassification.Healthy]: "Healthy",

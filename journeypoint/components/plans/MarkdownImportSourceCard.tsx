@@ -4,14 +4,14 @@ import React from "react";
 import { Card, Input, Space, Typography, Upload } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 import { useStyles } from "@/components/plans/style/style";
-import type { IMarkdownImportSourceCardProps } from "@/types/plans/components";
+import type { MarkdownImportSourceCardProps } from "@/types/plans/components";
 
 const { Paragraph, Text, Title } = Typography;
 
 /**
  * Renders the source-input card for document-backed plan import.
  */
-const MarkdownImportSourceCard: React.FC<IMarkdownImportSourceCardProps> = ({
+const MarkdownImportSourceCard: React.FC<MarkdownImportSourceCardProps> = ({
     sourceContent,
     sourceContentType,
     sourceFileName,

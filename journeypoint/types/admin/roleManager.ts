@@ -1,8 +1,6 @@
-import type { ICreateRoleDto } from "@/types/role";
+import type { CreateRoleDto } from "@/types/role/role";
 
-/**
- * Describes the editable role form values used by the admin workspace.
- */
-export interface IRoleFormValues extends ICreateRoleDto {
+/** Describes the editable role form values used by the admin workspace. */
+export type RoleFormValues = CreateRoleDto & {
     id?: number;
-}
+};

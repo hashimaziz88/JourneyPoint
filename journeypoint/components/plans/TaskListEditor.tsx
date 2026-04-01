@@ -6,9 +6,9 @@ import {
     ONBOARDING_TASK_ACKNOWLEDGEMENT_RULE_OPTIONS,
     ONBOARDING_TASK_ASSIGNMENT_TARGET_OPTIONS,
     ONBOARDING_TASK_CATEGORY_OPTIONS,
-} from "@/types/onboarding-plan";
+} from "@/constants/plans/onboarding-plan";
 import { useStyles } from "@/components/plans/style/style";
-import type { ITaskListEditorProps } from "@/types/plans/components";
+import type { TaskListEditorProps } from "@/types/plans/components";
 import { findOptionLabel } from "@/utils/plans/optionLabels";
 
 const { Paragraph, Title } = Typography;
@@ -16,7 +16,7 @@ const { Paragraph, Title } = Typography;
 /**
  * Renders ordered module tasks and exposes task editing controls.
  */
-const TaskListEditor: React.FC<ITaskListEditorProps> = ({
+const TaskListEditor: React.FC<TaskListEditorProps> = ({
     isReadOnly,
     onAddTask,
     onDeleteTask,

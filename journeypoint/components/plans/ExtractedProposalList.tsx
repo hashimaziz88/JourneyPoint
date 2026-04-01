@@ -4,15 +4,17 @@ import React from "react";
 import { Button, Card, Empty, Space, Tag, Typography } from "antd";
 import { useStyles } from "@/components/plans/style/style";
 import {
-    EXTRACTED_TASK_REVIEW_STATUS_LABELS,
     ExtractedTaskReviewStatus,
-} from "@/types/onboarding-document";
+} from "@/types/onboarding-document/onboarding-document"
+import {
+    EXTRACTED_TASK_REVIEW_STATUS_LABELS,
+} from "@/constants/plans/onboarding-document";
 import {
     ONBOARDING_TASK_ACKNOWLEDGEMENT_RULE_OPTIONS,
     ONBOARDING_TASK_ASSIGNMENT_TARGET_OPTIONS,
     ONBOARDING_TASK_CATEGORY_OPTIONS,
-} from "@/types/onboarding-plan";
-import type { IExtractedProposalListProps } from "@/types/plans/components";
+} from "@/constants/plans/onboarding-plan";
+import type { ExtractedProposalListProps } from "@/types/plans/components";
 import { findOptionLabel, getModuleName } from "@/utils/plans/optionLabels";
 import { getProposalStatusColor } from "@/utils/plans/proposalEditor";
 
@@ -21,7 +23,7 @@ const { Paragraph, Title } = Typography;
 /**
  * Renders reviewable extracted-task proposals and exposes facilitator actions.
  */
-const ExtractedProposalList: React.FC<IExtractedProposalListProps> = ({
+const ExtractedProposalList: React.FC<ExtractedProposalListProps> = ({
     availableModules,
     isPending,
     onAccept,
