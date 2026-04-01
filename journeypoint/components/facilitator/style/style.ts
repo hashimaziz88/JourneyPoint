@@ -92,4 +92,8 @@ export const useStyles = createStyles(({ token, css }) => ({
     font-size: ${token.fontSizeSM}px;
     color: ${token.colorTextTertiary};
   `,
+
+  scopeChipTag: css`
+    margin: 0;
+  `,
 }));

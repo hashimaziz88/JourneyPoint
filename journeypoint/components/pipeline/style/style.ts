@@ -223,4 +223,8 @@ export const useStyles = createStyles(({ css, token }) => ({
     font-size: ${token.fontSizeSM}px;
     font-weight: 400;
   `,
+
+  collapseLabelTag: css`
+    margin-inline-end: 0;
+  `,
 }));

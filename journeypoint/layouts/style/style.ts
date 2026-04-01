@@ -193,4 +193,12 @@ export const useStyles = createStyles(({ token, css }) => ({
     border: 1px dashed ${token.colorPrimaryBorder};
     background: ${token.colorPrimaryBg};
   `,
+
+  brandRow: css`
+    margin-bottom: 4px;
+  `,
+
+  brandTitleNoMargin: css`
+    margin: 0 !important;
+  `,
 }));

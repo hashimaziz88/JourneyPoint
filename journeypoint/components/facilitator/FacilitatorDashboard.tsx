@@ -111,7 +111,7 @@ const FacilitatorDashboard: React.FC = () => {
           {tenantName && (
             <div className={styles.scopeChip}>
               <span>Tenant</span>
-              <Tag color="gold" style={{ margin: 0 }}>
+              <Tag color="gold" className={styles.scopeChipTag}>
                 {tenantName}
               </Tag>
             </div>

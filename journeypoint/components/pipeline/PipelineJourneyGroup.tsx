@@ -22,9 +22,9 @@ const PipelineJourneyGroup: React.FC<PipelineJourneyGroupProps> = ({
     const groupLabel = (
         <span className={styles.collapseLabel}>
             <span className={styles.collapseLabelTitle}>{group.planName}</span>
-            <Tag style={{ marginInlineEnd: 0 }}>{group.totalHires} enrolled</Tag>
+            <Tag className={styles.collapseLabelTag}>{group.totalHires} enrolled</Tag>
             {group.atRiskCount > 0 && (
-                <Tag color="error" style={{ marginInlineEnd: 0 }}>{group.atRiskCount} at risk</Tag>
+                <Tag color="error" className={styles.collapseLabelTag}>{group.atRiskCount} at risk</Tag>
             )}
             <Text type="secondary" className={styles.collapseLabelMeta}>
                 {group.columns.length} stage{group.columns.length === 1 ? "" : "s"}

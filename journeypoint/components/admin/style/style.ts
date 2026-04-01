@@ -169,4 +169,25 @@ export const useStyles = createStyles(({ token, css }) => ({
   hostAlert: css`
     margin-bottom: ${token.marginLG}px;
   `,
+
+  headingRow: css`
+    margin-bottom: 4px;
+  `,
+
+  headingNoMargin: css`
+    margin: 0 !important;
+  `,
+
+  statusBarLabel: css`
+    font-size: 11px;
+  `,
+
+  statusBarTag: css`
+    margin: 0;
+  `,
+
+  navCardLink: css`
+    display: block;
+    height: 100%;
+  `,
 }));

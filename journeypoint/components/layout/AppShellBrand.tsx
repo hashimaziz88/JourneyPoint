@@ -19,7 +19,7 @@ const AppShellBrand: React.FC<AppShellBrandProps> = ({ subtitle }) => {
   return (
     <div className={styles.siderBrand}>
       <Link href={APP_ROUTES.home}>
-        <Space align="center" size={8} style={{ marginBottom: 4 }}>
+        <Space align="center" size={8} className={styles.brandRow}>
           <Image
             src="/journeypoint.svg"
             alt="JourneyPoint"
@@ -27,7 +27,7 @@ const AppShellBrand: React.FC<AppShellBrandProps> = ({ subtitle }) => {
             height={24}
             priority
           />
-          <Title level={4} className={styles.siderTitle} style={{ margin: 0 }}>
+          <Title level={4} className={`${styles.siderTitle} ${styles.brandTitleNoMargin}`}>
             JourneyPoint
           </Title>
         </Space>

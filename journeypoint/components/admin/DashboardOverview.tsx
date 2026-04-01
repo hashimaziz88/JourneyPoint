@@ -31,8 +31,8 @@ const DashboardOverview: React.FC = () => {
 
       {/* Header */}
       <div>
-        <Space align="center" size={8} style={{ marginBottom: 4 }}>
-          <Title level={2} className={styles.overviewHeading} style={{ margin: 0 }}>
+        <Space align="center" size={8} className={styles.headingRow}>
+          <Title level={2} className={`${styles.overviewHeading} ${styles.headingNoMargin}`}>
             Welcome back
           </Title>
           <Tag color={isTenant ? "gold" : "blue"}>{scopeLabel}</Tag>
@@ -46,7 +46,7 @@ const DashboardOverview: React.FC = () => {
       {/* Status bar */}
       <div className={styles.statusBar}>
         <div className={styles.statusBarItem}>
-          <Text type="secondary" style={{ fontSize: 11 }}>
+          <Text type="secondary" className={styles.statusBarLabel}>
             Signed in as
           </Text>
           <Text strong>
@@ -55,17 +55,17 @@ const DashboardOverview: React.FC = () => {
         </div>
         <div className={styles.statusBarDivider} />
         <div className={styles.statusBarItem}>
-          <Text type="secondary" style={{ fontSize: 11 }}>
+          <Text type="secondary" className={styles.statusBarLabel}>
             Email
           </Text>
           <Text>{session.user?.emailAddress ?? "—"}</Text>
         </div>
         <div className={styles.statusBarDivider} />
         <div className={styles.statusBarItem}>
-          <Text type="secondary" style={{ fontSize: 11 }}>
+          <Text type="secondary" className={styles.statusBarLabel}>
             Scope
           </Text>
-          <Tag color={isTenant ? "gold" : "blue"} style={{ margin: 0 }}>
+          <Tag color={isTenant ? "gold" : "blue"} className={styles.statusBarTag}>
             {scopeLabel}
           </Tag>
         </div>
@@ -81,7 +81,7 @@ const DashboardOverview: React.FC = () => {
             item.permission ? session.hasPermission(item.permission) : true,
           ).map((item) => (
             <Col xs={24} md={12} xl={8} key={item.key}>
-              <Link href={item.href} style={{ display: "block", height: "100%" }}>
+              <Link href={item.href} className={styles.navCardLink}>
                 <Card className={styles.navCard}>
                   <span className={styles.navCardIcon}>
                     {NAVIGATION_ICONS[item.iconKey]}
