@@ -8,6 +8,7 @@ using Xunit;
 using JourneyPoint.Application.Services.OnboardingPlanService;
 using JourneyPoint.Application.Services.OnboardingPlanService.Dto;
 using JourneyPoint.Domains.OnboardingPlans;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 
 namespace JourneyPoint.Tests.OnboardingPlans
 {

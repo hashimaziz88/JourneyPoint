@@ -4,6 +4,7 @@ using System.Linq;
 using JourneyPoint.Application.Services.GroqService.Dto;
 using JourneyPoint.Domains.Hires;
 using JourneyPoint.Domains.OnboardingPlans;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 
 namespace JourneyPoint.Application.Services.GroqService.Helpers
 {

@@ -1,4 +1,4 @@
-namespace JourneyPoint.Domains.Hires
+namespace JourneyPoint.Domains.Hires.Enums
 {
     /// <summary>
     /// Defines the stored completion states for one journey task.

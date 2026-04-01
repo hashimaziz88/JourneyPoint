@@ -2,7 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JourneyPoint.Domains.Engagement;
+using JourneyPoint.Domains.Engagement.Enums;
+using JourneyPoint.Domains.Engagement.Helpers;
 using JourneyPoint.Domains.Hires;
+using JourneyPoint.Domains.Hires.Enums;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 using JourneyPoint.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +19,7 @@ namespace JourneyPoint.EntityFrameworkCore.Seed.Tenants
     public class DemoSeedValidator
     {
         private readonly JourneyPointDbContext _context;
-        private readonly EngagementScoreService _engagementScoreService;
+        private readonly EngagementScoreCalculator _engagementScoreService;
 
         /// <summary>
         /// Initializes the demo-seed validator.
@@ -22,7 +27,7 @@ namespace JourneyPoint.EntityFrameworkCore.Seed.Tenants
         public DemoSeedValidator(JourneyPointDbContext context)
         {
             _context = context;
-            _engagementScoreService = new EngagementScoreService();
+            _engagementScoreService = new EngagementScoreCalculator();
         }
 
         /// <summary>
@@ -66,7 +71,7 @@ namespace JourneyPoint.EntityFrameworkCore.Seed.Tenants
             }
 
             var hasManagerTasks = hires.Any(hire =>
-                hire.Journey?.Tasks.Any(task => task.AssignmentTarget == Domains.OnboardingPlans.OnboardingTaskAssignmentTarget.Manager) == true);
+                hire.Journey?.Tasks.Any(task => task.AssignmentTarget == OnboardingTaskAssignmentTarget.Manager) ?? false);
 
             if (!hasManagerTasks)
             {

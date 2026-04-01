@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JourneyPoint.Application.Services.MarkdownImportService.Dto;
 using JourneyPoint.Domains.OnboardingPlans;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 
 namespace JourneyPoint.Application.Services.MarkdownImportService.Helpers
 {

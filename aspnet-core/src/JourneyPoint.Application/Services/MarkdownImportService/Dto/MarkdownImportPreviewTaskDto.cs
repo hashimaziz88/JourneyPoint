@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using JourneyPoint.Domains.OnboardingPlans;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 
 namespace JourneyPoint.Application.Services.MarkdownImportService.Dto
 {

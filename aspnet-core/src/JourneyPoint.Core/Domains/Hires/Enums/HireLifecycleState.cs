@@ -1,4 +1,4 @@
-namespace JourneyPoint.Domains.Hires
+namespace JourneyPoint.Domains.Hires.Enums
 {
     /// <summary>
     /// Defines the lifecycle states for an enrolled hire.

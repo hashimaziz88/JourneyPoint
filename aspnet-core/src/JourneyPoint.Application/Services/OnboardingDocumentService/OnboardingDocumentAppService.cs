@@ -10,6 +10,7 @@ using JourneyPoint.Application.Services.OnboardingDocumentService.Dto;
 using JourneyPoint.Application.Services.OnboardingDocumentService.Helpers;
 using JourneyPoint.Authorization;
 using JourneyPoint.Domains.OnboardingPlans;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 
 namespace JourneyPoint.Application.Services.OnboardingDocumentService
 {

@@ -1,4 +1,5 @@
 using System;
+using JourneyPoint.Domains.Hires.Enums;
 
 namespace JourneyPoint.Domains.Hires
 {

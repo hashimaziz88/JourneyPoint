@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using JourneyPoint.Domains.Engagement;
+using JourneyPoint.Domains.Engagement.Enums;
 
 namespace JourneyPoint.Application.Services.EngagementService.Dto
 {

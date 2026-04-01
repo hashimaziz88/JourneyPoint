@@ -1,4 +1,4 @@
-namespace JourneyPoint.Domains.Audit
+namespace JourneyPoint.Domains.Audit.Enums
 {
     /// <summary>
     /// Describes the outcome of one AI workflow execution.

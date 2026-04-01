@@ -14,6 +14,7 @@ using JourneyPoint.Application.Services.GroqService.Dto;
 using JourneyPoint.Application.Services.GroqService.Helpers;
 using JourneyPoint.Configuration;
 using JourneyPoint.Domains.Audit;
+using JourneyPoint.Domains.Audit.Enums;
 using JourneyPoint.Domains.Hires;
 using JourneyPoint.Domains.OnboardingPlans;
 using Microsoft.Extensions.Options;

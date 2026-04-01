@@ -1,4 +1,4 @@
-namespace JourneyPoint.Domains.Engagement
+namespace JourneyPoint.Domains.Engagement.Enums
 {
     /// <summary>
     /// Defines the lifecycle states for a durable at-risk intervention record.

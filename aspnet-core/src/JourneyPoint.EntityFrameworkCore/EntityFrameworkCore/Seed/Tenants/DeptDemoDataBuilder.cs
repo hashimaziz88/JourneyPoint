@@ -2,8 +2,11 @@ using System;
 using JourneyPoint.Authorization.Roles;
 using JourneyPoint.Authorization.Users;
 using JourneyPoint.Domains.Engagement;
+using JourneyPoint.Domains.Engagement.Enums;
 using JourneyPoint.Domains.Hires;
+using JourneyPoint.Domains.Hires.Enums;
 using JourneyPoint.Domains.OnboardingPlans;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 using JourneyPoint.MultiTenancy;
 
 namespace JourneyPoint.EntityFrameworkCore.Seed.Tenants

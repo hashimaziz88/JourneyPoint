@@ -1,4 +1,4 @@
-namespace JourneyPoint.Domains.Audit
+namespace JourneyPoint.Domains.Audit.Enums
 {
     /// <summary>
     /// Identifies the AI workflow recorded by one generation log entry.

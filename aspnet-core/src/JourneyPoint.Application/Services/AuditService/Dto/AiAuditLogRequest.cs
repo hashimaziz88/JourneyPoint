@@ -1,5 +1,6 @@
 using System;
 using JourneyPoint.Domains.Audit;
+using JourneyPoint.Domains.Audit.Enums;
 
 namespace JourneyPoint.Application.Services.AuditService.Dto
 {

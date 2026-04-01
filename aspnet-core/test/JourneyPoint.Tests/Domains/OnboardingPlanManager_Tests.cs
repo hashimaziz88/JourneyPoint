@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using JourneyPoint.Domains.OnboardingPlans;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 using Shouldly;
 using Xunit;
 

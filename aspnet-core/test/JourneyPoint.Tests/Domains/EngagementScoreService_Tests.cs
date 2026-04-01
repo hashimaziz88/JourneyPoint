@@ -1,5 +1,6 @@
 using System;
-using JourneyPoint.Domains.Engagement;
+using JourneyPoint.Domains.Engagement.Enums;
+using JourneyPoint.Domains.Engagement.Helpers;
 using Shouldly;
 using Xunit;
 
@@ -7,7 +8,7 @@ namespace JourneyPoint.Tests.Domains
 {
     public class EngagementScoreService_Tests
     {
-        private readonly EngagementScoreService _service = new();
+        private readonly EngagementScoreCalculator _service = new();
 
         private static EngagementScoreInput ValidInput(
             int total = 10,
@@ -130,7 +131,7 @@ namespace JourneyPoint.Tests.Domains
         public void Calculate_WithActivityAtThreshold_SetsRecencyScoreToZero()
         {
             // RecencyZeroScoreDay = 14
-            var input = ValidInput(daysSince: EngagementScoreService.RecencyZeroScoreDay);
+            var input = ValidInput(daysSince: EngagementScoreCalculator.RecencyZeroScoreDay);
 
             var result = _service.Calculate(input);
 

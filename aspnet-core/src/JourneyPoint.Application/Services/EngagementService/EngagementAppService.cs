@@ -6,6 +6,7 @@ using JourneyPoint.Application.Services.EngagementService.Dto;
 using JourneyPoint.Authorization;
 using JourneyPoint.Authorization.Users;
 using JourneyPoint.Domains.Engagement;
+using JourneyPoint.Domains.Engagement.Helpers;
 using JourneyPoint.Domains.Hires;
 
 namespace JourneyPoint.Application.Services.EngagementService
@@ -16,11 +17,10 @@ namespace JourneyPoint.Application.Services.EngagementService
     public partial class EngagementAppService : JourneyPointAppServiceBase, IEngagementAppService
     {
         private readonly IRepository<Hire, Guid> _hireRepository;
-        private readonly IRepository<JourneyTask, Guid> _journeyTaskRepository;
         private readonly IRepository<EngagementSnapshot, Guid> _engagementSnapshotRepository;
         private readonly IRepository<AtRiskFlag, Guid> _atRiskFlagRepository;
         private readonly EngagementManager _engagementManager;
-        private readonly EngagementScoreService _engagementScoreService;
+        private readonly EngagementScoreCalculator _engagementScoreService;
         private readonly UserManager _userManager;
 
         /// <summary>
@@ -28,15 +28,13 @@ namespace JourneyPoint.Application.Services.EngagementService
         /// </summary>
         public EngagementAppService(
             IRepository<Hire, Guid> hireRepository,
-            IRepository<JourneyTask, Guid> journeyTaskRepository,
             IRepository<EngagementSnapshot, Guid> engagementSnapshotRepository,
             IRepository<AtRiskFlag, Guid> atRiskFlagRepository,
             EngagementManager engagementManager,
-            EngagementScoreService engagementScoreService,
+            EngagementScoreCalculator engagementScoreService,
             UserManager userManager)
         {
             _hireRepository = hireRepository;
-            _journeyTaskRepository = journeyTaskRepository;
             _engagementSnapshotRepository = engagementSnapshotRepository;
             _atRiskFlagRepository = atRiskFlagRepository;
             _engagementManager = engagementManager;

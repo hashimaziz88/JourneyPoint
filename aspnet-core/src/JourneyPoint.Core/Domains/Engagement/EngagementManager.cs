@@ -1,5 +1,7 @@
 using System;
 using Abp.Domain.Services;
+using JourneyPoint.Domains.Engagement.Enums;
+using JourneyPoint.Domains.Engagement.Helpers;
 using JourneyPoint.Domains.Hires;
 
 namespace JourneyPoint.Domains.Engagement

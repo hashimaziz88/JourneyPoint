@@ -1,5 +1,6 @@
 using Abp.Application.Services.Dto;
 using JourneyPoint.Domains.Engagement;
+using JourneyPoint.Domains.Engagement.Enums;
 
 namespace JourneyPoint.Application.Services.EngagementService.Dto
 {

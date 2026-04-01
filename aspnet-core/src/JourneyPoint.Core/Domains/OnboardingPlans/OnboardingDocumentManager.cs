@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Abp.Domain.Services;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 
 namespace JourneyPoint.Domains.OnboardingPlans
 {
