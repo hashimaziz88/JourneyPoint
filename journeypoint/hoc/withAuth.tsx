@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { startTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { WithAuthOptions } from "@/types/auth/withAuth";
 import { APP_ROUTES } from "@/routes/auth.routes";
@@ -34,12 +34,12 @@ const withAuth = <P extends object>(
             }
 
             if (!isAuthenticated) {
-                router.replace(APP_ROUTES.login);
+                startTransition(() => { router.replace(APP_ROUTES.login); });
                 return;
             }
 
             if (!hasAllowedRole || (requiredPermission && !hasRequiredPermission)) {
-                router.replace(defaultRoute);
+                startTransition(() => { router.replace(defaultRoute); });
             }
         }, [defaultRoute, hasAllowedRole, hasRequiredPermission, isAuthenticated, isReady, router]);
 
