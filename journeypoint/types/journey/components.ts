@@ -39,6 +39,7 @@ export type JourneyTaskEditorModalProps = {
 
 export type EnroleeJourneyDashboardViewProps = {
     dashboard?: EnroleeJourneyDashboardDto | null;
+    isError?: boolean;
     isPending: boolean;
     onRefresh: () => Promise<void>;
 };
@@ -68,6 +69,7 @@ export type JourneyTaskAcknowledgementPanelProps = {
 
 export type ManagerTaskWorkspaceViewProps = {
     workspace?: ManagerTaskWorkspaceDto | null;
+    isError?: boolean;
     isPending: boolean;
     isMutationPending: boolean;
     onRefresh: () => Promise<void>;

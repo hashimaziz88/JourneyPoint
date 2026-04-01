@@ -173,10 +173,10 @@ const TenantManager: React.FC = () => {
       key: "actions",
       render: (_, tenant) => (
         <Space>
-          <Button type="link" onClick={() => onEdit(tenant)}>
+          <Button type="link" disabled={tenantState.isPending} onClick={() => onEdit(tenant)}>
             Edit
           </Button>
-          <Button type="link" danger onClick={() => onDelete(tenant)}>
+          <Button type="link" danger disabled={tenantState.isPending} onClick={() => onDelete(tenant)}>
             Delete
           </Button>
         </Space>

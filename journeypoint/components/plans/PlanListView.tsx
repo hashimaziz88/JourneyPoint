@@ -2,6 +2,7 @@
 
 import React, { startTransition, useEffect, useEffectEvent, useState } from "react";
 import {
+    Alert,
     Button,
     Card,
     Empty,
@@ -47,7 +48,7 @@ const PlanListView: React.FC = () => {
     const [messageApi, messageContextHolder] = message.useMessage();
     const { archivePlan, clonePlan, getPlans, publishPlan } =
         useOnboardingPlanActions();
-    const { isListPending, isMutationPending, plans, totalCount } =
+    const { isError, isListPending, isMutationPending, plans, totalCount } =
         useOnboardingPlanState();
     const [keywordInput, setKeywordInput] = useState("");
     const [statusInput, setStatusInput] = useState<
@@ -138,6 +139,15 @@ const PlanListView: React.FC = () => {
     let listContent: React.ReactNode;
     if (isListPending) {
         listContent = <Spin size="large" className={styles.loadingWrap} />;
+    } else if (isError && !hasPlans) {
+        listContent = (
+            <Alert
+                type="error"
+                showIcon
+                title="Onboarding plans could not be loaded."
+                description="Check the backend connection or try refreshing."
+            />
+        );
     } else if (hasPlans) {
         listContent = (
             <>
@@ -299,8 +309,8 @@ const PlanListView: React.FC = () => {
                             }))}
                     />
 
-                    <Button onClick={handleApplyFilters}>Apply Filters</Button>
-                    <Button onClick={handleResetFilters}>Reset</Button>
+                    <Button disabled={isListPending} onClick={handleApplyFilters}>Apply Filters</Button>
+                    <Button disabled={isListPending} onClick={handleResetFilters}>Reset</Button>
                 </div>
             </Card>
 

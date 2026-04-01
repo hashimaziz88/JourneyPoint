@@ -12,7 +12,7 @@ import {
 
 const ManagerMyTasksContent: React.FC = () => {
     const { completeManagerTask, getManagerTasks, resetJourney } = useJourneyActions();
-    const { isDetailPending, isMutationPending, managerWorkspace } = useJourneyState();
+    const { isDetailPending, isError, isMutationPending, managerWorkspace } = useJourneyState();
 
     const loadWorkspace = useEffectEvent(async (): Promise<void> => {
         await getManagerTasks();
@@ -33,6 +33,7 @@ const ManagerMyTasksContent: React.FC = () => {
     return (
         <ManagerTaskWorkspaceView
             workspace={managerWorkspace}
+            isError={isError}
             isPending={isDetailPending}
             isMutationPending={isMutationPending}
             onRefresh={async () => {

@@ -206,8 +206,8 @@ const MarkdownImportWorkspace: React.FC = () => {
                     >
                         Back to Plan Creation
                     </Button>
-                    <Button onClick={handleLoadExample}>Load Example</Button>
-                    <Button onClick={resetImport}>Reset</Button>
+                    <Button disabled={isPreviewPending || isSavePending} onClick={handleLoadExample}>Load Example</Button>
+                    <Button disabled={isPreviewPending || isSavePending} onClick={resetImport}>Reset</Button>
                     <Button
                         icon={<EyeOutlined />}
                         onClick={() => void handlePreview()}

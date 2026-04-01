@@ -60,7 +60,7 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
         resetHireIntelligence,
         resolveAtRiskFlag,
     } = useEngagementActions();
-    const { isDetailPending, selectedHire } = useHireState();
+    const { isDetailPending, isError, selectedHire } = useHireState();
     const { isMutationPending, isPending, selectedHireIntelligence } = useEngagementState();
 
     const loadHireEffect = useEffectEvent(async (): Promise<void> => {
@@ -100,6 +100,17 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
 
     if ((isDetailPending || isPending) && !selectedHire) {
         return <Spin size="large" className={styles.loadingWrap} />;
+    }
+
+    if (isError && !selectedHire) {
+        return (
+            <Alert
+                type="error"
+                showIcon
+                title="Hire details could not be loaded."
+                description="The API may be unavailable. Try refreshing the page."
+            />
+        );
     }
 
     if (!selectedHire) {

@@ -64,7 +64,7 @@ const JourneyReviewView: React.FC<JourneyReviewViewProps> = ({ hireId }) => {
         getHireDetail,
         resetSelectedHire,
     } = useHireActions();
-    const { selectedHire } = useHireState();
+    const { selectedHire, isError: isHireError } = useHireState();
     const {
         activate,
         addTask,
@@ -76,6 +76,7 @@ const JourneyReviewView: React.FC<JourneyReviewViewProps> = ({ hireId }) => {
     } = useJourneyActions();
     const {
         isDetailPending,
+        isError: isJourneyError,
         isMutationPending,
         journey,
         personalisationProposal,
@@ -164,6 +165,17 @@ const JourneyReviewView: React.FC<JourneyReviewViewProps> = ({ hireId }) => {
 
     if (!selectedHire && isDetailPending) {
         return <Spin size="large" className={styles.loadingWrap} />;
+    }
+
+    if ((isHireError || isJourneyError) && !selectedHire) {
+        return (
+            <Alert
+                type="error"
+                showIcon
+                title="Journey review data could not be loaded."
+                description="The API may be unavailable. Try refreshing the page."
+            />
+        );
     }
 
     if (!selectedHire) {
@@ -270,6 +282,7 @@ const JourneyReviewView: React.FC<JourneyReviewViewProps> = ({ hireId }) => {
                                 <>
                                     <Button
                                         icon={<PlusOutlined />}
+                                        disabled={isMutationPending}
                                         onClick={() => {
                                             setEditingTask(null);
                                             setIsTaskModalOpen(true);

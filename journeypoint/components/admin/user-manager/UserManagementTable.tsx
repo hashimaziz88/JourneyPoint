@@ -65,17 +65,18 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
       key: "actions",
       render: (_, user) => (
         <Space wrap>
-          <Button type="link" onClick={() => onEdit(user)}>
+          <Button type="link" disabled={isLoading} onClick={() => onEdit(user)}>
             Edit
           </Button>
           <Button
             type="link"
             icon={<LockOutlined />}
+            disabled={isLoading}
             onClick={() => onResetPassword(user)}
           >
             Reset Password
           </Button>
-          <Button type="link" danger onClick={() => onDelete(user)}>
+          <Button type="link" danger disabled={isLoading} onClick={() => onDelete(user)}>
             Delete
           </Button>
         </Space>

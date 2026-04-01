@@ -20,6 +20,7 @@ const RegisterForm: React.FC = () => {
   const { register } = useAuthActions();
   const authState = useAuthState();
   const { defaultRoute, isAuthenticated, isReady, tenant } = useAppSession();
+  const [messageApi, messageContextHolder] = message.useMessage();
 
   useEffect(() => {
     if (isReady && isAuthenticated) {
@@ -39,9 +40,9 @@ const RegisterForm: React.FC = () => {
 
   useEffect(() => {
     if (authState.isError) {
-      message.error("Registration failed. Please review your details and try again.");
+      messageApi.error("Registration failed. Please review your details and try again.");
     }
-  }, [authState.isError]);
+  }, [authState.isError, messageApi]);
 
   const onFinish: FormProps<RegisterFieldType>["onFinish"] = (values) => {
     void (async () => {
@@ -68,6 +69,7 @@ const RegisterForm: React.FC = () => {
 
   return (
     <div className={styles.form}>
+      {messageContextHolder}
       <Space orientation="vertical" size={4} className={styles.formHeader}>
         <Title level={2}>Create account</Title>
         <Text type="secondary">Register inside a tenant so you can access its admin workspace.</Text>

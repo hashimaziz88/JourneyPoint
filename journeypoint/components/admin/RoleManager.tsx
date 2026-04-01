@@ -210,13 +210,14 @@ const RoleManager: React.FC = () => {
         <Space>
           <Button
             type="link"
+            disabled={roleState.isPending}
             onClick={() => {
               onEdit(role).catch(ignoreAsyncError);
             }}
           >
             Edit
           </Button>
-          <Button type="link" danger onClick={() => onDelete(role)}>
+          <Button type="link" danger disabled={roleState.isPending} onClick={() => onDelete(role)}>
             Delete
           </Button>
         </Space>

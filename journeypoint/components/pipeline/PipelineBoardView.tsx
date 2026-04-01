@@ -2,6 +2,7 @@
 
 import React, { startTransition, useEffect, useEffectEvent, useMemo, useState } from "react";
 import {
+    Alert,
     Button,
     Card,
     Empty,
@@ -39,7 +40,7 @@ const { Paragraph, Title } = Typography;
 const PipelineBoardView: React.FC<PipelineBoardViewProps> = () => {
     const { styles } = useStyles();
     const router = useRouter();
-    const { board, filters, isPending } = usePipelineState();
+    const { board, filters, isError, isPending } = usePipelineState();
     const { getBoard, resetFilters, setFilters } = usePipelineActions();
     const [keywordInput, setKeywordInput] = useState(filters.keyword);
     const [classificationInput, setClassificationInput] = useState<
@@ -85,6 +86,15 @@ const PipelineBoardView: React.FC<PipelineBoardViewProps> = () => {
     let boardContent: React.ReactNode;
     if (isPending && !board) {
         boardContent = <Spin size="large" className={styles.loadingWrap} />;
+    } else if (isError && !board) {
+        boardContent = (
+            <Alert
+                type="error"
+                showIcon
+                title="Pipeline data could not be loaded."
+                description="Check the backend connection or try refreshing."
+            />
+        );
     } else if (journeyGroups.length > 0) {
         boardContent = (
             <div className={styles.journeyGroupList}>
@@ -173,8 +183,8 @@ const PipelineBoardView: React.FC<PipelineBoardViewProps> = () => {
                             setClassificationInput(value as EngagementClassification | undefined)
                         }
                     />
-                    <Button onClick={handleApplyFilters}>Apply Filters</Button>
-                    <Button onClick={handleResetFilters}>Reset</Button>
+                    <Button disabled={isPending} onClick={handleApplyFilters}>Apply Filters</Button>
+                    <Button disabled={isPending} onClick={handleResetFilters}>Reset</Button>
                 </div>
             </Card>
 

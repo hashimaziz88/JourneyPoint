@@ -2,6 +2,7 @@
 
 import React, { startTransition, useEffect, useEffectEvent, useState } from "react";
 import {
+    Alert,
     Button,
     Card,
     Empty,
@@ -52,6 +53,7 @@ const HireListView: React.FC<HireListViewProps> = () => {
     } = useHireActions();
     const {
         hires,
+        isError,
         isListPending,
         isMutationPending,
         managerOptions,
@@ -141,6 +143,15 @@ const HireListView: React.FC<HireListViewProps> = () => {
 
     if (isListPending) {
         listContent = <Spin size="large" className={styles.loadingWrap} />;
+    } else if (isError && hiresInView.length === 0) {
+        listContent = (
+            <Alert
+                type="error"
+                showIcon
+                title="Hire list could not be loaded."
+                description="Check the backend connection or try refreshing."
+            />
+        );
     } else if (hiresInView.length > 0) {
         listContent = (
             <>
@@ -251,8 +262,8 @@ const HireListView: React.FC<HireListViewProps> = () => {
                                 onChange={(value) => setStatusInput(value)}
                             />
 
-                            <Button onClick={handleApplyFilters}>Apply Filters</Button>
-                            <Button onClick={handleResetFilters}>Reset</Button>
+                            <Button disabled={isListPending} onClick={handleApplyFilters}>Apply Filters</Button>
+                            <Button disabled={isListPending} onClick={handleResetFilters}>Reset</Button>
                         </div>
                     </Card>
 

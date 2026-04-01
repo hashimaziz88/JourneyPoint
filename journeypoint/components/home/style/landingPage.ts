@@ -2,7 +2,7 @@ import { createStyles } from "antd-style";
 
 export const useStyles = createStyles(({ token, css }) => ({
   landingRoot: css`
-    min-height: 100vh;
+    min-height: 100%;
     background:
       radial-gradient(
         circle at 0% 0%,

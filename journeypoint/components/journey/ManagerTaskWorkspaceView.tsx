@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Badge, Button, Card, Collapse, Empty, Space, Spin, Statistic, Typography, message } from "antd";
+import { Alert, Badge, Button, Card, Collapse, Empty, Space, Spin, Statistic, Typography, message } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
 import ManagerDirectReportSection from "@/components/journey/ManagerDirectReportSection";
 import { useStyles } from "@/components/journey/style/style";
@@ -15,6 +15,7 @@ const { Paragraph, Title } = Typography;
  */
 const ManagerTaskWorkspaceView: React.FC<ManagerTaskWorkspaceViewProps> = ({
     workspace,
+    isError,
     isPending,
     isMutationPending,
     onRefresh,
@@ -37,6 +38,17 @@ const ManagerTaskWorkspaceView: React.FC<ManagerTaskWorkspaceViewProps> = ({
 
     if (!workspace && isPending) {
         return <Spin size="large" className={styles.loadingWrap} />;
+    }
+
+    if (isError && !workspace) {
+        return (
+            <Alert
+                type="error"
+                showIcon
+                title="Manager tasks could not be loaded."
+                description="The API may be unavailable. Try refreshing the page."
+            />
+        );
     }
 
     if (!workspace || workspace.totalTaskCount === 0) {

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Spin } from "antd";
+import Spinner from "@/components/spinner/Spinner";
 import {
     APP_PERMISSIONS,
     APP_ROLE_NAMES,
@@ -17,7 +17,7 @@ const FacilitatorMarkdownImportPage: React.FC = () => {
         router.replace(APP_ROUTES.facilitatorPlanImport);
     }, [router]);
 
-    return <Spin size="large" />;
+    return <Spinner />;
 };
 
 export default withAuth(FacilitatorMarkdownImportPage, {
