@@ -1,5 +1,7 @@
+import type { ReactNode } from "react";
+
 export interface AuthCardProps {
   title: string;
   description: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }
