@@ -6,7 +6,7 @@ import {
     APP_PERMISSIONS,
     APP_ROLE_NAMES,
 } from "@/constants/auth/permissions";
-import { APP_ROUTES } from "@/constants/auth/routes";
+import { APP_ROUTES } from "@/routes/auth.routes";
 import withAuth from "@/hoc/withAuth";
 import { useRouter } from "next/navigation";
 

@@ -4,7 +4,7 @@ import React from "react";
 import { Card, Empty, Tag, Typography } from "antd";
 import HirePipelineCard from "@/components/pipeline/HirePipelineCard";
 import { useStyles } from "@/components/pipeline/style/style";
-import type { IPipelineColumnProps } from "@/types/pipeline/components";
+import type { PipelineColumnProps } from "@/types/pipeline/components";
 import { getPipelineColumnSummary } from "@/utils/pipeline/board";
 
 const { Paragraph, Title } = Typography;
@@ -12,7 +12,7 @@ const { Paragraph, Title } = Typography;
 /**
  * Renders one ordered facilitator pipeline column with its hire cards.
  */
-const PipelineColumn: React.FC<IPipelineColumnProps> = ({
+const PipelineColumn: React.FC<PipelineColumnProps> = ({
     column,
     onOpenHire,
     onOpenJourney,

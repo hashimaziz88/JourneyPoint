@@ -21,8 +21,8 @@ import {
     useJourneyActions,
     useJourneyState,
 } from "@/providers/journeyProvider";
-import type { IPersonalisationDiffProps } from "@/types/journey/components";
-import { JourneyStatus } from "@/types/journey";
+import type { PersonalisationDiffProps } from "@/types/journey/components";
+import { JourneyStatus } from "@/types/journey/journey";
 import { formatDisplayDateTime } from "@/utils/date";
 import {
     getPersonalisationDecision,
@@ -35,7 +35,7 @@ const { TextArea } = Input;
 /**
  * Drives facilitator AI-review requests and selective application for one journey.
  */
-const PersonalisationDiff: React.FC<IPersonalisationDiffProps> = ({ hireId }) => {
+const PersonalisationDiff: React.FC<PersonalisationDiffProps> = ({ hireId }) => {
     const { styles } = useStyles();
     const [messageApi, messageContextHolder] = message.useMessage();
     const [facilitatorInstructions, setFacilitatorInstructions] = useState("");

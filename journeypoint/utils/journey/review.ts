@@ -1,13 +1,13 @@
-import { JourneyStatus, type IJourneyDraftDto, type IJourneyModuleGroup } from "@/types/journey";
+import { JourneyStatus, type JourneyDraftDto, type JourneyModuleGroup } from "@/types/journey/journey";
 
 export const groupJourneyTasksByModule = (
-    journey: IJourneyDraftDto | null | undefined,
-): IJourneyModuleGroup[] => {
+    journey: JourneyDraftDto | null | undefined,
+): JourneyModuleGroup[] => {
     if (!journey) {
         return [];
     }
 
-    const moduleMap = new Map<string, IJourneyModuleGroup>();
+    const moduleMap = new Map<string, JourneyModuleGroup>();
 
     journey.tasks.forEach((task) => {
         const moduleKey = `${task.moduleOrderIndex}:${task.moduleTitle}`;
@@ -37,5 +37,5 @@ export const groupJourneyTasksByModule = (
 };
 
 export const isJourneyDraftEditable = (
-    journey: IJourneyDraftDto | null | undefined,
+    journey: JourneyDraftDto | null | undefined,
 ): boolean => journey?.status === JourneyStatus.Draft;

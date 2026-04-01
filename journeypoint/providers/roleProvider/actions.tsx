@@ -1,5 +1,5 @@
 import { createAction } from "redux-actions";
-import { IRoleStateContext, IRoleDto, IPermissionDto, IGetRoleForEditOutput } from "./context";
+import { IRoleStateContext, RoleDto, PermissionDto, GetRoleForEditOutput } from "./context";
 
 export enum RoleActionEnums {
     getAllRolesPending = "GET_ALL_ROLES_PENDING",
@@ -32,7 +32,7 @@ export const getAllRolesPending = createAction<IRoleStateContext>(
     () => ({ isPending: true, isError: false, isSuccess: false })
 );
 
-export const getAllRolesSuccess = createAction<IRoleStateContext, { items: IRoleDto[]; totalCount: number }>(
+export const getAllRolesSuccess = createAction<IRoleStateContext, { items: RoleDto[]; totalCount: number }>(
     RoleActionEnums.getAllRolesSuccess,
     ({ items, totalCount }) => ({ isPending: false, isError: false, isSuccess: true, roles: items, totalCount })
 );
@@ -48,9 +48,9 @@ export const getRoleForEditPending = createAction<IRoleStateContext>(
     () => ({ isPending: true, isError: false, isSuccess: false })
 );
 
-export const getRoleForEditSuccess = createAction<IRoleStateContext, IGetRoleForEditOutput>(
+export const getRoleForEditSuccess = createAction<IRoleStateContext, GetRoleForEditOutput>(
     RoleActionEnums.getRoleForEditSuccess,
-    (currentRole: IGetRoleForEditOutput) => ({ isPending: false, isError: false, isSuccess: true, currentRole })
+    (currentRole: GetRoleForEditOutput) => ({ isPending: false, isError: false, isSuccess: true, currentRole })
 );
 
 export const getRoleForEditError = createAction<IRoleStateContext>(
@@ -112,9 +112,9 @@ export const getAllPermissionsPending = createAction<IRoleStateContext>(
     () => ({ isPending: true, isError: false, isSuccess: false })
 );
 
-export const getAllPermissionsSuccess = createAction<IRoleStateContext, IPermissionDto[]>(
+export const getAllPermissionsSuccess = createAction<IRoleStateContext, PermissionDto[]>(
     RoleActionEnums.getAllPermissionsSuccess,
-    (availablePermissions: IPermissionDto[]) => ({ isPending: false, isError: false, isSuccess: false, availablePermissions })
+    (availablePermissions: PermissionDto[]) => ({ isPending: false, isError: false, isSuccess: false, availablePermissions })
 );
 
 export const getAllPermissionsError = createAction<IRoleStateContext>(

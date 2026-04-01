@@ -1,58 +1,58 @@
 import type {
-  EngagementClassification,
-  IAcknowledgeAtRiskFlagRequest,
-  IAtRiskFlagDto,
-  IEngagementSnapshotDto,
-  IResolveAtRiskFlagRequest,
-} from "@/types/engagement";
+    AcknowledgeAtRiskFlagRequest,
+    AtRiskFlagDto,
+    EngagementClassification,
+    EngagementSnapshotDto,
+    ResolveAtRiskFlagRequest,
+} from "@/types/engagement/engagement";
 
-export interface IEngagementBadgeProps {
-  classification: EngagementClassification;
-  compositeScore?: number;
-  hasActiveAtRiskFlag?: boolean;
-  compact?: boolean;
-}
+export type EngagementBadgeProps = {
+    classification: EngagementClassification;
+    compositeScore?: number;
+    hasActiveAtRiskFlag?: boolean;
+    compact?: boolean;
+};
 
-export interface IScoreTrendChartProps {
-  activationDate?: string | null;
-  currentSnapshot?: IEngagementSnapshotDto | null;
-  snapshotHistory: IEngagementSnapshotDto[];
-}
+export type ScoreTrendChartProps = {
+    activationDate?: string | null;
+    currentSnapshot?: EngagementSnapshotDto | null;
+    snapshotHistory: EngagementSnapshotDto[];
+};
 
-export interface IAtRiskFlagPanelProps {
-  activeFlag?: IAtRiskFlagDto | null;
-  isPending: boolean;
-  onAcknowledge: (payload: IAcknowledgeAtRiskFlagRequest) => Promise<boolean>;
-  onResolve: (payload: IResolveAtRiskFlagRequest) => Promise<boolean>;
-}
+export type AtRiskFlagPanelProps = {
+    activeFlag?: AtRiskFlagDto | null;
+    isPending: boolean;
+    onAcknowledge: (payload: AcknowledgeAtRiskFlagRequest) => Promise<boolean>;
+    onResolve: (payload: ResolveAtRiskFlagRequest) => Promise<boolean>;
+};
 
-export interface IInterventionHistoryPanelProps {
-  resolvedFlags: IAtRiskFlagDto[];
-}
+export type InterventionHistoryPanelProps = {
+    resolvedFlags: AtRiskFlagDto[];
+};
 
-export interface ITrendChartPoint {
-  key: string;
-  x: number;
-  y: number;
-  value: number;
-  label: string;
-  tooltip: string;
-}
+export type TrendChartPoint = {
+    key: string;
+    x: number;
+    y: number;
+    value: number;
+    label: string;
+    tooltip: string;
+};
 
-export interface ITrendChartTick {
-  key: string;
-  x: number;
-  label: string;
-}
+export type TrendChartTick = {
+    key: string;
+    x: number;
+    label: string;
+};
 
-export interface ITrendChartModel {
-  width: number;
-  points: ITrendChartPoint[];
-  ticks: ITrendChartTick[];
-  polylinePoints: string;
-  latestScore: number;
-  previousScore?: number;
-  lowestScore: number;
-  highestScore: number;
-  hasRepeatedSameDaySnapshots: boolean;
-}
+export type TrendChartModel = {
+    width: number;
+    points: TrendChartPoint[];
+    ticks: TrendChartTick[];
+    polylinePoints: string;
+    latestScore: number;
+    previousScore?: number;
+    lowestScore: number;
+    highestScore: number;
+    hasRepeatedSameDaySnapshots: boolean;
+};

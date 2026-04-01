@@ -31,17 +31,17 @@ import {
     JOURNEY_STATUS_TAG_COLORS,
 } from "@/constants/journey/review";
 import { useStyles } from "@/components/hires/style/style";
-import { APP_ROUTES, buildFacilitatorHireJourneyRoute } from "@/constants/auth/routes";
+import { APP_ROUTES, buildFacilitatorHireJourneyRoute } from "@/routes/auth.routes";
 import {
     useEngagementActions,
     useEngagementState,
 } from "@/providers/engagementProvider";
 import { useHireActions, useHireState } from "@/providers/hireProvider";
 import type {
-    IAcknowledgeAtRiskFlagRequest,
-    IResolveAtRiskFlagRequest,
-} from "@/types/engagement";
-import type { IHireDetailViewProps } from "@/types/hire/components";
+    AcknowledgeAtRiskFlagRequest,
+    ResolveAtRiskFlagRequest,
+} from "@/types/engagement/engagement";
+import type { HireDetailViewProps } from "@/types/hire/components";
 import { formatDisplayDate, formatDisplayDateTime } from "@/utils/date";
 import { useRouter } from "next/navigation";
 
@@ -50,7 +50,7 @@ const { Paragraph, Title } = Typography;
 /**
  * Shows one hire record with journey and welcome-delivery summary state.
  */
-const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
+const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
     const { styles } = useStyles();
     const router = useRouter();
     const { getHireDetail, resetSelectedHire } = useHireActions();
@@ -91,11 +91,11 @@ const HireDetailView: React.FC<IHireDetailViewProps> = ({ hireId }) => {
     };
 
     const handleAcknowledgeFlag = async (
-        payload: IAcknowledgeAtRiskFlagRequest,
+        payload: AcknowledgeAtRiskFlagRequest,
     ): Promise<boolean> => Boolean(await acknowledgeAtRiskFlag(hireId, payload));
 
     const handleResolveFlag = async (
-        payload: IResolveAtRiskFlagRequest,
+        payload: ResolveAtRiskFlagRequest,
     ): Promise<boolean> => Boolean(await resolveAtRiskFlag(hireId, payload));
 
     if ((isDetailPending || isPending) && !selectedHire) {

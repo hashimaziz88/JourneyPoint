@@ -4,13 +4,13 @@ import React from "react";
 import { Alert, Button, Space } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 import { useStyles } from "@/components/journey/style/style";
-import type { IJourneyTaskAcknowledgementPanelProps } from "@/types/journey/components";
+import type { JourneyTaskAcknowledgementPanelProps } from "@/types/journey/components";
 import { getAcknowledgementLabel } from "@/utils/journey/dashboard";
 
 /**
  * Renders acknowledgement guidance and action controls for one participant task.
  */
-const JourneyTaskAcknowledgementPanel: React.FC<IJourneyTaskAcknowledgementPanelProps> = ({
+const JourneyTaskAcknowledgementPanel: React.FC<JourneyTaskAcknowledgementPanelProps> = ({
     task,
     isPending,
     onAcknowledge,

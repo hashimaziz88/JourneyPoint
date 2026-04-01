@@ -6,10 +6,10 @@ import { useRouter } from "next/navigation";
 import type { FormProps } from "antd";
 import { Alert, Button, Form, Input, Space, Typography, message } from "antd";
 import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
-import { useAppSession } from "@/helpers/useAppSession";
+import { useAppSession } from "@/hooks/useAppSession";
 import { useAuthActions, useAuthState } from "@/providers/authProvider";
 import { RegisterFieldType } from "@/types/auth/formTypes";
-import { APP_ROUTES } from "@/constants/auth/routes";
+import { APP_ROUTES } from "@/routes/auth.routes";
 import { useStyles } from "./style/style";
 
 const { Title, Text } = Typography;

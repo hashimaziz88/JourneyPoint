@@ -1,13 +1,13 @@
 import { DEFAULT_ADD_JOURNEY_TASK_REQUEST } from "@/constants/journey/review";
 import type {
-    IAddJourneyTaskRequest,
-    IJourneyTaskReviewDto,
-    IUpdateJourneyTaskRequest,
-} from "@/types/journey";
+    AddJourneyTaskRequest,
+    JourneyTaskReviewDto,
+    UpdateJourneyTaskRequest,
+} from "@/types/journey/journey";
 
 export const mapJourneyTaskToEditorValues = (
-    task?: IJourneyTaskReviewDto | null,
-): IAddJourneyTaskRequest | IUpdateJourneyTaskRequest =>
+    task?: JourneyTaskReviewDto | null,
+): AddJourneyTaskRequest | UpdateJourneyTaskRequest =>
     task
         ? {
               moduleTitle: task.moduleTitle,

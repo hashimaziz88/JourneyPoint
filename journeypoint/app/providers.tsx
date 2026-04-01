@@ -9,12 +9,12 @@ import { AuthProvider } from "@/providers/authProvider";
 import { RoleProvider } from "@/providers/roleProvider";
 import { TenantProvider } from "@/providers/tenantProvider";
 import { UserProvider } from "@/providers/userProvider";
-import type { IAppProvidersProps } from "@/types/app/providers";
+import type { AppProvidersProps } from "@/types/app/providers";
 
 /**
  * Composes the global JourneyPoint frontend providers in dependency order.
  */
-export const AppProviders: React.FC<IAppProvidersProps> = ({ children }) => (
+export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => (
   <ConfigProvider theme={themeSetup}>
     <AuthProvider>
       <AuthSessionBootstrap />

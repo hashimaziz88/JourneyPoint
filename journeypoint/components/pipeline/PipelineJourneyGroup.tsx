@@ -4,7 +4,7 @@ import React from "react";
 import { Collapse, Tag, Typography } from "antd";
 import PipelineColumn from "@/components/pipeline/PipelineColumn";
 import { useStyles } from "@/components/pipeline/style/style";
-import type { IPipelineJourneyGroupProps } from "@/types/pipeline/components";
+import type { PipelineJourneyGroupProps } from "@/types/pipeline/components";
 
 const { Text } = Typography;
 
@@ -12,7 +12,7 @@ const { Text } = Typography;
  * Renders one onboarding-plan group in the pipeline as a collapsible panel.
  * Groups are expanded by default so facilitators see all data on first load.
  */
-const PipelineJourneyGroup: React.FC<IPipelineJourneyGroupProps> = ({
+const PipelineJourneyGroup: React.FC<PipelineJourneyGroupProps> = ({
     group,
     onOpenHire,
     onOpenJourney,

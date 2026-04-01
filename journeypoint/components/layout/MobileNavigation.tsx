@@ -5,13 +5,13 @@ import type { MenuProps } from "antd";
 import { Button, Drawer, Menu } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import { useStyles } from "@/layouts/style/style";
-import type { IMobileNavigationProps } from "@/types/layout/navigation";
+import type { MobileNavigationProps } from "@/types/layout/navigation";
 import AppShellBrand from "./AppShellBrand";
 
 /**
  * Renders the mobile-only navigation entry point and full-screen drawer.
  */
-const MobileNavigation: React.FC<IMobileNavigationProps> = ({
+const MobileNavigation: React.FC<MobileNavigationProps> = ({
   menuItems,
   onNavigate,
   routeMap,

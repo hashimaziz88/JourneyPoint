@@ -10,8 +10,8 @@ import {
   TeamOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import { APP_ROUTES } from "@/constants/auth/routes";
-import { useAppSession } from "@/helpers/useAppSession";
+import { APP_ROUTES } from "@/routes/auth.routes";
+import { useAppSession } from "@/hooks/useAppSession";
 import { useStyles } from "./style/style";
 
 const { Paragraph, Text, Title } = Typography;

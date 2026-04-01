@@ -1,8 +1,8 @@
 import { createAction } from "redux-actions";
 import type {
-    IOnboardingPlanDetailDto,
-    IOnboardingPlanDraft,
-    IOnboardingPlanListItemDto,
+    OnboardingPlanDetailDto,
+    OnboardingPlanDraft,
+    OnboardingPlanListItemDto,
 } from "./context";
 import { IOnboardingPlanStateContext } from "./context";
 
@@ -37,7 +37,7 @@ export const getPlansPending = createAction<OnboardingPlanStatePayload>(
     }),
 );
 
-export const getPlansSuccess = createAction<OnboardingPlanStatePayload, { plans: IOnboardingPlanListItemDto[]; totalCount: number }>(
+export const getPlansSuccess = createAction<OnboardingPlanStatePayload, { plans: OnboardingPlanListItemDto[]; totalCount: number }>(
     OnboardingPlanActionEnums.getPlansSuccess,
     ({ plans, totalCount }) => ({
         isPending: false,
@@ -71,7 +71,7 @@ export const getPlanDetailPending = createAction<OnboardingPlanStatePayload>(
     }),
 );
 
-export const getPlanDetailSuccess = createAction<OnboardingPlanStatePayload, { selectedPlan: IOnboardingPlanDetailDto; draftPlan: IOnboardingPlanDraft }>(
+export const getPlanDetailSuccess = createAction<OnboardingPlanStatePayload, { selectedPlan: OnboardingPlanDetailDto; draftPlan: OnboardingPlanDraft }>(
     OnboardingPlanActionEnums.getPlanDetailSuccess,
     ({ selectedPlan, draftPlan }) => ({
         isPending: false,
@@ -103,7 +103,7 @@ export const mutationPending = createAction<OnboardingPlanStatePayload>(
     }),
 );
 
-export const mutationSuccess = createAction<OnboardingPlanStatePayload, { selectedPlan: IOnboardingPlanDetailDto; draftPlan: IOnboardingPlanDraft }>(
+export const mutationSuccess = createAction<OnboardingPlanStatePayload, { selectedPlan: OnboardingPlanDetailDto; draftPlan: OnboardingPlanDraft }>(
     OnboardingPlanActionEnums.mutationSuccess,
     ({ selectedPlan, draftPlan }) => ({
         isPending: false,
@@ -125,7 +125,7 @@ export const mutationError = createAction<OnboardingPlanStatePayload>(
     }),
 );
 
-export const setDraft = createAction<OnboardingPlanStatePayload, IOnboardingPlanDraft>(
+export const setDraft = createAction<OnboardingPlanStatePayload, OnboardingPlanDraft>(
     OnboardingPlanActionEnums.setDraft,
     (draftPlan) => ({ draftPlan }),
 );

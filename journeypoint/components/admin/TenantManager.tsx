@@ -18,10 +18,10 @@ import {
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { PlusOutlined } from "@ant-design/icons";
 import { useTenantActions, useTenantState } from "@/providers/tenantProvider";
-import type { ITenantDto } from "@/types/tenant";
+import type { TenantDto } from "@/types/tenant/tenant";
 import { useStyles } from "@/components/admin/style/style";
 import { TENANT_SUCCESS_MESSAGES } from "@/constants/admin/tenantManager";
-import type { ITenantFormValues } from "@/types/admin/tenantManager";
+import type { TenantFormValues } from "@/types/admin/tenantManager";
 import { buildTenantQuery } from "@/utils/admin/tenantManager";
 import { ignoreAsyncError } from "@/utils/async";
 
@@ -38,9 +38,9 @@ const TenantManager: React.FC = () => {
     pageSize: 10,
   });
   const [modalOpen, setModalOpen] = useState(false);
-  const [editingTenant, setEditingTenant] = useState<ITenantDto | null>(null);
+  const [editingTenant, setEditingTenant] = useState<TenantDto | null>(null);
   const [awaitingMutation, setAwaitingMutation] = useState<"create" | "update" | "delete" | null>(null);
-  const [form] = Form.useForm<ITenantFormValues>();
+  const [form] = Form.useForm<TenantFormValues>();
   const [messageApi, messageContextHolder] = message.useMessage();
 
   const loadTenants = useEffectEvent(async (): Promise<void> => {
@@ -103,7 +103,7 @@ const TenantManager: React.FC = () => {
     setModalOpen(true);
   };
 
-  const onEdit = (tenant: ITenantDto) => {
+  const onEdit = (tenant: TenantDto) => {
     setEditingTenant(tenant);
     form.setFieldsValue({
       id: tenant.id,
@@ -114,7 +114,7 @@ const TenantManager: React.FC = () => {
     setModalOpen(true);
   };
 
-  const onDelete = (tenant: ITenantDto) => {
+  const onDelete = (tenant: TenantDto) => {
     Modal.confirm({
       title: `Delete ${tenant.name}?`,
       content: "This removes the tenant record from the host admin scope.",
@@ -127,7 +127,7 @@ const TenantManager: React.FC = () => {
     });
   };
 
-  const handleSubmit = async (values: ITenantFormValues) => {
+  const handleSubmit = async (values: TenantFormValues) => {
     if (editingTenant?.id) {
       setAwaitingMutation("update");
       await updateTenant({
@@ -149,7 +149,7 @@ const TenantManager: React.FC = () => {
     });
   };
 
-  const columns: ColumnsType<ITenantDto> = [
+  const columns: ColumnsType<TenantDto> = [
     {
       title: "Tenant Name",
       dataIndex: "name",
@@ -267,7 +267,7 @@ const TenantManager: React.FC = () => {
         okText={editingTenant ? "Save Changes" : "Create Tenant"}
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit} initialValues={{ isActive: true }}>
-          <Form.Item<ITenantFormValues>
+          <Form.Item<TenantFormValues>
             label="Tenant Name"
             name="name"
             rules={[{ required: true, message: "Please enter the tenant name." }]}
@@ -275,7 +275,7 @@ const TenantManager: React.FC = () => {
             <Input placeholder="Contoso" />
           </Form.Item>
 
-          <Form.Item<ITenantFormValues>
+          <Form.Item<TenantFormValues>
             label="Tenancy Name"
             name="tenancyName"
             rules={[{ required: true, message: "Please enter the tenancy name." }]}
@@ -285,7 +285,7 @@ const TenantManager: React.FC = () => {
 
           {!editingTenant && (
             <>
-              <Form.Item<ITenantFormValues>
+              <Form.Item<TenantFormValues>
                 label="Admin Email Address"
                 name="adminEmailAddress"
                 rules={[
@@ -296,13 +296,13 @@ const TenantManager: React.FC = () => {
                 <Input placeholder="admin@contoso.com" />
               </Form.Item>
 
-              <Form.Item<ITenantFormValues> label="Connection String" name="connectionString">
+              <Form.Item<TenantFormValues> label="Connection String" name="connectionString">
                 <Input.TextArea rows={3} placeholder="Optional custom connection string" />
               </Form.Item>
             </>
           )}
 
-          <Form.Item<ITenantFormValues> label="Active" name="isActive" valuePropName="checked">
+          <Form.Item<TenantFormValues> label="Active" name="isActive" valuePropName="checked">
             <Switch />
           </Form.Item>
         </Form>

@@ -19,11 +19,11 @@ import {
     EngagementActionContext,
     EngagementStateContext,
     INITIAL_STATE,
-    type IAcknowledgeAtRiskFlagRequest,
+    type AcknowledgeAtRiskFlagRequest,
     type IEngagementActionContext,
     type IEngagementStateContext,
-    type IHireIntelligenceDetailDto,
-    type IResolveAtRiskFlagRequest,
+    type HireIntelligenceDetailDto,
+    type ResolveAtRiskFlagRequest,
 } from "./context";
 import { EngagementReducer } from "./reducer";
 
@@ -37,7 +37,7 @@ export const EngagementProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const getHireIntelligence = async (
         hireId: string,
-    ): Promise<IHireIntelligenceDetailDto | null> => {
+    ): Promise<HireIntelligenceDetailDto | null> => {
         dispatch(getHireIntelligencePending());
 
         try {
@@ -53,7 +53,7 @@ export const EngagementProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const refreshAfterMutation = async (
         hireId: string,
-    ): Promise<IHireIntelligenceDetailDto | null> => {
+    ): Promise<HireIntelligenceDetailDto | null> => {
         try {
             const selectedHireIntelligence = await fetchHireIntelligence(hireId);
             dispatch(mutationSuccess(selectedHireIntelligence));
@@ -67,8 +67,8 @@ export const EngagementProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const acknowledgeAtRiskFlag = async (
         hireId: string,
-        payload: IAcknowledgeAtRiskFlagRequest,
-    ): Promise<IHireIntelligenceDetailDto | null> => {
+        payload: AcknowledgeAtRiskFlagRequest,
+    ): Promise<HireIntelligenceDetailDto | null> => {
         dispatch(mutationPending());
 
         try {
@@ -83,8 +83,8 @@ export const EngagementProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const resolveAtRiskFlag = async (
         hireId: string,
-        payload: IResolveAtRiskFlagRequest,
-    ): Promise<IHireIntelligenceDetailDto | null> => {
+        payload: ResolveAtRiskFlagRequest,
+    ): Promise<HireIntelligenceDetailDto | null> => {
         dispatch(mutationPending());
 
         try {

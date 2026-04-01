@@ -4,16 +4,16 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Space, Typography } from "antd";
-import { APP_ROUTES } from "@/constants/auth/routes";
+import { APP_ROUTES } from "@/routes/auth.routes";
 import { useStyles } from "@/layouts/style/style";
-import type { IAppShellBrandProps } from "@/types/layout/navigation";
+import type { AppShellBrandProps } from "@/types/layout/navigation";
 
 const { Title, Text } = Typography;
 
 /**
  * Renders the shared workspace navigation brand header.
  */
-const AppShellBrand: React.FC<IAppShellBrandProps> = ({ subtitle }) => {
+const AppShellBrand: React.FC<AppShellBrandProps> = ({ subtitle }) => {
   const { styles } = useStyles();
 
   return (

@@ -9,9 +9,9 @@ import ResetPasswordModal from "@/components/admin/user-manager/ResetPasswordMod
 import UserFormModal from "@/components/admin/user-manager/UserFormModal";
 import UserManagementTable from "@/components/admin/user-manager/UserManagementTable";
 import { useUserActions, useUserState } from "@/providers/userProvider";
-import type { IResetPasswordDto, IUserDto } from "@/types/user";
+import type { ResetPasswordDto, UserDto } from "@/types/user/user";
 import { USER_SUCCESS_MESSAGES } from "@/constants/admin/userManager";
-import type { IUserFormValues } from "@/types/admin/userManager";
+import type { UserFormValues } from "@/types/admin/userManager";
 import { buildUserQuery } from "@/utils/admin/userManager";
 
 const { Title, Text } = Typography;
@@ -37,14 +37,14 @@ const UserManager: React.FC = () => {
     pageSize: 10,
   });
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState<IUserDto | null>(null);
+  const [editingUser, setEditingUser] = useState<UserDto | null>(null);
   const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
-  const [resettingUser, setResettingUser] = useState<IUserDto | null>(null);
+  const [resettingUser, setResettingUser] = useState<UserDto | null>(null);
   const [awaitingMutation, setAwaitingMutation] = useState<
     "create" | "update" | "delete" | "reset" | null
   >(null);
-  const [userForm] = Form.useForm<IUserFormValues>();
-  const [resetPasswordForm] = Form.useForm<IResetPasswordDto>();
+  const [userForm] = Form.useForm<UserFormValues>();
+  const [resetPasswordForm] = Form.useForm<ResetPasswordDto>();
   const [messageApi, messageContextHolder] = message.useMessage();
 
   const roleOptions = useMemo(
@@ -123,7 +123,7 @@ const UserManager: React.FC = () => {
     setIsUserModalOpen(true);
   };
 
-  const onEdit = (user: IUserDto): void => {
+  const onEdit = (user: UserDto): void => {
     setEditingUser(user);
     userForm.setFieldsValue({
       id: user.id,
@@ -137,7 +137,7 @@ const UserManager: React.FC = () => {
     setIsUserModalOpen(true);
   };
 
-  const onResetPassword = (user: IUserDto): void => {
+  const onResetPassword = (user: UserDto): void => {
     setResettingUser(user);
     resetPasswordForm.setFieldsValue({
       userId: user.id ?? 0,
@@ -146,7 +146,7 @@ const UserManager: React.FC = () => {
     setIsResetPasswordModalOpen(true);
   };
 
-  const onDelete = (user: IUserDto): void => {
+  const onDelete = (user: UserDto): void => {
     Modal.confirm({
       title: `Delete ${user.fullName ?? user.userName}?`,
       content: "This removes the user from the current scope.",
@@ -159,7 +159,7 @@ const UserManager: React.FC = () => {
     });
   };
 
-  const handleUserSubmit = async (values: IUserFormValues): Promise<void> => {
+  const handleUserSubmit = async (values: UserFormValues): Promise<void> => {
     if (editingUser?.id) {
       setAwaitingMutation("update");
       await updateUser({
@@ -187,7 +187,7 @@ const UserManager: React.FC = () => {
   };
 
   const handleResetPasswordSubmit = async (
-    values: IResetPasswordDto,
+    values: ResetPasswordDto,
   ): Promise<void> => {
     setAwaitingMutation("reset");
     await resetPassword(values);

@@ -3,14 +3,14 @@
 import React, { useEffect } from "react";
 import dayjs from "dayjs";
 import { Button, DatePicker, Form, Input, Modal, Select } from "antd";
-import type { ICreateHireRequest } from "@/types/hire";
-import type { IHireFormProps, IHireFormValues } from "@/types/hire/components";
+import type { CreateHireRequest } from "@/types/hire/hire";
+import type { HireFormProps, HireFormValues } from "@/types/hire/components";
 import { useStyles } from "@/components/hires/style/style";
 
 /**
  * Captures the facilitator input required to enrol one hire.
  */
-const HireForm: React.FC<IHireFormProps> = ({
+const HireForm: React.FC<HireFormProps> = ({
     isOpen,
     isPending,
     managerOptions,
@@ -19,7 +19,7 @@ const HireForm: React.FC<IHireFormProps> = ({
     planOptions,
 }) => {
     const { styles } = useStyles();
-    const [form] = Form.useForm<IHireFormValues>();
+    const [form] = Form.useForm<HireFormValues>();
 
     useEffect(() => {
         if (!isOpen) {
@@ -29,8 +29,8 @@ const HireForm: React.FC<IHireFormProps> = ({
         form.resetFields();
     }, [form, isOpen]);
 
-    const handleFinish = async (values: IHireFormValues): Promise<void> => {
-        const payload: ICreateHireRequest = {
+    const handleFinish = async (values: HireFormValues): Promise<void> => {
+        const payload: CreateHireRequest = {
             onboardingPlanId: values.onboardingPlanId,
             firstName: values.firstName.trim(),
             lastName: values.lastName.trim(),
@@ -66,7 +66,7 @@ const HireForm: React.FC<IHireFormProps> = ({
                 </Button>,
             ]}
         >
-            <Form<IHireFormValues>
+            <Form<HireFormValues>
                 form={form}
                 layout="vertical"
                 onFinish={(values) => void handleFinish(values)}

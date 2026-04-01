@@ -1,9 +1,9 @@
-import type { HireLifecycleState } from "@/types/hire";
+import type { HireLifecycleState } from "@/types/hire/hire";
 import type {
     OnboardingTaskAcknowledgementRule,
     OnboardingTaskAssignmentTarget,
     OnboardingTaskCategory,
-} from "@/types/onboarding-plan";
+} from "@/types/onboarding-plan/onboarding-plan";
 
 export enum JourneyStatus {
     Draft = 1,
@@ -17,7 +17,7 @@ export enum JourneyTaskStatus {
     Completed = 2,
 }
 
-export interface IJourneyTaskReviewDto {
+export type JourneyTaskReviewDto = {
     id: string;
     sourceOnboardingTaskId?: string | null;
     sourceOnboardingModuleId?: string | null;
@@ -35,9 +35,9 @@ export interface IJourneyTaskReviewDto {
     acknowledgedAt?: string | null;
     completedAt?: string | null;
     completedByUserId?: number | null;
-}
+};
 
-export interface IJourneyDraftDto {
+export type JourneyDraftDto = {
     journeyId: string;
     hireId: string;
     onboardingPlanId: string;
@@ -47,14 +47,14 @@ export interface IJourneyDraftDto {
     activatedAt?: string | null;
     pausedAt?: string | null;
     completedAt?: string | null;
-    tasks: IJourneyTaskReviewDto[];
-}
+    tasks: JourneyTaskReviewDto[];
+};
 
-export interface IGenerateDraftJourneyRequest {
+export type GenerateDraftJourneyRequest = {
     hireId: string;
-}
+};
 
-export interface IUpdateJourneyTaskRequest {
+export type UpdateJourneyTaskRequest = {
     moduleTitle: string;
     moduleOrderIndex: number;
     taskOrderIndex: number;
@@ -64,18 +64,18 @@ export interface IUpdateJourneyTaskRequest {
     assignmentTarget: OnboardingTaskAssignmentTarget;
     acknowledgementRule: OnboardingTaskAcknowledgementRule;
     dueDayOffset: number;
-}
+};
 
-export type IAddJourneyTaskRequest = IUpdateJourneyTaskRequest;
+export type AddJourneyTaskRequest = UpdateJourneyTaskRequest;
 
-export interface IJourneyModuleGroup {
+export type JourneyModuleGroup = {
     moduleKey: string;
     moduleTitle: string;
     moduleOrderIndex: number;
-    tasks: IJourneyTaskReviewDto[];
-}
+    tasks: JourneyTaskReviewDto[];
+};
 
-export interface IEnroleeJourneyTaskListItemDto {
+export type EnroleeJourneyTaskListItemDto = {
     journeyTaskId: string;
     title: string;
     descriptionPreview: string;
@@ -85,19 +85,19 @@ export interface IEnroleeJourneyTaskListItemDto {
     acknowledgedAt?: string | null;
     isOverdue: boolean;
     isPersonalised: boolean;
-}
+};
 
-export interface IEnroleeJourneyModuleGroupDto {
+export type EnroleeJourneyModuleGroupDto = {
     moduleKey: string;
     moduleTitle: string;
     moduleOrderIndex: number;
     totalTaskCount: number;
     completedTaskCount: number;
     pendingTaskCount: number;
-    tasks: IEnroleeJourneyTaskListItemDto[];
-}
+    tasks: EnroleeJourneyTaskListItemDto[];
+};
 
-export interface IEnroleeJourneyDashboardDto {
+export type EnroleeJourneyDashboardDto = {
     journeyId: string;
     hireId: string;
     status: JourneyStatus;
@@ -105,10 +105,10 @@ export interface IEnroleeJourneyDashboardDto {
     totalTaskCount: number;
     completedTaskCount: number;
     overdueTaskCount: number;
-    modules: IEnroleeJourneyModuleGroupDto[];
-}
+    modules: EnroleeJourneyModuleGroupDto[];
+};
 
-export interface IEnroleeJourneyTaskDetailDto {
+export type EnroleeJourneyTaskDetailDto = {
     journeyTaskId: string;
     journeyId: string;
     moduleTitle: string;
@@ -126,17 +126,17 @@ export interface IEnroleeJourneyTaskDetailDto {
     personalisedAt?: string | null;
     canAcknowledge: boolean;
     canComplete: boolean;
-}
+};
 
-export interface IAcknowledgeJourneyTaskRequest {
+export type AcknowledgeJourneyTaskRequest = {
     journeyTaskId: string;
-}
+};
 
-export interface ICompleteJourneyTaskRequest {
+export type CompleteJourneyTaskRequest = {
     journeyTaskId: string;
-}
+};
 
-export interface IManagerAssignedTaskDto {
+export type ManagerAssignedTaskDto = {
     journeyTaskId: string;
     journeyId: string;
     hireId: string;
@@ -155,9 +155,9 @@ export interface IManagerAssignedTaskDto {
     isPersonalised: boolean;
     personalisedAt?: string | null;
     canComplete: boolean;
-}
+};
 
-export interface IManagerDirectReportTaskGroupDto {
+export type ManagerDirectReportTaskGroupDto = {
     hireId: string;
     journeyId: string;
     hireFullName: string;
@@ -165,17 +165,17 @@ export interface IManagerDirectReportTaskGroupDto {
     department?: string | null;
     pendingTaskCount: number;
     completedTaskCount: number;
-    tasks: IManagerAssignedTaskDto[];
-}
+    tasks: ManagerAssignedTaskDto[];
+};
 
-export interface IManagerTaskWorkspaceDto {
+export type ManagerTaskWorkspaceDto = {
     directReportCount: number;
     totalTaskCount: number;
     pendingTaskCount: number;
     completedTaskCount: number;
     overdueTaskCount: number;
-    directReports: IManagerDirectReportTaskGroupDto[];
-}
+    directReports: ManagerDirectReportTaskGroupDto[];
+};
 
 export type JourneyPersonalisationChangedField =
     | "title"
@@ -187,7 +187,7 @@ export type JourneyPersonalisationChangedField =
 
 export type JourneyPersonalisationDecision = "unreviewed" | "accepted" | "rejected";
 
-export interface IJourneyTaskPersonalisationDiffDto {
+export type JourneyTaskPersonalisationDiffDto = {
     journeyTaskId: string;
     moduleTitle: string;
     taskOrderIndex: number;
@@ -208,9 +208,9 @@ export interface IJourneyTaskPersonalisationDiffDto {
     proposedDueOn: string;
     rationale: string;
     changedFields: JourneyPersonalisationChangedField[];
-}
+};
 
-export interface IJourneyPersonalisationProposalDto {
+export type JourneyPersonalisationProposalDto = {
     generationLogId: string;
     hireId: string;
     journeyId: string;
@@ -218,20 +218,20 @@ export interface IJourneyPersonalisationProposalDto {
     requestedAt: string;
     summary: string;
     revisedTaskCount: number;
-    diffs: IJourneyTaskPersonalisationDiffDto[];
-}
+    diffs: JourneyTaskPersonalisationDiffDto[];
+};
 
-export interface IJourneyPersonalisationDecisionItem {
+export type JourneyPersonalisationDecisionItem = {
     journeyTaskId: string;
     decision: JourneyPersonalisationDecision;
-}
+};
 
-export interface IRequestJourneyPersonalisationRequest {
+export type RequestJourneyPersonalisationRequest = {
     journeyId: string;
     facilitatorInstructions?: string | null;
-}
+};
 
-export interface IApplyJourneyPersonalisationSelectionDto {
+export type ApplyJourneyPersonalisationSelectionDto = {
     journeyTaskId: string;
     baselineSnapshotAt: string;
     title: string;
@@ -240,10 +240,10 @@ export interface IApplyJourneyPersonalisationSelectionDto {
     assignmentTarget: OnboardingTaskAssignmentTarget;
     acknowledgementRule: OnboardingTaskAcknowledgementRule;
     dueDayOffset: number;
-}
+};
 
-export interface IApplyJourneyPersonalisationRequest {
+export type ApplyJourneyPersonalisationRequest = {
     journeyId: string;
     generationLogId: string;
-    selections: IApplyJourneyPersonalisationSelectionDto[];
-}
+    selections: ApplyJourneyPersonalisationSelectionDto[];
+};

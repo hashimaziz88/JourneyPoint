@@ -7,19 +7,19 @@ import {
   normalizeTenancyName,
   persistTenantCookies,
   readTenantFromCookies,
-} from "@/helpers/auth";
+} from "@/utils/auth/auth";
 import {
   fetchCurrentLoginState,
   loadAuthConfiguration,
   resolveTenantAvailability,
-} from "@/helpers/authApi";
-import { resolveActiveTenancyName } from "@/helpers/tenancy";
+} from "@/utils/auth/authApi";
+import { resolveActiveTenancyName } from "@/utils/auth/tenancy";
 import type {
-  ITenantInfo,
-  IUserLoginRequest,
-  IUserLoginResponse,
-  IUserRegisterRequest,
-} from "@/types/auth";
+  TenantInfo,
+  UserLoginRequest,
+  UserLoginResponse,
+  UserRegisterRequest,
+} from "@/types/auth/auth";
 import { getCookie, removeCookie, setCookie } from "@/utils/cookies";
 import { getAxiosInstance } from "@/utils/axiosInstance";
 import {
@@ -62,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const resolveTenant = async (
     tenancyName: string,
-  ): Promise<ITenantInfo | null> => {
+  ): Promise<TenantInfo | null> => {
     const normalizedTenancyName = normalizeTenancyName(tenancyName);
 
     if (!normalizedTenancyName) {
@@ -95,7 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const getMe = async (): Promise<IUserLoginResponse | null> => {
+  const getMe = async (): Promise<UserLoginResponse | null> => {
     const token = getCookie(AUTH_COOKIE_NAMES.token);
 
     if (!token) {
@@ -196,7 +196,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const login = async (payload: IUserLoginRequest): Promise<void> => {
+  const login = async (payload: UserLoginRequest): Promise<void> => {
     dispatch(loginPending());
 
     try {
@@ -239,7 +239,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const register = async (
-    payload: IUserRegisterRequest,
+    payload: UserRegisterRequest,
   ): Promise<"logged-in" | "registered" | "failed"> => {
     dispatch(registerPending());
 

@@ -10,21 +10,23 @@ import {
     SendOutlined,
     StopOutlined,
 } from "@ant-design/icons";
-import { APP_ROUTES } from "@/constants/auth/routes";
+import { APP_ROUTES } from "@/routes/auth.routes";
 import { useStyles } from "@/components/plans/style/style";
 import {
-    ONBOARDING_PLAN_STATUS_LABELS,
     OnboardingPlanStatus,
-} from "@/types/onboarding-plan";
+} from "@/types/onboarding-plan/onboarding-plan"
+import {
+    ONBOARDING_PLAN_STATUS_LABELS,
+} from "@/constants/plans/onboarding-plan";
 import { useRouter } from "next/navigation";
-import type { IPlanEditorHeaderProps } from "@/types/plans/components";
+import type { PlanEditorHeaderProps } from "@/types/plans/components";
 
 const { Paragraph, Title } = Typography;
 
 /**
  * Renders the plan-editor heading, lifecycle actions, and new-plan entry choices.
  */
-const PlanEditorHeader: React.FC<IPlanEditorHeaderProps> = ({
+const PlanEditorHeader: React.FC<PlanEditorHeaderProps> = ({
     isDraftEditable,
     isMutationPending,
     isNewPlan,

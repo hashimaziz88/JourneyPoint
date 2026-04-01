@@ -1,8 +1,8 @@
-import type { IEngagementSnapshotDto } from "@/types/engagement";
+import type { EngagementSnapshotDto } from "@/types/engagement/engagement";
 import type {
-  ITrendChartModel,
-  ITrendChartPoint,
-  ITrendChartTick,
+  TrendChartModel,
+  TrendChartPoint,
+  TrendChartTick,
 } from "@/types/engagement/components";
 import { formatDisplayDate, formatDisplayDateTime } from "@/utils/date";
 
@@ -21,8 +21,8 @@ const DATE_KEY_FORMATTER = new Intl.DateTimeFormat("en-ZA", {
 });
 
 const sortSnapshotsAscending = (
-  snapshots: IEngagementSnapshotDto[],
-): IEngagementSnapshotDto[] =>
+  snapshots: EngagementSnapshotDto[],
+): EngagementSnapshotDto[] =>
   [...snapshots].sort(
     (leftSnapshot, rightSnapshot) =>
       new Date(leftSnapshot.computedAt).getTime() -
@@ -39,7 +39,7 @@ const getDateKey = (value: string): string =>
   DATE_KEY_FORMATTER.format(new Date(value));
 
 const hasRepeatedSameDaySnapshots = (
-  snapshots: IEngagementSnapshotDto[],
+  snapshots: EngagementSnapshotDto[],
 ): boolean => {
   const keys = snapshots.map((snapshot) => getDateKey(snapshot.computedAt));
   return new Set(keys).size !== keys.length;
@@ -87,12 +87,12 @@ const getTickIndexes = (totalCount: number): number[] => {
 };
 
 const mapPoint = (
-  snapshot: IEngagementSnapshotDto,
+  snapshot: EngagementSnapshotDto,
   index: number,
   totalCount: number,
   chartWidth: number,
   activationDate?: string | null,
-): ITrendChartPoint => {
+): TrendChartPoint => {
   const usableWidth = chartWidth - CHART_PADDING * 2;
   const usableHeight = CHART_HEIGHT - CHART_PADDING * 2;
   const x =
@@ -116,9 +116,9 @@ const mapPoint = (
 };
 
 const mapTicks = (
-  points: ITrendChartPoint[],
+  points: TrendChartPoint[],
   totalCount: number,
-): ITrendChartTick[] =>
+): TrendChartTick[] =>
   getTickIndexes(totalCount).map((index) => ({
     key: points[index].key,
     x: points[index].x,
@@ -126,10 +126,10 @@ const mapTicks = (
   }));
 
 export const getTrendChartModel = (
-  currentSnapshot: IEngagementSnapshotDto | null | undefined,
-  snapshotHistory: IEngagementSnapshotDto[],
+  currentSnapshot: EngagementSnapshotDto | null | undefined,
+  snapshotHistory: EngagementSnapshotDto[],
   activationDate?: string | null,
-): ITrendChartModel | null => {
+): TrendChartModel | null => {
   const hasCurrentSnapshot =
     currentSnapshot !== null && currentSnapshot !== undefined;
   let history = snapshotHistory;
@@ -182,7 +182,7 @@ export const getTrendChartModel = (
   };
 };
 
-export const getTrendDeltaLabel = (model: ITrendChartModel | null): string => {
+export const getTrendDeltaLabel = (model: TrendChartModel | null): string => {
   if (model?.previousScore === undefined) {
     return "No previous comparison yet";
   }

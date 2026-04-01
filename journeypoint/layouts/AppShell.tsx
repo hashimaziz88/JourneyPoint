@@ -5,12 +5,12 @@ import { usePathname, useRouter } from "next/navigation";
 import type { MenuProps } from "antd";
 import { LogoutOutlined } from "@ant-design/icons";
 import { Button, Grid, Layout, Menu, Space, Tag, Typography } from "antd";
-import { APP_ROUTES } from "@/constants/auth/routes";
-import { NAVIGATION_ICONS } from "@/constants/layout/appShell";
+import { APP_ROUTES } from "@/routes/auth.routes";
+import { NAVIGATION_ICONS } from "@/utils/layout/appShell";
 import { useAuthActions } from "@/providers/authProvider";
 import AppShellBrand from "@/components/layout/AppShellBrand";
 import MobileNavigation from "@/components/layout/MobileNavigation";
-import type { IAppShellProps } from "@/types/layout/shell";
+import type { AppShellProps } from "@/types/layout/shell";
 import { ignoreAsyncError } from "@/utils/async";
 import { getSelectedMenuKey } from "@/utils/layout/appShell";
 import { useStyles } from "./style/style";
@@ -22,7 +22,7 @@ const { useBreakpoint } = Grid;
 /**
  * Renders the shared JourneyPoint workspace shell for host and tenant routes.
  */
-const AppShell: React.FC<IAppShellProps> = ({
+const AppShell: React.FC<AppShellProps> = ({
   children,
   navigationItems,
   scopeLabel,

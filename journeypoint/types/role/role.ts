@@ -1,4 +1,4 @@
-export interface IRoleDto {
+export type RoleDto = {
     id?: number;
     name?: string | null;
     displayName?: string | null;
@@ -6,45 +6,45 @@ export interface IRoleDto {
     description?: string | null;
     grantedPermissions?: string[] | null;
     isStatic?: boolean;
-}
+};
 
-export interface ICreateRoleDto {
+export type CreateRoleDto = {
     name: string;
     displayName: string;
     normalizedName?: string | null;
     description?: string | null;
     grantedPermissions?: string[] | null;
-}
+};
 
-export interface IPermissionDto {
+export type PermissionDto = {
     id?: number;
     name?: string | null;
     displayName?: string | null;
     description?: string | null;
-}
+};
 
-export interface IFlatPermissionDto {
+export type FlatPermissionDto = {
     name?: string | null;
     displayName?: string | null;
     description?: string | null;
-}
+};
 
-export interface IRoleEditDto {
+export type RoleEditDto = {
     id?: number;
     name?: string | null;
     displayName?: string | null;
     description?: string | null;
     isStatic?: boolean;
-}
+};
 
-export interface IGetRoleForEditOutput {
-    role?: IRoleEditDto | null;
-    permissions?: IFlatPermissionDto[] | null;
+export type GetRoleForEditOutput = {
+    role?: RoleEditDto | null;
+    permissions?: FlatPermissionDto[] | null;
     grantedPermissionNames?: string[] | null;
-}
+};
 
-export interface IGetAllRolesRequest {
+export type GetAllRolesRequest = {
     keyword?: string | null;
     skipCount: number;
     maxResultCount: number;
-}
+};

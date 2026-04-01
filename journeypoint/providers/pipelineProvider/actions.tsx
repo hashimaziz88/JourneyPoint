@@ -1,7 +1,7 @@
 import { createAction } from "redux-actions";
 import type {
-    IPipelineBoardDto,
-    IPipelineBoardQueryState,
+    PipelineBoardDto,
+    PipelineBoardQueryState,
     IPipelineStateContext,
 } from "./context";
 
@@ -24,7 +24,7 @@ export const getBoardPending = createAction<PipelineStatePayload>(
     }),
 );
 
-export const getBoardSuccess = createAction<PipelineStatePayload, IPipelineBoardDto>(
+export const getBoardSuccess = createAction<PipelineStatePayload, PipelineBoardDto>(
     PipelineActionEnums.getBoardSuccess,
     (board) => ({
         isPending: false,
@@ -43,7 +43,7 @@ export const getBoardError = createAction<PipelineStatePayload>(
     }),
 );
 
-export const setFilters = createAction<PipelineStatePayload, IPipelineBoardQueryState>(
+export const setFilters = createAction<PipelineStatePayload, PipelineBoardQueryState>(
     PipelineActionEnums.setFilters,
     (filters) => ({
         filters,

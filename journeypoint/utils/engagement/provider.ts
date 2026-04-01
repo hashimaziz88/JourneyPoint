@@ -1,10 +1,10 @@
 import { getAxiosInstance } from "@/utils/axiosInstance";
 import type {
-    IAcknowledgeAtRiskFlagRequest,
-    IAtRiskFlagDto,
-    IHireIntelligenceDetailDto,
-    IResolveAtRiskFlagRequest,
-} from "@/types/engagement";
+    AcknowledgeAtRiskFlagRequest,
+    AtRiskFlagDto,
+    HireIntelligenceDetailDto,
+    ResolveAtRiskFlagRequest,
+} from "@/types/engagement/engagement";
 
 const ENGAGEMENT_API_BASE = "/api/services/app/Engagement";
 
@@ -13,7 +13,7 @@ const getEngagementApiResult = <T,>(response: { data?: { result?: T } & T }): T 
 
 export const fetchHireIntelligence = async (
     hireId: string,
-): Promise<IHireIntelligenceDetailDto> => {
+): Promise<HireIntelligenceDetailDto> => {
     const response = await getAxiosInstance().get(
         `${ENGAGEMENT_API_BASE}/GetHireIntelligence`,
         {
@@ -21,27 +21,27 @@ export const fetchHireIntelligence = async (
         },
     );
 
-    return getEngagementApiResult<IHireIntelligenceDetailDto>(response);
+    return getEngagementApiResult<HireIntelligenceDetailDto>(response);
 };
 
 export const acknowledgeAtRiskFlag = async (
-    payload: IAcknowledgeAtRiskFlagRequest,
-): Promise<IAtRiskFlagDto> => {
+    payload: AcknowledgeAtRiskFlagRequest,
+): Promise<AtRiskFlagDto> => {
     const response = await getAxiosInstance().post(
         `${ENGAGEMENT_API_BASE}/AcknowledgeAtRiskFlag`,
         payload,
     );
 
-    return getEngagementApiResult<IAtRiskFlagDto>(response);
+    return getEngagementApiResult<AtRiskFlagDto>(response);
 };
 
 export const resolveAtRiskFlag = async (
-    payload: IResolveAtRiskFlagRequest,
-): Promise<IAtRiskFlagDto> => {
+    payload: ResolveAtRiskFlagRequest,
+): Promise<AtRiskFlagDto> => {
     const response = await getAxiosInstance().post(
         `${ENGAGEMENT_API_BASE}/ResolveAtRiskFlag`,
         payload,
     );
 
-    return getEngagementApiResult<IAtRiskFlagDto>(response);
+    return getEngagementApiResult<AtRiskFlagDto>(response);
 };

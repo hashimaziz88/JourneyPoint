@@ -30,10 +30,10 @@ import {
   INITIAL_STATE,
   UserActionContext,
   UserStateContext,
-  type ICreateUserDto,
-  type IGetAllUsersRequest,
-  type IResetPasswordDto,
-  type IUserDto,
+  type CreateUserDto,
+  type GetAllUsersRequest,
+  type ResetPasswordDto,
+  type UserDto,
 } from "./context";
 import { UserReducer } from "./reducer";
 
@@ -45,7 +45,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [state, dispatch] = useReducer(UserReducer, INITIAL_STATE);
 
-  const getAll = async (request: IGetAllUsersRequest): Promise<void> => {
+  const getAll = async (request: GetAllUsersRequest): Promise<void> => {
     dispatch(getAllUsersPending());
 
     try {
@@ -84,7 +84,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const createUser = async (payload: ICreateUserDto): Promise<void> => {
+  const createUser = async (payload: CreateUserDto): Promise<void> => {
     dispatch(createUserPending());
 
     try {
@@ -96,7 +96,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const updateUser = async (payload: IUserDto): Promise<void> => {
+  const updateUser = async (payload: UserDto): Promise<void> => {
     dispatch(updateUserPending());
 
     try {
@@ -138,7 +138,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const resetPassword = async (dto: IResetPasswordDto): Promise<void> => {
+  const resetPassword = async (dto: ResetPasswordDto): Promise<void> => {
     dispatch(resetPasswordPending());
 
     try {

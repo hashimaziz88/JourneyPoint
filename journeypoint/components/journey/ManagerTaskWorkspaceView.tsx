@@ -6,14 +6,14 @@ import { ReloadOutlined } from "@ant-design/icons";
 import ManagerDirectReportSection from "@/components/journey/ManagerDirectReportSection";
 import { useStyles } from "@/components/journey/style/style";
 import { MANAGER_WORKSPACE_EMPTY_DESCRIPTION } from "@/constants/journey/manager";
-import type { IManagerTaskWorkspaceViewProps } from "@/types/journey/components";
+import type { ManagerTaskWorkspaceViewProps } from "@/types/journey/components";
 
 const { Paragraph, Title } = Typography;
 
 /**
  * Renders the manager task workspace for direct-report tasks.
  */
-const ManagerTaskWorkspaceView: React.FC<IManagerTaskWorkspaceViewProps> = ({
+const ManagerTaskWorkspaceView: React.FC<ManagerTaskWorkspaceViewProps> = ({
     workspace,
     isPending,
     isMutationPending,

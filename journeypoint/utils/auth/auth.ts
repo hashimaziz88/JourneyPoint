@@ -1,19 +1,19 @@
 import { AUTH_COOKIE_NAMES } from "@/constants/auth/cookies";
 import { getCookie, removeCookie, setCookie } from "@/utils/cookies";
-import {
-    IApplicationInfo,
-    ICurrentLoginInfoUser,
-    ICurrentLoginInfoTenant,
-    ITenantInfo,
-    IUserLoginResponse,
-} from "@/types/auth";
+import type {
+    ApplicationInfo,
+    CurrentLoginInfoUser,
+    CurrentLoginInfoTenant,
+    TenantInfo,
+    UserLoginResponse,
+} from "@/types/auth/auth";
 
 export const mapSessionUser = (
     token: string,
-    user: ICurrentLoginInfoUser | null | undefined,
+    user: CurrentLoginInfoUser | null | undefined,
     userId?: number,
-    expireInSeconds?: number
-): IUserLoginResponse => {
+    expireInSeconds?: number,
+): UserLoginResponse => {
     const expiresAt =
         typeof expireInSeconds === "number"
             ? new Date(Date.now() + expireInSeconds * 1000).toISOString()
@@ -39,9 +39,9 @@ export const normalizeTenancyName = (value?: string | null): string | null => {
 };
 
 export const mapTenantInfo = (
-    tenant?: ICurrentLoginInfoTenant | ITenantInfo | null,
+    tenant?: CurrentLoginInfoTenant | TenantInfo | null,
     fallbackTenancyName?: string | null,
-): ITenantInfo | null => {
+): TenantInfo | null => {
     if (!tenant && !fallbackTenancyName) {
         return null;
     }
@@ -63,7 +63,7 @@ export const mapTenantInfo = (
     };
 };
 
-export const mapApplicationInfo = (application?: IApplicationInfo | null): IApplicationInfo | null => {
+export const mapApplicationInfo = (application?: ApplicationInfo | null): ApplicationInfo | null => {
     if (!application) {
         return null;
     }
@@ -75,7 +75,7 @@ export const mapApplicationInfo = (application?: IApplicationInfo | null): IAppl
     };
 };
 
-export const persistTenantCookies = (tenant: ITenantInfo | null): void => {
+export const persistTenantCookies = (tenant: TenantInfo | null): void => {
     if (!tenant?.tenantId) {
         clearTenantCookies();
         return;
@@ -92,7 +92,7 @@ export const clearTenantCookies = (): void => {
     removeCookie(AUTH_COOKIE_NAMES.tenantName);
 };
 
-export const readTenantFromCookies = (): ITenantInfo | null => {
+export const readTenantFromCookies = (): TenantInfo | null => {
     const tenantId = getCookie(AUTH_COOKIE_NAMES.tenantId);
     const tenancyName = getCookie(AUTH_COOKIE_NAMES.tenancyName);
     const tenantName = getCookie(AUTH_COOKIE_NAMES.tenantName);

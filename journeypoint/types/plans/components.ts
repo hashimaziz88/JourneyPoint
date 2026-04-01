@@ -1,97 +1,97 @@
 import type { UploadProps } from "antd";
 import type {
-    IMarkdownImportDraftState,
-    IMarkdownImportWarningDto,
-} from "@/types/markdown-import";
+    MarkdownImportDraftState,
+    MarkdownImportWarningDto,
+} from "@/types/markdown-import/markdown-import";
 import type {
-    IDocumentModuleOptionDto,
-    IExtractedTaskProposalDto,
-    IExtractedTaskProposalEditorValues,
-    IOnboardingDocumentDetailDto,
-} from "@/types/onboarding-document";
+    DocumentModuleOptionDto,
+    ExtractedTaskProposalDto,
+    ExtractedTaskProposalEditorValues,
+    OnboardingDocumentDetailDto,
+} from "@/types/onboarding-document/onboarding-document";
 import type {
-    IGetOnboardingPlansInput,
-    IOnboardingModuleDraft,
-    IOnboardingPlanDraft,
-    IOnboardingPlanListItemDto,
-    IOnboardingPlanMetadataInput,
-    IOnboardingTaskDraft,
-    IOnboardingTaskEditorValues,
+    GetOnboardingPlansInput,
+    OnboardingModuleDraft,
+    OnboardingPlanDraft,
+    OnboardingPlanListItemDto,
+    OnboardingPlanMetadataInput,
     OnboardingPlanStatus,
-} from "@/types/onboarding-plan";
+    OnboardingTaskDraft,
+    OnboardingTaskEditorValues,
+} from "@/types/onboarding-plan/onboarding-plan";
 
-export type TPlanOrderDirection = "up" | "down";
-export type TProposalModalMode = "accept" | "edit";
+export type PlanOrderDirection = "up" | "down";
+export type ProposalModalMode = "accept" | "edit";
 
-export interface IDocumentReviewWorkspaceProps {
+export type DocumentReviewWorkspaceProps = {
     documentId: string;
     planId: string;
-}
+};
 
-export interface IProposalModalState {
-    mode: TProposalModalMode;
+export type ProposalModalState = {
+    mode: ProposalModalMode;
     proposalId: string;
-}
+};
 
-export interface IDocumentReviewProposalPanelProps {
-    availableModules: IDocumentModuleOptionDto[];
+export type DocumentReviewProposalPanelProps = {
+    availableModules: DocumentModuleOptionDto[];
     isPending: boolean;
     onAccept: (proposalId: string) => void;
     onEdit: (proposalId: string) => void;
     onReject: (proposalId: string) => Promise<void>;
-    proposals: IExtractedTaskProposalDto[];
-}
+    proposals: ExtractedTaskProposalDto[];
+};
 
-export interface IDocumentReviewSummaryCardProps {
-    document: IOnboardingDocumentDetailDto;
-}
+export type DocumentReviewSummaryCardProps = {
+    document: OnboardingDocumentDetailDto;
+};
 
-export interface IDocumentStatusAlertContent {
+export type DocumentStatusAlertContent = {
     description: string;
     title: string;
     type: "error" | "info" | "success";
-}
+};
 
-export interface IDocumentUploadPanelProps {
+export type DocumentUploadPanelProps = {
     planId?: string | null;
     planStatus: OnboardingPlanStatus;
-}
+};
 
-export interface IExtractedProposalEditorModalProps {
-    availableModules: IDocumentModuleOptionDto[];
+export type ExtractedProposalEditorModalProps = {
+    availableModules: DocumentModuleOptionDto[];
     isPending: boolean;
     isVisible: boolean;
-    mode: TProposalModalMode;
+    mode: ProposalModalMode;
     onCancel: () => void;
-    onSubmit: (values: IExtractedTaskProposalEditorValues) => Promise<void>;
-    proposal?: IExtractedTaskProposalDto | null;
-}
+    onSubmit: (values: ExtractedTaskProposalEditorValues) => Promise<void>;
+    proposal?: ExtractedTaskProposalDto | null;
+};
 
-export interface IExtractedProposalListProps {
-    availableModules: IDocumentModuleOptionDto[];
+export type ExtractedProposalListProps = {
+    availableModules: DocumentModuleOptionDto[];
     isPending: boolean;
     onAccept: (proposalId: string) => void;
     onEdit: (proposalId: string) => void;
     onReject: (proposalId: string) => Promise<void>;
-    proposals: IExtractedTaskProposalDto[];
-}
+    proposals: ExtractedTaskProposalDto[];
+};
 
-export interface IMarkdownImportWorkspaceTaskModalState {
+export type MarkdownImportWorkspaceTaskModalState = {
     moduleClientKey: string;
     taskClientKey: string;
-}
+};
 
-export interface IMarkdownImportPreviewMetadataPayload {
+export type MarkdownImportPreviewMetadataPayload = {
     description?: string;
     durationDays?: number;
     name?: string;
     targetAudience?: string;
-}
+};
 
-export interface IMarkdownImportPreviewCardProps {
-    previewPlan?: IMarkdownImportDraftState | null;
+export type MarkdownImportPreviewCardProps = {
+    previewPlan?: MarkdownImportDraftState | null;
     onEditTask: (moduleClientKey: string, taskClientKey: string) => void;
-    onMetadataChange: (payload: IMarkdownImportPreviewMetadataPayload) => void;
+    onMetadataChange: (payload: MarkdownImportPreviewMetadataPayload) => void;
     onModuleChange: (
         moduleClientKey: string,
         name: string,
@@ -99,22 +99,22 @@ export interface IMarkdownImportPreviewCardProps {
     ) => void;
     onRemoveModule: (moduleClientKey: string) => void;
     onRemoveTask: (moduleClientKey: string, taskClientKey: string) => void;
-}
+};
 
-export interface IMarkdownImportSourceCardProps {
+export type MarkdownImportSourceCardProps = {
     onSourceContentChange: (value: string, sourceFileName?: string | null) => void;
     sourceContent: string;
     sourceContentType?: string | null;
     sourceFileName?: string | null;
     uploadProps: UploadProps;
-}
+};
 
-export interface IMarkdownImportWarningsProps {
-    warnings: IMarkdownImportWarningDto[];
-}
+export type MarkdownImportWarningsProps = {
+    warnings: MarkdownImportWarningDto[];
+};
 
-export interface IMarkdownPreviewTableProps {
-    modules: IOnboardingModuleDraft[];
+export type MarkdownPreviewTableProps = {
+    modules: OnboardingModuleDraft[];
     onEditTask: (moduleClientKey: string, taskClientKey: string) => void;
     onModuleChange: (
         moduleClientKey: string,
@@ -123,45 +123,45 @@ export interface IMarkdownPreviewTableProps {
     ) => void;
     onRemoveModule: (moduleClientKey: string) => void;
     onRemoveTask: (moduleClientKey: string, taskClientKey: string) => void;
-}
+};
 
-export interface IMarkdownPreviewTaskRow extends IOnboardingTaskDraft {
+export type MarkdownPreviewTaskRow = OnboardingTaskDraft & {
     key: string;
     moduleClientKey: string;
-}
+};
 
-export interface IModulePanelProps {
+export type ModulePanelProps = {
     isReadOnly: boolean;
-    module: IOnboardingModuleDraft;
+    module: OnboardingModuleDraft;
     moduleCount: number;
     onAddTask: () => void;
     onDeleteTask: (taskClientKey: string) => void;
     onEditTask: (taskClientKey: string) => void;
     onModuleChange: (name: string, description: string) => void;
-    onMoveModule: (direction: TPlanOrderDirection) => void;
-    onMoveTask: (taskClientKey: string, direction: TPlanOrderDirection) => void;
+    onMoveModule: (direction: PlanOrderDirection) => void;
+    onMoveTask: (taskClientKey: string, direction: PlanOrderDirection) => void;
     onRemoveModule: () => void;
-}
+};
 
-export interface IPlanCardProps {
+export type PlanCardProps = {
     isActionPending: boolean;
-    onArchive: (plan: IOnboardingPlanListItemDto) => Promise<void>;
-    onClone: (plan: IOnboardingPlanListItemDto) => Promise<void>;
+    onArchive: (plan: OnboardingPlanListItemDto) => Promise<void>;
+    onClone: (plan: OnboardingPlanListItemDto) => Promise<void>;
     onOpen: (planId: string) => void;
-    onPublish: (plan: IOnboardingPlanListItemDto) => Promise<void>;
-    plan: IOnboardingPlanListItemDto;
-}
+    onPublish: (plan: OnboardingPlanListItemDto) => Promise<void>;
+    plan: OnboardingPlanListItemDto;
+};
 
-export interface IPlanEditorProps {
+export type PlanEditorProps = {
     planId: string;
-}
+};
 
-export interface IPlanEditorTaskModalState {
+export type PlanEditorTaskModalState = {
     moduleClientKey: string;
     taskClientKey?: string | null;
-}
+};
 
-export interface IPlanEditorHeaderProps {
+export type PlanEditorHeaderProps = {
     isDraftEditable: boolean;
     isMutationPending: boolean;
     isNewPlan: boolean;
@@ -173,17 +173,17 @@ export interface IPlanEditorHeaderProps {
     planName: string;
     planStatus: OnboardingPlanStatus;
     showCreationChoice: boolean;
-}
+};
 
-export interface IPlanEditorMetadataCardProps {
-    draftPlan: IOnboardingPlanDraft;
+export type PlanEditorMetadataCardProps = {
+    draftPlan: OnboardingPlanDraft;
     isDraftEditable: boolean;
-    onMetadataChange: (payload: Partial<IOnboardingPlanMetadataInput>) => void;
-}
+    onMetadataChange: (payload: Partial<OnboardingPlanMetadataInput>) => void;
+};
 
-export interface IPlanEditorModulesSectionProps {
+export type PlanEditorModulesSectionProps = {
     isDraftEditable: boolean;
-    modules: IOnboardingModuleDraft[];
+    modules: OnboardingModuleDraft[];
     onAddModule: () => void;
     onAddTask: (moduleClientKey: string) => void;
     onDeleteTask: (moduleClientKey: string, taskClientKey: string) => void;
@@ -195,40 +195,38 @@ export interface IPlanEditorModulesSectionProps {
     ) => void;
     onMoveModule: (
         moduleClientKey: string,
-        direction: TPlanOrderDirection,
+        direction: PlanOrderDirection,
     ) => void;
     onMoveTask: (
         moduleClientKey: string,
         taskClientKey: string,
-        direction: TPlanOrderDirection,
+        direction: PlanOrderDirection,
     ) => void;
     onRemoveModule: (moduleClientKey: string) => void;
-}
+};
 
-export interface IPlanListQueryState {
+export type PlanListQueryState = {
     current: number;
     keyword: string;
     maxResultCount: number;
     status?: OnboardingPlanStatus;
-}
+};
 
-export interface ITaskFormModalProps {
-    editingTask?: IOnboardingTaskDraft | null;
+export type TaskFormModalProps = {
+    editingTask?: OnboardingTaskDraft | null;
     isPending: boolean;
     isVisible: boolean;
     onCancel: () => void;
-    onSubmit: (values: IOnboardingTaskEditorValues) => Promise<void>;
-}
+    onSubmit: (values: OnboardingTaskEditorValues) => Promise<void>;
+};
 
-export interface ITaskListEditorProps {
+export type TaskListEditorProps = {
     isReadOnly: boolean;
     onAddTask: () => void;
     onDeleteTask: (taskClientKey: string) => void;
     onEditTask: (taskClientKey: string) => void;
-    onMoveTask: (taskClientKey: string, direction: TPlanOrderDirection) => void;
-    tasks: IOnboardingTaskDraft[];
-}
+    onMoveTask: (taskClientKey: string, direction: PlanOrderDirection) => void;
+    tasks: OnboardingTaskDraft[];
+};
 
-export interface IPlanListRequestBuilder {
-    (query: IPlanListQueryState): IGetOnboardingPlansInput;
-}
+export type PlanListRequestBuilder = (query: PlanListQueryState) => GetOnboardingPlansInput;

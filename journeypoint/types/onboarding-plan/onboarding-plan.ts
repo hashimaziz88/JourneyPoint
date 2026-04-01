@@ -23,7 +23,7 @@ export enum OnboardingTaskAcknowledgementRule {
     Required = 2,
 }
 
-export interface IOnboardingPlanListItemDto {
+export type OnboardingPlanListItemDto = {
     id: string;
     name: string;
     targetAudience: string;
@@ -32,9 +32,9 @@ export interface IOnboardingPlanListItemDto {
     moduleCount: number;
     taskCount: number;
     lastUpdatedTime: string;
-}
+};
 
-export interface IOnboardingTaskDto {
+export type OnboardingTaskDto = {
     id: string;
     title: string;
     description: string;
@@ -43,27 +43,27 @@ export interface IOnboardingTaskDto {
     dueDayOffset: number;
     assignmentTarget: OnboardingTaskAssignmentTarget;
     acknowledgementRule: OnboardingTaskAcknowledgementRule;
-}
+};
 
-export interface IOnboardingModuleDto {
+export type OnboardingModuleDto = {
     id: string;
     name: string;
     description: string;
     orderIndex: number;
-    tasks: IOnboardingTaskDto[];
-}
+    tasks: OnboardingTaskDto[];
+};
 
-export interface IOnboardingPlanDetailDto {
+export type OnboardingPlanDetailDto = {
     id: string;
     name: string;
     description: string;
     targetAudience: string;
     durationDays: number;
     status: OnboardingPlanStatus;
-    modules: IOnboardingModuleDto[];
-}
+    modules: OnboardingModuleDto[];
+};
 
-export interface IUpsertOnboardingTaskDto {
+export type UpsertOnboardingTaskDto = {
     id?: string | null;
     title: string;
     description: string;
@@ -72,47 +72,47 @@ export interface IUpsertOnboardingTaskDto {
     dueDayOffset: number;
     assignmentTarget: OnboardingTaskAssignmentTarget;
     acknowledgementRule: OnboardingTaskAcknowledgementRule;
-}
+};
 
-export interface IUpsertOnboardingModuleDto {
+export type UpsertOnboardingModuleDto = {
     id?: string | null;
     name: string;
     description: string;
     orderIndex: number;
-    tasks: IUpsertOnboardingTaskDto[];
-}
+    tasks: UpsertOnboardingTaskDto[];
+};
 
-export interface ICreateOnboardingPlanRequest {
+export type CreateOnboardingPlanRequest = {
     name: string;
     description: string;
     targetAudience: string;
     durationDays: number;
-    modules: IUpsertOnboardingModuleDto[];
-}
+    modules: UpsertOnboardingModuleDto[];
+};
 
-export interface IUpdateOnboardingPlanRequest {
+export type UpdateOnboardingPlanRequest = {
     id: string;
     name: string;
     description: string;
     targetAudience: string;
     durationDays: number;
-    modules: IUpsertOnboardingModuleDto[];
-}
+    modules: UpsertOnboardingModuleDto[];
+};
 
-export interface ICloneOnboardingPlanRequest {
+export type CloneOnboardingPlanRequest = {
     sourcePlanId: string;
     name?: string | null;
-}
+};
 
-export interface IGetOnboardingPlansInput {
+export type GetOnboardingPlansInput = {
     keyword?: string | null;
     status?: OnboardingPlanStatus | null;
     skipCount: number;
     maxResultCount: number;
     sorting?: string | null;
-}
+};
 
-export interface IOnboardingTaskDraft {
+export type OnboardingTaskDraft = {
     clientKey: string;
     id?: string | null;
     title: string;
@@ -122,73 +122,39 @@ export interface IOnboardingTaskDraft {
     dueDayOffset: number;
     assignmentTarget: OnboardingTaskAssignmentTarget;
     acknowledgementRule: OnboardingTaskAcknowledgementRule;
-}
+};
 
-export interface IOnboardingModuleDraft {
+export type OnboardingModuleDraft = {
     clientKey: string;
     id?: string | null;
     name: string;
     description: string;
     orderIndex: number;
-    tasks: IOnboardingTaskDraft[];
-}
+    tasks: OnboardingTaskDraft[];
+};
 
-export interface IOnboardingPlanDraft {
+export type OnboardingPlanDraft = {
     id?: string | null;
     name: string;
     description: string;
     targetAudience: string;
     durationDays: number;
     status: OnboardingPlanStatus;
-    modules: IOnboardingModuleDraft[];
-}
+    modules: OnboardingModuleDraft[];
+};
 
-export interface IOnboardingTaskEditorValues {
+export type OnboardingTaskEditorValues = {
     title: string;
     description: string;
     category: OnboardingTaskCategory;
     dueDayOffset: number;
     assignmentTarget: OnboardingTaskAssignmentTarget;
     acknowledgementRule: OnboardingTaskAcknowledgementRule;
-}
+};
 
-export interface IOnboardingPlanMetadataInput {
+export type OnboardingPlanMetadataInput = {
     name: string;
     description: string;
     targetAudience: string;
     durationDays: number;
-}
-
-export const ONBOARDING_PLAN_STATUS_LABELS: Record<OnboardingPlanStatus, string> = {
-    [OnboardingPlanStatus.Draft]: "Draft",
-    [OnboardingPlanStatus.Published]: "Published",
-    [OnboardingPlanStatus.Archived]: "Archived",
-};
-
-export const ONBOARDING_TASK_CATEGORY_OPTIONS = [
-    { label: "Orientation", value: OnboardingTaskCategory.Orientation },
-    { label: "Learning", value: OnboardingTaskCategory.Learning },
-    { label: "Practice", value: OnboardingTaskCategory.Practice },
-    { label: "Assessment", value: OnboardingTaskCategory.Assessment },
-    { label: "Check-in", value: OnboardingTaskCategory.CheckIn },
-];
-
-export const ONBOARDING_TASK_ASSIGNMENT_TARGET_OPTIONS = [
-    { label: "Enrolee", value: OnboardingTaskAssignmentTarget.Enrolee },
-    { label: "Manager", value: OnboardingTaskAssignmentTarget.Manager },
-    { label: "Facilitator", value: OnboardingTaskAssignmentTarget.Facilitator },
-];
-
-export const ONBOARDING_TASK_ACKNOWLEDGEMENT_RULE_OPTIONS = [
-    { label: "Not required", value: OnboardingTaskAcknowledgementRule.NotRequired },
-    { label: "Required", value: OnboardingTaskAcknowledgementRule.Required },
-];
-
-export const DEFAULT_ONBOARDING_TASK_EDITOR_VALUES: IOnboardingTaskEditorValues = {
-    title: "",
-    description: "",
-    category: OnboardingTaskCategory.Orientation,
-    dueDayOffset: 0,
-    assignmentTarget: OnboardingTaskAssignmentTarget.Enrolee,
-    acknowledgementRule: OnboardingTaskAcknowledgementRule.NotRequired,
 };

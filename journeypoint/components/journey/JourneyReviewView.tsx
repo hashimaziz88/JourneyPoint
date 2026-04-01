@@ -38,17 +38,17 @@ import {
     useJourneyState,
 } from "@/providers/journeyProvider";
 import type {
-    IAddJourneyTaskRequest,
-    IJourneyTaskReviewDto,
-} from "@/types/journey";
-import type { IJourneyReviewViewProps } from "@/types/journey/components";
+    AddJourneyTaskRequest,
+    JourneyTaskReviewDto,
+} from "@/types/journey/journey";
+import type { JourneyReviewViewProps } from "@/types/journey/components";
 import { formatDisplayDate, formatDisplayDateTime } from "@/utils/date";
 import {
     groupJourneyTasksByModule,
     isJourneyDraftEditable,
 } from "@/utils/journey/review";
 import { getHighlightedTaskIds } from "@/utils/journey/personalisation";
-import { buildFacilitatorHireRoute } from "@/constants/auth/routes";
+import { buildFacilitatorHireRoute } from "@/routes/auth.routes";
 import { useRouter } from "next/navigation";
 
 const { Paragraph, Title } = Typography;
@@ -56,7 +56,7 @@ const { Paragraph, Title } = Typography;
 /**
  * Drives facilitator review, activation, and draft-task editing for one hire journey.
  */
-const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
+const JourneyReviewView: React.FC<JourneyReviewViewProps> = ({ hireId }) => {
     const { styles } = useStyles();
     const router = useRouter();
     const [messageApi, messageContextHolder] = message.useMessage();
@@ -80,7 +80,7 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
         journey,
         personalisationProposal,
     } = useJourneyState();
-    const [editingTask, setEditingTask] = useState<IJourneyTaskReviewDto | null>(null);
+    const [editingTask, setEditingTask] = useState<JourneyTaskReviewDto | null>(null);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
     const loadScreenEffect = useEffectEvent(async (): Promise<void> => {
@@ -118,7 +118,7 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
         await getHireDetail(hireId);
     };
 
-    const handleSubmitTask = async (payload: IAddJourneyTaskRequest): Promise<void> => {
+    const handleSubmitTask = async (payload: AddJourneyTaskRequest): Promise<void> => {
         let result = null;
 
         if (editingTask) {
@@ -138,7 +138,7 @@ const JourneyReviewView: React.FC<IJourneyReviewViewProps> = ({ hireId }) => {
         await getHireDetail(hireId);
     };
 
-    const handleRemoveTask = async (task: IJourneyTaskReviewDto): Promise<void> => {
+    const handleRemoveTask = async (task: JourneyTaskReviewDto): Promise<void> => {
         const result = await removePendingTask(hireId, task.id);
 
         if (!result) {

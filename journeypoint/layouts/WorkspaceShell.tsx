@@ -7,12 +7,12 @@ import { usePathname, useRouter } from "next/navigation";
 import type { MenuProps } from "antd";
 import { Button, Grid, Layout, Tag, Typography } from "antd";
 import { LogoutOutlined } from "@ant-design/icons";
-import { APP_ROUTES } from "@/constants/auth/routes";
+import { APP_ROUTES } from "@/routes/auth.routes";
 import { useAuthActions } from "@/providers/authProvider";
 import MobileNavigation from "@/components/layout/MobileNavigation";
 import WorkspaceNavLinks from "@/components/layout/WorkspaceNavLinks";
-import { NAVIGATION_ICONS } from "@/constants/layout/appShell";
-import type { IAppShellProps } from "@/types/layout/shell";
+import { NAVIGATION_ICONS } from "@/utils/layout/appShell";
+import type { AppShellProps } from "@/types/layout/shell";
 import { ignoreAsyncError } from "@/utils/async";
 import { getSelectedMenuKey } from "@/utils/layout/appShell";
 import { useWorkspaceShellStyles } from "./style/workspaceShell";
@@ -25,7 +25,7 @@ const { useBreakpoint } = Grid;
  * Renders the top-navigation product shell for Facilitator, Manager, and Enrolee
  * workspaces. The admin workspace uses AppShell (sidebar) instead.
  */
-const WorkspaceShell: React.FC<IAppShellProps> = ({
+const WorkspaceShell: React.FC<AppShellProps> = ({
   children,
   navigationItems,
   scopeLabel,

@@ -17,10 +17,10 @@ import {
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { PlusOutlined } from "@ant-design/icons";
 import { useRoleActions, useRoleState } from "@/providers/roleProvider";
-import type { IFlatPermissionDto, IPermissionDto, IRoleDto } from "@/types/role";
+import type { FlatPermissionDto, PermissionDto, RoleDto } from "@/types/role/role";
 import { useStyles } from "@/components/admin/style/style";
 import { ROLE_SUCCESS_MESSAGES } from "@/constants/admin/roleManager";
-import type { IRoleFormValues } from "@/types/admin/roleManager";
+import type { RoleFormValues } from "@/types/admin/roleManager";
 import { buildRoleQuery } from "@/utils/admin/roleManager";
 import { ignoreAsyncError } from "@/utils/async";
 
@@ -36,20 +36,20 @@ const RoleManager: React.FC = () => {
     pageSize: 10,
   });
   const [modalOpen, setModalOpen] = useState(false);
-  const [editingRole, setEditingRole] = useState<IRoleDto | null>(null);
+  const [editingRole, setEditingRole] = useState<RoleDto | null>(null);
   const [awaitingMutation, setAwaitingMutation] = useState<"create" | "update" | "delete" | null>(null);
   const [loadingRoleForEdit, setLoadingRoleForEdit] = useState(false);
-  const [form] = Form.useForm<IRoleFormValues>();
+  const [form] = Form.useForm<RoleFormValues>();
   const [messageApi, messageContextHolder] = message.useMessage();
 
   const availablePermissions = useMemo(
-    () => (editingRole ? (roleState.currentRole?.permissions as IFlatPermissionDto[] | null) : roleState.availablePermissions ?? []),
+    () => (editingRole ? (roleState.currentRole?.permissions as FlatPermissionDto[] | null) : roleState.availablePermissions ?? []),
     [editingRole, roleState.availablePermissions, roleState.currentRole?.permissions],
   );
 
   const permissionOptions = useMemo(
     () =>
-      (availablePermissions ?? []).map((permission: IPermissionDto | IFlatPermissionDto) => ({
+      (availablePermissions ?? []).map((permission: PermissionDto | FlatPermissionDto) => ({
         label: permission.displayName ?? permission.name ?? "Permission",
         value: permission.name ?? "",
       })),
@@ -129,7 +129,7 @@ const RoleManager: React.FC = () => {
     setModalOpen(true);
   };
 
-  const onEdit = async (role: IRoleDto) => {
+  const onEdit = async (role: RoleDto) => {
     setEditingRole(role);
     setModalOpen(true);
     setLoadingRoleForEdit(true);
@@ -143,7 +143,7 @@ const RoleManager: React.FC = () => {
 
 
 
-  const onDelete = (role: IRoleDto) => {
+  const onDelete = (role: RoleDto) => {
     Modal.confirm({
       title: `Delete ${role.displayName ?? role.name}?`,
       content: "This removes the role from the current scope.",
@@ -156,7 +156,7 @@ const RoleManager: React.FC = () => {
     });
   };
 
-  const handleSubmit = async (values: IRoleFormValues) => {
+  const handleSubmit = async (values: RoleFormValues) => {
     if (editingRole?.id) {
       setAwaitingMutation("update");
       await updateRole({
@@ -178,7 +178,7 @@ const RoleManager: React.FC = () => {
     });
   };
 
-  const columns: ColumnsType<IRoleDto> = [
+  const columns: ColumnsType<RoleDto> = [
     {
       title: "Display Name",
       dataIndex: "displayName",
@@ -286,7 +286,7 @@ const RoleManager: React.FC = () => {
         width={720}
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
-          <Form.Item<IRoleFormValues>
+          <Form.Item<RoleFormValues>
             label="Role Name"
             name="name"
             rules={[{ required: true, message: "Please enter the role name." }]}
@@ -294,7 +294,7 @@ const RoleManager: React.FC = () => {
             <Input placeholder="Manager" />
           </Form.Item>
 
-          <Form.Item<IRoleFormValues>
+          <Form.Item<RoleFormValues>
             label="Display Name"
             name="displayName"
             rules={[{ required: true, message: "Please enter the display name." }]}
@@ -302,11 +302,11 @@ const RoleManager: React.FC = () => {
             <Input placeholder="Manager" />
           </Form.Item>
 
-          <Form.Item<IRoleFormValues> label="Description" name="description">
+          <Form.Item<RoleFormValues> label="Description" name="description">
             <Input.TextArea rows={3} placeholder="Describe the role" />
           </Form.Item>
 
-          <Form.Item<IRoleFormValues> label="Granted Permissions" name="grantedPermissions">
+          <Form.Item<RoleFormValues> label="Granted Permissions" name="grantedPermissions">
             <Checkbox.Group
               disabled={loadingRoleForEdit}
               options={permissionOptions}

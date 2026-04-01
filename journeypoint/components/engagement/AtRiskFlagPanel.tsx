@@ -10,8 +10,8 @@ import {
     FACILITATOR_RESOLUTION_OPTIONS,
 } from "@/constants/engagement/interventions";
 import { useStyles } from "@/components/engagement/style/style";
-import { AtRiskFlagStatus, AtRiskResolutionType } from "@/types/engagement";
-import type { IAtRiskFlagPanelProps } from "@/types/engagement/components";
+import { AtRiskFlagStatus, AtRiskResolutionType } from "@/types/engagement/engagement";
+import type { AtRiskFlagPanelProps } from "@/types/engagement/components";
 import { formatDisplayDateTime } from "@/utils/date";
 
 const { Paragraph, Text, Title } = Typography;
@@ -19,7 +19,7 @@ const { Paragraph, Text, Title } = Typography;
 /**
  * Renders the active at-risk intervention panel with acknowledge and resolve actions.
  */
-const AtRiskFlagPanel: React.FC<IAtRiskFlagPanelProps> = ({
+const AtRiskFlagPanel: React.FC<AtRiskFlagPanelProps> = ({
     activeFlag,
     isPending,
     onAcknowledge,

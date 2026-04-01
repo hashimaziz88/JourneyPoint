@@ -1,5 +1,5 @@
-import type { HireLifecycleState } from "@/types/hire";
-import type { JourneyStatus } from "@/types/journey";
+import type { HireLifecycleState } from "@/types/hire/hire";
+import type { JourneyStatus } from "@/types/journey/journey";
 
 export enum EngagementClassification {
     Healthy = 1,
@@ -19,7 +19,7 @@ export enum AtRiskResolutionType {
     HireExited = 3,
 }
 
-export interface IEngagementSnapshotDto {
+export type EngagementSnapshotDto = {
     id: string;
     completionRate: number;
     daysSinceLastActivity: number;
@@ -27,9 +27,9 @@ export interface IEngagementSnapshotDto {
     compositeScore: number;
     classification: EngagementClassification;
     computedAt: string;
-}
+};
 
-export interface IAtRiskFlagDto {
+export type AtRiskFlagDto = {
     id: string;
     hireId: string;
     journeyId: string;
@@ -45,9 +45,9 @@ export interface IAtRiskFlagDto {
     resolvedAt?: string | null;
     resolutionType?: AtRiskResolutionType | null;
     resolutionNotes?: string | null;
-}
+};
 
-export interface IHireIntelligenceDetailDto {
+export type HireIntelligenceDetailDto = {
     hireId: string;
     journeyId?: string | null;
     onboardingPlanId: string;
@@ -62,19 +62,19 @@ export interface IHireIntelligenceDetailDto {
     hireStatus: HireLifecycleState;
     journeyStatus?: JourneyStatus | null;
     currentStageTitle?: string | null;
-    currentSnapshot?: IEngagementSnapshotDto | null;
-    snapshotHistory: IEngagementSnapshotDto[];
-    activeFlag?: IAtRiskFlagDto | null;
-    resolvedFlags: IAtRiskFlagDto[];
-}
+    currentSnapshot?: EngagementSnapshotDto | null;
+    snapshotHistory: EngagementSnapshotDto[];
+    activeFlag?: AtRiskFlagDto | null;
+    resolvedFlags: AtRiskFlagDto[];
+};
 
-export interface IAcknowledgeAtRiskFlagRequest {
+export type AcknowledgeAtRiskFlagRequest = {
     flagId: string;
     acknowledgementNotes?: string | null;
-}
+};
 
-export interface IResolveAtRiskFlagRequest {
+export type ResolveAtRiskFlagRequest = {
     flagId: string;
     resolutionType: AtRiskResolutionType;
     resolutionNotes?: string | null;
-}
+};

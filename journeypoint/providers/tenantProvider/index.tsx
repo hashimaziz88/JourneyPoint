@@ -20,9 +20,9 @@ import {
   INITIAL_STATE,
   TenantActionContext,
   TenantStateContext,
-  type ICreateTenantDto,
-  type IGetAllTenantsRequest,
-  type ITenantDto,
+  type CreateTenantDto,
+  type GetAllTenantsRequest,
+  type TenantDto,
 } from "./context";
 import { TenantReducer } from "./reducer";
 
@@ -34,7 +34,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [state, dispatch] = useReducer(TenantReducer, INITIAL_STATE);
 
-  const getAll = async (request: IGetAllTenantsRequest): Promise<void> => {
+  const getAll = async (request: GetAllTenantsRequest): Promise<void> => {
     dispatch(getAllTenantsPending());
 
     try {
@@ -56,7 +56,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const createTenant = async (payload: ICreateTenantDto): Promise<void> => {
+  const createTenant = async (payload: CreateTenantDto): Promise<void> => {
     dispatch(createTenantPending());
 
     try {
@@ -68,7 +68,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const updateTenant = async (payload: ITenantDto): Promise<void> => {
+  const updateTenant = async (payload: TenantDto): Promise<void> => {
     dispatch(updateTenantPending());
 
     try {

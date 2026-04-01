@@ -9,7 +9,7 @@ import {
     ENROLEE_JOURNEY_STATUS_COLORS,
     ENROLEE_JOURNEY_STATUS_LABELS,
 } from "@/constants/journey/dashboard";
-import type { IEnroleeJourneyDashboardViewProps } from "@/types/journey/components";
+import type { EnroleeJourneyDashboardViewProps } from "@/types/journey/components";
 import { formatDisplayDateTime } from "@/utils/date";
 
 const { Paragraph, Title } = Typography;
@@ -17,7 +17,7 @@ const { Paragraph, Title } = Typography;
 /**
  * Renders the active journey dashboard for the signed-in enrolee.
  */
-const EnroleeJourneyDashboardView: React.FC<IEnroleeJourneyDashboardViewProps> = ({
+const EnroleeJourneyDashboardView: React.FC<EnroleeJourneyDashboardViewProps> = ({
     dashboard,
     isPending,
     onRefresh,

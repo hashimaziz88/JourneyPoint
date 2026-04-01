@@ -1,14 +1,14 @@
-import type { EngagementClassification } from "@/types/engagement";
+import type { EngagementClassification } from "@/types/engagement/engagement";
 
-export interface IGetPipelineBoardInput {
+export type GetPipelineBoardInput = {
     keyword?: string | null;
     classification?: EngagementClassification | null;
     skipCount: number;
     maxResultCount: number;
     sorting?: string | null;
-}
+};
 
-export interface IPipelineHireCardDto {
+export type PipelineHireCardDto = {
     hireId: string;
     journeyId: string;
     fullName: string;
@@ -27,32 +27,32 @@ export interface IPipelineHireCardDto {
     snapshotComputedAt: string;
     onboardingPlanId: string;
     onboardingPlanName: string;
-}
+};
 
-export interface IPipelineColumnDto {
+export type PipelineColumnDto = {
     columnKey: string;
     columnTitle: string;
     orderIndex: number;
-    hires: IPipelineHireCardDto[];
-}
+    hires: PipelineHireCardDto[];
+};
 
-export interface IPipelineBoardDto {
+export type PipelineBoardDto = {
     generatedAt: string;
     keyword?: string | null;
     classificationFilter?: EngagementClassification | null;
-    columns: IPipelineColumnDto[];
-}
+    columns: PipelineColumnDto[];
+};
 
-export interface IPipelineBoardQueryState {
+export type PipelineBoardQueryState = {
     keyword: string;
     classification?: EngagementClassification;
-}
+};
 
 /** One onboarding-plan group on the pipeline, containing plan-specific columns. */
-export interface IPipelineJourneyGroup {
+export type PipelineJourneyGroup = {
     planId: string;
     planName: string;
-    columns: IPipelineColumnDto[];
+    columns: PipelineColumnDto[];
     totalHires: number;
     atRiskCount: number;
-}
+};

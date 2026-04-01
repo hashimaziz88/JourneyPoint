@@ -9,12 +9,12 @@ import {
 } from "@/utils/plans/documentReview";
 import {
     ONBOARDING_DOCUMENT_STATUS_LABELS,
-} from "@/types/onboarding-document";
-import type { IDocumentReviewSummaryCardProps } from "@/types/plans/components";
+} from "@/constants/plans/onboarding-document";
+import type { DocumentReviewSummaryCardProps } from "@/types/plans/components";
 
 const { Text, Title } = Typography;
 
-const DocumentReviewSummaryCard: React.FC<IDocumentReviewSummaryCardProps> = ({
+const DocumentReviewSummaryCard: React.FC<DocumentReviewSummaryCardProps> = ({
     document,
 }) => {
     const { styles } = useStyles();

@@ -1,20 +1,20 @@
 import { createContext } from "react";
-export type { ITenantDto, ICreateTenantDto, IGetAllTenantsRequest } from "@/types/tenant";
-import type { ITenantDto, ICreateTenantDto, IGetAllTenantsRequest } from "@/types/tenant";
+export type { TenantDto, CreateTenantDto, GetAllTenantsRequest } from "@/types/tenant/tenant";
+import type { TenantDto, CreateTenantDto, GetAllTenantsRequest } from "@/types/tenant/tenant";
 
 export interface ITenantStateContext {
     isSuccess: boolean;
     isPending: boolean;
     isError: boolean;
-    tenants?: ITenantDto[] | null;
-    currentTenant?: ITenantDto | null;
+    tenants?: TenantDto[] | null;
+    currentTenant?: TenantDto | null;
     totalCount?: number;
 }
 
 export interface ITenantActionContext {
-    getAll: (request: IGetAllTenantsRequest) => Promise<void>;
-    createTenant: (payload: ICreateTenantDto) => Promise<void>;
-    updateTenant: (payload: ITenantDto) => Promise<void>;
+    getAll: (request: GetAllTenantsRequest) => Promise<void>;
+    createTenant: (payload: CreateTenantDto) => Promise<void>;
+    updateTenant: (payload: TenantDto) => Promise<void>;
     deleteTenant: (id: number) => Promise<void>;
 }
 

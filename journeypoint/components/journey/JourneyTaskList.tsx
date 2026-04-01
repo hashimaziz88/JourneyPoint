@@ -4,22 +4,22 @@ import React from "react";
 import { Button, Card, Collapse, Empty, Space, Tag, Typography } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useStyles } from "@/components/journey/style/style";
-import type { IJourneyTaskListProps } from "@/types/journey/components";
-import { JourneyTaskStatus } from "@/types/journey";
+import type { JourneyTaskListProps } from "@/types/journey/components";
+import { JourneyTaskStatus } from "@/types/journey/journey";
 import { formatDisplayDate } from "@/utils/date";
 import { findOptionLabel } from "@/utils/plans/optionLabels";
 import {
     ONBOARDING_TASK_ACKNOWLEDGEMENT_RULE_OPTIONS,
     ONBOARDING_TASK_ASSIGNMENT_TARGET_OPTIONS,
     ONBOARDING_TASK_CATEGORY_OPTIONS,
-} from "@/types/onboarding-plan";
+} from "@/constants/plans/onboarding-plan";
 
 const { Paragraph, Text, Title } = Typography;
 
 /**
  * Renders the ordered draft-journey task groups for facilitator review.
  */
-const JourneyTaskList: React.FC<IJourneyTaskListProps> = ({
+const JourneyTaskList: React.FC<JourneyTaskListProps> = ({
     highlightedTaskIds = [],
     isEditable,
     isMutationPending,

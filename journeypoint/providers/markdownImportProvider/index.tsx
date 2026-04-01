@@ -2,8 +2,8 @@
 
 import React, { useContext, useReducer } from "react";
 import { getAxiosInstance } from "@/utils/axiosInstance";
-import type { IMarkdownImportPreviewDto } from "@/types/markdown-import";
-import type { IOnboardingPlanDetailDto } from "@/types/onboarding-plan";
+import type { MarkdownImportPreviewDto } from "@/types/markdown-import/markdown-import";
+import type { OnboardingPlanDetailDto } from "@/types/onboarding-plan/onboarding-plan";
 import {
     previewError,
     previewPending,
@@ -70,7 +70,7 @@ export const MarkdownImportProvider: React.FC<{ children: React.ReactNode }> = (
         }));
     };
 
-    const previewImport = async (): Promise<IMarkdownImportPreviewDto | null> => {
+    const previewImport = async (): Promise<MarkdownImportPreviewDto | null> => {
         dispatch(previewPending());
 
         try {
@@ -83,7 +83,7 @@ export const MarkdownImportProvider: React.FC<{ children: React.ReactNode }> = (
                     base64Content: state.sourceBase64Content,
                 },
             );
-            const preview = getApiResult<IMarkdownImportPreviewDto>(response);
+            const preview = getApiResult<MarkdownImportPreviewDto>(response);
             dispatch(previewSuccess(mapMarkdownPreviewToDraftState(preview)));
             return preview;
         } catch (error) {
@@ -93,7 +93,7 @@ export const MarkdownImportProvider: React.FC<{ children: React.ReactNode }> = (
         }
     };
 
-    const saveDraft = async (): Promise<IOnboardingPlanDetailDto | null> => {
+    const saveDraft = async (): Promise<OnboardingPlanDetailDto | null> => {
         if (!state.previewPlan?.plan) {
             return null;
         }
@@ -105,7 +105,7 @@ export const MarkdownImportProvider: React.FC<{ children: React.ReactNode }> = (
                 `${MARKDOWN_IMPORT_API_BASE}/SaveDraft`,
                 mapMarkdownDraftToSaveRequest(state.previewPlan.plan),
             );
-            const detail = getApiResult<IOnboardingPlanDetailDto>(response);
+            const detail = getApiResult<OnboardingPlanDetailDto>(response);
             dispatch(saveSuccess());
             return detail;
         } catch (error) {

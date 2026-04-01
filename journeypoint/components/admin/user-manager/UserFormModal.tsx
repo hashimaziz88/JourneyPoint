@@ -3,14 +3,14 @@
 import React from "react";
 import { Form, Input, Modal, Select, Switch } from "antd";
 import type {
-  IUserFormModalProps,
-  IUserFormValues,
+  UserFormModalProps,
+  UserFormValues,
 } from "@/types/admin/userManager";
 
 /**
  * Renders the create/edit user modal used by the admin workspace.
  */
-const UserFormModal: React.FC<IUserFormModalProps> = ({
+const UserFormModal: React.FC<UserFormModalProps> = ({
   editingUser,
   form,
   isPending,
@@ -35,7 +35,7 @@ const UserFormModal: React.FC<IUserFormModalProps> = ({
       }}
       initialValues={{ isActive: true, roleNames: [] }}
     >
-      <Form.Item<IUserFormValues>
+      <Form.Item<UserFormValues>
         label="Username"
         name="userName"
         rules={[{ required: true, message: "Please enter the username." }]}
@@ -43,7 +43,7 @@ const UserFormModal: React.FC<IUserFormModalProps> = ({
         <Input placeholder="admin" />
       </Form.Item>
 
-      <Form.Item<IUserFormValues>
+      <Form.Item<UserFormValues>
         label="First Name"
         name="name"
         rules={[{ required: true, message: "Please enter the first name." }]}
@@ -51,7 +51,7 @@ const UserFormModal: React.FC<IUserFormModalProps> = ({
         <Input placeholder="Jane" />
       </Form.Item>
 
-      <Form.Item<IUserFormValues>
+      <Form.Item<UserFormValues>
         label="Last Name"
         name="surname"
         rules={[{ required: true, message: "Please enter the last name." }]}
@@ -59,7 +59,7 @@ const UserFormModal: React.FC<IUserFormModalProps> = ({
         <Input placeholder="Doe" />
       </Form.Item>
 
-      <Form.Item<IUserFormValues>
+      <Form.Item<UserFormValues>
         label="Email Address"
         name="emailAddress"
         rules={[
@@ -71,7 +71,7 @@ const UserFormModal: React.FC<IUserFormModalProps> = ({
       </Form.Item>
 
       {!editingUser && (
-        <Form.Item<IUserFormValues>
+        <Form.Item<UserFormValues>
           label="Password"
           name="password"
           rules={[{ required: true, message: "Please enter a password." }]}
@@ -80,11 +80,11 @@ const UserFormModal: React.FC<IUserFormModalProps> = ({
         </Form.Item>
       )}
 
-      <Form.Item<IUserFormValues> label="Roles" name="roleNames">
+      <Form.Item<UserFormValues> label="Roles" name="roleNames">
         <Select mode="multiple" options={roleOptions} placeholder="Select roles" />
       </Form.Item>
 
-      <Form.Item<IUserFormValues>
+      <Form.Item<UserFormValues>
         label="Active"
         name="isActive"
         valuePropName="checked"

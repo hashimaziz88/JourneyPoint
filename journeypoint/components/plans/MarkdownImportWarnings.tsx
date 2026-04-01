@@ -3,13 +3,13 @@
 import React from "react";
 import { Alert } from "antd";
 import { useStyles } from "@/components/plans/style/style";
-import type { IMarkdownImportWarningsProps } from "@/types/plans/components";
+import type { MarkdownImportWarningsProps } from "@/types/plans/components";
 import { buildMarkdownWarningMessage } from "@/utils/plans/markdownImport";
 
 /**
  * Renders parser warnings that require facilitator review before save.
  */
-const MarkdownImportWarnings: React.FC<IMarkdownImportWarningsProps> = ({
+const MarkdownImportWarnings: React.FC<MarkdownImportWarningsProps> = ({
     warnings,
 }) => {
     const { styles } = useStyles();

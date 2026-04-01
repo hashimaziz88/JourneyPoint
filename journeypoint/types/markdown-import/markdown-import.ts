@@ -1,19 +1,19 @@
 import type {
-    IOnboardingModuleDraft,
-    IOnboardingPlanDraft,
+    OnboardingModuleDraft,
+    OnboardingPlanDraft,
     OnboardingTaskAcknowledgementRule,
     OnboardingTaskAssignmentTarget,
     OnboardingTaskCategory,
-} from "@/types/onboarding-plan";
+} from "@/types/onboarding-plan/onboarding-plan";
 
-export interface IMarkdownImportWarningDto {
+export type MarkdownImportWarningDto = {
     code: string;
     message: string;
     lineNumber?: number | null;
     sectionName?: string | null;
-}
+};
 
-export interface IMarkdownImportPreviewTaskDto {
+export type MarkdownImportPreviewTaskDto = {
     title: string;
     description: string;
     category: OnboardingTaskCategory;
@@ -21,46 +21,46 @@ export interface IMarkdownImportPreviewTaskDto {
     dueDayOffset: number;
     assignmentTarget: OnboardingTaskAssignmentTarget;
     acknowledgementRule: OnboardingTaskAcknowledgementRule;
-}
+};
 
-export interface IMarkdownImportPreviewModuleDto {
+export type MarkdownImportPreviewModuleDto = {
     name: string;
     description: string;
     orderIndex: number;
-    tasks: IMarkdownImportPreviewTaskDto[];
-}
+    tasks: MarkdownImportPreviewTaskDto[];
+};
 
-export interface IMarkdownImportPreviewDto {
+export type MarkdownImportPreviewDto = {
     name: string;
     description: string;
     targetAudience: string;
     durationDays: number;
-    modules: IMarkdownImportPreviewModuleDto[];
-    warnings: IMarkdownImportWarningDto[];
+    modules: MarkdownImportPreviewModuleDto[];
+    warnings: MarkdownImportWarningDto[];
     canSave: boolean;
-}
+};
 
-export interface IPreviewMarkdownImportRequest {
+export type PreviewMarkdownImportRequest = {
     markdownContent: string;
     sourceFileName?: string | null;
     sourceContentType?: string | null;
     base64Content?: string | null;
-}
+};
 
-export interface ISaveMarkdownImportRequest {
+export type SaveMarkdownImportRequest = {
     name: string;
     description: string;
     targetAudience: string;
     durationDays: number;
-    modules: IMarkdownImportPreviewModuleDto[];
-}
+    modules: MarkdownImportPreviewModuleDto[];
+};
 
-export interface IMarkdownImportDraftState {
-    plan: IOnboardingPlanDraft | null;
-    warnings: IMarkdownImportWarningDto[];
+export type MarkdownImportDraftState = {
+    plan: OnboardingPlanDraft | null;
+    warnings: MarkdownImportWarningDto[];
     canSave: boolean;
-}
+};
 
-export interface IMarkdownImportModuleTableRow extends IOnboardingModuleDraft {
+export type MarkdownImportModuleTableRow = OnboardingModuleDraft & {
     warningCount?: number;
-}
+};

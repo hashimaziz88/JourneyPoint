@@ -4,14 +4,14 @@ import React from "react";
 import { Button, Card, Input, Space, Typography } from "antd";
 import TaskListEditor from "@/components/plans/TaskListEditor";
 import { useStyles } from "@/components/plans/style/style";
-import type { IModulePanelProps } from "@/types/plans/components";
+import type { ModulePanelProps } from "@/types/plans/components";
 
 const { Paragraph, Title } = Typography;
 
 /**
  * Renders one ordered onboarding module and its nested task editor.
  */
-const ModulePanel: React.FC<IModulePanelProps> = ({
+const ModulePanel: React.FC<ModulePanelProps> = ({
     isReadOnly,
     module,
     moduleCount,

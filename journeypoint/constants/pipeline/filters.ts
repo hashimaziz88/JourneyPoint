@@ -2,10 +2,10 @@ import type { SelectProps } from "antd";
 import {
     ENGAGEMENT_CLASSIFICATION_LABELS,
 } from "@/constants/engagement/badge";
-import { EngagementClassification } from "@/types/engagement";
-import type { IPipelineBoardQueryState } from "@/types/pipeline";
+import { EngagementClassification } from "@/types/engagement/engagement";
+import type { PipelineBoardQueryState } from "@/types/pipeline/pipeline";
 
-export const DEFAULT_PIPELINE_QUERY_STATE: IPipelineBoardQueryState = {
+export const DEFAULT_PIPELINE_QUERY_STATE: PipelineBoardQueryState = {
     keyword: "",
     classification: undefined,
 };

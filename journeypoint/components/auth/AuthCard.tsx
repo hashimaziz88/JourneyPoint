@@ -4,9 +4,9 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, Col, Row, Typography } from "antd";
-import { APP_ROUTES } from "@/constants/auth/routes";
+import { APP_ROUTES } from "@/routes/auth.routes";
 import { useStyles } from "./style/style";
-import { AuthCardProps } from "@/constants/auth/cardTypes";
+import { AuthCardProps } from "@/types/auth/cardTypes";
 
 const { Title, Paragraph } = Typography;
 

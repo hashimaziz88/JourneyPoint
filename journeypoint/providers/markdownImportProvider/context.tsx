@@ -1,19 +1,19 @@
 import { createContext } from "react";
 export type {
-    IMarkdownImportDraftState,
-    IMarkdownImportPreviewDto,
-    IMarkdownImportWarningDto,
-    IPreviewMarkdownImportRequest,
-    ISaveMarkdownImportRequest,
-} from "@/types/markdown-import";
+    MarkdownImportDraftState,
+    MarkdownImportPreviewDto,
+    MarkdownImportWarningDto,
+    PreviewMarkdownImportRequest,
+    SaveMarkdownImportRequest,
+} from "@/types/markdown-import/markdown-import";
 import type {
-    IMarkdownImportDraftState,
-    IMarkdownImportPreviewDto,
-} from "@/types/markdown-import";
+    MarkdownImportDraftState,
+    MarkdownImportPreviewDto,
+} from "@/types/markdown-import/markdown-import";
 import type {
-    IOnboardingPlanDetailDto,
-    IOnboardingTaskEditorValues,
-} from "@/types/onboarding-plan";
+    OnboardingPlanDetailDto,
+    OnboardingTaskEditorValues,
+} from "@/types/onboarding-plan/onboarding-plan";
 
 export interface IMarkdownImportStateContext {
     isSuccess: boolean;
@@ -25,7 +25,7 @@ export interface IMarkdownImportStateContext {
     sourceFileName?: string | null;
     sourceContentType?: string | null;
     sourceBase64Content?: string | null;
-    previewPlan?: IMarkdownImportDraftState | null;
+    previewPlan?: MarkdownImportDraftState | null;
 }
 
 export interface IMarkdownImportActionContext {
@@ -36,8 +36,8 @@ export interface IMarkdownImportActionContext {
         base64Content: string;
         sourceContent?: string | null;
     }) => void;
-    previewImport: () => Promise<IMarkdownImportPreviewDto | null>;
-    saveDraft: () => Promise<IOnboardingPlanDetailDto | null>;
+    previewImport: () => Promise<MarkdownImportPreviewDto | null>;
+    saveDraft: () => Promise<OnboardingPlanDetailDto | null>;
     resetImport: () => void;
     setPreviewMetadata: (payload: {
         name?: string;
@@ -54,7 +54,7 @@ export interface IMarkdownImportActionContext {
     updatePreviewTask: (
         moduleClientKey: string,
         taskClientKey: string,
-        payload: IOnboardingTaskEditorValues,
+        payload: OnboardingTaskEditorValues,
     ) => void;
     removePreviewTask: (moduleClientKey: string, taskClientKey: string) => void;
 }

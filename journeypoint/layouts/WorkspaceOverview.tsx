@@ -2,8 +2,8 @@
 
 import React from "react";
 import { Card, Col, Row, Space, Typography } from "antd";
-import { useAppSession } from "@/helpers/useAppSession";
-import type { IWorkspaceOverviewProps } from "@/types/layout/shell";
+import { useAppSession } from "@/hooks/useAppSession";
+import type { WorkspaceOverviewProps } from "@/types/layout/shell";
 import { useStyles } from "./style/style";
 
 const { Paragraph, Title, Text } = Typography;
@@ -11,7 +11,7 @@ const { Paragraph, Title, Text } = Typography;
 /**
  * Generic workspace placeholder for role workspaces that are not yet configured.
  */
-const WorkspaceOverview: React.FC<IWorkspaceOverviewProps> = ({
+const WorkspaceOverview: React.FC<WorkspaceOverviewProps> = ({
   currentFocus,
   description,
   title,

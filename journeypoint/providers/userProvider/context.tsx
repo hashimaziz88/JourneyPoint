@@ -1,25 +1,25 @@
 import { createContext } from "react";
-export type { IUserDto, ICreateUserDto, IGetAllUsersRequest, IResetPasswordDto, IRoleListItem } from "@/types/user";
-import type { IUserDto, ICreateUserDto, IGetAllUsersRequest, IResetPasswordDto, IRoleListItem } from "@/types/user";
+export type { UserDto, CreateUserDto, GetAllUsersRequest, ResetPasswordDto, RoleListItem } from "@/types/user/user";
+import type { UserDto, CreateUserDto, GetAllUsersRequest, ResetPasswordDto, RoleListItem } from "@/types/user/user";
 
 export interface IUserStateContext {
     isSuccess: boolean;
     isPending: boolean;
     isError: boolean;
-    users?: IUserDto[] | null;
-    currentUser?: IUserDto | null;
+    users?: UserDto[] | null;
+    currentUser?: UserDto | null;
     totalCount?: number;
-    availableRoles?: IRoleListItem[] | null;
+    availableRoles?: RoleListItem[] | null;
 }
 
 export interface IUserActionContext {
-    getAll: (request: IGetAllUsersRequest) => Promise<void>;
+    getAll: (request: GetAllUsersRequest) => Promise<void>;
     get: (id: number) => Promise<void>;
-    createUser: (payload: ICreateUserDto) => Promise<void>;
-    updateUser: (payload: IUserDto) => Promise<void>;
+    createUser: (payload: CreateUserDto) => Promise<void>;
+    updateUser: (payload: UserDto) => Promise<void>;
     deleteUser: (id: number) => Promise<void>;
     getRoles: () => Promise<void>;
-    resetPassword: (dto: IResetPasswordDto) => Promise<void>;
+    resetPassword: (dto: ResetPasswordDto) => Promise<void>;
     resetState: () => void;
 }
 

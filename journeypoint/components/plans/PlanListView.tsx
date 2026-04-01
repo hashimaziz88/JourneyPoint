@@ -17,21 +17,23 @@ import { ImportOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons"
 import {
     APP_ROUTES,
     buildFacilitatorPlanRoute,
-} from "@/constants/auth/routes";
+} from "@/routes/auth.routes";
 import { DEFAULT_PLAN_LIST_QUERY_STATE } from "@/constants/plans/list";
 import PlanCard from "@/components/plans/PlanCard";
 import { useStyles } from "@/components/plans/style/style";
 import {
-    IOnboardingPlanListItemDto,
-    ONBOARDING_PLAN_STATUS_LABELS,
+    OnboardingPlanListItemDto,
     OnboardingPlanStatus,
-} from "@/types/onboarding-plan";
+} from "@/types/onboarding-plan/onboarding-plan"
+import {
+    ONBOARDING_PLAN_STATUS_LABELS,
+} from "@/constants/plans/onboarding-plan";
 import {
     useOnboardingPlanActions,
     useOnboardingPlanState,
 } from "@/providers/onboardingPlanProvider";
 import { useRouter } from "next/navigation";
-import type { IPlanListQueryState } from "@/types/plans/components";
+import type { PlanListQueryState } from "@/types/plans/components";
 import { buildPlanListRequest } from "@/utils/plans/planList";
 
 const { Paragraph, Title } = Typography;
@@ -51,14 +53,14 @@ const PlanListView: React.FC = () => {
     const [statusInput, setStatusInput] = useState<
         OnboardingPlanStatus | undefined
     >(undefined);
-    const [query, setQuery] = useState<IPlanListQueryState>(DEFAULT_PLAN_LIST_QUERY_STATE);
+    const [query, setQuery] = useState<PlanListQueryState>(DEFAULT_PLAN_LIST_QUERY_STATE);
 
     const loadPlans = useEffectEvent(async (): Promise<void> => {
         await getPlans(buildPlanListRequest(query));
     });
 
     const refreshPlans = async (
-        nextQuery: IPlanListQueryState = query,
+        nextQuery: PlanListQueryState = query,
     ): Promise<void> => {
         await getPlans(buildPlanListRequest(nextQuery));
     };
@@ -89,7 +91,7 @@ const PlanListView: React.FC = () => {
     };
 
     const handleClone = async (
-        plan: IOnboardingPlanListItemDto,
+        plan: OnboardingPlanListItemDto,
     ): Promise<void> => {
         const clonedPlan = await clonePlan({ sourcePlanId: plan.id });
 
@@ -105,7 +107,7 @@ const PlanListView: React.FC = () => {
     };
 
     const handlePublish = async (
-        plan: IOnboardingPlanListItemDto,
+        plan: OnboardingPlanListItemDto,
     ): Promise<void> => {
         const publishedPlan = await publishPlan(plan.id);
 
@@ -119,7 +121,7 @@ const PlanListView: React.FC = () => {
     };
 
     const handleArchive = async (
-        plan: IOnboardingPlanListItemDto,
+        plan: OnboardingPlanListItemDto,
     ): Promise<void> => {
         const archivedPlan = await archivePlan(plan.id);
 

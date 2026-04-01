@@ -1,4 +1,4 @@
-export interface IUserDto {
+export type UserDto = {
     id?: number;
     userName?: string | null;
     name?: string | null;
@@ -9,9 +9,9 @@ export interface IUserDto {
     lastLoginTime?: string | null;
     creationTime?: string | null;
     roleNames?: string[] | null;
-}
+};
 
-export interface ICreateUserDto {
+export type CreateUserDto = {
     userName: string;
     name: string;
     surname: string;
@@ -19,23 +19,23 @@ export interface ICreateUserDto {
     isActive: boolean;
     roleNames?: string[] | null;
     password: string;
-}
+};
 
-export interface IGetAllUsersRequest {
+export type GetAllUsersRequest = {
     keyword?: string | null;
     isActive?: boolean | null;
     skipCount: number;
     maxResultCount: number;
-}
+};
 
-export interface IResetPasswordDto {
+export type ResetPasswordDto = {
     userId: number;
     newPassword: string;
-}
+};
 
-export interface IRoleListItem {
+export type RoleListItem = {
     id?: number;
     name?: string | null;
     displayName?: string | null;
     normalizedName?: string | null;
-}
+};

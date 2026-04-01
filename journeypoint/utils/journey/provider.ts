@@ -1,18 +1,18 @@
 import { JOURNEY_API_BASE } from "@/constants/journey/api";
 import type {
-    IAcknowledgeJourneyTaskRequest,
-    IAddJourneyTaskRequest,
-    IApplyJourneyPersonalisationRequest,
-    ICompleteJourneyTaskRequest,
-    IEnroleeJourneyDashboardDto,
-    IEnroleeJourneyTaskDetailDto,
-    IGenerateDraftJourneyRequest,
-    IJourneyDraftDto,
-    IJourneyPersonalisationProposalDto,
-    IManagerTaskWorkspaceDto,
-    IRequestJourneyPersonalisationRequest,
-    IUpdateJourneyTaskRequest,
-} from "@/types/journey";
+    AcknowledgeJourneyTaskRequest,
+    AddJourneyTaskRequest,
+    ApplyJourneyPersonalisationRequest,
+    CompleteJourneyTaskRequest,
+    EnroleeJourneyDashboardDto,
+    EnroleeJourneyTaskDetailDto,
+    GenerateDraftJourneyRequest,
+    JourneyDraftDto,
+    JourneyPersonalisationProposalDto,
+    ManagerTaskWorkspaceDto,
+    RequestJourneyPersonalisationRequest,
+    UpdateJourneyTaskRequest,
+} from "@/types/journey/journey";
 import { getAxiosInstance } from "@/utils/axiosInstance";
 
 export const getJourneyApiResult = <T,>(response: { data?: { result?: T } | T }): T => {
@@ -29,48 +29,48 @@ export const getJourneyApiResult = <T,>(response: { data?: { result?: T } | T })
     return data as T;
 };
 
-export const fetchJourneyDraft = async (hireId: string): Promise<IJourneyDraftDto> => {
+export const fetchJourneyDraft = async (hireId: string): Promise<JourneyDraftDto> => {
     const response = await getAxiosInstance().get(`${JOURNEY_API_BASE}/GetDraft`, {
         params: { hireId },
     });
 
-    return getJourneyApiResult<IJourneyDraftDto>(response);
+    return getJourneyApiResult<JourneyDraftDto>(response);
 };
 
-export const fetchMyJourney = async (): Promise<IEnroleeJourneyDashboardDto | null> => {
+export const fetchMyJourney = async (): Promise<EnroleeJourneyDashboardDto | null> => {
     const response = await getAxiosInstance().get(`${JOURNEY_API_BASE}/GetMyJourney`);
-    return getJourneyApiResult<IEnroleeJourneyDashboardDto | null>(response);
+    return getJourneyApiResult<EnroleeJourneyDashboardDto | null>(response);
 };
 
-export const fetchManagerTasks = async (): Promise<IManagerTaskWorkspaceDto | null> => {
+export const fetchManagerTasks = async (): Promise<ManagerTaskWorkspaceDto | null> => {
     const response = await getAxiosInstance().get(`${JOURNEY_API_BASE}/GetManagerTasks`);
-    return getJourneyApiResult<IManagerTaskWorkspaceDto | null>(response);
+    return getJourneyApiResult<ManagerTaskWorkspaceDto | null>(response);
 };
 
 export const fetchMyTask = async (
     journeyTaskId: string,
-): Promise<IEnroleeJourneyTaskDetailDto> => {
+): Promise<EnroleeJourneyTaskDetailDto> => {
     const response = await getAxiosInstance().get(`${JOURNEY_API_BASE}/GetMyTask`, {
         params: { journeyTaskId },
     });
 
-    return getJourneyApiResult<IEnroleeJourneyTaskDetailDto>(response);
+    return getJourneyApiResult<EnroleeJourneyTaskDetailDto>(response);
 };
 
 export const generateJourneyDraft = async (
-    payload: IGenerateDraftJourneyRequest,
-): Promise<IJourneyDraftDto> => {
+    payload: GenerateDraftJourneyRequest,
+): Promise<JourneyDraftDto> => {
     const response = await getAxiosInstance().post(
         `${JOURNEY_API_BASE}/GenerateDraft`,
         payload,
     );
 
-    return getJourneyApiResult<IJourneyDraftDto>(response);
+    return getJourneyApiResult<JourneyDraftDto>(response);
 };
 
 export const updateJourneyTask = async (
     journeyTaskId: string,
-    payload: IUpdateJourneyTaskRequest,
+    payload: UpdateJourneyTaskRequest,
 ): Promise<void> => {
     await getAxiosInstance().put(`${JOURNEY_API_BASE}/UpdateTask`, payload, {
         params: { journeyTaskId },
@@ -79,7 +79,7 @@ export const updateJourneyTask = async (
 
 export const addJourneyTask = async (
     journeyId: string,
-    payload: IAddJourneyTaskRequest,
+    payload: AddJourneyTaskRequest,
 ): Promise<void> => {
     await getAxiosInstance().post(`${JOURNEY_API_BASE}/AddTask`, payload, {
         params: { journeyId },
@@ -92,55 +92,55 @@ export const removePendingJourneyTask = async (journeyTaskId: string): Promise<v
     });
 };
 
-export const activateJourney = async (hireId: string): Promise<IJourneyDraftDto> => {
+export const activateJourney = async (hireId: string): Promise<JourneyDraftDto> => {
     const response = await getAxiosInstance().post(`${JOURNEY_API_BASE}/Activate`, null, {
         params: { hireId },
     });
 
-    return getJourneyApiResult<IJourneyDraftDto>(response);
+    return getJourneyApiResult<JourneyDraftDto>(response);
 };
 
 export const acknowledgeMyJourneyTask = async (
-    payload: IAcknowledgeJourneyTaskRequest,
+    payload: AcknowledgeJourneyTaskRequest,
 ): Promise<void> => {
     await getAxiosInstance().post(`${JOURNEY_API_BASE}/AcknowledgeMyTask`, payload);
 };
 
 export const completeMyJourneyTask = async (
-    payload: ICompleteJourneyTaskRequest,
+    payload: CompleteJourneyTaskRequest,
 ): Promise<void> => {
     await getAxiosInstance().post(`${JOURNEY_API_BASE}/CompleteMyTask`, payload);
 };
 
 export const completeManagerJourneyTask = async (
-    payload: ICompleteJourneyTaskRequest,
-): Promise<IManagerTaskWorkspaceDto | null> => {
+    payload: CompleteJourneyTaskRequest,
+): Promise<ManagerTaskWorkspaceDto | null> => {
     const response = await getAxiosInstance().post(
         `${JOURNEY_API_BASE}/CompleteManagerTask`,
         payload,
     );
 
-    return getJourneyApiResult<IManagerTaskWorkspaceDto | null>(response);
+    return getJourneyApiResult<ManagerTaskWorkspaceDto | null>(response);
 };
 
 export const requestJourneyPersonalisation = async (
-    payload: IRequestJourneyPersonalisationRequest,
-): Promise<IJourneyPersonalisationProposalDto> => {
+    payload: RequestJourneyPersonalisationRequest,
+): Promise<JourneyPersonalisationProposalDto> => {
     const response = await getAxiosInstance().post(
         `${JOURNEY_API_BASE}/RequestPersonalisation`,
         payload,
     );
 
-    return getJourneyApiResult<IJourneyPersonalisationProposalDto>(response);
+    return getJourneyApiResult<JourneyPersonalisationProposalDto>(response);
 };
 
 export const applyJourneyPersonalisation = async (
-    payload: IApplyJourneyPersonalisationRequest,
-): Promise<IJourneyDraftDto> => {
+    payload: ApplyJourneyPersonalisationRequest,
+): Promise<JourneyDraftDto> => {
     const response = await getAxiosInstance().post(
         `${JOURNEY_API_BASE}/ApplyPersonalisation`,
         payload,
     );
 
-    return getJourneyApiResult<IJourneyDraftDto>(response);
+    return getJourneyApiResult<JourneyDraftDto>(response);
 };

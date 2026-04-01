@@ -18,14 +18,14 @@ import { useStyles } from "@/components/pipeline/style/style";
 import {
     buildFacilitatorHireJourneyRoute,
     buildFacilitatorHireRoute,
-} from "@/constants/auth/routes";
+} from "@/routes/auth.routes";
 import {
     DEFAULT_PIPELINE_QUERY_STATE,
     PIPELINE_CLASSIFICATION_OPTIONS,
 } from "@/constants/pipeline/filters";
 import { usePipelineActions, usePipelineState } from "@/providers/pipelineProvider";
-import type { EngagementClassification } from "@/types/engagement";
-import type { IPipelineBoardViewProps } from "@/types/pipeline/components";
+import type { EngagementClassification } from "@/types/engagement/engagement";
+import type { PipelineBoardViewProps } from "@/types/pipeline/components";
 import { formatDisplayDateTime } from "@/utils/date";
 import { getPipelineJourneyGroups, getPipelineSummaryMetrics } from "@/utils/pipeline/board";
 import { useRouter } from "next/navigation";
@@ -36,7 +36,7 @@ const { Paragraph, Title } = Typography;
  * Renders the facilitator pipeline grouped by onboarding plan, so hires
  * across different journeys stay in their own context with plan-specific columns.
  */
-const PipelineBoardView: React.FC<IPipelineBoardViewProps> = () => {
+const PipelineBoardView: React.FC<PipelineBoardViewProps> = () => {
     const { styles } = useStyles();
     const router = useRouter();
     const { board, filters, isPending } = usePipelineState();

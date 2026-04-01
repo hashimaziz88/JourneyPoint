@@ -9,12 +9,12 @@ import {
 } from "@ant-design/icons";
 import JourneyTaskAcknowledgementPanel from "@/components/journey/JourneyTaskAcknowledgementPanel";
 import { useStyles } from "@/components/journey/style/style";
-import { APP_ROUTES } from "@/constants/auth/routes";
+import { APP_ROUTES } from "@/routes/auth.routes";
 import {
     JOURNEY_TASK_STATUS_COLORS,
     JOURNEY_TASK_STATUS_LABELS,
 } from "@/constants/journey/dashboard";
-import type { IJourneyTaskDetailViewProps } from "@/types/journey/components";
+import type { JourneyTaskDetailViewProps } from "@/types/journey/components";
 import { formatDisplayDate, formatDisplayDateTime } from "@/utils/date";
 import { canRenderTaskActions } from "@/utils/journey/dashboard";
 
@@ -23,7 +23,7 @@ const { Paragraph, Text, Title } = Typography;
 /**
  * Renders the participant task-detail workflow for one enrolee task.
  */
-const JourneyTaskDetailView: React.FC<IJourneyTaskDetailViewProps> = ({
+const JourneyTaskDetailView: React.FC<JourneyTaskDetailViewProps> = ({
     task,
     isPending,
     isMutationPending,

@@ -1,11 +1,11 @@
 import type {
-  IOnboardingPlanDetailDto,
-  IOnboardingPlanDraft,
-  IOnboardingModuleDraft,
-  IOnboardingTaskDraft,
-  IOnboardingTaskEditorValues,
-} from "@/types/onboarding-plan";
-import { OnboardingPlanStatus } from "@/types/onboarding-plan";
+  OnboardingPlanDetailDto,
+  OnboardingPlanDraft,
+  OnboardingModuleDraft,
+  OnboardingTaskDraft,
+  OnboardingTaskEditorValues,
+} from "@/types/onboarding-plan/onboarding-plan";
+import { OnboardingPlanStatus } from "@/types/onboarding-plan/onboarding-plan";
 
 const createClientKey = (): string =>
   typeof globalThis.crypto?.randomUUID === "function"
@@ -29,16 +29,16 @@ const moveItem = <T>(items: T[], fromIndex: number, toIndex: number): T[] => {
 };
 
 const normalizeTasks = (
-  tasks: IOnboardingTaskDraft[],
-): IOnboardingTaskDraft[] =>
+  tasks: OnboardingTaskDraft[],
+): OnboardingTaskDraft[] =>
   tasks.map((task, index) => ({
     ...task,
     orderIndex: index + 1,
   }));
 
 const normalizeModules = (
-  modules: IOnboardingModuleDraft[],
-): IOnboardingModuleDraft[] =>
+  modules: OnboardingModuleDraft[],
+): OnboardingModuleDraft[] =>
   modules.map((module, index) => ({
     ...module,
     orderIndex: index + 1,
@@ -46,8 +46,8 @@ const normalizeModules = (
   }));
 
 export const normalizeOnboardingPlanDetail = (
-  detail: IOnboardingPlanDetailDto,
-): IOnboardingPlanDetailDto => ({
+  detail: OnboardingPlanDetailDto,
+): OnboardingPlanDetailDto => ({
   ...detail,
   modules: [...detail.modules]
     .sort((left, right) => left.orderIndex - right.orderIndex)
@@ -60,8 +60,8 @@ export const normalizeOnboardingPlanDetail = (
 });
 
 export const mapOnboardingPlanDetailToDraft = (
-  detail: IOnboardingPlanDetailDto,
-): IOnboardingPlanDraft => ({
+  detail: OnboardingPlanDetailDto,
+): OnboardingPlanDraft => ({
   id: detail.id,
   name: detail.name,
   description: detail.description,
@@ -90,7 +90,7 @@ export const mapOnboardingPlanDetailToDraft = (
   ),
 });
 
-export const createEmptyOnboardingPlanDraft = (): IOnboardingPlanDraft => ({
+export const createEmptyOnboardingPlanDraft = (): OnboardingPlanDraft => ({
   name: "",
   description: "",
   targetAudience: "",
@@ -100,9 +100,9 @@ export const createEmptyOnboardingPlanDraft = (): IOnboardingPlanDraft => ({
 });
 
 export const updateOnboardingPlanDraft = (
-  draft: IOnboardingPlanDraft | null | undefined,
-  updater: (currentDraft: IOnboardingPlanDraft) => IOnboardingPlanDraft,
-): IOnboardingPlanDraft | null => {
+  draft: OnboardingPlanDraft | null | undefined,
+  updater: (currentDraft: OnboardingPlanDraft) => OnboardingPlanDraft,
+): OnboardingPlanDraft | null => {
   if (!draft) {
     return null;
   }
@@ -111,16 +111,16 @@ export const updateOnboardingPlanDraft = (
 };
 
 export const applyOnboardingPlanDraftMetadata = (
-  draft: IOnboardingPlanDraft,
-  payload: Partial<IOnboardingPlanDraft>,
-): IOnboardingPlanDraft => ({
+  draft: OnboardingPlanDraft,
+  payload: Partial<OnboardingPlanDraft>,
+): OnboardingPlanDraft => ({
   ...draft,
   ...payload,
 });
 
 export const appendOnboardingPlanDraftModule = (
-  draft: IOnboardingPlanDraft,
-): IOnboardingPlanDraft => ({
+  draft: OnboardingPlanDraft,
+): OnboardingPlanDraft => ({
   ...draft,
   modules: normalizeModules([
     ...draft.modules,
@@ -135,11 +135,11 @@ export const appendOnboardingPlanDraftModule = (
 });
 
 export const updateOnboardingPlanDraftModule = (
-  draft: IOnboardingPlanDraft,
+  draft: OnboardingPlanDraft,
   moduleClientKey: string,
   name: string,
   description: string,
-): IOnboardingPlanDraft => ({
+): OnboardingPlanDraft => ({
   ...draft,
   modules: draft.modules.map((module) =>
     module.clientKey === moduleClientKey
@@ -149,9 +149,9 @@ export const updateOnboardingPlanDraftModule = (
 });
 
 export const removeOnboardingPlanDraftModule = (
-  draft: IOnboardingPlanDraft,
+  draft: OnboardingPlanDraft,
   moduleClientKey: string,
-): IOnboardingPlanDraft => ({
+): OnboardingPlanDraft => ({
   ...draft,
   modules: normalizeModules(
     draft.modules.filter((module) => module.clientKey !== moduleClientKey),
@@ -159,10 +159,10 @@ export const removeOnboardingPlanDraftModule = (
 });
 
 export const reorderOnboardingPlanDraftModule = (
-  draft: IOnboardingPlanDraft,
+  draft: OnboardingPlanDraft,
   moduleClientKey: string,
   direction: "up" | "down",
-): IOnboardingPlanDraft => {
+): OnboardingPlanDraft => {
   const currentIndex = draft.modules.findIndex(
     (module) => module.clientKey === moduleClientKey,
   );
@@ -177,10 +177,10 @@ export const reorderOnboardingPlanDraftModule = (
 };
 
 export const appendOnboardingPlanDraftTask = (
-  draft: IOnboardingPlanDraft,
+  draft: OnboardingPlanDraft,
   moduleClientKey: string,
-  payload: IOnboardingTaskEditorValues,
-): IOnboardingPlanDraft => ({
+  payload: OnboardingTaskEditorValues,
+): OnboardingPlanDraft => ({
   ...draft,
   modules: draft.modules.map((module) =>
     module.clientKey === moduleClientKey
@@ -200,11 +200,11 @@ export const appendOnboardingPlanDraftTask = (
 });
 
 export const updateOnboardingPlanDraftTask = (
-  draft: IOnboardingPlanDraft,
+  draft: OnboardingPlanDraft,
   moduleClientKey: string,
   taskClientKey: string,
-  payload: IOnboardingTaskEditorValues,
-): IOnboardingPlanDraft => ({
+  payload: OnboardingTaskEditorValues,
+): OnboardingPlanDraft => ({
   ...draft,
   modules: draft.modules.map((module) =>
     module.clientKey === moduleClientKey
@@ -219,10 +219,10 @@ export const updateOnboardingPlanDraftTask = (
 });
 
 export const removeOnboardingPlanDraftTask = (
-  draft: IOnboardingPlanDraft,
+  draft: OnboardingPlanDraft,
   moduleClientKey: string,
   taskClientKey: string,
-): IOnboardingPlanDraft => ({
+): OnboardingPlanDraft => ({
   ...draft,
   modules: draft.modules.map((module) =>
     module.clientKey === moduleClientKey
@@ -237,11 +237,11 @@ export const removeOnboardingPlanDraftTask = (
 });
 
 export const reorderOnboardingPlanDraftTask = (
-  draft: IOnboardingPlanDraft,
+  draft: OnboardingPlanDraft,
   moduleClientKey: string,
   taskClientKey: string,
   direction: "up" | "down",
-): IOnboardingPlanDraft => ({
+): OnboardingPlanDraft => ({
   ...draft,
   modules: draft.modules.map((module) => {
     if (module.clientKey !== moduleClientKey) {

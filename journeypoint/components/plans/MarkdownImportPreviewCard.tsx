@@ -5,14 +5,14 @@ import { Alert, Card, Empty, Input, InputNumber, Space, Typography } from "antd"
 import MarkdownImportWarnings from "@/components/plans/MarkdownImportWarnings";
 import MarkdownPreviewTable from "@/components/plans/MarkdownPreviewTable";
 import { useStyles } from "@/components/plans/style/style";
-import type { IMarkdownImportPreviewCardProps } from "@/types/plans/components";
+import type { MarkdownImportPreviewCardProps } from "@/types/plans/components";
 
 const { Paragraph, Title } = Typography;
 
 /**
  * Renders the editable import preview and review surface.
  */
-const MarkdownImportPreviewCard: React.FC<IMarkdownImportPreviewCardProps> = ({
+const MarkdownImportPreviewCard: React.FC<MarkdownImportPreviewCardProps> = ({
     previewPlan,
     onEditTask,
     onMetadataChange,

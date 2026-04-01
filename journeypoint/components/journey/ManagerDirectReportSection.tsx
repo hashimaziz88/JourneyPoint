@@ -9,7 +9,7 @@ import {
     JOURNEY_TASK_STATUS_COLORS,
     JOURNEY_TASK_STATUS_LABELS,
 } from "@/constants/journey/dashboard";
-import type { IManagerDirectReportSectionProps } from "@/types/journey/components";
+import type { ManagerDirectReportSectionProps } from "@/types/journey/components";
 import { formatDisplayDate, formatDisplayDateTime } from "@/utils/date";
 import { getCompletionPercent } from "@/utils/journey/dashboard";
 
@@ -18,7 +18,7 @@ const { Paragraph, Text } = Typography;
 /**
  * Renders one manager workspace section for a direct report.
  */
-const ManagerDirectReportSection: React.FC<IManagerDirectReportSectionProps> = ({
+const ManagerDirectReportSection: React.FC<ManagerDirectReportSectionProps> = ({
     directReport,
     isMutationPending,
     onComplete,

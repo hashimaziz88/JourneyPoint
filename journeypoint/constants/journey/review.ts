@@ -1,12 +1,12 @@
 import {
     JourneyStatus,
-    type IAddJourneyTaskRequest,
-} from "@/types/journey";
+    type AddJourneyTaskRequest,
+} from "@/types/journey/journey";
 import {
     OnboardingTaskAcknowledgementRule,
     OnboardingTaskAssignmentTarget,
     OnboardingTaskCategory,
-} from "@/types/onboarding-plan";
+} from "@/types/onboarding-plan/onboarding-plan";
 
 export const JOURNEY_STATUS_LABELS: Record<JourneyStatus, string> = {
     [JourneyStatus.Draft]: "Draft",
@@ -22,7 +22,7 @@ export const JOURNEY_STATUS_TAG_COLORS: Record<JourneyStatus, string> = {
     [JourneyStatus.Completed]: "blue",
 };
 
-export const DEFAULT_ADD_JOURNEY_TASK_REQUEST: IAddJourneyTaskRequest = {
+export const DEFAULT_ADD_JOURNEY_TASK_REQUEST: AddJourneyTaskRequest = {
     moduleTitle: "",
     moduleOrderIndex: 1,
     taskOrderIndex: 1,

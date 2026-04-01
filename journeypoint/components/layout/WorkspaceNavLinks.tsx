@@ -2,12 +2,12 @@
 
 import React from "react";
 import { useWorkspaceShellStyles } from "@/layouts/style/workspaceShell";
-import type { IWorkspaceNavLinksProps } from "@/types/layout/navigation";
+import type { WorkspaceNavLinksProps } from "@/types/layout/navigation";
 
 /**
  * Renders the horizontal navigation link row for the workspace top-nav shell.
  */
-const WorkspaceNavLinks: React.FC<IWorkspaceNavLinksProps> = ({
+const WorkspaceNavLinks: React.FC<WorkspaceNavLinksProps> = ({
   navigationItems,
   onNavigate,
   selectedMenuKey,

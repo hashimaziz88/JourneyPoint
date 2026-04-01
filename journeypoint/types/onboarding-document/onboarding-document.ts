@@ -2,7 +2,7 @@ import {
     OnboardingTaskAcknowledgementRule,
     OnboardingTaskAssignmentTarget,
     OnboardingTaskCategory,
-} from "@/types/onboarding-plan";
+} from "@/types/onboarding-plan/onboarding-plan";
 
 export enum OnboardingDocumentStatus {
     Uploaded = 1,
@@ -19,20 +19,20 @@ export enum ExtractedTaskReviewStatus {
     Applied = 4,
 }
 
-export interface ICreateOnboardingDocumentUploadRequest {
+export type CreateOnboardingDocumentUploadRequest = {
     planId: string;
     fileName: string;
     contentType: string;
     base64Content: string;
-}
+};
 
-export interface IDocumentModuleOptionDto {
+export type DocumentModuleOptionDto = {
     id: string;
     name: string;
     orderIndex: number;
-}
+};
 
-export interface IExtractedTaskProposalDto {
+export type ExtractedTaskProposalDto = {
     id: string;
     suggestedModuleId?: string | null;
     title: string;
@@ -45,9 +45,9 @@ export interface IExtractedTaskProposalDto {
     reviewedByUserId?: number | null;
     reviewedTime?: string | null;
     appliedOnboardingTaskId?: string | null;
-}
+};
 
-export interface IOnboardingDocumentListItemDto {
+export type OnboardingDocumentListItemDto = {
     id: string;
     planId: string;
     fileName: string;
@@ -60,9 +60,9 @@ export interface IOnboardingDocumentListItemDto {
     failureReason?: string | null;
     creationTime: string;
     extractionCompletedTime?: string | null;
-}
+};
 
-export interface IOnboardingDocumentDetailDto {
+export type OnboardingDocumentDetailDto = {
     id: string;
     planId: string;
     planName: string;
@@ -76,11 +76,11 @@ export interface IOnboardingDocumentDetailDto {
     failureReason?: string | null;
     creationTime: string;
     extractionCompletedTime?: string | null;
-    availableModules: IDocumentModuleOptionDto[];
-    proposals: IExtractedTaskProposalDto[];
-}
+    availableModules: DocumentModuleOptionDto[];
+    proposals: ExtractedTaskProposalDto[];
+};
 
-export interface IUpdateExtractedTaskProposalRequest {
+export type UpdateExtractedTaskProposalRequest = {
     proposalId: string;
     suggestedModuleId?: string | null;
     title: string;
@@ -89,9 +89,9 @@ export interface IUpdateExtractedTaskProposalRequest {
     dueDayOffset: number;
     assignmentTarget: OnboardingTaskAssignmentTarget;
     acknowledgementRule: OnboardingTaskAcknowledgementRule;
-}
+};
 
-export interface IExtractedTaskProposalEditorValues {
+export type ExtractedTaskProposalEditorValues = {
     suggestedModuleId?: string | null;
     title: string;
     description: string;
@@ -99,29 +99,4 @@ export interface IExtractedTaskProposalEditorValues {
     dueDayOffset: number;
     assignmentTarget: OnboardingTaskAssignmentTarget;
     acknowledgementRule: OnboardingTaskAcknowledgementRule;
-}
-
-export const ONBOARDING_DOCUMENT_STATUS_LABELS: Record<OnboardingDocumentStatus, string> = {
-    [OnboardingDocumentStatus.Uploaded]: "Uploaded",
-    [OnboardingDocumentStatus.Extracting]: "Extracting",
-    [OnboardingDocumentStatus.ReadyForReview]: "Ready for Review",
-    [OnboardingDocumentStatus.Applied]: "Applied",
-    [OnboardingDocumentStatus.Failed]: "Failed",
-};
-
-export const EXTRACTED_TASK_REVIEW_STATUS_LABELS: Record<ExtractedTaskReviewStatus, string> = {
-    [ExtractedTaskReviewStatus.Pending]: "Pending",
-    [ExtractedTaskReviewStatus.Accepted]: "Accepted",
-    [ExtractedTaskReviewStatus.Rejected]: "Rejected",
-    [ExtractedTaskReviewStatus.Applied]: "Applied",
-};
-
-export const DEFAULT_EXTRACTED_TASK_PROPOSAL_EDITOR_VALUES: IExtractedTaskProposalEditorValues = {
-    suggestedModuleId: null,
-    title: "",
-    description: "",
-    category: OnboardingTaskCategory.Orientation,
-    dueDayOffset: 0,
-    assignmentTarget: OnboardingTaskAssignmentTarget.Enrolee,
-    acknowledgementRule: OnboardingTaskAcknowledgementRule.NotRequired,
 };

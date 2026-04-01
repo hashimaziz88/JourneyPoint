@@ -1,36 +1,30 @@
 import type React from "react";
-import type { IWorkspaceNavigationItem } from "@/constants/global/navigation";
+import type { WorkspaceNavigationItem } from "@/types/layout/navigation";
 
-/**
- * Defines the shared app-shell props used by role workspaces.
- */
-export interface IAppShellProps {
+/** Defines the shared app-shell props used by role workspaces. */
+export type AppShellProps = {
     children: React.ReactNode;
-    navigationItems: IWorkspaceNavigationItem[];
+    navigationItems: WorkspaceNavigationItem[];
     scopeLabel: string;
     title: string;
     subtitle: string;
     userDisplayName?: string | null;
-}
+};
 
-/**
- * Defines the role-shell access and presentation props.
- */
-export interface IRoleShellProps {
+/** Defines the role-shell access and presentation props. */
+export type RoleShellProps = {
     children: React.ReactNode;
     title: string;
     subtitle: string;
-    navigationItems: IWorkspaceNavigationItem[];
+    navigationItems: WorkspaceNavigationItem[];
     allowedRoles?: string[];
     allowHost?: boolean;
-}
+};
 
-/**
- * Defines the lightweight workspace-overview card content.
- */
-export interface IWorkspaceOverviewProps {
+/** Defines the lightweight workspace-overview card content. */
+export type WorkspaceOverviewProps = {
     title: string;
     description: string;
     currentFocus: string;
     nextMilestoneHint: string;
-}
+};

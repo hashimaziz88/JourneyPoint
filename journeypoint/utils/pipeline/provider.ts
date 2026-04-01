@@ -1,5 +1,5 @@
 import { PIPELINE_API_BASE } from "@/constants/pipeline/api";
-import type { IGetPipelineBoardInput, IPipelineBoardDto } from "@/types/pipeline";
+import type { GetPipelineBoardInput, PipelineBoardDto } from "@/types/pipeline/pipeline";
 import { getAxiosInstance } from "@/utils/axiosInstance";
 
 const getApiResult = <T,>(response: { data?: { result?: T } | T }): T => {
@@ -13,11 +13,11 @@ const getApiResult = <T,>(response: { data?: { result?: T } | T }): T => {
 };
 
 export const fetchPipelineBoard = async (
-    request: IGetPipelineBoardInput,
-): Promise<IPipelineBoardDto> => {
+    request: GetPipelineBoardInput,
+): Promise<PipelineBoardDto> => {
     const response = await getAxiosInstance().get(`${PIPELINE_API_BASE}/GetPipelineBoard`, {
         params: request,
     });
 
-    return getApiResult<IPipelineBoardDto>(response);
+    return getApiResult<PipelineBoardDto>(response);
 };

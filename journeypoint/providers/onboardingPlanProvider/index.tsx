@@ -4,14 +4,14 @@ import React, { useContext, useReducer } from "react";
 import { getAxiosInstance } from "@/utils/axiosInstance";
 import { DEFAULT_PLAN_LIST_SORTING } from "@/constants/plans/list";
 import type {
-    ICloneOnboardingPlanRequest,
-    ICreateOnboardingPlanRequest,
-    IGetOnboardingPlansInput,
-    IOnboardingPlanDetailDto,
-    IOnboardingPlanListItemDto,
-    IOnboardingTaskEditorValues,
-    IUpdateOnboardingPlanRequest,
-} from "@/types/onboarding-plan";
+    CloneOnboardingPlanRequest,
+    CreateOnboardingPlanRequest,
+    GetOnboardingPlansInput,
+    OnboardingPlanDetailDto,
+    OnboardingPlanListItemDto,
+    OnboardingTaskEditorValues,
+    UpdateOnboardingPlanRequest,
+} from "@/types/onboarding-plan/onboarding-plan";
 import {
     getPlanDetailError,
     getPlanDetailPending,
@@ -62,7 +62,7 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
 }) => {
     const [state, dispatch] = useReducer(OnboardingPlanReducer, INITIAL_STATE);
 
-    const getPlans = async (request: IGetOnboardingPlansInput): Promise<void> => {
+    const getPlans = async (request: GetOnboardingPlansInput): Promise<void> => {
         dispatch(getPlansPending());
 
         try {
@@ -75,7 +75,7 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
                     },
                 },
             );
-            const data = getApiResult<{ items?: IOnboardingPlanListItemDto[]; totalCount?: number }>(
+            const data = getApiResult<{ items?: OnboardingPlanListItemDto[]; totalCount?: number }>(
                 response,
             );
 
@@ -91,7 +91,7 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
         }
     };
 
-    const getPlanDetail = async (id: string): Promise<IOnboardingPlanDetailDto | null> => {
+    const getPlanDetail = async (id: string): Promise<OnboardingPlanDetailDto | null> => {
         dispatch(getPlanDetailPending());
 
         try {
@@ -102,7 +102,7 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
                 },
             );
             const detail = normalizeOnboardingPlanDetail(
-                getApiResult<IOnboardingPlanDetailDto>(response),
+                getApiResult<OnboardingPlanDetailDto>(response),
             );
 
             dispatch(
@@ -120,14 +120,14 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
     };
 
     const runMutation = async (
-        request: Promise<{ data?: { result?: IOnboardingPlanDetailDto } & IOnboardingPlanDetailDto }>,
-    ): Promise<IOnboardingPlanDetailDto | null> => {
+        request: Promise<{ data?: { result?: OnboardingPlanDetailDto } & OnboardingPlanDetailDto }>,
+    ): Promise<OnboardingPlanDetailDto | null> => {
         dispatch(mutationPending());
 
         try {
             const response = await request;
             const detail = normalizeOnboardingPlanDetail(
-                getApiResult<IOnboardingPlanDetailDto>(response),
+                getApiResult<OnboardingPlanDetailDto>(response),
             );
 
             dispatch(
@@ -145,24 +145,24 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
     };
 
     const createPlan = async (
-        payload: ICreateOnboardingPlanRequest,
-    ): Promise<IOnboardingPlanDetailDto | null> =>
+        payload: CreateOnboardingPlanRequest,
+    ): Promise<OnboardingPlanDetailDto | null> =>
         runMutation(getAxiosInstance().post(`${ONBOARDING_PLAN_API_BASE}/Create`, payload));
 
     const updatePlan = async (
-        payload: IUpdateOnboardingPlanRequest,
-    ): Promise<IOnboardingPlanDetailDto | null> =>
+        payload: UpdateOnboardingPlanRequest,
+    ): Promise<OnboardingPlanDetailDto | null> =>
         runMutation(getAxiosInstance().put(`${ONBOARDING_PLAN_API_BASE}/Update`, payload));
 
-    const publishPlan = async (id: string): Promise<IOnboardingPlanDetailDto | null> =>
+    const publishPlan = async (id: string): Promise<OnboardingPlanDetailDto | null> =>
         runMutation(getAxiosInstance().post(`${ONBOARDING_PLAN_API_BASE}/Publish`, { id }));
 
-    const archivePlan = async (id: string): Promise<IOnboardingPlanDetailDto | null> =>
+    const archivePlan = async (id: string): Promise<OnboardingPlanDetailDto | null> =>
         runMutation(getAxiosInstance().post(`${ONBOARDING_PLAN_API_BASE}/Archive`, { id }));
 
     const clonePlan = async (
-        payload: ICloneOnboardingPlanRequest,
-    ): Promise<IOnboardingPlanDetailDto | null> =>
+        payload: CloneOnboardingPlanRequest,
+    ): Promise<OnboardingPlanDetailDto | null> =>
         runMutation(getAxiosInstance().post(`${ONBOARDING_PLAN_API_BASE}/Clone`, payload));
 
     const initialiseDraft = (): void => {
@@ -220,7 +220,7 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
 
     const addTask = (
         moduleClientKey: string,
-        payload: IOnboardingTaskEditorValues,
+        payload: OnboardingTaskEditorValues,
     ): void => {
         updateDraft((currentDraft) =>
             appendOnboardingPlanDraftTask(currentDraft, moduleClientKey, payload),
@@ -230,7 +230,7 @@ export const OnboardingPlanProvider: React.FC<{ children: React.ReactNode }> = (
     const updateTask = (
         moduleClientKey: string,
         taskClientKey: string,
-        payload: IOnboardingTaskEditorValues,
+        payload: OnboardingTaskEditorValues,
     ): void => {
         updateDraft((currentDraft) =>
             updateOnboardingPlanDraftTask(

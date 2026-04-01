@@ -1,33 +1,33 @@
 import { createContext } from "react";
 export type {
-    IAcknowledgeAtRiskFlagRequest,
-    IHireIntelligenceDetailDto,
-    IResolveAtRiskFlagRequest,
-} from "@/types/engagement";
+    AcknowledgeAtRiskFlagRequest,
+    HireIntelligenceDetailDto,
+    ResolveAtRiskFlagRequest,
+} from "@/types/engagement/engagement";
 import type {
-    IAcknowledgeAtRiskFlagRequest,
-    IHireIntelligenceDetailDto,
-    IResolveAtRiskFlagRequest,
-} from "@/types/engagement";
+    AcknowledgeAtRiskFlagRequest,
+    HireIntelligenceDetailDto,
+    ResolveAtRiskFlagRequest,
+} from "@/types/engagement/engagement";
 
 export interface IEngagementStateContext {
     isSuccess: boolean;
     isPending: boolean;
     isError: boolean;
     isMutationPending: boolean;
-    selectedHireIntelligence?: IHireIntelligenceDetailDto | null;
+    selectedHireIntelligence?: HireIntelligenceDetailDto | null;
 }
 
 export interface IEngagementActionContext {
-    getHireIntelligence: (hireId: string) => Promise<IHireIntelligenceDetailDto | null>;
+    getHireIntelligence: (hireId: string) => Promise<HireIntelligenceDetailDto | null>;
     acknowledgeAtRiskFlag: (
         hireId: string,
-        payload: IAcknowledgeAtRiskFlagRequest,
-    ) => Promise<IHireIntelligenceDetailDto | null>;
+        payload: AcknowledgeAtRiskFlagRequest,
+    ) => Promise<HireIntelligenceDetailDto | null>;
     resolveAtRiskFlag: (
         hireId: string,
-        payload: IResolveAtRiskFlagRequest,
-    ) => Promise<IHireIntelligenceDetailDto | null>;
+        payload: ResolveAtRiskFlagRequest,
+    ) => Promise<HireIntelligenceDetailDto | null>;
     resetHireIntelligence: () => void;
 }
 

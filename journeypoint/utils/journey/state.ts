@@ -1,10 +1,10 @@
 import type {
-    IEnroleeJourneyDashboardDto,
-    IEnroleeJourneyTaskDetailDto,
-    IJourneyDraftDto,
-    IJourneyPersonalisationProposalDto,
-    IManagerTaskWorkspaceDto,
-} from "@/types/journey";
+    EnroleeJourneyDashboardDto,
+    EnroleeJourneyTaskDetailDto,
+    JourneyDraftDto,
+    JourneyPersonalisationProposalDto,
+    ManagerTaskWorkspaceDto,
+} from "@/types/journey/journey";
 import { buildInitialPersonalisationDecisions } from "@/utils/journey/personalisation";
 import type { IJourneyStateContext } from "@/providers/journeyProvider/context";
 
@@ -48,7 +48,7 @@ export const buildJourneyPendingState = (): JourneyStatePatch => ({
 });
 
 export const buildJourneySuccessState = (
-    journey: IJourneyDraftDto,
+    journey: JourneyDraftDto,
 ): JourneyStatePatch => ({
     isPending: false,
     isDetailPending: false,
@@ -78,7 +78,7 @@ export const buildParticipantDashboardPendingState = (): JourneyStatePatch => ({
 });
 
 export const buildParticipantDashboardSuccessState = (
-    myJourney: IEnroleeJourneyDashboardDto | null,
+    myJourney: EnroleeJourneyDashboardDto | null,
 ): JourneyStatePatch => ({
     isPending: false,
     isDetailPending: false,
@@ -106,7 +106,7 @@ export const buildParticipantTaskPendingState = (): JourneyStatePatch => ({
 });
 
 export const buildParticipantTaskSuccessState = (
-    selectedTask: IEnroleeJourneyTaskDetailDto | null,
+    selectedTask: EnroleeJourneyTaskDetailDto | null,
 ): JourneyStatePatch => ({
     isPending: false,
     isDetailPending: false,
@@ -134,7 +134,7 @@ export const buildFacilitatorMutationPendingState = (): JourneyStatePatch => ({
 });
 
 export const buildFacilitatorMutationSuccessState = (
-    journey: IJourneyDraftDto,
+    journey: JourneyDraftDto,
 ): JourneyStatePatch => ({
     isPending: false,
     isMutationPending: false,
@@ -173,7 +173,7 @@ export const buildManagerPendingState = (): JourneyStatePatch => ({
 });
 
 export const buildManagerSuccessState = (
-    managerWorkspace: IManagerTaskWorkspaceDto | null,
+    managerWorkspace: ManagerTaskWorkspaceDto | null,
 ): JourneyStatePatch => ({
     isPending: false,
     isDetailPending: false,
@@ -201,7 +201,7 @@ export const buildManagerMutationPendingState = (): JourneyStatePatch => ({
 });
 
 export const buildManagerMutationSuccessState = (
-    managerWorkspace: IManagerTaskWorkspaceDto | null,
+    managerWorkspace: ManagerTaskWorkspaceDto | null,
 ): JourneyStatePatch => ({
     isPending: false,
     isMutationPending: false,
@@ -212,7 +212,7 @@ export const buildManagerMutationSuccessState = (
 });
 
 export const buildPersonalisationSuccessState = (
-    personalisationProposal: IJourneyPersonalisationProposalDto,
+    personalisationProposal: JourneyPersonalisationProposalDto,
 ): JourneyStatePatch => ({
     isPersonalisationPending: false,
     isError: false,

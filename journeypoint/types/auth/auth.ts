@@ -1,11 +1,11 @@
-export interface IUserLoginRequest {
+export type UserLoginRequest = {
     userNameOrEmailAddress: string;
     password: string;
     rememberClient?: boolean;
     tenancyName?: string | null;
-}
+};
 
-export interface IUserRegisterRequest {
+export type UserRegisterRequest = {
     name: string;
     surname: string;
     userName: string;
@@ -13,9 +13,9 @@ export interface IUserRegisterRequest {
     password: string;
     captchaResponse?: string | null;
     tenancyName?: string | null;
-}
+};
 
-export interface IUserLoginResponse {
+export type UserLoginResponse = {
     token?: string | null;
     userId?: number;
     name?: string | null;
@@ -26,21 +26,21 @@ export interface IUserLoginResponse {
     fullName?: string | null;
     roleNames?: string[];
     primaryRoleName?: string | null;
-}
+};
 
-export interface ITenantInfo {
+export type TenantInfo = {
     tenantId?: number | null;
     tenancyName?: string | null;
     tenantName?: string | null;
-}
+};
 
-export interface IApplicationInfo {
+export type ApplicationInfo = {
     version?: string | null;
     releaseDate?: string | null;
     features?: Record<string, boolean> | null;
-}
+};
 
-export interface ICurrentLoginInfoUser {
+export type CurrentLoginInfoUser = {
     id?: number;
     name?: string | null;
     surname?: string | null;
@@ -48,36 +48,36 @@ export interface ICurrentLoginInfoUser {
     emailAddress?: string | null;
     roleNames?: string[];
     primaryRoleName?: string | null;
-}
+};
 
-export interface ICurrentLoginInfoTenant {
+export type CurrentLoginInfoTenant = {
     id?: number;
     tenancyName?: string | null;
     name?: string | null;
-}
+};
 
-export interface ICurrentLoginInformationsResponse {
-    application?: IApplicationInfo | null;
-    user?: ICurrentLoginInfoUser | null;
-    tenant?: ICurrentLoginInfoTenant | null;
-}
+export type CurrentLoginInformationsResponse = {
+    application?: ApplicationInfo | null;
+    user?: CurrentLoginInfoUser | null;
+    tenant?: CurrentLoginInfoTenant | null;
+};
 
-export interface IAbpUserConfigurationResponse {
+export type AbpUserConfigurationResponse = {
     auth?: {
         grantedPermissions?: Record<string, boolean> | null;
     } | null;
     multiTenancy?: {
         isEnabled?: boolean;
     } | null;
-}
+};
 
-export interface ILoadedConfiguration {
+export type LoadedConfiguration = {
     grantedPermissions: string[];
     isMultiTenancyEnabled: boolean;
     configurationError: string | null;
-}
+};
 
-export interface IFetchedSessionState {
-    user: IUserLoginResponse;
-    tenant: ITenantInfo | null;
-}
+export type FetchedSessionState = {
+    user: UserLoginResponse;
+    tenant: TenantInfo | null;
+};

@@ -3,11 +3,13 @@
 import React from "react";
 import { Button, Card, Space, Tag, Typography } from "antd";
 import {
-    ONBOARDING_PLAN_STATUS_LABELS,
     OnboardingPlanStatus,
-} from "@/types/onboarding-plan";
+} from "@/types/onboarding-plan/onboarding-plan"
+import {
+    ONBOARDING_PLAN_STATUS_LABELS,
+} from "@/constants/plans/onboarding-plan";
 import { useStyles } from "@/components/plans/style/style";
-import type { IPlanCardProps } from "@/types/plans/components";
+import type { PlanCardProps } from "@/types/plans/components";
 import { formatPlanUpdatedTime, getPlanStatusColor } from "@/utils/plans/planCard";
 
 const { Paragraph, Text, Title } = Typography;
@@ -15,7 +17,7 @@ const { Paragraph, Text, Title } = Typography;
 /**
  * Renders one onboarding-plan list card and its lifecycle actions.
  */
-const PlanCard: React.FC<IPlanCardProps> = ({
+const PlanCard: React.FC<PlanCardProps> = ({
     isActionPending,
     onArchive,
     onClone,

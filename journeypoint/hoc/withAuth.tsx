@@ -3,8 +3,8 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { WithAuthOptions } from "@/types/auth/withAuth";
-import { APP_ROUTES } from "@/constants/auth/routes";
-import { useAppSession } from "@/helpers/useAppSession";
+import { APP_ROUTES } from "@/routes/auth.routes";
+import { useAppSession } from "@/hooks/useAppSession";
 import Spinner from "@/components/spinner/Spinner";
 
 const withAuth = <P extends object>(

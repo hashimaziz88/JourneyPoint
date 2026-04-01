@@ -5,14 +5,14 @@ import { Button, Empty, Space, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import ModulePanel from "@/components/plans/ModulePanel";
 import { useStyles } from "@/components/plans/style/style";
-import type { IPlanEditorModulesSectionProps } from "@/types/plans/components";
+import type { PlanEditorModulesSectionProps } from "@/types/plans/components";
 
 const { Paragraph, Title } = Typography;
 
 /**
  * Renders the ordered module and task builder section for one plan draft.
  */
-const PlanEditorModulesSection: React.FC<IPlanEditorModulesSectionProps> = ({
+const PlanEditorModulesSection: React.FC<PlanEditorModulesSectionProps> = ({
     isDraftEditable,
     modules,
     onAddModule,

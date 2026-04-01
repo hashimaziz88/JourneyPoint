@@ -4,8 +4,8 @@ import React from "react";
 import Link from "next/link";
 import { Alert, Card, Col, Row, Space, Tag, Typography } from "antd";
 import { ADMIN_NAVIGATION_ITEMS } from "@/constants/global/navigation";
-import { NAVIGATION_ICONS } from "@/constants/layout/appShell";
-import { useAppSession } from "@/helpers/useAppSession";
+import { NAVIGATION_ICONS } from "@/utils/layout/appShell";
+import { useAppSession } from "@/hooks/useAppSession";
 import { useStyles } from "@/components/admin/style/style";
 
 const { Paragraph, Text, Title } = Typography;

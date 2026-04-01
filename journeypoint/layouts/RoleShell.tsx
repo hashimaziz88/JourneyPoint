@@ -2,17 +2,17 @@
 
 import React, { startTransition, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { APP_ROUTES } from "@/constants/auth/routes";
-import { useAppSession } from "@/helpers/useAppSession";
+import { APP_ROUTES } from "@/routes/auth.routes";
+import { useAppSession } from "@/hooks/useAppSession";
 import Spinner from "@/components/spinner/Spinner";
-import type { IRoleShellProps } from "@/types/layout/shell";
+import type { RoleShellProps } from "@/types/layout/shell";
 import WorkspaceShell from "./WorkspaceShell";
 
 /**
  * Applies role-aware access control and top-navigation shell rendering to a
  * workspace. Admin workspaces use AdminShell → AppShell (sidebar) instead.
  */
-const RoleShell: React.FC<IRoleShellProps> = ({
+const RoleShell: React.FC<RoleShellProps> = ({
   children,
   title,
   subtitle,

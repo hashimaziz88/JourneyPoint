@@ -2,10 +2,10 @@
 
 import React, { startTransition, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { APP_ROUTES } from "@/constants/auth/routes";
+import { APP_ROUTES } from "@/routes/auth.routes";
 import { APP_ROLE_NAMES } from "@/constants/auth/permissions";
 import { ADMIN_NAVIGATION_ITEMS } from "@/constants/global/navigation";
-import { useAppSession } from "@/helpers/useAppSession";
+import { useAppSession } from "@/hooks/useAppSession";
 import Spinner from "@/components/spinner/Spinner";
 import AppShell from "@/layouts/AppShell";
 

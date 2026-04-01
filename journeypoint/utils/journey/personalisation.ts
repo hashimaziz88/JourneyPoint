@@ -4,18 +4,18 @@ import {
 import { formatDisplayDate } from "@/utils/date";
 import { findOptionLabel } from "@/utils/plans/optionLabels";
 import type {
-    IApplyJourneyPersonalisationRequest,
-    IJourneyPersonalisationDecisionItem,
-    IJourneyPersonalisationProposalDto,
-    IJourneyTaskPersonalisationDiffDto,
+    ApplyJourneyPersonalisationRequest,
+    JourneyPersonalisationDecisionItem,
+    JourneyPersonalisationProposalDto,
+    JourneyTaskPersonalisationDiffDto,
     JourneyPersonalisationChangedField,
     JourneyPersonalisationDecision,
-} from "@/types/journey";
+} from "@/types/journey/journey";
 import {
     ONBOARDING_TASK_ACKNOWLEDGEMENT_RULE_OPTIONS,
     ONBOARDING_TASK_ASSIGNMENT_TARGET_OPTIONS,
     ONBOARDING_TASK_CATEGORY_OPTIONS,
-} from "@/types/onboarding-plan";
+} from "@/constants/plans/onboarding-plan";
 
 interface IPersonalisationDecisionCounts {
     acceptedCount: number;
@@ -31,18 +31,18 @@ export interface IPersonalisationFieldComparison {
 }
 
 export const buildInitialPersonalisationDecisions = (
-    proposal: IJourneyPersonalisationProposalDto,
-): IJourneyPersonalisationDecisionItem[] =>
+    proposal: JourneyPersonalisationProposalDto,
+): JourneyPersonalisationDecisionItem[] =>
     proposal.diffs.map((diff) => ({
         journeyTaskId: diff.journeyTaskId,
         decision: "unreviewed",
     }));
 
 export const updatePersonalisationDecision = (
-    decisions: IJourneyPersonalisationDecisionItem[],
+    decisions: JourneyPersonalisationDecisionItem[],
     journeyTaskId: string,
     decision: JourneyPersonalisationDecision,
-): IJourneyPersonalisationDecisionItem[] => {
+): JourneyPersonalisationDecisionItem[] => {
     const hasExistingDecision = decisions.some(
         (existingDecision) => existingDecision.journeyTaskId === journeyTaskId,
     );
@@ -59,14 +59,14 @@ export const updatePersonalisationDecision = (
 };
 
 export const getPersonalisationDecision = (
-    decisions: IJourneyPersonalisationDecisionItem[],
+    decisions: JourneyPersonalisationDecisionItem[],
     journeyTaskId: string,
 ): JourneyPersonalisationDecision =>
     decisions.find((decision) => decision.journeyTaskId === journeyTaskId)?.decision ??
     "unreviewed";
 
 export const getPersonalisationDecisionCounts = (
-    decisions: IJourneyPersonalisationDecisionItem[],
+    decisions: JourneyPersonalisationDecisionItem[],
 ): IPersonalisationDecisionCounts =>
     decisions.reduce<IPersonalisationDecisionCounts>(
         (counts, decision) => {
@@ -96,9 +96,9 @@ export const getPersonalisationDecisionCounts = (
     );
 
 export const buildApplyPersonalisationRequest = (
-    proposal: IJourneyPersonalisationProposalDto | null | undefined,
-    decisions: IJourneyPersonalisationDecisionItem[],
-): IApplyJourneyPersonalisationRequest | null => {
+    proposal: JourneyPersonalisationProposalDto | null | undefined,
+    decisions: JourneyPersonalisationDecisionItem[],
+): ApplyJourneyPersonalisationRequest | null => {
     if (!proposal) {
         return null;
     }
@@ -131,11 +131,11 @@ export const buildApplyPersonalisationRequest = (
 };
 
 export const getHighlightedTaskIds = (
-    proposal: IJourneyPersonalisationProposalDto | null | undefined,
+    proposal: JourneyPersonalisationProposalDto | null | undefined,
 ): string[] => proposal?.diffs.map((diff) => diff.journeyTaskId) ?? [];
 
 export const getChangedFieldComparisons = (
-    diff: IJourneyTaskPersonalisationDiffDto,
+    diff: JourneyTaskPersonalisationDiffDto,
 ): IPersonalisationFieldComparison[] =>
     diff.changedFields.map((field) => ({
         field,
@@ -145,7 +145,7 @@ export const getChangedFieldComparisons = (
     }));
 
 const formatPersonalisationFieldValue = (
-    diff: IJourneyTaskPersonalisationDiffDto,
+    diff: JourneyTaskPersonalisationDiffDto,
     field: JourneyPersonalisationChangedField,
     isProposedValue: boolean,
 ): string => {

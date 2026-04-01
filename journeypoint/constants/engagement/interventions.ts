@@ -1,5 +1,5 @@
 import type { SelectProps } from "antd";
-import { AtRiskFlagStatus, AtRiskResolutionType } from "@/types/engagement";
+import { AtRiskFlagStatus, AtRiskResolutionType } from "@/types/engagement/engagement";
 
 export const AT_RISK_FLAG_STATUS_LABELS: Record<AtRiskFlagStatus, string> = {
     [AtRiskFlagStatus.Active]: "Active",

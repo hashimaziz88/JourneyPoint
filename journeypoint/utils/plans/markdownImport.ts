@@ -1,11 +1,11 @@
-import type { IMarkdownImportWarningDto } from "@/types/markdown-import";
+import type { MarkdownImportWarningDto } from "@/types/markdown-import/markdown-import";
 import type {
-    IOnboardingPlanDraft,
-    IOnboardingTaskDraft,
-} from "@/types/onboarding-plan";
+    OnboardingPlanDraft,
+    OnboardingTaskDraft,
+} from "@/types/onboarding-plan/onboarding-plan";
 
 export const buildMarkdownWarningMessage = (
-    warning: IMarkdownImportWarningDto,
+    warning: MarkdownImportWarningDto,
 ): string => {
     const locationParts = [
         warning.sectionName ? `Section: ${warning.sectionName}` : null,
@@ -18,10 +18,10 @@ export const buildMarkdownWarningMessage = (
 };
 
 export const findImportDraftTask = (
-    draftPlan: IOnboardingPlanDraft | null | undefined,
+    draftPlan: OnboardingPlanDraft | null | undefined,
     moduleClientKey: string | null,
     taskClientKey: string | null,
-): IOnboardingTaskDraft | null => {
+): OnboardingTaskDraft | null => {
     if (!draftPlan || !moduleClientKey || !taskClientKey) {
         return null;
     }

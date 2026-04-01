@@ -1,16 +1,18 @@
 import type {
     ExtractedTaskReviewStatus,
-    IExtractedTaskProposalDto,
-    IExtractedTaskProposalEditorValues,
-} from "@/types/onboarding-document";
+    ExtractedTaskProposalDto,
+    ExtractedTaskProposalEditorValues,
+} from "@/types/onboarding-document/onboarding-document";
+import {
+    ExtractedTaskReviewStatus as ProposalReviewStatus,
+} from "@/types/onboarding-document/onboarding-document"
 import {
     DEFAULT_EXTRACTED_TASK_PROPOSAL_EDITOR_VALUES,
-    ExtractedTaskReviewStatus as ProposalReviewStatus,
-} from "@/types/onboarding-document";
+} from "@/constants/plans/onboarding-document";
 
 export const mapProposalToEditorValues = (
-    proposal?: IExtractedTaskProposalDto | null,
-): IExtractedTaskProposalEditorValues => {
+    proposal?: ExtractedTaskProposalDto | null,
+): ExtractedTaskProposalEditorValues => {
     if (!proposal) {
         return DEFAULT_EXTRACTED_TASK_PROPOSAL_EDITOR_VALUES;
     }

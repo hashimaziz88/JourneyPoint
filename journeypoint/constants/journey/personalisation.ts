@@ -1,7 +1,7 @@
 import type {
     JourneyPersonalisationChangedField,
     JourneyPersonalisationDecision,
-} from "@/types/journey";
+} from "@/types/journey/journey";
 
 export const PERSONALISATION_CHANGED_FIELD_LABELS: Record<
     JourneyPersonalisationChangedField,
