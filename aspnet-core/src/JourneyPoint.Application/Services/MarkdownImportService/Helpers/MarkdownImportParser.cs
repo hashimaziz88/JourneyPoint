@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Abp.Dependency;
 using JourneyPoint.Application.Services.MarkdownImportService.Dto;
 
-namespace JourneyPoint.Application.Services.MarkdownImportService
+namespace JourneyPoint.Application.Services.MarkdownImportService.Helpers
 {
     /// <summary>
     /// Parses structured markdown into onboarding preview data and review warnings.

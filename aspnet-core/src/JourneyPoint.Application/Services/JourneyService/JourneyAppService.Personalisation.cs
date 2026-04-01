@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Abp.Authorization;
 using Abp.Domain.Entities;
 using JourneyPoint.Application.Services.GroqService;
+using JourneyPoint.Application.Services.GroqService.Dto;
 using JourneyPoint.Application.Services.JourneyService.Dto;
 using JourneyPoint.Authorization;
 using JourneyPoint.Domains.Audit;

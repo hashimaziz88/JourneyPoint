@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using JourneyPoint.Domains.OnboardingPlans;
 
-namespace JourneyPoint.Application.Services.GroqService
+namespace JourneyPoint.Application.Services.GroqService.Dto
 {
     /// <summary>
     /// Represents one successful Groq journey personalisation result.

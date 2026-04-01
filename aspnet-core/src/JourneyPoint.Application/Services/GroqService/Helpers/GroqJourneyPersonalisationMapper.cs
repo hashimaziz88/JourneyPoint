@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JourneyPoint.Application.Services.GroqService.Dto;
 using JourneyPoint.Domains.Hires;
 using JourneyPoint.Domains.OnboardingPlans;
 
-namespace JourneyPoint.Application.Services.GroqService
+namespace JourneyPoint.Application.Services.GroqService.Helpers
 {
     internal static class GroqJourneyPersonalisationMapper
     {

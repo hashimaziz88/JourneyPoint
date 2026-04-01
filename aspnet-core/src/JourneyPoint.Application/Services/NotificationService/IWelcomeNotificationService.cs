@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using JourneyPoint.Application.Services.NotificationService.Dto;
 
 namespace JourneyPoint.Application.Services.NotificationService
 {

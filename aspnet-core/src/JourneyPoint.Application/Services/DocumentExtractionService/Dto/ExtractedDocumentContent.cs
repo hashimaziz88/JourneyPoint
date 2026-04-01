@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace JourneyPoint.Application.Services.DocumentExtractionService
+namespace JourneyPoint.Application.Services.DocumentExtractionService.Dto
 {
     /// <summary>
     /// Represents extracted text and image content derived from one uploaded source document.

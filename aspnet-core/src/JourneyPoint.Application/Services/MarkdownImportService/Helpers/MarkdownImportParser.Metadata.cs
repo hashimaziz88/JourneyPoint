@@ -5,7 +5,7 @@ using System.Linq;
 using JourneyPoint.Application.Services.MarkdownImportService.Dto;
 using JourneyPoint.Domains.OnboardingPlans;
 
-namespace JourneyPoint.Application.Services.MarkdownImportService
+namespace JourneyPoint.Application.Services.MarkdownImportService.Helpers
 {
     /// <summary>
     /// Provides metadata parsing and preview fallback helpers for markdown import parsing.

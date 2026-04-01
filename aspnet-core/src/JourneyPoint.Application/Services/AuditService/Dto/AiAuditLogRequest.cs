@@ -1,7 +1,7 @@
 using System;
 using JourneyPoint.Domains.Audit;
 
-namespace JourneyPoint.Application.Services.AuditService
+namespace JourneyPoint.Application.Services.AuditService.Dto
 {
     /// <summary>
     /// Carries the metadata required to persist one AI workflow audit record.

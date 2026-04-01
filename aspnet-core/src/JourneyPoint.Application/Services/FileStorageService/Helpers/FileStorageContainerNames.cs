@@ -1,4 +1,4 @@
-namespace JourneyPoint.Application.Services.FileStorageService
+namespace JourneyPoint.Application.Services.FileStorageService.Helpers
 {
     /// <summary>
     /// Defines the supported storage-container names used by JourneyPoint application services.

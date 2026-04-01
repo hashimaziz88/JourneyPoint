@@ -11,13 +11,14 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using UglyToad.PdfPig;
+using JourneyPoint.Application.Services.DocumentExtractionService.Dto;
 
 namespace JourneyPoint.Application.Services.DocumentExtractionService
 {
     /// <summary>
     /// Extracts text or image payloads from uploaded onboarding source documents.
     /// </summary>
-    public class DocumentContentExtractionService : ITransientDependency
+    public class DocumentContentExtractionService : IDocumentContentExtractionService, ITransientDependency
     {
         private const int MaximumRasterizedPages = 5;
         private const int RasterizedPageWidth = 1600;

@@ -1,4 +1,4 @@
-namespace JourneyPoint.Application.Services.NotificationService
+namespace JourneyPoint.Application.Services.NotificationService.Dto
 {
     /// <summary>
     /// Carries the transient credentials and addressing data needed for one welcome-notification attempt.

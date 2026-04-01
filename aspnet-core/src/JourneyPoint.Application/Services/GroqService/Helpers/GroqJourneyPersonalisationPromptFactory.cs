@@ -5,7 +5,7 @@ using System.Text.Json;
 using JourneyPoint.Domains.Hires;
 using JourneyPoint.Domains.OnboardingPlans;
 
-namespace JourneyPoint.Application.Services.GroqService
+namespace JourneyPoint.Application.Services.GroqService.Helpers
 {
     internal static class GroqJourneyPersonalisationPromptFactory
     {

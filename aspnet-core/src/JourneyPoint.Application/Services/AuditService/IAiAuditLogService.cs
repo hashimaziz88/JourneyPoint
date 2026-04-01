@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using JourneyPoint.Application.Services.AuditService.Dto;
 
 namespace JourneyPoint.Application.Services.AuditService
 {

@@ -8,6 +8,7 @@ using Abp.UI;
 using JourneyPoint.Application.Services.DocumentExtractionService;
 using JourneyPoint.Application.Services.GroqService;
 using JourneyPoint.Application.Services.MarkdownImportService.Dto;
+using JourneyPoint.Application.Services.MarkdownImportService.Helpers;
 using JourneyPoint.Application.Services.OnboardingPlanService.Dto;
 using JourneyPoint.Authorization;
 using JourneyPoint.Domains.OnboardingPlans;
@@ -25,7 +26,7 @@ namespace JourneyPoint.Application.Services.MarkdownImportService
         private readonly IRepository<OnboardingPlan, Guid> _onboardingPlanRepository;
         private readonly OnboardingPlanManager _onboardingPlanManager;
         private readonly MarkdownImportParser _markdownImportParser;
-        private readonly DocumentContentExtractionService _documentContentExtractionService;
+        private readonly IDocumentContentExtractionService _documentContentExtractionService;
         private readonly IGroqDocumentNormalizationService _groqDocumentNormalizationService;
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace JourneyPoint.Application.Services.MarkdownImportService
             IRepository<OnboardingPlan, Guid> onboardingPlanRepository,
             OnboardingPlanManager onboardingPlanManager,
             MarkdownImportParser markdownImportParser,
-            DocumentContentExtractionService documentContentExtractionService,
+            IDocumentContentExtractionService documentContentExtractionService,
             IGroqDocumentNormalizationService groqDocumentNormalizationService)
         {
             _onboardingPlanRepository = onboardingPlanRepository;

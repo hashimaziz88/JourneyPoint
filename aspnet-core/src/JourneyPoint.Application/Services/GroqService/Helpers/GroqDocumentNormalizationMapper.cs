@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using JourneyPoint.Application.Services.GroqService.Dto;
 using JourneyPoint.Application.Services.MarkdownImportService.Dto;
-using JourneyPoint.Application.Services.OnboardingDocumentService;
+using JourneyPoint.Application.Services.OnboardingDocumentService.Dto;
 using JourneyPoint.Domains.OnboardingPlans;
 
-namespace JourneyPoint.Application.Services.GroqService
+namespace JourneyPoint.Application.Services.GroqService.Helpers
 {
     internal static class GroqDocumentNormalizationMapper
     {

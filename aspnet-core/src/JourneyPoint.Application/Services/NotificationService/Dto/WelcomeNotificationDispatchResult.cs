@@ -1,6 +1,6 @@
 using System;
 
-namespace JourneyPoint.Application.Services.NotificationService
+namespace JourneyPoint.Application.Services.NotificationService.Dto
 {
     /// <summary>
     /// Describes the outcome of one welcome-notification attempt.

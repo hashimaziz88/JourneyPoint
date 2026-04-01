@@ -6,9 +6,11 @@ using Abp.Dependency;
 using JourneyPoint.Application.Services.DocumentExtractionService;
 using JourneyPoint.Application.Services.GroqService;
 using JourneyPoint.Application.Services.MarkdownImportService;
+using JourneyPoint.Application.Services.MarkdownImportService.Helpers;
+using JourneyPoint.Application.Services.OnboardingDocumentService.Dto;
 using JourneyPoint.Domains.OnboardingPlans;
 
-namespace JourneyPoint.Application.Services.OnboardingDocumentService
+namespace JourneyPoint.Application.Services.OnboardingDocumentService.Helpers
 {
     /// <summary>
     /// Extracts reviewable task proposals from uploaded onboarding documents.
@@ -17,7 +19,7 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
     {
         private readonly IOnboardingDocumentStorage _onboardingDocumentStorage;
         private readonly MarkdownImportParser _markdownImportParser;
-        private readonly DocumentContentExtractionService _documentContentExtractionService;
+        private readonly IDocumentContentExtractionService _documentContentExtractionService;
         private readonly IGroqDocumentNormalizationService _groqDocumentNormalizationService;
 
         /// <summary>
@@ -26,7 +28,7 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
         public OnboardingDocumentExtractionOrchestrator(
             IOnboardingDocumentStorage onboardingDocumentStorage,
             MarkdownImportParser markdownImportParser,
-            DocumentContentExtractionService documentContentExtractionService,
+            IDocumentContentExtractionService documentContentExtractionService,
             IGroqDocumentNormalizationService groqDocumentNormalizationService)
         {
             _onboardingDocumentStorage = onboardingDocumentStorage;
@@ -342,6 +344,5 @@ namespace JourneyPoint.Application.Services.OnboardingDocumentService
         {
             return (value ?? string.Empty).Trim().ToLowerInvariant();
         }
-
     }
 }
