@@ -43,21 +43,23 @@ const RegisterForm: React.FC = () => {
     }
   }, [authState.isError]);
 
-  const onFinish: FormProps<RegisterFieldType>["onFinish"] = async (values) => {
-    const result = await register({
-      name: values.name ?? "",
-      surname: values.surname ?? "",
-      userName: values.userName ?? "",
-      emailAddress: values.emailAddress ?? "",
-      password: values.password ?? "",
-      tenancyName: tenant?.tenancyName ?? null,
-    });
-
-    if (result === "registered") {
-      startTransition(() => {
-        router.replace(APP_ROUTES.login);
+  const onFinish: FormProps<RegisterFieldType>["onFinish"] = (values) => {
+    void (async () => {
+      const result = await register({
+        name: values.name ?? "",
+        surname: values.surname ?? "",
+        userName: values.userName ?? "",
+        emailAddress: values.emailAddress ?? "",
+        password: values.password ?? "",
+        tenancyName: tenant?.tenancyName ?? null,
       });
-    }
+
+      if (result === "registered") {
+        startTransition(() => {
+          router.replace(APP_ROUTES.login);
+        });
+      }
+    })();
   };
 
   const onFinishFailed: FormProps<RegisterFieldType>["onFinishFailed"] = (errorInfo) => {

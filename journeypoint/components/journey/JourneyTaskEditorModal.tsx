@@ -53,7 +53,7 @@ const JourneyTaskEditorModal: React.FC<JourneyTaskEditorModalProps> = ({
                     key="submit"
                     type="primary"
                     loading={isPending}
-                    onClick={() => void form.submit()}
+                    onClick={() => form.submit()}
                 >
                     {task ? "Save Changes" : "Add Task"}
                 </Button>,

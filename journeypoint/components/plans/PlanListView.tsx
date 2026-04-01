@@ -135,46 +135,51 @@ const PlanListView: React.FC = () => {
     };
 
     const hasPlans = (plans ?? []).length > 0;
-    const listContent = isListPending ? (
-        <Spin size="large" className={styles.loadingWrap} />
-    ) : hasPlans ? (
-        <>
-            <div className={styles.planGrid}>
-                {(plans ?? []).map((plan) => (
-                    <PlanCard
-                        key={plan.id}
-                        isActionPending={isMutationPending}
-                        onArchive={handleArchive}
-                        onClone={handleClone}
-                        onOpen={handleOpen}
-                        onPublish={handlePublish}
-                        plan={plan}
-                    />
-                ))}
-            </div>
+    let listContent: React.ReactNode;
+    if (isListPending) {
+        listContent = <Spin size="large" className={styles.loadingWrap} />;
+    } else if (hasPlans) {
+        listContent = (
+            <>
+                <div className={styles.planGrid}>
+                    {(plans ?? []).map((plan) => (
+                        <PlanCard
+                            key={plan.id}
+                            isActionPending={isMutationPending}
+                            onArchive={handleArchive}
+                            onClone={handleClone}
+                            onOpen={handleOpen}
+                            onPublish={handlePublish}
+                            plan={plan}
+                        />
+                    ))}
+                </div>
 
-            <div className={styles.paginationWrap}>
-                <Pagination
-                    current={query.current}
-                    pageSize={query.maxResultCount}
-                    total={totalCount ?? 0}
-                    showSizeChanger
-                    onChange={(page, pageSize) =>
-                        setQuery((currentQuery) => ({
-                            ...currentQuery,
-                            current: page,
-                            maxResultCount: pageSize,
-                        }))
-                    }
-                />
-            </div>
-        </>
-    ) : (
-        <Empty
-            className={styles.emptyState}
-            description="No onboarding plans match the current filter set."
-        />
-    );
+                <div className={styles.paginationWrap}>
+                    <Pagination
+                        current={query.current}
+                        pageSize={query.maxResultCount}
+                        total={totalCount ?? 0}
+                        showSizeChanger
+                        onChange={(page, pageSize) =>
+                            setQuery((currentQuery) => ({
+                                ...currentQuery,
+                                current: page,
+                                maxResultCount: pageSize,
+                            }))
+                        }
+                    />
+                </div>
+            </>
+        );
+    } else {
+        listContent = (
+            <Empty
+                className={styles.emptyState}
+                description="No onboarding plans match the current filter set."
+            />
+        );
+    }
 
     return (
         <Space orientation="vertical" size={24} className={styles.pageRoot}>

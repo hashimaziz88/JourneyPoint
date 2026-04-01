@@ -100,14 +100,14 @@ const PlanEditorHeader: React.FC<PlanEditorHeaderProps> = ({
                 </Space>
             </div>
 
-            {!isDraftEditable ? (
+            {isDraftEditable ? null : (
                 <Alert
                     className={styles.alert}
                     type="info"
                     showIcon
                     title={`This plan is ${ONBOARDING_PLAN_STATUS_LABELS[planStatus].toLowerCase()} and its structure is read-only.`}
                 />
-            ) : null}
+            )}
 
             {showCreationChoice ? (
                 <Card className={styles.editorCard}>

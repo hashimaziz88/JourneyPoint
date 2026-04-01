@@ -82,25 +82,30 @@ const PipelineBoardView: React.FC<PipelineBoardViewProps> = () => {
         });
     };
 
-    const boardContent = isPending && !board ? (
-        <Spin size="large" className={styles.loadingWrap} />
-    ) : journeyGroups.length > 0 ? (
-        <div className={styles.journeyGroupList}>
-            {journeyGroups.map((group) => (
-                <PipelineJourneyGroup
-                    key={group.planId}
-                    group={group}
-                    onOpenHire={handleOpenHire}
-                    onOpenJourney={handleOpenJourney}
-                />
-            ))}
-        </div>
-    ) : (
-        <Empty
-            className={styles.emptyState}
-            description="No hires matched the current pipeline filters."
-        />
-    );
+    let boardContent: React.ReactNode;
+    if (isPending && !board) {
+        boardContent = <Spin size="large" className={styles.loadingWrap} />;
+    } else if (journeyGroups.length > 0) {
+        boardContent = (
+            <div className={styles.journeyGroupList}>
+                {journeyGroups.map((group) => (
+                    <PipelineJourneyGroup
+                        key={group.planId}
+                        group={group}
+                        onOpenHire={handleOpenHire}
+                        onOpenJourney={handleOpenJourney}
+                    />
+                ))}
+            </div>
+        );
+    } else {
+        boardContent = (
+            <Empty
+                className={styles.emptyState}
+                description="No hires matched the current pipeline filters."
+            />
+        );
+    }
 
     return (
         <Space orientation="vertical" size={24} className={styles.pageRoot}>

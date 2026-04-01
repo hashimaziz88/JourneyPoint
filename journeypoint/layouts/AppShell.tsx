@@ -6,13 +6,12 @@ import type { MenuProps } from "antd";
 import { LogoutOutlined } from "@ant-design/icons";
 import { Button, Grid, Layout, Menu, Space, Tag, Typography } from "antd";
 import { APP_ROUTES } from "@/routes/auth.routes";
-import { NAVIGATION_ICONS } from "@/utils/layout/appShell";
+import { NAVIGATION_ICONS, getSelectedMenuKey } from "@/utils/layout/appShell";
 import { useAuthActions } from "@/providers/authProvider";
 import AppShellBrand from "@/components/layout/AppShellBrand";
 import MobileNavigation from "@/components/layout/MobileNavigation";
 import type { AppShellProps } from "@/types/layout/shell";
 import { ignoreAsyncError } from "@/utils/async";
-import { getSelectedMenuKey } from "@/utils/layout/appShell";
 import { useStyles } from "./style/style";
 
 const { Header, Content, Sider } = Layout;

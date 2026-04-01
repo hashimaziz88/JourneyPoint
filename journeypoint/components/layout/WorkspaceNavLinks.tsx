@@ -23,7 +23,7 @@ const WorkspaceNavLinks: React.FC<WorkspaceNavLinksProps> = ({
             key={item.key}
             type="button"
             onClick={() => onNavigate(item.href)}
-            className={`${styles.navLink}${isActive ? ` ${styles.navLinkActive}` : ""}`}
+            className={isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink}
             aria-current={isActive ? "page" : undefined}
           >
             {item.label}

@@ -11,10 +11,9 @@ import { APP_ROUTES } from "@/routes/auth.routes";
 import { useAuthActions } from "@/providers/authProvider";
 import MobileNavigation from "@/components/layout/MobileNavigation";
 import WorkspaceNavLinks from "@/components/layout/WorkspaceNavLinks";
-import { NAVIGATION_ICONS } from "@/utils/layout/appShell";
+import { NAVIGATION_ICONS, getSelectedMenuKey } from "@/utils/layout/appShell";
 import type { AppShellProps } from "@/types/layout/shell";
 import { ignoreAsyncError } from "@/utils/async";
-import { getSelectedMenuKey } from "@/utils/layout/appShell";
 import { useWorkspaceShellStyles } from "./style/workspaceShell";
 
 const { Content } = Layout;

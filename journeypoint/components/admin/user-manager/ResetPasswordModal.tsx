@@ -17,7 +17,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
   resettingUser,
 }) => (
   <Modal
-    title={`Reset Password${resettingUser ? ` for ${resettingUser.fullName ?? resettingUser.userName}` : ""}`}
+    title={resettingUser ? `Reset Password for ${resettingUser.fullName ?? resettingUser.userName}` : "Reset Password"}
     open={isVisible}
     onCancel={onCancel}
     onOk={() => form.submit()}

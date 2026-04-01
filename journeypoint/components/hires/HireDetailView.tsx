@@ -232,7 +232,7 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
         <Space orientation="vertical" size={24} className={styles.pageRoot}>
             <Breadcrumb
                 items={[
-                    { title: <a onClick={() => startTransition(() => router.push(APP_ROUTES.facilitatorHires))}>Hires</a> },
+                    { title: <button type="button" onClick={() => startTransition(() => router.push(APP_ROUTES.facilitatorHires))}>Hires</button> },
                     { title: selectedHire.fullName },
                 ]}
             />
