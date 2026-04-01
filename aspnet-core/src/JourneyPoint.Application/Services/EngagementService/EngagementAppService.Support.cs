@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using JourneyPoint.Application.Services.EngagementService.Dto;
 using JourneyPoint.Authorization.Users;
 using JourneyPoint.Domains.Engagement;
+using JourneyPoint.Domains.Engagement.Enums;
 using JourneyPoint.Domains.Engagement.Helpers;
 using JourneyPoint.Domains.Hires;
+using JourneyPoint.Domains.Hires.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace JourneyPoint.Application.Services.EngagementService

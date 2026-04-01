@@ -9,7 +9,9 @@ using JourneyPoint.Application.Services.GroqService.Dto;
 using JourneyPoint.Application.Services.JourneyService.Dto;
 using JourneyPoint.Authorization;
 using JourneyPoint.Domains.Audit;
+using JourneyPoint.Domains.Audit.Enums;
 using JourneyPoint.Domains.Hires;
+using JourneyPoint.Domains.Hires.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace JourneyPoint.Application.Services.JourneyService

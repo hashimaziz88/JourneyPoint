@@ -17,7 +17,6 @@ namespace JourneyPoint.Application.Services.EngagementService
     public partial class EngagementAppService : JourneyPointAppServiceBase, IEngagementAppService
     {
         private readonly IRepository<Hire, Guid> _hireRepository;
-        private readonly IRepository<JourneyTask, Guid> _journeyTaskRepository;
         private readonly IRepository<EngagementSnapshot, Guid> _engagementSnapshotRepository;
         private readonly IRepository<AtRiskFlag, Guid> _atRiskFlagRepository;
         private readonly EngagementManager _engagementManager;
@@ -29,7 +28,6 @@ namespace JourneyPoint.Application.Services.EngagementService
         /// </summary>
         public EngagementAppService(
             IRepository<Hire, Guid> hireRepository,
-            IRepository<JourneyTask, Guid> journeyTaskRepository,
             IRepository<EngagementSnapshot, Guid> engagementSnapshotRepository,
             IRepository<AtRiskFlag, Guid> atRiskFlagRepository,
             EngagementManager engagementManager,
@@ -37,7 +35,6 @@ namespace JourneyPoint.Application.Services.EngagementService
             UserManager userManager)
         {
             _hireRepository = hireRepository;
-            _journeyTaskRepository = journeyTaskRepository;
             _engagementSnapshotRepository = engagementSnapshotRepository;
             _atRiskFlagRepository = atRiskFlagRepository;
             _engagementManager = engagementManager;

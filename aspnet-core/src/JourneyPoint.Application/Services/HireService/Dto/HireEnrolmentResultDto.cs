@@ -1,5 +1,6 @@
 using System;
 using JourneyPoint.Domains.Hires;
+using JourneyPoint.Domains.Hires.Enums;
 
 namespace JourneyPoint.Application.Services.HireService.Dto
 {

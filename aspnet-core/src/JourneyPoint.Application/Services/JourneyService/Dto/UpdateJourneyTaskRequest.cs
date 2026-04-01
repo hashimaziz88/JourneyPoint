@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using JourneyPoint.Domains.Hires;
 using JourneyPoint.Domains.OnboardingPlans;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 
 namespace JourneyPoint.Application.Services.JourneyService.Dto
 {

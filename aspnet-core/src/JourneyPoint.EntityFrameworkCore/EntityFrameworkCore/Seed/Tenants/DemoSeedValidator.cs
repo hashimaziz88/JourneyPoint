@@ -2,8 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JourneyPoint.Domains.Engagement;
+using JourneyPoint.Domains.Engagement.Enums;
 using JourneyPoint.Domains.Engagement.Helpers;
 using JourneyPoint.Domains.Hires;
+using JourneyPoint.Domains.Hires.Enums;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 using JourneyPoint.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 
@@ -67,7 +71,7 @@ namespace JourneyPoint.EntityFrameworkCore.Seed.Tenants
             }
 
             var hasManagerTasks = hires.Any(hire =>
-                hire.Journey?.Tasks.Any(task => task.AssignmentTarget == Domains.OnboardingPlans.OnboardingTaskAssignmentTarget.Manager) == true);
+                hire.Journey?.Tasks.Any(task => task.AssignmentTarget == OnboardingTaskAssignmentTarget.Manager) ?? false);
 
             if (!hasManagerTasks)
             {

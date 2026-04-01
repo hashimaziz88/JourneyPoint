@@ -9,6 +9,7 @@ using JourneyPoint.Application.Services.MarkdownImportService;
 using JourneyPoint.Application.Services.MarkdownImportService.Helpers;
 using JourneyPoint.Application.Services.OnboardingDocumentService.Dto;
 using JourneyPoint.Domains.OnboardingPlans;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 
 namespace JourneyPoint.Application.Services.OnboardingDocumentService.Helpers
 {

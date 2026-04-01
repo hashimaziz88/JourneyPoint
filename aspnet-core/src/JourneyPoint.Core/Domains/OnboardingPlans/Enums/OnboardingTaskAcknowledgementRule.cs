@@ -1,4 +1,4 @@
-namespace JourneyPoint.Domains.OnboardingPlans
+namespace JourneyPoint.Domains.OnboardingPlans.Enums
 {
     /// <summary>
     /// Defines whether a generated onboarding task requires explicit acknowledgement.

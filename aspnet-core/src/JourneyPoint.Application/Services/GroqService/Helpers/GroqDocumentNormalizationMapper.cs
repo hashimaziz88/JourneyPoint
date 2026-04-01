@@ -6,6 +6,7 @@ using JourneyPoint.Application.Services.GroqService.Dto;
 using JourneyPoint.Application.Services.MarkdownImportService.Dto;
 using JourneyPoint.Application.Services.OnboardingDocumentService.Dto;
 using JourneyPoint.Domains.OnboardingPlans;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 
 namespace JourneyPoint.Application.Services.GroqService.Helpers
 {

@@ -6,7 +6,9 @@ using Abp.Domain.Entities;
 using JourneyPoint.Application.Services.JourneyService.Dto;
 using JourneyPoint.Authorization;
 using JourneyPoint.Domains.Hires;
+using JourneyPoint.Domains.Hires.Enums;
 using JourneyPoint.Domains.OnboardingPlans;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace JourneyPoint.Application.Services.JourneyService

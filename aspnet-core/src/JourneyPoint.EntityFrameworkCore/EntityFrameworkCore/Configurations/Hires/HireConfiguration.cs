@@ -1,4 +1,5 @@
 using JourneyPoint.Domains.Hires;
+using JourneyPoint.Domains.Hires.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

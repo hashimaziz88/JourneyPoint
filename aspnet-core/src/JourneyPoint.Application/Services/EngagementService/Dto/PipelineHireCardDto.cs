@@ -1,6 +1,8 @@
 using System;
 using JourneyPoint.Domains.Engagement;
+using JourneyPoint.Domains.Engagement.Enums;
 using JourneyPoint.Domains.Hires;
+using JourneyPoint.Domains.Hires.Enums;
 
 namespace JourneyPoint.Application.Services.EngagementService.Dto
 {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JourneyPoint.Domains.Hires;
+using JourneyPoint.Domains.Hires.Enums;
 
 namespace JourneyPoint.Application.Services.JourneyService.Dto
 {

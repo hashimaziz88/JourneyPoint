@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using JourneyPoint.Domains.Hires.Enums;
 using JourneyPoint.Domains.OnboardingPlans;
 
 namespace JourneyPoint.Domains.Hires

@@ -1,5 +1,6 @@
 using System;
 using Abp.Domain.Services;
+using JourneyPoint.Domains.Engagement.Enums;
 
 namespace JourneyPoint.Domains.Engagement.Helpers
 {
@@ -68,32 +69,32 @@ namespace JourneyPoint.Domains.Engagement.Helpers
 
             if (input.TotalTaskCount <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(input.TotalTaskCount), "Total task count must be greater than zero.");
+                throw new ArgumentOutOfRangeException(nameof(input), "Total task count must be greater than zero.");
             }
 
             if (input.CompletedTaskCount < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(input.CompletedTaskCount), "Completed task count cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(input), "Completed task count cannot be negative.");
             }
 
             if (input.CompletedTaskCount > input.TotalTaskCount)
             {
-                throw new ArgumentOutOfRangeException(nameof(input.CompletedTaskCount), "Completed task count cannot exceed the total task count.");
+                throw new ArgumentOutOfRangeException(nameof(input), "Completed task count cannot exceed the total task count.");
             }
 
             if (input.DaysSinceLastActivity < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(input.DaysSinceLastActivity), "Days since last activity cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(input), "Days since last activity cannot be negative.");
             }
 
             if (input.OverdueTaskCount < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(input.OverdueTaskCount), "Overdue task count cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(input), "Overdue task count cannot be negative.");
             }
 
             if (input.ComputedAt == default)
             {
-                throw new ArgumentOutOfRangeException(nameof(input.ComputedAt), "Computed time is required.");
+                throw new ArgumentOutOfRangeException(nameof(input), "Computed time is required.");
             }
         }
 

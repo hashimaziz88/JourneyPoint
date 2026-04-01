@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 
 namespace JourneyPoint.Domains.OnboardingPlans
 {

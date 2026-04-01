@@ -1,4 +1,4 @@
-namespace JourneyPoint.Domains.Engagement
+namespace JourneyPoint.Domains.Engagement.Enums
 {
     /// <summary>
     /// Represents the engagement bands shown in facilitator intelligence views.

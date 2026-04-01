@@ -1,7 +1,10 @@
 using System;
 using System.Collections.ObjectModel;
 using JourneyPoint.Domains.Engagement;
+using JourneyPoint.Domains.Engagement.Enums;
+using JourneyPoint.Domains.Engagement.Helpers;
 using JourneyPoint.Domains.Hires;
+using JourneyPoint.Domains.Hires.Enums;
 using JourneyPoint.Domains.OnboardingPlans;
 using Shouldly;
 using Xunit;

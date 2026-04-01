@@ -9,7 +9,9 @@ using JourneyPoint.Application.Services.NotificationService.Dto;
 using JourneyPoint.Authorization.Roles;
 using JourneyPoint.Authorization.Users;
 using JourneyPoint.Domains.Hires;
+using JourneyPoint.Domains.Hires.Enums;
 using JourneyPoint.Domains.OnboardingPlans;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace JourneyPoint.Application.Services.HireService

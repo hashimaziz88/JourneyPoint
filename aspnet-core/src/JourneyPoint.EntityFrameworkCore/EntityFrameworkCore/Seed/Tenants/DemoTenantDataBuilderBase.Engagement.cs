@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JourneyPoint.Domains.Engagement;
+using JourneyPoint.Domains.Engagement.Enums;
 using JourneyPoint.Domains.Hires;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,4 +1,4 @@
-namespace JourneyPoint.Domains.Hires
+namespace JourneyPoint.Domains.Hires.Enums
 {
     /// <summary>
     /// Represents the recoverable delivery state for the hire welcome notification.

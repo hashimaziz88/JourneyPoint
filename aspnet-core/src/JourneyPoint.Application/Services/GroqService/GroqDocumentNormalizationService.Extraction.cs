@@ -11,6 +11,7 @@ using JourneyPoint.Application.Services.GroqService.Helpers;
 using JourneyPoint.Application.Services.OnboardingDocumentService;
 using JourneyPoint.Application.Services.OnboardingDocumentService.Dto;
 using JourneyPoint.Domains.Audit;
+using JourneyPoint.Domains.Audit.Enums;
 using JourneyPoint.Domains.OnboardingPlans;
 
 namespace JourneyPoint.Application.Services.GroqService

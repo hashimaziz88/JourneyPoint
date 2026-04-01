@@ -1,5 +1,6 @@
 using Abp.Application.Services.Dto;
 using JourneyPoint.Domains.OnboardingPlans;
+using JourneyPoint.Domains.OnboardingPlans.Enums;
 
 namespace JourneyPoint.Application.Services.OnboardingPlanService.Dto
 {

@@ -1,4 +1,5 @@
 using System;
+using JourneyPoint.Domains.Engagement.Enums;
 
 namespace JourneyPoint.Domains.Engagement.Helpers
 {

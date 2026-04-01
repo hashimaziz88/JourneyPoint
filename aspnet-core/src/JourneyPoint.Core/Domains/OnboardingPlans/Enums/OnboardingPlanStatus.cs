@@ -1,4 +1,4 @@
-namespace JourneyPoint.Domains.OnboardingPlans
+namespace JourneyPoint.Domains.OnboardingPlans.Enums
 {
     /// <summary>
     /// Defines the lifecycle states for a reusable onboarding plan.

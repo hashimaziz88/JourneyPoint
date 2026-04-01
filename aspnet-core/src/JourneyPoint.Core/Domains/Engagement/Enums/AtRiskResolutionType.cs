@@ -1,4 +1,4 @@
-namespace JourneyPoint.Domains.Engagement
+namespace JourneyPoint.Domains.Engagement.Enums
 {
     /// <summary>
     /// Classifies how one at-risk episode was resolved.

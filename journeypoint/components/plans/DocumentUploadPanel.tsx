@@ -128,6 +128,76 @@ const DocumentUploadPanel: React.FC<IDocumentUploadPanelProps> = ({
         },
     };
 
+    let documentContent: React.ReactNode;
+    if (isListPending) {
+        documentContent = <Card className={styles.documentPanel} loading />;
+    } else if ((documents ?? []).length === 0) {
+        documentContent = (
+            <Empty
+                className={styles.emptyState}
+                description="No enrichment documents have been uploaded for this plan yet."
+            />
+        );
+    } else {
+        documentContent = (
+            <div className={styles.documentList}>
+                {(documents ?? []).map((document) => (
+                    <Card key={document.id} className={styles.documentCard}>
+                        <div className={styles.documentCardBody}>
+                            <div className={styles.documentCardHeader}>
+                                <div>
+                                    <Title level={4}>{document.fileName}</Title>
+                                    <Text type="secondary">
+                                        {formatFileSize(document.fileSizeBytes)}
+                                    </Text>
+                                </div>
+
+                                <Tag color={getDocumentStatusColor(document.status)}>
+                                    {ONBOARDING_DOCUMENT_STATUS_LABELS[document.status]}
+                                </Tag>
+                            </div>
+
+                            <div className={styles.documentStatGrid}>
+                                <div className={styles.statBlock}>
+                                    <Text type="secondary">Proposals</Text>
+                                    <Title level={5}>{document.extractedTaskCount}</Title>
+                                </div>
+                                <div className={styles.statBlock}>
+                                    <Text type="secondary">Accepted</Text>
+                                    <Title level={5}>{document.acceptedTaskCount}</Title>
+                                </div>
+                                <div className={styles.statBlock}>
+                                    <Text type="secondary">Applied</Text>
+                                    <Title level={5}>{document.appliedTaskCount}</Title>
+                                </div>
+                            </div>
+
+                            <Space orientation="vertical" size={8}>
+                                <Text type="secondary">
+                                    Uploaded {formatDocumentDateTime(document.creationTime)}
+                                </Text>
+                                {document.extractionCompletedTime ? (
+                                    <Text type="secondary">
+                                        Extraction finished {formatDocumentDateTime(document.extractionCompletedTime)}
+                                    </Text>
+                                ) : null}
+                                {document.failureReason ? (
+                                    <Text type="danger">{document.failureReason}</Text>
+                                ) : null}
+                            </Space>
+
+                            <Space wrap className={styles.documentCardActions}>
+                                <Button onClick={() => handleOpenReview(document.id)}>
+                                    Open Review
+                                </Button>
+                            </Space>
+                        </div>
+                    </Card>
+                ))}
+            </div>
+        );
+    }
+
     return (
         <Space orientation="vertical" size={16} className={styles.documentPanel}>
             {messageContextHolder}
@@ -139,14 +209,14 @@ const DocumentUploadPanel: React.FC<IDocumentUploadPanelProps> = ({
                 </Paragraph>
             </div>
 
-            {!hasSavedPlan ? (
+            {hasSavedPlan ? null : (
                 <Alert
                     className={styles.alert}
                     type="info"
                     showIcon
                     title="Save the draft before adding enrichment documents."
                 />
-            ) : null}
+            )}
 
             {hasSavedPlan && planStatus === OnboardingPlanStatus.Archived ? (
                 <Alert
@@ -182,70 +252,7 @@ const DocumentUploadPanel: React.FC<IDocumentUploadPanelProps> = ({
                 </Upload.Dragger>
             </Card>
 
-            {isListPending ? (
-                <Card className={styles.documentPanel} loading />
-            ) : (documents ?? []).length === 0 ? (
-                <Empty
-                    className={styles.emptyState}
-                    description="No enrichment documents have been uploaded for this plan yet."
-                />
-            ) : (
-                <div className={styles.documentList}>
-                    {(documents ?? []).map((document) => (
-                        <Card key={document.id} className={styles.documentCard}>
-                            <div className={styles.documentCardBody}>
-                                <div className={styles.documentCardHeader}>
-                                    <div>
-                                        <Title level={4}>{document.fileName}</Title>
-                                        <Text type="secondary">
-                                            {formatFileSize(document.fileSizeBytes)}
-                                        </Text>
-                                    </div>
-
-                                    <Tag color={getDocumentStatusColor(document.status)}>
-                                        {ONBOARDING_DOCUMENT_STATUS_LABELS[document.status]}
-                                    </Tag>
-                                </div>
-
-                                <div className={styles.documentStatGrid}>
-                                    <div className={styles.statBlock}>
-                                        <Text type="secondary">Proposals</Text>
-                                        <Title level={5}>{document.extractedTaskCount}</Title>
-                                    </div>
-                                    <div className={styles.statBlock}>
-                                        <Text type="secondary">Accepted</Text>
-                                        <Title level={5}>{document.acceptedTaskCount}</Title>
-                                    </div>
-                                    <div className={styles.statBlock}>
-                                        <Text type="secondary">Applied</Text>
-                                        <Title level={5}>{document.appliedTaskCount}</Title>
-                                    </div>
-                                </div>
-
-                                <Space orientation="vertical" size={8}>
-                                    <Text type="secondary">
-                                        Uploaded {formatDocumentDateTime(document.creationTime)}
-                                    </Text>
-                                    {document.extractionCompletedTime ? (
-                                        <Text type="secondary">
-                                            Extraction finished {formatDocumentDateTime(document.extractionCompletedTime)}
-                                        </Text>
-                                    ) : null}
-                                    {document.failureReason ? (
-                                        <Text type="danger">{document.failureReason}</Text>
-                                    ) : null}
-                                </Space>
-
-                                <Space wrap className={styles.documentCardActions}>
-                                    <Button onClick={() => handleOpenReview(document.id)}>
-                                        Open Review
-                                    </Button>
-                                </Space>
-                            </div>
-                        </Card>
-                    ))}
-                </div>
-            )}
+            {documentContent}
         </Space>
     );
 };

@@ -1,4 +1,4 @@
-namespace JourneyPoint.Domains.OnboardingPlans
+namespace JourneyPoint.Domains.OnboardingPlans.Enums
 {
     /// <summary>
     /// Represents the extraction lifecycle for an uploaded onboarding document.

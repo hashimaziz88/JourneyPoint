@@ -9,6 +9,7 @@ using JourneyPoint.Authorization.Roles;
 using JourneyPoint.Application.Services.HireService.Dto;
 using JourneyPoint.Authorization.Users;
 using JourneyPoint.Domains.Hires;
+using JourneyPoint.Domains.Hires.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace JourneyPoint.Application.Services.HireService
