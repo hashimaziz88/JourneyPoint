@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace JourneyPoint.Application.Services.GroqService
+namespace JourneyPoint.Application.Services.GroqService.Dto
 {
     internal sealed class GroqChatCompletionResponse
     {

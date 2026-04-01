@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Abp.Dependency;
+using JourneyPoint.Application.Services.FileStorageService.Helpers;
 using JourneyPoint.Configuration;
 using Microsoft.Extensions.Options;
 

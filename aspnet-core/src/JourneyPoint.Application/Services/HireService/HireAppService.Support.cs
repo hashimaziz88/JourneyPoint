@@ -5,6 +5,7 @@ using Abp.Authorization;
 using Abp.Domain.Entities;
 using JourneyPoint.Application.Services.HireService.Dto;
 using JourneyPoint.Application.Services.NotificationService;
+using JourneyPoint.Application.Services.NotificationService.Dto;
 using JourneyPoint.Authorization.Roles;
 using JourneyPoint.Authorization.Users;
 using JourneyPoint.Domains.Hires;

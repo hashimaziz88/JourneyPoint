@@ -1,7 +1,7 @@
 using System;
 using JourneyPoint.Domains.OnboardingPlans;
 
-namespace JourneyPoint.Application.Services.OnboardingDocumentService
+namespace JourneyPoint.Application.Services.OnboardingDocumentService.Dto
 {
     /// <summary>
     /// Represents one normalized extraction candidate before it is persisted as a reviewable proposal.

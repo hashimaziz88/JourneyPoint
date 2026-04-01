@@ -4,6 +4,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Abp.Dependency;
+using JourneyPoint.Application.Services.NotificationService.Dto;
 using JourneyPoint.Configuration;
 using Microsoft.Extensions.Options;
 

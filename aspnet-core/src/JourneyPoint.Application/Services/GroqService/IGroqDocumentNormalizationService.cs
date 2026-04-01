@@ -2,7 +2,10 @@ using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
 using JourneyPoint.Application.Services.DocumentExtractionService;
+using JourneyPoint.Application.Services.DocumentExtractionService.Dto;
+using JourneyPoint.Application.Services.GroqService.Dto;
 using JourneyPoint.Application.Services.MarkdownImportService.Dto;
+using JourneyPoint.Application.Services.OnboardingDocumentService.Dto;
 using JourneyPoint.Application.Services.OnboardingDocumentService;
 using JourneyPoint.Domains.OnboardingPlans;
 

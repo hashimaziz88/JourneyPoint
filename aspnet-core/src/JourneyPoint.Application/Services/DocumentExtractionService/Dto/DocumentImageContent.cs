@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace JourneyPoint.Application.Services.DocumentExtractionService
+namespace JourneyPoint.Application.Services.DocumentExtractionService.Dto
 {
     /// <summary>
     /// Represents one base64-encoded image passed to backend document normalization.

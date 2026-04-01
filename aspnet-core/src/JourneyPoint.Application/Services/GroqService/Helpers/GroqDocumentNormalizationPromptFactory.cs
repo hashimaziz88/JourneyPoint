@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using JourneyPoint.Domains.OnboardingPlans;
 
-namespace JourneyPoint.Application.Services.GroqService
+namespace JourneyPoint.Application.Services.GroqService.Helpers
 {
     internal static class GroqDocumentNormalizationPromptFactory
     {

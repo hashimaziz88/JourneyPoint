@@ -3,8 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using JourneyPoint.Application.Services.AuditService;
+using JourneyPoint.Application.Services.AuditService.Dto;
 using JourneyPoint.Application.Services.DocumentExtractionService;
+using JourneyPoint.Application.Services.DocumentExtractionService.Dto;
+using JourneyPoint.Application.Services.GroqService.Dto;
+using JourneyPoint.Application.Services.GroqService.Helpers;
 using JourneyPoint.Application.Services.OnboardingDocumentService;
+using JourneyPoint.Application.Services.OnboardingDocumentService.Dto;
 using JourneyPoint.Domains.Audit;
 using JourneyPoint.Domains.OnboardingPlans;
 

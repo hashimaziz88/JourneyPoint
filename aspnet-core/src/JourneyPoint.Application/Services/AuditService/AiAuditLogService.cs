@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
+using JourneyPoint.Application.Services.AuditService.Dto;
 using JourneyPoint.Domains.Audit;
 
 namespace JourneyPoint.Application.Services.AuditService

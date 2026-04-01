@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep -r UserRegistrationManager '/c/Users/Hashim/Documents/Git Repos/JourneyPoint/aspnet-core/src' --include=*.cs)"
+      "Bash(grep -r UserRegistrationManager '/c/Users/Hashim/Documents/Git Repos/JourneyPoint/aspnet-core/src' --include=*.cs)",
+      "Bash(grep -v \"^Dto$\\\\|^Helpers$\\\\|^IGroq\\\\|^Groq.*Service\")"
     ]
   }
 }
