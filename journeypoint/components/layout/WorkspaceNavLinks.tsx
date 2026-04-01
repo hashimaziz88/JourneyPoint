@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useWorkspaceShellStyles } from "@/layout/style/workspaceShell";
+import { useWorkspaceShellStyles } from "@/layouts/style/workspaceShell";
 import type { IWorkspaceNavLinksProps } from "@/types/layout/navigation";
 
 /**

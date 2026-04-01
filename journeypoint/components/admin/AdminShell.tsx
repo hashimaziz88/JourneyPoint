@@ -7,7 +7,7 @@ import { APP_ROLE_NAMES } from "@/constants/auth/permissions";
 import { ADMIN_NAVIGATION_ITEMS } from "@/constants/global/navigation";
 import { useAppSession } from "@/helpers/useAppSession";
 import Spinner from "@/components/spinner/Spinner";
-import AppShell from "@/layout/AppShell";
+import AppShell from "@/layouts/AppShell";
 
 /**
  * Renders the admin workspace with the sidebar shell.

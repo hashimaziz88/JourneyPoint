@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Space, Typography } from "antd";
 import { APP_ROUTES } from "@/constants/auth/routes";
-import { useStyles } from "@/layout/style/style";
+import { useStyles } from "@/layouts/style/style";
 import type { IAppShellBrandProps } from "@/types/layout/navigation";
 
 const { Title, Text } = Typography;
