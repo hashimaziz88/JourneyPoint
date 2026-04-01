@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "journeypoint-frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "journeypoint-api",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "aspnet-core/src/JourneyPoint.Web.Host/JourneyPoint.Web.Host.csproj"],
+      "port": 44311
+    },
+    {
+      "name": "journeypoint-migrator",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "aspnet-core/src/JourneyPoint.Migrator/JourneyPoint.Migrator.csproj"],
+      "port": 0
+    }
+  ]
+}
