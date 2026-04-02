@@ -77,19 +77,46 @@ The frontend provides three role-specific experiences — Facilitator, Manager, 
 ```text
 journeypoint/
 ├── app/
-│   ├── (facilitator)/   # Facilitator route group
-│   ├── (manager)/       # Manager route group
-│   └── (enrolee)/       # Enrolee route group
-├── components/          # Shared reusable React components
-├── constants/           # Enum labels, filter defaults, route maps
-├── hoc/                 # Higher-order components (e.g. withAuth)
-├── hooks/               # Custom React hooks (e.g. useAppSession)
-├── layouts/             # App shell, role shell, and workspace layout components
-├── providers/           # Stateful feature providers (four-file contract)
-├── routes/              # Route definitions and auth route helpers
-├── types/               # TypeScript type definitions
-├── utils/               # Helpers and API utilities
-└── tests/               # Playwright e2e tests
+│   ├── (auth)/                # Login and authentication pages
+│   ├── (facilitator)/         # Facilitator route group
+│   ├── (manager)/             # Manager route group
+│   ├── (enrolee)/             # Enrolee route group
+│   ├── api/                   # Next.js API routes (proxy layer)
+│   └── dashboard/             # Post-login dashboard redirect
+├── components/                # Shared reusable React components
+│   ├── admin/                 # Tenant and user admin views
+│   ├── auth/                  # Login form and auth UI
+│   ├── engagement/            # Engagement scores, at-risk, interventions
+│   ├── facilitator/           # Facilitator dashboard
+│   ├── hires/                 # Hire cards, list, detail, form
+│   ├── journey/               # Journey review, task workspace
+│   ├── layout/                # Navigation, shell, sidebar
+│   ├── pipeline/              # Pipeline board and columns
+│   ├── plans/                 # Plan editor, modules, import, documents
+│   ├── spinner/               # Shared loading spinner
+│   └── wellness/              # Wellness check-in views and cards
+├── constants/                 # Enum labels, filter defaults, route maps
+├── hoc/                       # Higher-order components (withAuth)
+├── hooks/                     # Custom React hooks (useAppSession, etc.)
+├── layout/                    # App-level layout shell
+├── layouts/                   # Role-specific layout wrappers
+├── providers/                 # Stateful feature providers (four-file contract)
+│   ├── authProvider/
+│   ├── engagementProvider/
+│   ├── hireProvider/
+│   ├── journeyProvider/
+│   ├── markdownImportProvider/
+│   ├── onboardingDocumentProvider/
+│   ├── onboardingPlanProvider/
+│   ├── pipelineProvider/
+│   ├── roleProvider/
+│   ├── tenantProvider/
+│   ├── userProvider/
+│   └── wellnessProvider/
+├── routes/                    # Route definitions and builders
+├── types/                     # TypeScript type definitions per domain
+├── utils/                     # Helpers and API utilities per domain
+└── tests/                     # Playwright e2e tests
 ```
 
 ## Design

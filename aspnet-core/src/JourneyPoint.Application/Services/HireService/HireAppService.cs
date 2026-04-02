@@ -106,9 +106,7 @@ namespace JourneyPoint.Application.Services.HireService
             await _hireRepository.InsertAsync(hire);
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            var welcomeResult = await SendWelcomeNotificationAsync(hire, platformUser, temporaryPassword);
-            ApplyWelcomeResult(hire, welcomeResult);
-            await CurrentUnitOfWork.SaveChangesAsync();
+            _ = SendWelcomeNotificationInBackgroundAsync(hire.Id, platformUser.Id, temporaryPassword);
 
             return MapToResultDto(hire);
         }

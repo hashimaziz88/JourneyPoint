@@ -83,40 +83,54 @@ The backend exposes a secure JWT-authenticated REST API consumed by the Next.js 
 ```text
 aspnet-core/
 ├── src/
-│   ├── JourneyPoint.Core/
-│   │   ├── Authorization/               # Permissions, roles, login manager
+│   ├── JourneyPoint.Core                     # Domain layer
+│   │   ├── Authorization/                    # Permissions, roles, users
 │   │   ├── Domains/
-│   │   │   ├── Audit/                   # Audit trail entities
-│   │   │   ├── Engagement/              # Engagement scores, at-risk flags, interventions
-│   │   │   ├── Hires/                   # Hire entity, enums, HireJourneyManager
-│   │   │   ├── OnboardingPlans/         # Plan, module, task entities and domain services
-│   │   │   └── Wellness/               # Wellness check-in and question entities
-│   │   ├── Identity/                    # Tenant and user extensions
-│   │   └── Localization/               # Resource strings
+│   │   │   ├── Audit/                        # Audit log entities
+│   │   │   ├── Engagement/                   # Engagement scores, at-risk flags, interventions
+│   │   │   ├── Hires/                        # Hire entity, lifecycle state machine, notifications
+│   │   │   ├── OnboardingPlans/              # Plan, module, task aggregate
+│   │   │   └── Wellness/                     # Wellness check-in, question, period entities
+│   │   ├── Configuration/                    # Mail and Groq option classes
+│   │   └── Localization/                     # Resource files
 │   │
-│   ├── JourneyPoint.Application/
-│   │   └── Services/
-│   │       ├── AuditService/            # Audit trail queries
-│   │       ├── DocumentExtractionService/ # AI content extraction from uploaded files
-│   │       ├── EngagementService/       # Engagement scoring, at-risk, interventions
-│   │       ├── FileStorageService/      # Tenant-scoped document storage
-│   │       ├── GroqService/             # Groq AI provider integration
-│   │       ├── HireService/             # Hire enrolment, pipeline queries
-│   │       ├── JourneyService/          # Journey generation, task activation
-│   │       ├── MarkdownImportService/   # Plan import from markdown documents
-│   │       ├── NotificationService/     # Welcome email dispatch via SMTP
-│   │       ├── OnboardingDocumentService/ # Document management and AI enrichment
-│   │       ├── OnboardingPlanService/   # Plan CRUD and lifecycle
-│   │       └── WellnessService/         # Check-in scheduling, AI questions, submissions
+│   ├── JourneyPoint.Application              # Application layer
+│   │   ├── Services/
+│   │   │   ├── AuditService/                 # Audit log queries
+│   │   │   ├── DocumentExtractionService/    # AI content extraction from documents
+│   │   │   ├── EngagementService/            # Engagement scores and interventions
+│   │   │   ├── FileStorageService/           # Tenant-scoped file persistence
+│   │   │   ├── GroqService/                  # Groq AI integration (all AI calls)
+│   │   │   ├── HireService/                  # Hire enrolment and account provisioning
+│   │   │   ├── JourneyService/               # Journey generation, activation, task tracking
+│   │   │   ├── MarkdownImportService/        # Markdown plan import and parsing
+│   │   │   ├── NotificationService/          # Welcome email dispatch via SMTP
+│   │   │   ├── OnboardingDocumentService/    # Document upload and AI enrichment review
+│   │   │   ├── OnboardingPlanService/        # Plan CRUD and lifecycle (Draft/Published/Archived)
+│   │   │   └── WellnessService/              # Wellness check-in scheduling and AI questions
+│   │   ├── Sessions/                         # Current user/tenant session info
+│   │   └── Users/                            # User management
 │   │
-│   ├── JourneyPoint.EntityFrameworkCore/ # DbContext, EF Fluent API config, migrations
-│   ├── JourneyPoint.Web.Core/           # API controller base classes and JWT wiring
-│   ├── JourneyPoint.Web.Host/           # Startup, appsettings, hosting (no business logic)
-│   └── JourneyPoint.Migrator/           # Database migration console app
+│   ├── JourneyPoint.EntityFrameworkCore       # Persistence layer
+│   │   ├── EntityFrameworkCore/
+│   │   │   ├── Configurations/               # EF Fluent API entity configuration
+│   │   │   ├── Repositories/                 # Custom repository implementations
+│   │   │   └── Seed/                         # Demo tenant and data seeding
+│   │   └── Migrations/                       # EF Core migration files
+│   │
+│   ├── JourneyPoint.Web.Core                 # API plumbing
+│   │   ├── Authentication/                   # JWT Bearer and external auth
+│   │   └── Controllers/                      # API controller base classes
+│   │
+│   ├── JourneyPoint.Web.Host                 # Hosting
+│   │   ├── Startup/                          # DI configuration, middleware, options validation
+│   │   └── Controllers/                      # HomeController (health check only)
+│   │
+│   └── JourneyPoint.Migrator                 # Database migration console app
 │
 └── test/
-    ├── JourneyPoint.Tests/              # Domain and application service unit tests
-    └── JourneyPoint.Web.Tests/          # API controller tests
+    ├── JourneyPoint.Tests                    # Domain and application service tests
+    └── JourneyPoint.Web.Tests                # API integration tests
 ```
 
 ### Domain Model
