@@ -97,6 +97,14 @@ export const useStyles = createStyles(({ css, token }) => ({
     width: 100%;
   `,
 
+  hireCard: css`
+    height: 100%;
+
+    .ant-card-body {
+      height: 100%;
+    }
+  `,
+
   cardBody: css`
     display: flex;
     flex-direction: column;

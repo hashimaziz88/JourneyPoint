@@ -75,6 +75,9 @@ namespace JourneyPoint.Application.Services.WellnessService
             {
                 HireId = hire.Id,
                 HireFullName = hire.FullName,
+                HireRoleTitle = hire.RoleTitle,
+                HireDepartment = hire.Department,
+                HireStartDate = hire.StartDate,
                 CheckIns = summaries,
                 CompletedCount = summaries.Count(s => s.Status == WellnessCheckInStatus.Completed),
                 TotalCount = summaries.Count
@@ -93,7 +96,7 @@ namespace JourneyPoint.Application.Services.WellnessService
             var checkIn = await GetCheckInWithQuestionsAsync(checkInId, tenantId);
             var hire = await GetHireForTenantAsync(checkIn.HireId, tenantId);
 
-            return MapToDetail(checkIn, hire.FullName);
+            return MapToDetail(checkIn, hire);
         }
 
         /// <inheritdoc />
@@ -150,7 +153,7 @@ namespace JourneyPoint.Application.Services.WellnessService
             _wellnessManager.SubmitCheckIn(checkIn);
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            return MapToDetail(checkIn, hire.FullName);
+            return MapToDetail(checkIn, hire);
         }
 
         /// <inheritdoc />
@@ -227,13 +230,16 @@ namespace JourneyPoint.Application.Services.WellnessService
             };
         }
 
-        private static WellnessCheckInDetailDto MapToDetail(WellnessCheckIn checkIn, string hireFullName)
+        private static WellnessCheckInDetailDto MapToDetail(WellnessCheckIn checkIn, Hire hire)
         {
             return new WellnessCheckInDetailDto
             {
                 Id = checkIn.Id,
                 HireId = checkIn.HireId,
-                HireFullName = hireFullName,
+                HireFullName = hire.FullName,
+                HireRoleTitle = hire.RoleTitle,
+                HireDepartment = hire.Department,
+                HireStartDate = hire.StartDate,
                 Period = checkIn.Period,
                 PeriodLabel = GroqWellnessPromptFactory.GetPeriodLabel(checkIn.Period),
                 Status = checkIn.Status,

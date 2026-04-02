@@ -25,7 +25,7 @@ const HireCard: React.FC<HireCardProps> = ({ hire, onOpenDetail, onOpenJourney }
     const { styles } = useStyles();
 
     return (
-        <Card>
+        <Card className={styles.hireCard}>
             <div className={styles.cardBody}>
                 <div className={styles.cardHeader}>
                     <div>

@@ -23,6 +23,12 @@ export const useStyles = createStyles(({ token, css }) => ({
     margin-bottom: 0 !important;
   `,
 
+  statsGrid: css`
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: ${token.margin}px;
+  `,
+
   sectionHeading: css`
     margin-bottom: ${token.marginLG}px !important;
     font-weight: 600 !important;
@@ -31,7 +37,9 @@ export const useStyles = createStyles(({ token, css }) => ({
   featureCard: css`
     height: 100%;
     cursor: pointer;
-    transition: border-color 180ms ease-out, box-shadow 180ms ease-out;
+    transition:
+      border-color 180ms ease-out,
+      box-shadow 180ms ease-out;
 
     &:hover {
       border-color: ${token.colorPrimaryBorder};

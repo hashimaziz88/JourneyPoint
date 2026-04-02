@@ -12,7 +12,7 @@ import type { TenantResolveStatus } from "@/types/auth/login";
 import { ignoreAsyncError } from "@/utils/async";
 import { useStyles } from "./style/style";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const LoginForm: React.FC = () => {
   const router = useRouter();

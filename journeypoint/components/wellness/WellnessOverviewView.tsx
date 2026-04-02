@@ -2,12 +2,14 @@
 
 import React, { startTransition, useEffect, useEffectEvent } from "react";
 import { Alert, Empty, Space, Spin, Statistic, Typography } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 import {
     useWellnessActions,
     useWellnessState,
 } from "@/providers/wellnessProvider";
 import WellnessCheckInCard from "@/components/wellness/WellnessCheckInCard";
 import { useStyles } from "@/components/wellness/style/style";
+import { formatDisplayDate } from "@/utils/date";
 import { useRouter } from "next/navigation";
 
 interface WellnessOverviewViewProps {
@@ -67,6 +69,20 @@ const WellnessOverviewView: React.FC<WellnessOverviewViewProps> = ({
 
     return (
         <Space orientation="vertical" size={16} className={styles.pageRoot}>
+            <div className={styles.hireBanner}>
+                <UserOutlined />
+                <div>
+                    <Typography.Title level={5} className={styles.hireBannerName}>
+                        {overview.hireFullName}
+                    </Typography.Title>
+                    <Typography.Text type="secondary">
+                        {[overview.hireRoleTitle, overview.hireDepartment].filter(Boolean).join(" · ") || "No role or department"}
+                        {" — Started "}
+                        {formatDisplayDate(overview.hireStartDate)}
+                    </Typography.Text>
+                </div>
+            </div>
+
             <div className={styles.statsRow}>
                 <Statistic title="Completed" value={overview.completedCount} suffix={`/ ${overview.totalCount}`} />
             </div>

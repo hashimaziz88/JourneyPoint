@@ -48,6 +48,15 @@ namespace JourneyPoint.Application.Services.WellnessService.Dto
         /// <summary>Gets or sets the hire's full name.</summary>
         public string HireFullName { get; set; }
 
+        /// <summary>Gets or sets the hire's role title.</summary>
+        public string HireRoleTitle { get; set; }
+
+        /// <summary>Gets or sets the hire's department.</summary>
+        public string HireDepartment { get; set; }
+
+        /// <summary>Gets or sets the hire's start date.</summary>
+        public DateTime HireStartDate { get; set; }
+
         /// <summary>Gets or sets the milestone period.</summary>
         public WellnessCheckInPeriod Period { get; set; }
 
@@ -140,6 +149,15 @@ namespace JourneyPoint.Application.Services.WellnessService.Dto
 
         /// <summary>Gets or sets the hire's full name.</summary>
         public string HireFullName { get; set; }
+
+        /// <summary>Gets or sets the hire's role title.</summary>
+        public string HireRoleTitle { get; set; }
+
+        /// <summary>Gets or sets the hire's department.</summary>
+        public string HireDepartment { get; set; }
+
+        /// <summary>Gets or sets the hire's start date.</summary>
+        public DateTime HireStartDate { get; set; }
 
         /// <summary>Gets or sets the summary items for all scheduled check-ins.</summary>
         public List<WellnessCheckInSummaryDto> CheckIns { get; set; } = new();

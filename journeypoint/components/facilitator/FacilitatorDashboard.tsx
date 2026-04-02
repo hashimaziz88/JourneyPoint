@@ -1,17 +1,25 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useEffectEvent, useState } from "react";
 import Link from "next/link";
-import { Button, Card, Col, Row, Tag, Typography } from "antd";
+import { Button, Card, Col, Row, Spin, Statistic, Tag, Typography } from "antd";
 import {
   ArrowRightOutlined,
   DeploymentUnitOutlined,
   ProfileOutlined,
   TeamOutlined,
   UploadOutlined,
+  WarningOutlined,
 } from "@ant-design/icons";
 import { APP_ROUTES } from "@/routes/auth.routes";
 import { useAppSession } from "@/hooks/useAppSession";
+import {
+  buildPipelineBoardRequest,
+  fetchPipelineBoard,
+  formatPercentage,
+  getPipelineSummaryMetrics,
+} from "@/utils/pipeline/board";
+import type { PipelineSummaryMetrics } from "@/types/pipeline/components";
 import { useStyles } from "./style/style";
 
 const { Paragraph, Text, Title } = Typography;
@@ -46,6 +54,24 @@ const FEATURE_CARDS = [
 const FacilitatorDashboard: React.FC = () => {
   const { styles } = useStyles();
   const session = useAppSession();
+  const [metrics, setMetrics] = useState<PipelineSummaryMetrics | null>(null);
+  const [isMetricsLoading, setIsMetricsLoading] = useState(true);
+
+  const loadMetrics = useEffectEvent(async (): Promise<void> => {
+    try {
+      const request = buildPipelineBoardRequest({ keyword: "" });
+      const board = await fetchPipelineBoard(request);
+      setMetrics(getPipelineSummaryMetrics(board));
+    } catch {
+      // Non-blocking — dashboard still works without stats.
+    } finally {
+      setIsMetricsLoading(false);
+    }
+  });
+
+  useEffect(() => {
+    void loadMetrics();
+  }, []);
 
   const displayName = session.user?.fullName ?? session.user?.userName ?? "there";
   const tenantName = session.tenant?.tenantName ?? null;
@@ -63,6 +89,31 @@ const FacilitatorDashboard: React.FC = () => {
             : "You are working in host scope."}
         </Paragraph>
       </div>
+
+      {/* Pipeline snapshot */}
+      {isMetricsLoading ? (
+        <Spin size="small" />
+      ) : metrics ? (
+        <div className={styles.statsGrid}>
+          <Card size="small">
+            <Statistic title="Active Hires" value={metrics.totalHires} />
+          </Card>
+          <Card size="small">
+            <Statistic
+              title="At-Risk"
+              value={metrics.activeAtRiskCount}
+              prefix={metrics.activeAtRiskCount > 0 ? <WarningOutlined /> : undefined}
+              styles={metrics.activeAtRiskCount > 0 ? { content: { color: "#EF4444" } } : undefined}
+            />
+          </Card>
+          <Card size="small">
+            <Statistic title="Avg Completion" value={formatPercentage(metrics.averageCompletionRate)} />
+          </Card>
+          <Card size="small">
+            <Statistic title="Avg Engagement" value={formatPercentage(metrics.averageCompositeScore)} />
+          </Card>
+        </div>
+      ) : null}
 
       {/* Feature hub */}
       <div>
