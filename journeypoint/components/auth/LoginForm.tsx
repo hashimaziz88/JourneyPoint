@@ -92,7 +92,6 @@ const LoginForm: React.FC = () => {
     <div className={styles.form}>
       {messageContextHolder}
       <Space orientation="vertical" size={4} className={styles.formHeader}>
-        <Title level={2}>Welcome back</Title>
         <Text type="secondary">Sign in with your host or tenant account.</Text>
       </Space>
 

@@ -47,7 +47,7 @@ import { formatDisplayDate, formatDisplayDateTime } from "@/utils/date";
 import { useRouter } from "next/navigation";
 import { WellnessProvider } from "@/providers/wellnessProvider";
 
-const { Paragraph, Title } = Typography;
+const { Paragraph, Text, Title } = Typography;
 
 /**
  * Shows one hire record with journey and welcome-delivery summary state.
@@ -267,18 +267,22 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
                     </Title>
                     <Paragraph type="secondary">{selectedHire.emailAddress}</Paragraph>
                     <Space wrap>
+                        <span><Text type="secondary">Status:</Text>{" "}
                         <Tag color={HIRE_STATUS_TAG_COLORS[selectedHire.status]}>
                             {HIRE_STATUS_LABELS[selectedHire.status]}
-                        </Tag>
+                        </Tag></span>
+                        <span><Text type="secondary">Welcome:</Text>{" "}
                         <Tag color={WELCOME_STATUS_TAG_COLORS[selectedHire.welcomeNotificationStatus]}>
                             {WELCOME_STATUS_LABELS[selectedHire.welcomeNotificationStatus]}
-                        </Tag>
+                        </Tag></span>
                         {selectedHire.journey ? (
+                            <span><Text type="secondary">Journey:</Text>{" "}
                             <Tag color={JOURNEY_STATUS_TAG_COLORS[selectedHire.journey.status]}>
                                 {JOURNEY_STATUS_LABELS[selectedHire.journey.status]}
-                            </Tag>
+                            </Tag></span>
                         ) : (
-                            <Tag>No journey generated</Tag>
+                            <span><Text type="secondary">Journey:</Text>{" "}
+                            <Tag>No journey generated</Tag></span>
                         )}
                     </Space>
                 </div>

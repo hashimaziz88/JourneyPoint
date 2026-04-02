@@ -34,18 +34,22 @@ const HireCard: React.FC<HireCardProps> = ({ hire, onOpenDetail, onOpenJourney }
                     </div>
 
                     <div className={styles.statusTags}>
-                        <Tag color={HIRE_STATUS_TAG_COLORS[hire.status]}>
-                            {HIRE_STATUS_LABELS[hire.status]}
-                        </Tag>
-                        <Tag color={WELCOME_STATUS_TAG_COLORS[hire.welcomeNotificationStatus]}>
-                            {WELCOME_STATUS_LABELS[hire.welcomeNotificationStatus]}
-                        </Tag>
+                        <span><Text type="secondary">Status:</Text>{" "}
+                            <Tag color={HIRE_STATUS_TAG_COLORS[hire.status]}>
+                                {HIRE_STATUS_LABELS[hire.status]}
+                            </Tag></span>
+                        <span><Text type="secondary">Welcome:</Text>{" "}
+                            <Tag color={WELCOME_STATUS_TAG_COLORS[hire.welcomeNotificationStatus]}>
+                                {WELCOME_STATUS_LABELS[hire.welcomeNotificationStatus]}
+                            </Tag></span>
                         {hire.journeyStatus ? (
-                            <Tag color={JOURNEY_STATUS_TAG_COLORS[hire.journeyStatus]}>
-                                {JOURNEY_STATUS_LABELS[hire.journeyStatus]}
-                            </Tag>
+                            <span><Text type="secondary">Journey:</Text>{" "}
+                                <Tag color={JOURNEY_STATUS_TAG_COLORS[hire.journeyStatus]}>
+                                    {JOURNEY_STATUS_LABELS[hire.journeyStatus]}
+                                </Tag></span>
                         ) : (
-                            <Tag>No journey yet</Tag>
+                            <span><Text type="secondary">Journey:</Text>{" "}
+                                <Tag>No journey yet</Tag></span>
                         )}
                     </div>
                 </div>
