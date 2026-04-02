@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
 using Abp.Domain.Entities;
 using Abp.Linq.Extensions;
+using JourneyPoint.Authorization;
 using JourneyPoint.Authorization.Roles;
 using JourneyPoint.Application.Services.HireService.Dto;
 using JourneyPoint.Authorization.Users;
@@ -45,11 +46,14 @@ namespace JourneyPoint.Application.Services.HireService
             var tenantId = GetRequiredTenantId();
             var normalizedInput = input ?? new GetHiresInput();
             var normalizedKeyword = normalizedInput.Keyword?.Trim();
+            var callerIsManagerOnly = await IsCallerManagerOnlyAsync();
+
             var query = _hireRepository.GetAll()
                 .AsNoTracking()
                 .Include(hire => hire.OnboardingPlan)
                 .Include(hire => hire.Journey)
                 .Where(hire => hire.TenantId == tenantId)
+                .WhereIf(callerIsManagerOnly, hire => hire.ManagerUserId == AbpSession.UserId)
                 .WhereIf(
                     !string.IsNullOrWhiteSpace(normalizedKeyword),
                     hire =>
@@ -182,6 +186,31 @@ namespace JourneyPoint.Application.Services.HireService
             return userDisplayNames.TryGetValue(userId.Value, out var displayName)
                 ? displayName
                 : null;
+        }
+
+        /// <summary>
+        /// Returns true when the current user has only the Manager permission
+        /// (not Facilitator or TenantAdmin). Used to scope hire lists to
+        /// direct-report hires only.
+        /// </summary>
+        private async Task<bool> IsCallerManagerOnlyAsync()
+        {
+            var isFacilitator = await PermissionChecker.IsGrantedAsync(
+                PermissionNames.Pages_JourneyPoint_Facilitator);
+            if (isFacilitator)
+            {
+                return false;
+            }
+
+            var isTenantAdmin = await PermissionChecker.IsGrantedAsync(
+                PermissionNames.Pages_JourneyPoint_TenantAdmin);
+            if (isTenantAdmin)
+            {
+                return false;
+            }
+
+            return await PermissionChecker.IsGrantedAsync(
+                PermissionNames.Pages_JourneyPoint_Manager);
         }
     }
 }

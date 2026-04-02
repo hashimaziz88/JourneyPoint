@@ -16,7 +16,7 @@ namespace JourneyPoint.Application.Services.HireService
     /// <summary>
     /// Provides tenant-scoped hire enrolment and account provisioning workflows.
     /// </summary>
-    [AbpAuthorize(PermissionNames.Pages_JourneyPoint_Facilitator, PermissionNames.Pages_JourneyPoint_TenantAdmin)]
+    [AbpAuthorize(PermissionNames.Pages_JourneyPoint_Facilitator, PermissionNames.Pages_JourneyPoint_TenantAdmin, PermissionNames.Pages_JourneyPoint_Manager)]
     public partial class HireAppService : JourneyPointAppServiceBase, IHireAppService
     {
         private readonly IRepository<Hire, System.Guid> _hireRepository;

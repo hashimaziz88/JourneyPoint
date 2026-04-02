@@ -23,7 +23,7 @@ export const ONBOARDING_TASK_CATEGORY_OPTIONS = [
 export const ONBOARDING_TASK_ASSIGNMENT_TARGET_OPTIONS = [
     { label: "Enrolee", value: OnboardingTaskAssignmentTarget.Enrolee },
     { label: "Manager", value: OnboardingTaskAssignmentTarget.Manager },
-    { label: "Facilitator", value: OnboardingTaskAssignmentTarget.Facilitator },
+    { label: "HR Facilitator", value: OnboardingTaskAssignmentTarget.Facilitator },
 ];
 
 export const ONBOARDING_TASK_ACKNOWLEDGEMENT_RULE_OPTIONS = [

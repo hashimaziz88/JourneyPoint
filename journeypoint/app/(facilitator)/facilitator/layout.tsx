@@ -5,7 +5,7 @@ import RoleShell from "@/layouts/RoleShell";
 
 const FacilitatorLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <RoleShell
-    title="Facilitator Workspace"
+    title="HR Facilitator Workspace"
     subtitle="Plan and onboarding coordination"
     navigationItems={FACILITATOR_NAVIGATION_ITEMS}
     allowedRoles={[APP_ROLE_NAMES.facilitator]}

@@ -5,6 +5,7 @@ using JourneyPoint.Domains.Audit;
 using JourneyPoint.Domains.Engagement;
 using JourneyPoint.Domains.Hires;
 using JourneyPoint.Domains.OnboardingPlans;
+using JourneyPoint.Domains.Wellness;
 using JourneyPoint.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 
@@ -69,6 +70,16 @@ namespace JourneyPoint.EntityFrameworkCore
         /// Gets or sets durable at-risk intervention records.
         /// </summary>
         public DbSet<AtRiskFlag> AtRiskFlags { get; set; }
+
+        /// <summary>
+        /// Gets or sets scheduled wellness check-ins generated for hire journeys.
+        /// </summary>
+        public DbSet<WellnessCheckIn> WellnessCheckIns { get; set; }
+
+        /// <summary>
+        /// Gets or sets AI-generated wellness questions and hire answers.
+        /// </summary>
+        public DbSet<WellnessQuestion> WellnessQuestions { get; set; }
 
         public JourneyPointDbContext(DbContextOptions<JourneyPointDbContext> options)
             : base(options)

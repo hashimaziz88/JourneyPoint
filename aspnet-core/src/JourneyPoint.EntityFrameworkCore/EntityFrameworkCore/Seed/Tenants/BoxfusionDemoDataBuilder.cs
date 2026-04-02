@@ -7,6 +7,7 @@ using JourneyPoint.Domains.Hires;
 using JourneyPoint.Domains.Hires.Enums;
 using JourneyPoint.Domains.OnboardingPlans;
 using JourneyPoint.Domains.OnboardingPlans.Enums;
+using JourneyPoint.Domains.Wellness.Enums;
 using JourneyPoint.MultiTenancy;
 
 namespace JourneyPoint.EntityFrameworkCore.Seed.Tenants
@@ -95,6 +96,32 @@ namespace JourneyPoint.EntityFrameworkCore.Seed.Tenants
                 "Manager scheduled a focused support cadence after the first-week check-in.",
                 "Recovered after focused coaching and completion of the guided practice backlog.",
                 AtRiskResolutionType.ManualFacilitatorResolution);
+
+            EnsureWellnessCheckIn(hire, journey, WellnessCheckInPeriod.Day1, WellnessCheckInStatus.Completed, startDate, startDate.AddHours(16),
+                "Alex settled in quickly on day one, expressing enthusiasm about the team culture and workspace setup.",
+                new[]
+                {
+                    new WellnessQuestionSeed(1, "How are you feeling about your first day so far?", "Really excited — the welcome checklist made everything feel organised and the team has been very welcoming.", null, true),
+                    new WellnessQuestionSeed(2, "Is there anything you need to feel more comfortable in your new workspace?", "I have everything I need. The buddy system is a great touch.", null, true),
+                    new WellnessQuestionSeed(3, "What are you most looking forward to in your onboarding journey?", "Getting stuck into the sandbox exercise and learning from real delivery scenarios.", null, true),
+                });
+
+            EnsureWellnessCheckIn(hire, journey, WellnessCheckInPeriod.Day2, WellnessCheckInStatus.Completed, startDate.AddDays(1), startDate.AddDays(1).AddHours(15),
+                "Alex remains positive heading into day two, having completed the culture guide ahead of schedule.",
+                new[]
+                {
+                    new WellnessQuestionSeed(1, "How did you sleep after your first day — any lingering concerns?", "Slept well! No concerns, just eager to get going on the culture material.", null, true),
+                    new WellnessQuestionSeed(2, "Do you feel clear on what is expected of you this week?", "Yes, the manager kickoff really clarified the success measures for week one.", null, true),
+                    new WellnessQuestionSeed(3, "Is there anything blocking your progress right now?", "Nothing at all — everything is on track.", null, true),
+                });
+
+            EnsureWellnessCheckIn(hire, journey, WellnessCheckInPeriod.Week1, WellnessCheckInStatus.InProgress, startDate.AddDays(7), null, null,
+                new[]
+                {
+                    new WellnessQuestionSeed(1, "Reflecting on your first full week, what has gone well?", "The sandbox exercise was challenging but I learned a lot from the facilitator feedback.", null, true),
+                    new WellnessQuestionSeed(2, "Have you felt supported by your manager and team this week?", null, "Based on your onboarding progress, you could mention the manager kickoff and buddy sessions.", false),
+                    new WellnessQuestionSeed(3, "What would help you most heading into week two?", null, null, false),
+                });
         }
 
         private void SeedNeedsAttentionHire(OnboardingPlan plan, User manager, User enrolee, OnboardingModule welcomeModule, OnboardingModule integrationModule, OnboardingModule practiceModule, OnboardingModule capabilityModule, OnboardingTask welcomeChecklist, OnboardingTask cultureGuide, OnboardingTask kickoffCheckIn, OnboardingTask onboardingBuddy, OnboardingTask sandboxExercise, OnboardingTask reflection, OnboardingTask managerReview, OnboardingTask capstoneRecap)
@@ -119,6 +146,23 @@ namespace JourneyPoint.EntityFrameworkCore.Seed.Tenants
                 new SnapshotSeed(50m, 3, 0, 70.71m, EngagementClassification.NeedsAttention, today.AddDays(-6).AddHours(9)),
                 new SnapshotSeed(50m, 5, 1, 59.29m, EngagementClassification.NeedsAttention, today.AddDays(-3).AddHours(9))
             });
+
+            EnsureWellnessCheckIn(hire, journey, WellnessCheckInPeriod.Day1, WellnessCheckInStatus.Completed, startDate, startDate.AddHours(17),
+                "Nomsa started positively but mentioned feeling slightly overwhelmed by the volume of reading material.",
+                new[]
+                {
+                    new WellnessQuestionSeed(1, "How are you feeling about your first day so far?", "It was okay — lots to take in. The admin setup took longer than I expected.", null, true),
+                    new WellnessQuestionSeed(2, "Is there anything you need to feel more comfortable in your new workspace?", "Maybe a quieter space for focused reading. The open plan is a bit distracting.", null, true),
+                    new WellnessQuestionSeed(3, "What are you most looking forward to in your onboarding journey?", "Meeting the team properly and getting into the advisory work.", null, true),
+                });
+
+            EnsureWellnessCheckIn(hire, journey, WellnessCheckInPeriod.Day2, WellnessCheckInStatus.Pending, startDate.AddDays(1), null, null,
+                new[]
+                {
+                    new WellnessQuestionSeed(1, "How did yesterday's reading go — were you able to complete the culture guide?", null, null, false),
+                    new WellnessQuestionSeed(2, "Do you feel you have enough support from your manager and buddy?", null, null, false),
+                    new WellnessQuestionSeed(3, "Is there anything you would change about how the first two days have been structured?", null, null, false),
+                });
         }
 
         private void SeedAtRiskHire(OnboardingPlan plan, User manager, User enrolee, OnboardingModule welcomeModule, OnboardingModule integrationModule, OnboardingModule practiceModule, OnboardingModule capabilityModule, OnboardingTask welcomeChecklist, OnboardingTask cultureGuide, OnboardingTask kickoffCheckIn, OnboardingTask onboardingBuddy, OnboardingTask sandboxExercise, OnboardingTask reflection, OnboardingTask managerReview, OnboardingTask capstoneRecap)
@@ -145,6 +189,32 @@ namespace JourneyPoint.EntityFrameworkCore.Seed.Tenants
             });
 
             EnsureActiveFlag(hire, journey, today.AddDays(-2).AddHours(11));
+
+            EnsureWellnessCheckIn(hire, journey, WellnessCheckInPeriod.Day1, WellnessCheckInStatus.Completed, startDate, startDate.AddDays(2).AddHours(10),
+                "Thabo completed day-one wellness late on day three. Responses indicate uncertainty about role expectations and limited team connection.",
+                new[]
+                {
+                    new WellnessQuestionSeed(1, "How are you feeling about your first day so far?", "Fine I guess. Still figuring out where everything is.", null, true),
+                    new WellnessQuestionSeed(2, "Is there anything you need to feel more comfortable in your new workspace?", "Not sure yet. I haven't really met anyone besides the person who showed me around.", null, true),
+                    new WellnessQuestionSeed(3, "What are you most looking forward to in your onboarding journey?", "Hopefully understanding what I'm actually supposed to be doing.", null, true),
+                });
+
+            EnsureWellnessCheckIn(hire, journey, WellnessCheckInPeriod.Day2, WellnessCheckInStatus.Completed, startDate.AddDays(1), startDate.AddDays(5).AddHours(9),
+                "Thabo responded four days late with minimally detailed answers, signalling disengagement. The hire mentions feeling unsure about support availability.",
+                new[]
+                {
+                    new WellnessQuestionSeed(1, "How did you sleep after your first day — any lingering concerns?", "It was okay.", null, true),
+                    new WellnessQuestionSeed(2, "Do you feel clear on what is expected of you this week?", "Not really. I have tasks listed but I'm not sure how to approach them.", null, true),
+                    new WellnessQuestionSeed(3, "Is there anything blocking your progress right now?", "I don't know who to ask for help.", null, true),
+                });
+
+            EnsureWellnessCheckIn(hire, journey, WellnessCheckInPeriod.Week1, WellnessCheckInStatus.Pending, startDate.AddDays(7), null, null,
+                new[]
+                {
+                    new WellnessQuestionSeed(1, "Reflecting on your first full week, what has gone well?", null, null, false),
+                    new WellnessQuestionSeed(2, "Have you felt supported by your manager and team this week?", null, null, false),
+                    new WellnessQuestionSeed(3, "What would help you most heading into week two?", null, null, false),
+                });
         }
     }
 }

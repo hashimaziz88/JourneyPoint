@@ -50,7 +50,7 @@ const PlanEditorHeader: React.FC<PlanEditorHeaderProps> = ({
                         {isNewPlan ? "New Onboarding Plan" : planName || "Plan Editor"}
                     </Title>
                     <Paragraph type="secondary">
-                        Keep the template structure ordered and lifecycle-safe for facilitators.
+                        Keep the template structure ordered and lifecycle-safe for HR Facilitators.
                     </Paragraph>
                 </div>
 

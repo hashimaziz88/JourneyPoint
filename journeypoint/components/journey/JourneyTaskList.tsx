@@ -109,7 +109,7 @@ const JourneyTaskList: React.FC<JourneyTaskListProps> = ({
                                                 <Tag color={task.sourceOnboardingTaskId ? "processing" : "purple"}>
                                                     {task.sourceOnboardingTaskId
                                                         ? "Template-derived"
-                                                        : "Facilitator-authored"}
+                                                        : "HR Facilitator-authored"}
                                                 </Tag>
                                             </div>
 

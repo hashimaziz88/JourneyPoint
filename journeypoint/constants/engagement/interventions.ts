@@ -14,7 +14,7 @@ export const AT_RISK_FLAG_STATUS_COLORS: Record<AtRiskFlagStatus, string> = {
 };
 
 export const AT_RISK_RESOLUTION_LABELS: Record<AtRiskResolutionType, string> = {
-    [AtRiskResolutionType.ManualFacilitatorResolution]: "Manual facilitator resolution",
+    [AtRiskResolutionType.ManualFacilitatorResolution]: "Manual HR Facilitator resolution",
     [AtRiskResolutionType.AutomaticHealthyRecovery]: "Automatic healthy recovery",
     [AtRiskResolutionType.HireExited]: "Hire exited",
 };

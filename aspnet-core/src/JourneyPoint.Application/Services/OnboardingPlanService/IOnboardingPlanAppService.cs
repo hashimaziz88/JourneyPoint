@@ -45,5 +45,16 @@ namespace JourneyPoint.Application.Services.OnboardingPlanService
         /// Creates a draft copy of an existing onboarding plan.
         /// </summary>
         Task<OnboardingPlanDetailDto> CloneAsync(CloneOnboardingPlanRequest input);
+
+        /// <summary>
+        /// Generates AI-enhanced proposals for all modules and tasks in a draft plan.
+        /// Returns enhanced content for facilitator review before applying.
+        /// </summary>
+        Task<PlanEnhancementProposalDto> EnhancePlanWithAiAsync(EntityDto<Guid> input);
+
+        /// <summary>
+        /// Applies AI-enhanced proposals to the plan's modules and tasks.
+        /// </summary>
+        Task<OnboardingPlanDetailDto> ApplyPlanEnhancementAsync(ApplyPlanEnhancementRequest input);
     }
 }

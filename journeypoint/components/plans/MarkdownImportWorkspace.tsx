@@ -192,7 +192,7 @@ const MarkdownImportWorkspace: React.FC = () => {
                     <Paragraph type="secondary">
                         Upload markdown, text, PDF, or image source material and
                         normalize it into the same reviewable onboarding draft shape used by
-                        the manual builder. Nothing is applied automatically. A facilitator
+                        the manual builder. Nothing is applied automatically. An HR Facilitator
                         must inspect and approve the preview before the draft is created.
                     </Paragraph>
                 </div>

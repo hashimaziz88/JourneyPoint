@@ -201,7 +201,7 @@ const PlanListView: React.FC = () => {
                     </Title>
                     <Paragraph type="secondary">
                         Build reusable onboarding templates, keep modules and tasks
-                        in order, and manage lifecycle state for facilitator
+                        in order, and manage lifecycle state for HR Facilitator
                         delivery.
                     </Paragraph>
                 </div>
