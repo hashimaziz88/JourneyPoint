@@ -242,7 +242,8 @@ namespace JourneyPoint.Application.Services.HireService
         private async Task SendWelcomeNotificationInBackgroundAsync(
             Guid hireId,
             long platformUserId,
-            string temporaryPassword)
+            string temporaryPassword,
+            int tenantId)
         {
             try
             {
@@ -252,7 +253,7 @@ namespace JourneyPoint.Application.Services.HireService
                     IsTransactional = true
                 });
 
-                using (CurrentUnitOfWork.SetTenantId(AbpSession.TenantId))
+                using (CurrentUnitOfWork.SetTenantId(tenantId))
                 {
                     var hire = await _hireRepository.GetAsync(hireId);
                     var platformUser = await _userManager.GetUserByIdAsync(platformUserId);
