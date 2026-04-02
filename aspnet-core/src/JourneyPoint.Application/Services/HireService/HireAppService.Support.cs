@@ -257,7 +257,7 @@ namespace JourneyPoint.Application.Services.HireService
                 {
                     var hire = await _hireRepository.GetAsync(hireId);
                     var platformUser = await _userManager.GetUserByIdAsync(platformUserId);
-                    var tenant = await GetCurrentTenantAsync();
+                    var tenant = await TenantManager.GetByIdAsync(tenantId);
 
                     var result = await _welcomeNotificationService.SendAsync(new WelcomeNotificationMessage
                     {
