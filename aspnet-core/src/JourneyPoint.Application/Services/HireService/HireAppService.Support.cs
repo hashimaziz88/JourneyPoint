@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Abp.Authorization;
 using Abp.Domain.Entities;
+using Abp.Domain.Uow;
 using JourneyPoint.Application.Services.HireService.Dto;
 using JourneyPoint.Application.Services.NotificationService;
 using JourneyPoint.Application.Services.NotificationService.Dto;
@@ -232,6 +233,48 @@ namespace JourneyPoint.Application.Services.HireService
                 WelcomeNotificationSentAt = hire.WelcomeNotificationSentAt,
                 WelcomeNotificationFailureReason = hire.WelcomeNotificationFailureReason
             };
+        }
+
+        /// <summary>
+        /// Sends the welcome email in a background task with its own unit-of-work,
+        /// so the hire creation response is not blocked by SMTP latency.
+        /// </summary>
+        private async Task SendWelcomeNotificationInBackgroundAsync(
+            Guid hireId,
+            long platformUserId,
+            string temporaryPassword)
+        {
+            try
+            {
+                using var uow = UnitOfWorkManager.Begin(new UnitOfWorkOptions
+                {
+                    Scope = System.Transactions.TransactionScopeOption.RequiresNew,
+                    IsTransactional = true
+                });
+
+                using (CurrentUnitOfWork.SetTenantId(AbpSession.TenantId))
+                {
+                    var hire = await _hireRepository.GetAsync(hireId);
+                    var platformUser = await _userManager.GetUserByIdAsync(platformUserId);
+                    var tenant = await GetCurrentTenantAsync();
+
+                    var result = await _welcomeNotificationService.SendAsync(new WelcomeNotificationMessage
+                    {
+                        TenantName = tenant?.TenancyName ?? "JourneyPoint",
+                        RecipientName = hire.FullName,
+                        RecipientEmailAddress = hire.EmailAddress,
+                        UserName = platformUser.UserName,
+                        TemporaryPassword = temporaryPassword
+                    });
+
+                    ApplyWelcomeResult(hire, result);
+                    await uow.CompleteAsync();
+                }
+            }
+            catch (Exception exception)
+            {
+                Logger.Error($"Background welcome notification failed for hire {hireId}.", exception);
+            }
         }
     }
 }
