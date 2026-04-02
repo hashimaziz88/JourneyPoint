@@ -24,8 +24,6 @@ import { ArrowRightOutlined, ReloadOutlined, WarningOutlined } from "@ant-design
 import {
     HIRE_STATUS_LABELS,
     HIRE_STATUS_TAG_COLORS,
-    WELCOME_STATUS_LABELS,
-    WELCOME_STATUS_TAG_COLORS,
 } from "@/constants/hire/list";
 import {
     JOURNEY_STATUS_LABELS,
@@ -143,12 +141,6 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
                         </Descriptions.Item>
                         <Descriptions.Item label="Manager">
                             {selectedHire.managerDisplayName || "No manager assigned"}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Welcome sent">
-                            {formatDisplayDateTime(selectedHire.welcomeNotificationSentAt)}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Last attempted">
-                            {formatDisplayDateTime(selectedHire.welcomeNotificationLastAttemptedAt)}
                         </Descriptions.Item>
                     </Descriptions>
                 </Card>
@@ -271,10 +263,6 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
                         <Tag color={HIRE_STATUS_TAG_COLORS[selectedHire.status]}>
                             {HIRE_STATUS_LABELS[selectedHire.status]}
                         </Tag></span>
-                        <span><Text type="secondary">Welcome:</Text>{" "}
-                        <Tag color={WELCOME_STATUS_TAG_COLORS[selectedHire.welcomeNotificationStatus]}>
-                            {WELCOME_STATUS_LABELS[selectedHire.welcomeNotificationStatus]}
-                        </Tag></span>
                         {selectedHire.journey ? (
                             <span><Text type="secondary">Journey:</Text>{" "}
                             <Tag color={JOURNEY_STATUS_TAG_COLORS[selectedHire.journey.status]}>
@@ -304,14 +292,6 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
                     </Button>
                 </Space>
             </div>
-
-            {selectedHire.welcomeNotificationFailureReason ? (
-                <Alert
-                    type="warning"
-                    title="Welcome notification needs HR Facilitator follow-up."
-                    description={selectedHire.welcomeNotificationFailureReason}
-                />
-            ) : null}
 
             <Tabs
                 defaultActiveKey="overview"

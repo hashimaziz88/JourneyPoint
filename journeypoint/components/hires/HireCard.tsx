@@ -5,8 +5,6 @@ import { Button, Card, Space, Tag, Typography } from "antd";
 import {
     HIRE_STATUS_LABELS,
     HIRE_STATUS_TAG_COLORS,
-    WELCOME_STATUS_LABELS,
-    WELCOME_STATUS_TAG_COLORS,
 } from "@/constants/hire/list";
 import {
     JOURNEY_STATUS_LABELS,
@@ -37,10 +35,6 @@ const HireCard: React.FC<HireCardProps> = ({ hire, onOpenDetail, onOpenJourney }
                         <span><Text type="secondary">Status:</Text>{" "}
                             <Tag color={HIRE_STATUS_TAG_COLORS[hire.status]}>
                                 {HIRE_STATUS_LABELS[hire.status]}
-                            </Tag></span>
-                        <span><Text type="secondary">Welcome:</Text>{" "}
-                            <Tag color={WELCOME_STATUS_TAG_COLORS[hire.welcomeNotificationStatus]}>
-                                {WELCOME_STATUS_LABELS[hire.welcomeNotificationStatus]}
                             </Tag></span>
                         {hire.journeyStatus ? (
                             <span><Text type="secondary">Journey:</Text>{" "}
