@@ -42,7 +42,7 @@ export const FACILITATOR_NAVIGATION_ITEMS: WorkspaceNavigationItem[] = [
         label: "Overview",
         href: APP_ROUTES.facilitatorDashboard,
         permission: APP_PERMISSIONS.facilitator,
-        description: "Facilitator landing and milestone-one workspace access",
+        description: "HR Facilitator landing and milestone-one workspace access",
         iconKey: "facilitator",
     },
     {
@@ -69,6 +69,14 @@ export const FACILITATOR_NAVIGATION_ITEMS: WorkspaceNavigationItem[] = [
         description: "Monitor module-stage progress, engagement health, and at-risk visibility",
         iconKey: "pipeline",
     },
+    {
+        key: "facilitator-wellness",
+        label: "Wellness",
+        href: APP_ROUTES.facilitatorWellness,
+        permission: APP_PERMISSIONS.facilitator,
+        description: "Track hire wellbeing with AI-generated check-ins and insights",
+        iconKey: "wellness",
+    },
 ];
 
 export const MANAGER_NAVIGATION_ITEMS: WorkspaceNavigationItem[] = [
@@ -80,6 +88,14 @@ export const MANAGER_NAVIGATION_ITEMS: WorkspaceNavigationItem[] = [
         description: "Manager-assigned task workspace",
         iconKey: "manager",
     },
+    {
+        key: "manager-wellness",
+        label: "Wellness",
+        href: APP_ROUTES.managerWellness,
+        permission: APP_PERMISSIONS.manager,
+        description: "Monitor team hire wellness check-ins and AI insights",
+        iconKey: "wellness",
+    },
 ];
 
 export const ENROLEE_NAVIGATION_ITEMS: WorkspaceNavigationItem[] = [
@@ -90,5 +106,13 @@ export const ENROLEE_NAVIGATION_ITEMS: WorkspaceNavigationItem[] = [
         permission: APP_PERMISSIONS.enrolee,
         description: "Personal onboarding journey workspace",
         iconKey: "enrolee",
+    },
+    {
+        key: "enrolee-wellness",
+        label: "Wellness",
+        href: APP_ROUTES.enroleeWellness,
+        permission: APP_PERMISSIONS.enrolee,
+        description: "Your scheduled wellness check-ins",
+        iconKey: "wellness",
     },
 ];

@@ -377,4 +377,33 @@ export const useStyles = createStyles(({ css, token }) => ({
     gap: 8px;
     margin-top: auto;
   `,
+
+  enhanceAlertWrap: css`
+    margin-bottom: 16px;
+  `,
+
+  enhanceIndent: css`
+    margin-left: 24px;
+  `,
+
+  enhanceDescriptionGap: css`
+    margin-top: 4px;
+  `,
+
+  enhanceDivider: css`
+    margin: 8px 0;
+  `,
+
+  enhanceTaskDiff: css`
+    margin-left: 24px;
+    margin-top: 4px;
+  `,
+
+  enhanceParagraphTight: css`
+    margin-bottom: 2px !important;
+  `,
+
+  enhanceParagraphFlush: css`
+    margin-bottom: 0 !important;
+  `,
 }));

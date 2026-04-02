@@ -35,7 +35,7 @@ const EnroleeJourneyDashboardView: React.FC<EnroleeJourneyDashboardViewProps> = 
                 type="error"
                 showIcon
                 title="Your journey dashboard could not be loaded."
-                description="Please try refreshing. If this persists, contact your facilitator."
+                description="Please try refreshing. If this persists, contact your HR Facilitator."
             />
         );
     }
@@ -45,7 +45,7 @@ const EnroleeJourneyDashboardView: React.FC<EnroleeJourneyDashboardViewProps> = 
             <Card className={styles.sectionCard}>
                 <Empty
                     className={styles.emptyState}
-                    description="Your onboarding journey is not active yet. Please check back once your facilitator activates it."
+                    description="Your onboarding journey is not active yet. Please check back once your HR Facilitator activates it."
                 >
                     <Button icon={<ReloadOutlined />} onClick={() => void onRefresh()}>
                         Refresh

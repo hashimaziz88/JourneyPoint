@@ -10,7 +10,8 @@ export type NavigationIconKey =
     | "pipeline"
     | "facilitator"
     | "manager"
-    | "enrolee";
+    | "enrolee"
+    | "wellness";
 
 /** A single workspace navigation item used in sidebar and top-nav menus. */
 export type WorkspaceNavigationItem = {

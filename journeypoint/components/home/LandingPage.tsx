@@ -20,7 +20,7 @@ const FEATURES = [
     icon: <ProfileOutlined />,
     title: "Onboarding Plans",
     description:
-      "Build structured, modular onboarding templates with facilitator-level control. Import from documents or author module-by-module.",
+      "Build structured, modular onboarding templates with HR Facilitator-level control. Import from documents or author module-by-module.",
   },
   {
     icon: <TeamOutlined />,
@@ -45,7 +45,7 @@ const STATS = [
   {
     value: "4",
     label: "Role-aware workspaces",
-    description: "Facilitator, Manager, Enrolee, and Admin",
+    description: "HR Facilitator, Manager, Enrolee, and Admin",
   },
   {
     value: "Multi",
@@ -57,7 +57,7 @@ const STATS = [
 const HIGHLIGHTS = [
   "Role-aware onboarding actions",
   "Audit-friendly journey updates",
-  "Manager and facilitator workspaces",
+  "Manager and HR Facilitator workspaces",
 ];
 
 const LandingPage: React.FC = () => {
@@ -94,7 +94,7 @@ const LandingPage: React.FC = () => {
               Onboarding that works for teams, not just checklists.
             </Title>
             <Paragraph className={styles.heroSubtitle}>
-              JourneyPoint gives facilitators, managers, and hires a coordinated workspace to
+              JourneyPoint gives HR Facilitators, managers, and hires a coordinated workspace to
               launch plans, monitor progress, and close tasks with clear ownership.
             </Paragraph>
             <div className={styles.heroCtas}>

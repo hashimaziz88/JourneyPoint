@@ -206,7 +206,7 @@ const DocumentUploadPanel: React.FC<DocumentUploadPanelProps> = ({
             <div>
                 <Title level={3}>Plan Enrichment Documents</Title>
                 <Paragraph type="secondary">
-                    Upload a saved plan document for backend extraction and facilitator review.
+                    Upload a saved plan document for backend extraction and HR Facilitator review.
                     Accepted proposals affect future journeys only.
                 </Paragraph>
             </div>
@@ -249,7 +249,7 @@ const DocumentUploadPanel: React.FC<DocumentUploadPanelProps> = ({
                         Drop a PDF, markdown, text, or image file here, or click to browse
                     </p>
                     <p className="ant-upload-hint">
-                        Extraction runs on the backend only, and nothing is applied until a facilitator reviews the proposals.
+                        Extraction runs on the backend only, and nothing is applied until an HR Facilitator reviews the proposals.
                     </p>
                 </Upload.Dragger>
             </Card>

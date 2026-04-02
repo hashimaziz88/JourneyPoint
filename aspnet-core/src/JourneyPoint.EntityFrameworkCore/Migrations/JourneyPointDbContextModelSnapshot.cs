@@ -2456,6 +2456,135 @@ namespace JourneyPoint.Migrations
                     b.ToTable("OnboardingTasks", (string)null);
                 });
 
+            modelBuilder.Entity("JourneyPoint.Domains.Wellness.WellnessCheckIn", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("HireId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("InsightSummary")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("JourneyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Period")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ScheduledDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("SubmittedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HireId");
+
+                    b.HasIndex("JourneyId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("HireId", "Period")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "Status");
+
+                    b.ToTable("WellnessCheckIns", (string)null);
+                });
+
+            modelBuilder.Entity("JourneyPoint.Domains.Wellness.WellnessQuestion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AiSuggestedAnswer")
+                        .HasMaxLength(3000)
+                        .HasColumnType("character varying(3000)");
+
+                    b.Property<string>("AnswerText")
+                        .HasMaxLength(3000)
+                        .HasColumnType("character varying(3000)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsAnswered")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("QuestionText")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("WellnessCheckInId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("WellnessCheckInId");
+
+                    b.HasIndex("WellnessCheckInId", "OrderIndex");
+
+                    b.ToTable("WellnessQuestions", (string)null);
+                });
+
             modelBuilder.Entity("JourneyPoint.MultiTenancy.Tenant", b =>
                 {
                     b.Property<int>("Id")
@@ -2906,6 +3035,36 @@ namespace JourneyPoint.Migrations
                     b.Navigation("OnboardingModule");
                 });
 
+            modelBuilder.Entity("JourneyPoint.Domains.Wellness.WellnessCheckIn", b =>
+                {
+                    b.HasOne("JourneyPoint.Domains.Hires.Hire", "Hire")
+                        .WithMany()
+                        .HasForeignKey("HireId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JourneyPoint.Domains.Hires.Journey", "Journey")
+                        .WithMany()
+                        .HasForeignKey("JourneyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Hire");
+
+                    b.Navigation("Journey");
+                });
+
+            modelBuilder.Entity("JourneyPoint.Domains.Wellness.WellnessQuestion", b =>
+                {
+                    b.HasOne("JourneyPoint.Domains.Wellness.WellnessCheckIn", "WellnessCheckIn")
+                        .WithMany("Questions")
+                        .HasForeignKey("WellnessCheckInId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WellnessCheckIn");
+                });
+
             modelBuilder.Entity("JourneyPoint.MultiTenancy.Tenant", b =>
                 {
                     b.HasOne("JourneyPoint.Authorization.Users.User", "CreatorUser")
@@ -3029,6 +3188,11 @@ namespace JourneyPoint.Migrations
                     b.Navigation("Documents");
 
                     b.Navigation("Modules");
+                });
+
+            modelBuilder.Entity("JourneyPoint.Domains.Wellness.WellnessCheckIn", b =>
+                {
+                    b.Navigation("Questions");
                 });
 #pragma warning restore 612, 618
         }

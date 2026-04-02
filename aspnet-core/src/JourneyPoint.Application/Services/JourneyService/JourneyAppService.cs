@@ -4,6 +4,7 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using JourneyPoint.Application.Services.GroqService;
 using JourneyPoint.Application.Services.JourneyService.Dto;
+using JourneyPoint.Application.Services.WellnessService;
 using JourneyPoint.Authorization;
 using JourneyPoint.Domains.Audit;
 using JourneyPoint.Domains.Hires;
@@ -23,6 +24,7 @@ namespace JourneyPoint.Application.Services.JourneyService
         private readonly IRepository<GenerationLog, Guid> _generationLogRepository;
         private readonly HireJourneyManager _hireJourneyManager;
         private readonly IGroqJourneyPersonalisationService _groqJourneyPersonalisationService;
+        private readonly IWellnessAppService _wellnessAppService;
 
         /// <summary>
         /// Initializes the journey generation application service dependencies.
@@ -34,7 +36,8 @@ namespace JourneyPoint.Application.Services.JourneyService
             IRepository<OnboardingPlan, Guid> onboardingPlanRepository,
             IRepository<GenerationLog, Guid> generationLogRepository,
             HireJourneyManager hireJourneyManager,
-            IGroqJourneyPersonalisationService groqJourneyPersonalisationService)
+            IGroqJourneyPersonalisationService groqJourneyPersonalisationService,
+            IWellnessAppService wellnessAppService)
         {
             _hireRepository = hireRepository;
             _journeyRepository = journeyRepository;
@@ -43,6 +46,7 @@ namespace JourneyPoint.Application.Services.JourneyService
             _generationLogRepository = generationLogRepository;
             _hireJourneyManager = hireJourneyManager;
             _groqJourneyPersonalisationService = groqJourneyPersonalisationService;
+            _wellnessAppService = wellnessAppService;
         }
 
         /// <summary>
@@ -151,6 +155,7 @@ namespace JourneyPoint.Application.Services.JourneyService
 
         /// <summary>
         /// Activates the generated journey for one hire after review is complete.
+        /// Triggers wellness check-in generation for the newly active journey.
         /// </summary>
         [AbpAuthorize(PermissionNames.Pages_JourneyPoint_Facilitator, PermissionNames.Pages_JourneyPoint_TenantAdmin)]
         public async Task<JourneyDraftDto> ActivateAsync(Guid hireId)
@@ -160,6 +165,15 @@ namespace JourneyPoint.Application.Services.JourneyService
 
             _hireJourneyManager.ActivateJourney(hire, hire.Journey);
             await CurrentUnitOfWork.SaveChangesAsync();
+
+            try
+            {
+                await _wellnessAppService.GenerateCheckInsForJourneyAsync(hire.Id, hire.Journey.Id);
+            }
+            catch
+            {
+                // Non-blocking: journey activation succeeds even if wellness generation fails.
+            }
 
             return MapToDraftDto(hire, hire.Journey);
         }

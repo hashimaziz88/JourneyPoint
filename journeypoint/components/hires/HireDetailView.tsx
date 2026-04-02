@@ -268,14 +268,6 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
                         ) : (
                             <Tag>No journey generated</Tag>
                         )}
-                        {currentSnapshot ? (
-                            <EngagementBadge
-                                classification={currentSnapshot.classification}
-                                compositeScore={currentSnapshot.compositeScore}
-                                hasActiveAtRiskFlag={Boolean(selectedHireIntelligence?.activeFlag)}
-                                compact
-                            />
-                        ) : null}
                     </Space>
                 </div>
 
@@ -300,7 +292,7 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
             {selectedHire.welcomeNotificationFailureReason ? (
                 <Alert
                     type="warning"
-                    title="Welcome notification needs facilitator follow-up."
+                    title="Welcome notification needs HR Facilitator follow-up."
                     description={selectedHire.welcomeNotificationFailureReason}
                 />
             ) : null}

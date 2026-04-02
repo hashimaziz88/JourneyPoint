@@ -3,6 +3,7 @@ import {
     ApartmentOutlined,
     DashboardOutlined,
     DeploymentUnitOutlined,
+    HeartOutlined,
     ProfileOutlined,
     SafetyCertificateOutlined,
     SolutionOutlined,
@@ -22,6 +23,7 @@ export const NAVIGATION_ICONS: Record<NavigationIconKey, React.ReactNode> = {
     facilitator: <SolutionOutlined />,
     manager: <TeamOutlined />,
     enrolee: <UserOutlined />,
+    wellness: <HeartOutlined />,
 };
 
 /** Resolves the active navigation key for the current route. */

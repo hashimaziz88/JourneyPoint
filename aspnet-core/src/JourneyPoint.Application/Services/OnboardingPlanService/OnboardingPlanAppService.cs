@@ -5,6 +5,7 @@ using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
+using JourneyPoint.Application.Services.GroqService;
 using JourneyPoint.Application.Services.OnboardingPlanService.Dto;
 using JourneyPoint.Authorization;
 using JourneyPoint.Domains.OnboardingPlans;
@@ -24,17 +25,20 @@ namespace JourneyPoint.Application.Services.OnboardingPlanService
         private readonly IRepository<OnboardingModule, Guid> _onboardingModuleRepository;
         private readonly IRepository<OnboardingTask, Guid> _onboardingTaskRepository;
         private readonly OnboardingPlanManager _onboardingPlanManager;
+        private readonly IGroqPlanEnhancementService _groqPlanEnhancementService;
 
         public OnboardingPlanAppService(
             IRepository<OnboardingPlan, Guid> onboardingPlanRepository,
             IRepository<OnboardingModule, Guid> onboardingModuleRepository,
             IRepository<OnboardingTask, Guid> onboardingTaskRepository,
-            OnboardingPlanManager onboardingPlanManager)
+            OnboardingPlanManager onboardingPlanManager,
+            IGroqPlanEnhancementService groqPlanEnhancementService)
         {
             _onboardingPlanRepository = onboardingPlanRepository;
             _onboardingModuleRepository = onboardingModuleRepository;
             _onboardingTaskRepository = onboardingTaskRepository;
             _onboardingPlanManager = onboardingPlanManager;
+            _groqPlanEnhancementService = groqPlanEnhancementService;
         }
 
         /// <summary>
@@ -172,6 +176,118 @@ namespace JourneyPoint.Application.Services.OnboardingPlanService
             await CurrentUnitOfWork.SaveChangesAsync();
 
             var persistedPlan = await GetPlanForReadAsync(clonePlan.Id);
+            return MapToDetailDto(persistedPlan);
+        }
+
+        /// <summary>
+        /// Generates AI-enhanced proposals for all modules and tasks in a draft plan.
+        /// </summary>
+        public async Task<PlanEnhancementProposalDto> EnhancePlanWithAiAsync(EntityDto<Guid> input)
+        {
+            if (!_groqPlanEnhancementService.IsEnabled)
+            {
+                throw new Abp.UI.UserFriendlyException("AI plan enhancement is not currently available.");
+            }
+
+            var plan = await GetPlanForReadAsync(input.Id);
+            var moduleDtos = MapToDetailDto(plan).Modules;
+            var tenantId = GetRequiredTenantId();
+
+            var aiResult = await _groqPlanEnhancementService.EnhancePlanAsync(plan, moduleDtos, tenantId, plan.Id);
+
+            var moduleLookup = moduleDtos.ToDictionary(m => m.Id);
+            var proposal = new PlanEnhancementProposalDto
+            {
+                PlanId = plan.Id,
+                ModelName = aiResult.ModelName,
+                Modules = aiResult.Modules
+                    .Where(m => moduleLookup.ContainsKey(m.ModuleId))
+                    .Select(m =>
+                    {
+                        var original = moduleLookup[m.ModuleId];
+                        var taskLookup = original.Tasks.ToDictionary(t => t.Id);
+                        return new EnhancedModuleProposalDto
+                        {
+                            ModuleId = m.ModuleId,
+                            OriginalName = original.Name,
+                            EnhancedName = m.Name,
+                            OriginalDescription = original.Description,
+                            EnhancedDescription = m.Description,
+                            Tasks = m.Tasks
+                                .Where(t => taskLookup.ContainsKey(t.TaskId))
+                                .Select(t =>
+                                {
+                                    var originalTask = taskLookup[t.TaskId];
+                                    return new EnhancedTaskProposalDto
+                                    {
+                                        TaskId = t.TaskId,
+                                        OriginalTitle = originalTask.Title,
+                                        EnhancedTitle = t.Title,
+                                        OriginalDescription = originalTask.Description,
+                                        EnhancedDescription = t.Description
+                                    };
+                                })
+                                .ToList()
+                        };
+                    })
+                    .ToList()
+            };
+
+            return proposal;
+        }
+
+        /// <summary>
+        /// Applies facilitator-selected AI-enhanced proposals to the plan's modules and tasks.
+        /// </summary>
+        public async Task<OnboardingPlanDetailDto> ApplyPlanEnhancementAsync(ApplyPlanEnhancementRequest input)
+        {
+            ArgumentNullException.ThrowIfNull(input);
+
+            var plan = await GetPlanForEditAsync(input.PlanId);
+
+            foreach (var moduleEnhancement in input.Modules)
+            {
+                var module = plan.Modules.FirstOrDefault(m => m.Id == moduleEnhancement.ModuleId);
+                if (module == null)
+                {
+                    continue;
+                }
+
+                if (moduleEnhancement.ApplyModuleContent)
+                {
+                    if (!string.IsNullOrWhiteSpace(moduleEnhancement.EnhancedName))
+                    {
+                        module.Name = moduleEnhancement.EnhancedName.Trim();
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(moduleEnhancement.EnhancedDescription))
+                    {
+                        module.Description = moduleEnhancement.EnhancedDescription.Trim();
+                    }
+                }
+
+                foreach (var taskEnhancement in moduleEnhancement.Tasks ?? new System.Collections.Generic.List<ApplyTaskEnhancement>())
+                {
+                    var task = module.Tasks.FirstOrDefault(t => t.Id == taskEnhancement.TaskId);
+                    if (task == null)
+                    {
+                        continue;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(taskEnhancement.EnhancedTitle))
+                    {
+                        task.Title = taskEnhancement.EnhancedTitle.Trim();
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(taskEnhancement.EnhancedDescription))
+                    {
+                        task.Description = taskEnhancement.EnhancedDescription.Trim();
+                    }
+                }
+            }
+
+            await CurrentUnitOfWork.SaveChangesAsync();
+            var persistedPlan = await GetPlanForReadAsync(plan.Id);
             return MapToDetailDto(persistedPlan);
         }
     }

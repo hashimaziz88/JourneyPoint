@@ -7,6 +7,7 @@ using JourneyPoint.Domains.Hires;
 using JourneyPoint.Domains.Hires.Enums;
 using JourneyPoint.Domains.OnboardingPlans;
 using JourneyPoint.Domains.OnboardingPlans.Enums;
+using JourneyPoint.Domains.Wellness.Enums;
 using JourneyPoint.MultiTenancy;
 
 namespace JourneyPoint.EntityFrameworkCore.Seed.Tenants
@@ -91,6 +92,33 @@ namespace JourneyPoint.EntityFrameworkCore.Seed.Tenants
                 new SnapshotSeed(66.67m, 1, 0, 83.34m, EngagementClassification.Healthy, today.AddDays(-8).AddHours(14)),
                 new SnapshotSeed(100m, 1, 0, 100m, EngagementClassification.Healthy, today.AddDays(-3).AddHours(14))
             });
+
+            EnsureWellnessCheckIn(hire, journey, WellnessCheckInPeriod.Day1, WellnessCheckInStatus.Completed, startDate, startDate.AddHours(14),
+                "Musa had a smooth first day with no blockers. The security briefing was well received.",
+                new[]
+                {
+                    new WellnessQuestionSeed(1, "How are you feeling about your first day in the department?", "Very positive — the security briefing was well-structured and the team was friendly.", null, true),
+                    new WellnessQuestionSeed(2, "Is there anything you need help with as you settle in?", "Nothing for now. My workstation was already set up which made things seamless.", null, true),
+                    new WellnessQuestionSeed(3, "What is your first impression of the department's onboarding process?", "It feels thorough and well-planned. I appreciate the structured approach.", null, true),
+                });
+
+            EnsureWellnessCheckIn(hire, journey, WellnessCheckInPeriod.Day2, WellnessCheckInStatus.Completed, startDate.AddDays(1), startDate.AddDays(1).AddHours(16),
+                "Musa continues to adjust well with a clear understanding of expectations after the ethics policy review.",
+                new[]
+                {
+                    new WellnessQuestionSeed(1, "How are you feeling after completing the ethics policy review?", "It was detailed but necessary. I feel well-informed about the standards expected.", null, true),
+                    new WellnessQuestionSeed(2, "Do you feel clear on your role and what the next few days look like?", "Yes, the manager office setup review is next and I know exactly what to prepare.", null, true),
+                    new WellnessQuestionSeed(3, "Is there anything about the onboarding that could be improved so far?", "Honestly, nothing comes to mind — it has been a very smooth experience.", null, true),
+                });
+
+            EnsureWellnessCheckIn(hire, journey, WellnessCheckInPeriod.Week1, WellnessCheckInStatus.Completed, startDate.AddDays(7), startDate.AddDays(7).AddHours(15),
+                "Musa completed the first week strongly, praising the shadowing experience and expressing readiness for the knowledge check.",
+                new[]
+                {
+                    new WellnessQuestionSeed(1, "Reflecting on your first week, what has been the highlight?", "Shadowing the service desk workflow was invaluable — seeing real citizen interactions made everything click.", null, true),
+                    new WellnessQuestionSeed(2, "Have you felt adequately supported by your manager this week?", "Absolutely. The office setup review was thorough and my manager checked in regularly.", null, true),
+                    new WellnessQuestionSeed(3, "How confident do you feel about the upcoming knowledge check?", "Quite confident. The combination of reading and practical shadowing has prepared me well.", null, true),
+                });
         }
     }
 }

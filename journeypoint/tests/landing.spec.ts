@@ -29,7 +29,7 @@ test.describe('Landing page', () => {
   });
 
   test('renders the hero subtitle', async ({ page }) => {
-    await expect(page.getByText(/JourneyPoint gives facilitators/i)).toBeVisible();
+    await expect(page.getByText(/JourneyPoint gives HR Facilitators/i)).toBeVisible();
   });
 
   test('renders the hero panel heading', async ({ page }) => {
@@ -39,7 +39,7 @@ test.describe('Landing page', () => {
   test('renders all hero highlight list items', async ({ page }) => {
     await expect(page.getByText('Role-aware onboarding actions')).toBeVisible();
     await expect(page.getByText('Audit-friendly journey updates')).toBeVisible();
-    await expect(page.getByText('Manager and facilitator workspaces')).toBeVisible();
+    await expect(page.getByText('Manager and HR Facilitator workspaces')).toBeVisible();
   });
 
   test('get started link points to /login', async ({ page }) => {

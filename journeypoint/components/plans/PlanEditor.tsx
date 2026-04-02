@@ -39,6 +39,7 @@ import type {
     PlanEditorProps,
     PlanEditorTaskModalState,
 } from "@/types/plans/components";
+import PlanAiEnhancePanel from "@/components/plans/PlanAiEnhancePanel";
 
 /**
  * Renders the facilitator onboarding-plan editor and lifecycle actions.
@@ -309,22 +310,34 @@ const PlanEditor: React.FC<PlanEditorProps> = ({ planId }) => {
                                 key: "modules",
                                 label: "Modules",
                                 children: (
-                                    <PlanEditorModulesSection
-                                        isDraftEditable={isDraftEditable}
-                                        modules={draftPlan.modules}
-                                        onAddModule={addModule}
-                                        onAddTask={(moduleClientKey) =>
-                                            setTaskModalState({ moduleClientKey })
-                                        }
-                                        onDeleteTask={removeTask}
-                                        onEditTask={(moduleClientKey, taskClientKey) =>
-                                            setTaskModalState({ moduleClientKey, taskClientKey })
-                                        }
-                                        onModuleChange={updateModule}
-                                        onMoveModule={moveModule}
-                                        onMoveTask={moveTask}
-                                        onRemoveModule={removeModule}
-                                    />
+                                    <Space orientation="vertical" size={12} className={styles.pageRoot}>
+                                        {isDraftEditable && draftPlan.id && (
+                                            <div>
+                                                <PlanAiEnhancePanel
+                                                    planId={draftPlan.id}
+                                                    onApplied={async () => {
+                                                        await getPlanDetail(draftPlan.id!);
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+                                        <PlanEditorModulesSection
+                                            isDraftEditable={isDraftEditable}
+                                            modules={draftPlan.modules}
+                                            onAddModule={addModule}
+                                            onAddTask={(moduleClientKey) =>
+                                                setTaskModalState({ moduleClientKey })
+                                            }
+                                            onDeleteTask={removeTask}
+                                            onEditTask={(moduleClientKey, taskClientKey) =>
+                                                setTaskModalState({ moduleClientKey, taskClientKey })
+                                            }
+                                            onModuleChange={updateModule}
+                                            onMoveModule={moveModule}
+                                            onMoveTask={moveTask}
+                                            onRemoveModule={removeModule}
+                                        />
+                                    </Space>
                                 ),
                             },
                         ]}

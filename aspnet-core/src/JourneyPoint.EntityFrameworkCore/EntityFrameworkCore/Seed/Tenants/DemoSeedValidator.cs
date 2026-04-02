@@ -7,7 +7,7 @@ using JourneyPoint.Domains.Engagement.Helpers;
 using JourneyPoint.Domains.Hires;
 using JourneyPoint.Domains.Hires.Enums;
 using JourneyPoint.Domains.OnboardingPlans.Enums;
-using JourneyPoint.Domains.OnboardingPlans.Enums;
+using JourneyPoint.Domains.Wellness.Enums;
 using JourneyPoint.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 
@@ -77,6 +77,24 @@ namespace JourneyPoint.EntityFrameworkCore.Seed.Tenants
             {
                 throw new InvalidOperationException("Boxfusion demo seed must contain manager-assigned tasks for direct-report validation.");
             }
+
+            var boxfusionWellnessCount = _context.WellnessCheckIns
+                .IgnoreQueryFilters()
+                .Count(checkIn => checkIn.TenantId == tenant.Id);
+
+            if (boxfusionWellnessCount < 3)
+            {
+                throw new InvalidOperationException("Boxfusion demo seed must contain at least three wellness check-ins across its hires.");
+            }
+
+            var completedCheckInCount = _context.WellnessCheckIns
+                .IgnoreQueryFilters()
+                .Count(checkIn => checkIn.TenantId == tenant.Id && checkIn.Status == WellnessCheckInStatus.Completed);
+
+            if (completedCheckInCount < 1)
+            {
+                throw new InvalidOperationException("Boxfusion demo seed must contain at least one completed wellness check-in.");
+            }
         }
 
         private void ValidateDeptDemo()
@@ -97,6 +115,15 @@ namespace JourneyPoint.EntityFrameworkCore.Seed.Tenants
             if (!hires.Any(hire => hire.WelcomeNotificationStatus == WelcomeNotificationStatus.FailedRecoverable))
             {
                 throw new InvalidOperationException("DeptDemo demo seed must retain a recoverable welcome-notification failure scenario.");
+            }
+
+            var deptDemoCompletedCheckIns = _context.WellnessCheckIns
+                .IgnoreQueryFilters()
+                .Count(checkIn => checkIn.TenantId == tenant.Id && checkIn.Status == WellnessCheckInStatus.Completed);
+
+            if (deptDemoCompletedCheckIns < 3)
+            {
+                throw new InvalidOperationException("DeptDemo demo seed must contain at least three completed wellness check-ins for its completed hire.");
             }
         }
 

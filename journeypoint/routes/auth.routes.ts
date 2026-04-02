@@ -10,8 +10,11 @@ export const APP_ROUTES = {
     facilitatorPlanImport: "/facilitator/plans/import",
     facilitatorHires: "/facilitator/hires",
     facilitatorPipeline: "/facilitator/pipeline",
+    facilitatorWellness: "/facilitator/wellness",
     managerMyTasks: "/manager/my-tasks",
+    managerWellness: "/manager/wellness",
     enroleeMyJourney: "/enrolee/my-journey",
+    enroleeWellness: "/enrolee/wellness",
 } as const;
 
 export const buildFacilitatorPlanRoute = (planId: string): string =>
@@ -30,3 +33,15 @@ export const buildFacilitatorHireJourneyRoute = (hireId: string): string =>
 
 export const buildEnroleeJourneyTaskRoute = (taskId: string): string =>
     `${APP_ROUTES.enroleeMyJourney}/tasks/${taskId}`;
+
+export const buildFacilitatorHireWellnessRoute = (hireId: string): string =>
+    `${APP_ROUTES.facilitatorWellness}/${hireId}`;
+
+export const buildFacilitatorWellnessCheckInRoute = (hireId: string, checkInId: string): string =>
+    `${buildFacilitatorHireWellnessRoute(hireId)}/${checkInId}`;
+
+export const buildManagerHireWellnessRoute = (hireId: string): string =>
+    `${APP_ROUTES.managerWellness}/${hireId}`;
+
+export const buildEnroleeWellnessCheckInRoute = (checkInId: string): string =>
+    `${APP_ROUTES.enroleeWellness}/${checkInId}`;
