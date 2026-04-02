@@ -19,6 +19,7 @@ import AtRiskFlagPanel from "@/components/engagement/AtRiskFlagPanel";
 import EngagementBadge from "@/components/engagement/EngagementBadge";
 import InterventionHistoryPanel from "@/components/engagement/InterventionHistoryPanel";
 import ScoreTrendChart from "@/components/journey/ScoreTrendChart";
+import WellnessOverviewView from "@/components/wellness/WellnessOverviewView";
 import { ArrowRightOutlined, ReloadOutlined, WarningOutlined } from "@ant-design/icons";
 import {
     HIRE_STATUS_LABELS,
@@ -31,7 +32,7 @@ import {
     JOURNEY_STATUS_TAG_COLORS,
 } from "@/constants/journey/review";
 import { useStyles } from "@/components/hires/style/style";
-import { APP_ROUTES, buildFacilitatorHireJourneyRoute } from "@/routes/auth.routes";
+import { APP_ROUTES, buildFacilitatorHireJourneyRoute, buildFacilitatorWellnessCheckInRoute } from "@/routes/auth.routes";
 import {
     useEngagementActions,
     useEngagementState,
@@ -44,6 +45,7 @@ import type {
 import type { HireDetailViewProps } from "@/types/hire/components";
 import { formatDisplayDate, formatDisplayDateTime } from "@/utils/date";
 import { useRouter } from "next/navigation";
+import { WellnessProvider } from "@/providers/wellnessProvider";
 
 const { Paragraph, Title } = Typography;
 
@@ -239,6 +241,16 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
         </div>
     );
 
+    const wellnessTab = (
+        <WellnessProvider>
+            <WellnessOverviewView
+                hireId={hireId}
+                checkInRoute={(checkInId) => buildFacilitatorWellnessCheckInRoute(hireId, checkInId)}
+                readonly
+            />
+        </WellnessProvider>
+    );
+
     return (
         <Space orientation="vertical" size={24} className={styles.pageRoot}>
             <Breadcrumb
@@ -309,6 +321,7 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
                         children: engagementTab,
                     },
                     { key: "interventions", label: `Interventions (${(selectedHireIntelligence?.resolvedFlags.length ?? 0) + (selectedHireIntelligence?.activeFlag ? 1 : 0)})`, children: interventionsTab },
+                    { key: "wellness", label: "Wellness", children: wellnessTab },
                 ]}
             />
         </Space>

@@ -5,7 +5,8 @@ import { APP_PERMISSIONS, APP_ROLE_NAMES } from "@/constants/auth/permissions";
 import withAuth from "@/hoc/withAuth";
 import { HireProvider } from "@/providers/hireProvider";
 import { WellnessProvider } from "@/providers/wellnessProvider";
-import FacilitatorWellnessListView from "@/components/wellness/FacilitatorWellnessListView";
+import WellnessHireListView from "@/components/wellness/WellnessHireListView";
+import { buildManagerHireWellnessRoute } from "@/routes/auth.routes";
 
 /**
  * Manager wellness overview — lists direct-report hires and links to their wellness trackers.
@@ -13,7 +14,7 @@ import FacilitatorWellnessListView from "@/components/wellness/FacilitatorWellne
 const ManagerWellnessPage: React.FC = () => (
     <HireProvider>
         <WellnessProvider>
-            <FacilitatorWellnessListView />
+            <WellnessHireListView hireWellnessRoute={buildManagerHireWellnessRoute} />
         </WellnessProvider>
     </HireProvider>
 );

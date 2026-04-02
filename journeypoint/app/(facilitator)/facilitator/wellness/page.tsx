@@ -1,14 +1,22 @@
+"use client";
+
 import React from "react";
-import FacilitatorWellnessListView from "@/components/wellness/FacilitatorWellnessListView";
-import { WellnessProvider } from "@/providers/wellnessProvider";
+import { APP_PERMISSIONS, APP_ROLE_NAMES } from "@/constants/auth/permissions";
+import withAuth from "@/hoc/withAuth";
 import { HireProvider } from "@/providers/hireProvider";
+import { WellnessProvider } from "@/providers/wellnessProvider";
+import WellnessHireListView from "@/components/wellness/WellnessHireListView";
+import { buildFacilitatorHireWellnessRoute } from "@/routes/auth.routes";
 
 const FacilitatorWellnessPage: React.FC = () => (
     <HireProvider>
         <WellnessProvider>
-            <FacilitatorWellnessListView />
+            <WellnessHireListView hireWellnessRoute={buildFacilitatorHireWellnessRoute} />
         </WellnessProvider>
     </HireProvider>
 );
 
-export default FacilitatorWellnessPage;
+export default withAuth(FacilitatorWellnessPage, {
+    requiredPermission: APP_PERMISSIONS.facilitator,
+    allowedRoles: [APP_ROLE_NAMES.facilitator],
+});

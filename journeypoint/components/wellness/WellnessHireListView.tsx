@@ -14,16 +14,20 @@ import {
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useHireActions, useHireState } from "@/providers/hireProvider";
-import { buildFacilitatorHireWellnessRoute } from "@/routes/auth.routes";
 import { useStyles } from "@/components/wellness/style/style";
 import { useRouter } from "next/navigation";
 import type { HireListItemDto } from "@/types/hire/hire";
 
+interface WellnessHireListViewProps {
+    hireWellnessRoute: (hireId: string) => string;
+}
+
 /**
- * Renders the HR facilitator wellness overview — a list of all hires with links
- * to their wellness tracker.
+ * Renders a role-agnostic wellness overview — a list of hires with links
+ * to their wellness tracker. The caller supplies the route builder to
+ * control which role-specific URL is used.
  */
-const FacilitatorWellnessListView: React.FC = () => {
+const WellnessHireListView: React.FC<WellnessHireListViewProps> = ({ hireWellnessRoute }) => {
     const { styles } = useStyles();
     const router = useRouter();
     const { getHires } = useHireActions();
@@ -45,7 +49,7 @@ const FacilitatorWellnessListView: React.FC = () => {
 
     const handleViewWellness = (hireId: string): void => {
         startTransition(() => {
-            router.push(buildFacilitatorHireWellnessRoute(hireId));
+            router.push(hireWellnessRoute(hireId));
         });
     };
 
@@ -146,4 +150,4 @@ const FacilitatorWellnessListView: React.FC = () => {
     );
 };
 
-export default FacilitatorWellnessListView;
+export default WellnessHireListView;
