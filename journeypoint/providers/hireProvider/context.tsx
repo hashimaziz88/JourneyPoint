@@ -37,7 +37,6 @@ export interface IHireActionContext {
     getHires: (request: GetHiresInput) => Promise<void>;
     getHireDetail: (id: string) => Promise<HireDetailDto | null>;
     createHire: (payload: CreateHireRequest) => Promise<HireEnrolmentResultDto | null>;
-    resendWelcomeNotification: (hireId: string) => Promise<HireEnrolmentResultDto | null>;
     getPublishedPlanOptions: () => Promise<void>;
     getManagerOptions: () => Promise<void>;
     resetSelectedHire: () => void;

@@ -14,13 +14,13 @@ import {
     Tabs,
     Tag,
     Typography,
-    message,
 } from "antd";
 import AtRiskFlagPanel from "@/components/engagement/AtRiskFlagPanel";
-import HireEngagementPanel from "@/components/hires/HireEngagementPanel";
+import EngagementBadge from "@/components/engagement/EngagementBadge";
 import InterventionHistoryPanel from "@/components/engagement/InterventionHistoryPanel";
+import ScoreTrendChart from "@/components/journey/ScoreTrendChart";
 import WellnessOverviewView from "@/components/wellness/WellnessOverviewView";
-import { ArrowRightOutlined, MailOutlined, ReloadOutlined, WarningOutlined } from "@ant-design/icons";
+import { ArrowRightOutlined, ReloadOutlined, WarningOutlined } from "@ant-design/icons";
 import {
     HIRE_STATUS_LABELS,
     HIRE_STATUS_TAG_COLORS,
@@ -42,7 +42,6 @@ import type {
     AcknowledgeAtRiskFlagRequest,
     ResolveAtRiskFlagRequest,
 } from "@/types/engagement/engagement";
-import { WelcomeNotificationStatus } from "@/types/hire/hire";
 import type { HireDetailViewProps } from "@/types/hire/components";
 import { formatDisplayDate, formatDisplayDateTime } from "@/utils/date";
 import { useRouter } from "next/navigation";
@@ -56,15 +55,14 @@ const { Paragraph, Text, Title } = Typography;
 const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
     const { styles } = useStyles();
     const router = useRouter();
-    const [messageApi, messageContextHolder] = message.useMessage();
-    const { getHireDetail, resendWelcomeNotification, resetSelectedHire } = useHireActions();
+    const { getHireDetail, resetSelectedHire } = useHireActions();
     const {
         acknowledgeAtRiskFlag,
         getHireIntelligence,
         resetHireIntelligence,
         resolveAtRiskFlag,
     } = useEngagementActions();
-    const { isDetailPending, isError, isMutationPending: isHireMutationPending, selectedHire } = useHireState();
+    const { isDetailPending, isError, selectedHire } = useHireState();
     const { isMutationPending, isPending, selectedHireIntelligence } = useEngagementState();
 
     const loadHireEffect = useEffectEvent(async (): Promise<void> => {
@@ -86,23 +84,6 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
 
     const refreshHire = async (): Promise<void> => {
         await Promise.all([getHireDetail(hireId), getHireIntelligence(hireId)]);
-    };
-
-    const handleResendWelcome = async (): Promise<void> => {
-        const result = await resendWelcomeNotification(hireId);
-
-        if (!result) {
-            messageApi.error("Welcome email could not be resent.");
-            return;
-        }
-
-        if (result.welcomeNotificationFailureReason) {
-            messageApi.warning("Resend attempted but delivery failed again.");
-        } else {
-            messageApi.success("Welcome email resent successfully.");
-        }
-
-        await refreshHire();
     };
 
     const handleOpenJourney = (): void => {
@@ -138,6 +119,7 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
         return <Empty className={styles.emptyState} description="Hire record not found." />;
     }
 
+    const currentSnapshot = selectedHireIntelligence?.currentSnapshot;
 
     const overviewTab = (
         <Space orientation="vertical" size={16} className={styles.pageRoot}>
@@ -206,10 +188,43 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
     );
 
     const engagementTab = (
-        <HireEngagementPanel
-            activatedAt={selectedHire.activatedAt}
-            intelligence={selectedHireIntelligence}
-        />
+        <Space orientation="vertical" size={16} className={styles.pageRoot}>
+            {currentSnapshot ? (
+                <>
+                    <Card title="Current Engagement">
+                        <Space orientation="vertical" size={16} className={styles.pageRoot}>
+                            <EngagementBadge
+                                classification={currentSnapshot.classification}
+                                compositeScore={currentSnapshot.compositeScore}
+                                hasActiveAtRiskFlag={Boolean(selectedHireIntelligence?.activeFlag)}
+                            />
+                            <div className={styles.summaryGrid}>
+                                <Statistic title="Composite score" value={currentSnapshot.compositeScore} precision={0} suffix="%" />
+                                <Statistic title="Completion rate" value={currentSnapshot.completionRate} precision={0} suffix="%" />
+                                <Statistic title="Days since activity" value={currentSnapshot.daysSinceLastActivity} />
+                                <Statistic title="Overdue tasks" value={currentSnapshot.overdueTaskCount} />
+                                <Statistic title="Snapshots" value={selectedHireIntelligence?.snapshotHistory.length ?? 0} />
+                            </div>
+                            <Paragraph type="secondary">
+                                Current stage: {selectedHireIntelligence?.currentStageTitle || "Not available"}
+                            </Paragraph>
+                        </Space>
+                    </Card>
+                    <ScoreTrendChart
+                        activationDate={selectedHire.activatedAt}
+                        currentSnapshot={currentSnapshot}
+                        snapshotHistory={selectedHireIntelligence?.snapshotHistory ?? []}
+                    />
+                </>
+            ) : (
+                <Card>
+                    <Paragraph type="secondary">
+                        Engagement snapshots will appear here after the intelligence
+                        service computes the first score for this hire.
+                    </Paragraph>
+                </Card>
+            )}
+        </Space>
     );
 
     const interventionsTab = (
@@ -238,7 +253,6 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
 
     return (
         <Space orientation="vertical" size={24} className={styles.pageRoot}>
-            {messageContextHolder}
             <Breadcrumb
                 items={[
                     { title: <button type="button" onClick={() => startTransition(() => router.push(APP_ROUTES.facilitatorHires))}>Hires</button> },
@@ -291,32 +305,11 @@ const HireDetailView: React.FC<HireDetailViewProps> = ({ hireId }) => {
                 </Space>
             </div>
 
-            {selectedHire.welcomeNotificationStatus !== WelcomeNotificationStatus.Sent ? (
+            {selectedHire.welcomeNotificationFailureReason ? (
                 <Alert
-                    type={selectedHire.welcomeNotificationStatus === WelcomeNotificationStatus.FailedRecoverable ? "warning" : "info"}
-                    showIcon
-                    message={
-                        selectedHire.welcomeNotificationStatus === WelcomeNotificationStatus.FailedRecoverable
-                            ? "Welcome email delivery failed."
-                            : "Welcome email is pending."
-                    }
-                    description={
-                        <Space orientation="vertical" size={8}>
-                            {selectedHire.welcomeNotificationFailureReason && (
-                                <Typography.Text type="secondary">
-                                    {selectedHire.welcomeNotificationFailureReason}
-                                </Typography.Text>
-                            )}
-                            <Button
-                                size="small"
-                                icon={<MailOutlined />}
-                                loading={isHireMutationPending}
-                                onClick={() => void handleResendWelcome()}
-                            >
-                                Resend Welcome Email
-                            </Button>
-                        </Space>
-                    }
+                    type="warning"
+                    title="Welcome notification needs HR Facilitator follow-up."
+                    description={selectedHire.welcomeNotificationFailureReason}
                 />
             ) : null}
 

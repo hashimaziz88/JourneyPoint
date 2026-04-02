@@ -110,27 +110,6 @@ export const HireProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
-    const resendWelcomeNotification = async (
-        hireId: string,
-    ): Promise<HireEnrolmentResultDto | null> => {
-        dispatch(mutationPending());
-
-        try {
-            const response = await getAxiosInstance().post(
-                `${HIRE_API_BASE}/ResendWelcomeNotification`,
-                { id: hireId },
-            );
-            const result = getApiResult<HireEnrolmentResultDto>(response);
-
-            dispatch(mutationSuccess({}));
-            return result;
-        } catch (error) {
-            console.error(error);
-            dispatch(mutationError());
-            return null;
-        }
-    };
-
     const getPublishedPlanOptions = async (): Promise<void> => {
         dispatch(referencePending());
 
@@ -181,7 +160,6 @@ export const HireProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     getHires,
                     getHireDetail,
                     createHire,
-                    resendWelcomeNotification,
                     getPublishedPlanOptions,
                     getManagerOptions,
                     resetSelectedHire,
