@@ -137,7 +137,7 @@ namespace JourneyPoint.Application.Services.NotificationService
             builder.AppendLine($"Welcome to {message.TenantName ?? "JourneyPoint"}.");
             builder.AppendLine("Your account has been created with the following temporary credentials:");
             builder.AppendLine($"Username: {message.UserName}");
-            builder.AppendLine($"Temporary password: {message.TemporaryPassword}");
+            builder.AppendLine($"Password: {message.TemporaryPassword}");
             builder.AppendLine();
             builder.AppendLine("Please sign in and change your password as soon as possible.");
             return builder.ToString();
