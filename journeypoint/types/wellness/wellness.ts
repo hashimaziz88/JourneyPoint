@@ -40,6 +40,9 @@ export type WellnessCheckInDetailDto = {
   id: string;
   hireId: string;
   hireFullName: string;
+  hireRoleTitle: string | null;
+  hireDepartment: string | null;
+  hireStartDate: string;
   period: WellnessCheckInPeriod;
   periodLabel: string;
   status: WellnessCheckInStatus;
@@ -52,6 +55,9 @@ export type WellnessCheckInDetailDto = {
 export type HireWellnessOverviewDto = {
   hireId: string;
   hireFullName: string;
+  hireRoleTitle: string | null;
+  hireDepartment: string | null;
+  hireStartDate: string;
   checkIns: WellnessCheckInSummaryDto[];
   completedCount: number;
   totalCount: number;

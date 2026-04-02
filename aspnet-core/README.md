@@ -4,7 +4,7 @@
 
 ## What is the JourneyPoint Backend?
 
-The JourneyPoint backend is a REST API built on ABP Framework 9.4.1 and .NET 8. It handles all business logic, data persistence, AI-assisted content enrichment, email delivery, and multi-tenant isolation for the JourneyPoint onboarding platform.
+The JourneyPoint backend is a REST API built on ABP Framework 9.4.1 and .NET 8. It handles all business logic, data persistence, AI-assisted content enrichment, wellness tracking, and multi-tenant isolation for the JourneyPoint onboarding platform.
 
 ## Why This Stack?
 
@@ -14,15 +14,13 @@ PostgreSQL with EF Core: A battle-tested combination that provides reliable rela
 
 Groq AI — Backend Only: All AI calls are made from the backend exclusively. The frontend never calls an AI provider directly, ensuring enrichment results are auditable and facilitator-approved before any data is changed.
 
-Mailjet SMTP: Transactional email for hire welcome notifications is routed through Mailjet's SMTP relay, with Mailpit available for local development interception.
-
 ## Documentation
 
 ### Software Requirement Specification
 
 #### Overview
 
-The backend exposes a secure JWT-authenticated REST API consumed by the Next.js frontend. It enforces multi-tenant data isolation, orchestrates AI enrichment workflows, manages file storage for plan documents, and delivers transactional email notifications.
+The backend exposes a secure JWT-authenticated REST API consumed by the Next.js frontend. It enforces multi-tenant data isolation, orchestrates AI enrichment workflows, manages wellness check-in scheduling and AI question generation, and handles file storage for plan documents.
 
 #### Components and Functional Requirements
 
@@ -44,8 +42,8 @@ The backend exposes a secure JWT-authenticated REST API consumed by the Next.js 
 
 - Create hire records with full personal and role details
 - Automatically generate a platform user account and temporary password on hire creation
-- Send a welcome email with temporary credentials via the configured SMTP provider
-- Track and expose welcome notification delivery status and failure reasons
+- Dispatch welcome email with temporary credentials via SMTP when mail delivery is enabled
+- Track welcome notification delivery status (Pending/Sent/Failed) on the Hire entity
 - Support pipeline board queries filtered by hire status
 
 ##### 4. Journey Management
@@ -63,11 +61,14 @@ The backend exposes a secure JWT-authenticated REST API consumed by the Next.js 
 - Create and resolve at-risk flags with structured intervention records
 - Return full intervention history per hire
 
-##### 6. Notification Management
+##### 6. Wellness Tracking
 
-- Send welcome notification emails on hire account creation
-- Record dispatch result including success status, timestamp, and failure reason
-- Expose notification status per hire for facilitator visibility
+- Generate scheduled wellness check-ins at key milestones when a journey is activated
+- Use Groq AI to generate tailored wellness questions per check-in period
+- Accept and persist hire answers and AI-suggested draft answers
+- Submit completed check-ins and generate AI insight summaries
+- Expose hire wellness overview and check-in detail endpoints for Facilitator, Manager, and Enrolee roles
+- Return hire context (name, role, department, start date) alongside wellness data
 
 ##### 7. Multi-Tenancy
 
@@ -82,15 +83,40 @@ The backend exposes a secure JWT-authenticated REST API consumed by the Next.js 
 ```text
 aspnet-core/
 ├── src/
-│   ├── JourneyPoint.Core                 # Domain entities, services, enums, permissions
-│   ├── JourneyPoint.Application          # Application services, DTOs, AutoMapper profiles
-│   ├── JourneyPoint.EntityFrameworkCore  # DbContext, EF configuration, migrations
-│   ├── JourneyPoint.Web.Core             # API controller base classes and JWT wiring
-│   ├── JourneyPoint.Web.Host             # Startup, appsettings, hosting (no business logic)
-│   └── JourneyPoint.Migrator             # Database migration console app
+│   ├── JourneyPoint.Core/
+│   │   ├── Authorization/               # Permissions, roles, login manager
+│   │   ├── Domains/
+│   │   │   ├── Audit/                   # Audit trail entities
+│   │   │   ├── Engagement/              # Engagement scores, at-risk flags, interventions
+│   │   │   ├── Hires/                   # Hire entity, enums, HireJourneyManager
+│   │   │   ├── OnboardingPlans/         # Plan, module, task entities and domain services
+│   │   │   └── Wellness/               # Wellness check-in and question entities
+│   │   ├── Identity/                    # Tenant and user extensions
+│   │   └── Localization/               # Resource strings
+│   │
+│   ├── JourneyPoint.Application/
+│   │   └── Services/
+│   │       ├── AuditService/            # Audit trail queries
+│   │       ├── DocumentExtractionService/ # AI content extraction from uploaded files
+│   │       ├── EngagementService/       # Engagement scoring, at-risk, interventions
+│   │       ├── FileStorageService/      # Tenant-scoped document storage
+│   │       ├── GroqService/             # Groq AI provider integration
+│   │       ├── HireService/             # Hire enrolment, pipeline queries
+│   │       ├── JourneyService/          # Journey generation, task activation
+│   │       ├── MarkdownImportService/   # Plan import from markdown documents
+│   │       ├── NotificationService/     # Welcome email dispatch via SMTP
+│   │       ├── OnboardingDocumentService/ # Document management and AI enrichment
+│   │       ├── OnboardingPlanService/   # Plan CRUD and lifecycle
+│   │       └── WellnessService/         # Check-in scheduling, AI questions, submissions
+│   │
+│   ├── JourneyPoint.EntityFrameworkCore/ # DbContext, EF Fluent API config, migrations
+│   ├── JourneyPoint.Web.Core/           # API controller base classes and JWT wiring
+│   ├── JourneyPoint.Web.Host/           # Startup, appsettings, hosting (no business logic)
+│   └── JourneyPoint.Migrator/           # Database migration console app
+│
 └── test/
-    ├── JourneyPoint.Tests
-    └── JourneyPoint.Web.Tests
+    ├── JourneyPoint.Tests/              # Domain and application service unit tests
+    └── JourneyPoint.Web.Tests/          # API controller tests
 ```
 
 ### Domain Model
@@ -105,7 +131,7 @@ aspnet-core/
 - .NET 8 SDK
 - PostgreSQL 15+ running locally or remotely
 - Groq API key for AI enrichment features
-- Mailjet credentials, or Mailpit running locally for email interception
+- (Optional) SMTP credentials for welcome email delivery, or Mailpit running locally for email interception
 
 ### Configuration
 

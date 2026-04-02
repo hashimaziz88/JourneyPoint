@@ -160,18 +160,18 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   featureSection: css`
-    padding: 96px ${token.paddingLG * 2}px;
+    padding: 64px ${token.paddingLG * 2}px 96px;
     background: ${token.colorBgContainer};
     border-top: 1px solid ${token.colorBorderSecondary};
 
     @media (max-width: 768px) {
-      padding: 64px ${token.paddingLG}px;
+      padding: 40px ${token.paddingLG}px 64px;
     }
   `,
 
   sectionLabel: css`
     text-align: center;
-    font-size: ${token.fontSizeSM}px !important;
+    font-size: 24px !important;
     font-weight: 600 !important;
     text-transform: uppercase;
     letter-spacing: 0.08em;

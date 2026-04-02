@@ -144,7 +144,10 @@ const WellnessCheckInDetailView: React.FC<WellnessCheckInDetailViewProps> = ({
             <div>
                 <Typography.Title level={4}>{checkInDetail.periodLabel} Wellness Check-in</Typography.Title>
                 <Typography.Text type="secondary">
-                    Scheduled: {new Date(checkInDetail.scheduledDate).toLocaleDateString("en-GB", {
+                    {checkInDetail.hireFullName}
+                    {checkInDetail.hireRoleTitle ? ` · ${checkInDetail.hireRoleTitle}` : ""}
+                    {" — Scheduled: "}
+                    {new Date(checkInDetail.scheduledDate).toLocaleDateString("en-GB", {
                         day: "numeric",
                         month: "long",
                         year: "numeric",

@@ -1,8 +1,22 @@
 import { createStyles } from "antd-style";
 
-export const useStyles = createStyles(({ css }) => ({
+export const useStyles = createStyles(({ css, token }) => ({
   pageRoot: css`
     width: 100%;
+  `,
+
+  hireBanner: css`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: center;
+    padding: 16px;
+    border-radius: ${token.borderRadius}px;
+    background: ${token.colorFillQuaternary};
+  `,
+
+  hireBannerName: css`
+    margin-bottom: 0 !important;
   `,
 
   statsRow: css`

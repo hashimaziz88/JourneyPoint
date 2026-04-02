@@ -12,7 +12,7 @@ import type { TenantResolveStatus } from "@/types/auth/login";
 import { ignoreAsyncError } from "@/utils/async";
 import { useStyles } from "./style/style";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const LoginForm: React.FC = () => {
   const router = useRouter();
@@ -92,7 +92,6 @@ const LoginForm: React.FC = () => {
     <div className={styles.form}>
       {messageContextHolder}
       <Space orientation="vertical" size={4} className={styles.formHeader}>
-        <Title level={2}>Welcome back</Title>
         <Text type="secondary">Sign in with your host or tenant account.</Text>
       </Space>
 
