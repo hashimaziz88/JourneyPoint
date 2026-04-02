@@ -4,7 +4,7 @@
 
 ## What is the JourneyPoint Frontend?
 
-The JourneyPoint frontend is a Next.js 16 application built with React 19 and TypeScript 5. It provides role-aware dashboards and workflows for Facilitators, Managers, and Enrolees, consuming the JourneyPoint REST API to drive the full onboarding lifecycle.
+The JourneyPoint frontend is a Next.js 16 application built with React 19 and TypeScript 5. It provides role-aware dashboards and workflows for Facilitators, Managers, and Enrolees, consuming the JourneyPoint REST API to drive the full onboarding lifecycle including journey management, engagement monitoring, and wellness tracking.
 
 ## Why This Stack?
 
@@ -42,30 +42,55 @@ The frontend provides three role-specific experiences — Facilitator, Manager, 
 * Facilitator can add and remove draft tasks before activating a journey
 * Facilitator can view engagement score trends and intervention history per hire
 * Facilitator can raise and resolve at-risk flags for hires
+* Facilitator can view a live pipeline snapshot with summary statistics on the dashboard
+* Facilitator can review wellness check-in responses and AI insight summaries per hire
 
 ##### 3. Manager Workflow
 
 * Manager can view a task workspace for their direct reports
 * Manager can see task completion and overdue task counts per report
+* Manager can view wellness check-ins for their assigned hires
 
 ##### 4. Enrolee Workflow
 
 * Enrolee can view their active onboarding journey
 * Enrolee can see module and task progress
 * Enrolee can mark tasks as complete
+* Enrolee can answer scheduled wellness check-in questions
+* Enrolee can request AI-generated answer suggestions for wellness questions
+* Enrolee can submit completed wellness check-ins
 
 ##### 5. Plan Management
 
 * Facilitator can import onboarding content from markdown documents
 * Facilitator can review AI-extracted content diffs before applying changes to a plan
 
-##### 6. Notifications
+##### 6. Wellness Tracking
 
-* Facilitator can see the welcome notification delivery status for each hire on the hire detail view
+* Wellness check-in overview displays hire context (name, role, department, start date)
+* Check-in detail view shows hire identity alongside scheduled date and period label
+* Facilitator and Manager wellness views are read-only
+* Enrolee wellness views support answering, AI suggestion, and submission
 
-#### Architecture Diagram
+#### Architecture
 
-Placeholder — link to be added.
+```text
+journeypoint/
+├── app/
+│   ├── (facilitator)/   # Facilitator route group
+│   ├── (manager)/       # Manager route group
+│   └── (enrolee)/       # Enrolee route group
+├── components/          # Shared reusable React components
+├── constants/           # Enum labels, filter defaults, route maps
+├── hoc/                 # Higher-order components (e.g. withAuth)
+├── hooks/               # Custom React hooks (e.g. useAppSession)
+├── layouts/             # App shell, role shell, and workspace layout components
+├── providers/           # Stateful feature providers (four-file contract)
+├── routes/              # Route definitions and auth route helpers
+├── types/               # TypeScript type definitions
+├── utils/               # Helpers and API utilities
+└── tests/               # Playwright e2e tests
+```
 
 ## Design
 
