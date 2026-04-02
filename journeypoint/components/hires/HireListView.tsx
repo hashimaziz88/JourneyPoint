@@ -66,7 +66,6 @@ const HireListView: React.FC<HireListViewProps> = () => {
     const [query, setQuery] = useState<HireListQueryState>(DEFAULT_HIRE_LIST_QUERY_STATE);
     const hiresInView = hires ?? [];
     const hiresWithoutJourney = hiresInView.filter((hire) => !hire.journeyId).length;
-    const failedWelcomeCount = hiresInView.filter((hire) => hire.welcomeNotificationStatus === 2).length;
 
     const loadHires = useEffectEvent(async (): Promise<void> => {
         await getHires(buildHireListRequest(query));
@@ -128,11 +127,7 @@ const HireListView: React.FC<HireListViewProps> = () => {
         setIsCreateModalOpen(false);
         await refreshHires();
 
-        if (result.welcomeNotificationFailureReason) {
-            messageApi.warning("Hire created, but the welcome notification needs follow-up.");
-        } else {
-            messageApi.success("Hire enrolled successfully.");
-        }
+        messageApi.success("Hire enrolled successfully.");
 
         startTransition(() => {
             router.push(buildFacilitatorHireRoute(result.id));
@@ -211,7 +206,6 @@ const HireListView: React.FC<HireListViewProps> = () => {
                             <Statistic title="Total hires" value={totalCount ?? 0} />
                             <Statistic title="In current page" value={hiresInView.length} />
                             <Statistic title="Without journey" value={hiresWithoutJourney} />
-                            <Statistic title="Welcome follow-up" value={failedWelcomeCount} />
                         </div>
 
                         <div className={styles.sidebarActions}>
